@@ -1,0 +1,754 @@
+z: 10850.0 
+g, t,	 u,	 v,	 w, 	 p 
+0, 0, 	 1 
+1, 0, 	 0 
+2, 0, 	 0 
+0, 0,	 1,	  0,	  0,	 170.0 
+1, 0,	 1,	  1,	  0,	 70.0 
+2, 0,	 0,	  0,	  0,	 0.0 
+0, 1,	 1,	  0,	  0,	 200.0 
+1, 1,	 1,	  0,	  0,	 50.0 
+2, 1,	 0,	  0,	  0,	 0.0 
+0, 2,	 1,	  0,	  0,	 200.0 
+1, 2,	 0,	  0,	  1,	 0.0 
+2, 2,	 0,	  0,	  0,	 0.0 
+0, 3,	 1,	  0,	  0,	 170.0 
+1, 3,	 0,	  0,	  0,	 0.0 
+2, 3,	 0,	  0,	  0,	 0.0 
+0, 4,	 1,	  0,	  0,	 170.0 
+1, 4,	 1,	  1,	  0,	 60.0 
+2, 4,	 1,	  1,	  0,	 30.0 
+0, 5,	 1,	  0,	  0,	 140.0 
+1, 5,	 1,	  0,	  0,	 50.0 
+2, 5,	 0,	  0,	  1,	 0.0 
+TIME,	 s 	 sR 
+1, 	0.0,	 0.0,	 
+2, 	0.0,	 0.0,	 
+3, 	0.0,	 0.0,	 
+4, 	0.0,	 0.0,	 
+5, 	0.0,	 0.0,	 
+6, 	0.0,	 0.0,	 
+29 Set Declarations
+    G : Size=1, Index=None, Ordered=Insertion
+        Key  : Dimen : Domain : Size : Members
+        None :     1 :    Any :    3 : {1, 2, 3}
+    S : Size=1, Index=None, Ordered=Insertion
+        Key  : Dimen : Domain : Size : Members
+        None :    -- :    Any :    0 :      {}
+    T : Size=1, Index=None, Ordered=Insertion
+        Key  : Dimen : Domain : Size : Members
+        None :     1 :    Any :    6 : {1, 2, 3, 4, 5, 6}
+    cSD_index : Size=1, Index=None, Ordered=True
+        Key  : Dimen : Domain : Size : Members
+        None :     2 :    G*T :   18 : {(1, 1), (1, 2), (1, 3), (1, 4), (1, 5), (1, 6), (2, 1), (2, 2), (2, 3), (2, 4), (2, 5), (2, 6), (3, 1), (3, 2), (3, 3), (3, 4), (3, 5), (3, 6)}
+    cSU_index : Size=1, Index=None, Ordered=True
+        Key  : Dimen : Domain : Size : Members
+        None :     2 :    G*T :   18 : {(1, 1), (1, 2), (1, 3), (1, 4), (1, 5), (1, 6), (2, 1), (2, 2), (2, 3), (2, 4), (2, 5), (2, 6), (3, 1), (3, 2), (3, 3), (3, 4), (3, 5), (3, 6)}
+    cp_index : Size=1, Index=None, Ordered=True
+        Key  : Dimen : Domain : Size : Members
+        None :     2 :    G*T :   18 : {(1, 1), (1, 2), (1, 3), (1, 4), (1, 5), (1, 6), (2, 1), (2, 2), (2, 3), (2, 4), (2, 5), (2, 6), (3, 1), (3, 2), (3, 3), (3, 4), (3, 5), (3, 6)}
+    delta_index : Size=1, Index=None, Ordered=True
+        Key  : Dimen : Domain : Size : Members
+        None :    -- :  G*T*S :    0 :      {}
+    down_ramp_rule36_index : Size=1, Index=None, Ordered=True
+        Key  : Dimen : Domain : Size : Members
+        None :     2 :    G*T :   18 : {(1, 1), (1, 2), (1, 3), (1, 4), (1, 5), (1, 6), (2, 1), (2, 2), (2, 3), (2, 4), (2, 5), (2, 6), (3, 1), (3, 2), (3, 3), (3, 4), (3, 5), (3, 6)}
+    logical_index : Size=1, Index=None, Ordered=True
+        Key  : Dimen : Domain : Size : Members
+        None :     2 :    G*T :   18 : {(1, 1), (1, 2), (1, 3), (1, 4), (1, 5), (1, 6), (2, 1), (2, 2), (2, 3), (2, 4), (2, 5), (2, 6), (3, 1), (3, 2), (3, 3), (3, 4), (3, 5), (3, 6)}
+    mdt_index : Size=1, Index=None, Ordered=True
+        Key  : Dimen : Domain : Size : Members
+        None :     2 :    G*T :   18 : {(1, 1), (1, 2), (1, 3), (1, 4), (1, 5), (1, 6), (2, 1), (2, 2), (2, 3), (2, 4), (2, 5), (2, 6), (3, 1), (3, 2), (3, 3), (3, 4), (3, 5), (3, 6)}
+    mut_index : Size=1, Index=None, Ordered=True
+        Key  : Dimen : Domain : Size : Members
+        None :     2 :    G*T :   18 : {(1, 1), (1, 2), (1, 3), (1, 4), (1, 5), (1, 6), (2, 1), (2, 2), (2, 3), (2, 4), (2, 5), (2, 6), (3, 1), (3, 2), (3, 3), (3, 4), (3, 5), (3, 6)}
+    p_index : Size=1, Index=None, Ordered=True
+        Key  : Dimen : Domain : Size : Members
+        None :     2 :    G*T :   18 : {(1, 1), (1, 2), (1, 3), (1, 4), (1, 5), (1, 6), (2, 1), (2, 2), (2, 3), (2, 4), (2, 5), (2, 6), (3, 1), (3, 2), (3, 3), (3, 4), (3, 5), (3, 6)}
+    pb_index : Size=1, Index=None, Ordered=True
+        Key  : Dimen : Domain : Size : Members
+        None :     2 :    G*T :   18 : {(1, 1), (1, 2), (1, 3), (1, 4), (1, 5), (1, 6), (2, 1), (2, 2), (2, 3), (2, 4), (2, 5), (2, 6), (3, 1), (3, 2), (3, 3), (3, 4), (3, 5), (3, 6)}
+    pbc_index : Size=1, Index=None, Ordered=True
+        Key  : Dimen : Domain : Size : Members
+        None :     2 :    G*T :   18 : {(1, 1), (1, 2), (1, 3), (1, 4), (1, 5), (1, 6), (2, 1), (2, 2), (2, 3), (2, 4), (2, 5), (2, 6), (3, 1), (3, 2), (3, 3), (3, 4), (3, 5), (3, 6)}
+    pc_index : Size=1, Index=None, Ordered=True
+        Key  : Dimen : Domain : Size : Members
+        None :     2 :    G*T :   18 : {(1, 1), (1, 2), (1, 3), (1, 4), (1, 5), (1, 6), (2, 1), (2, 2), (2, 3), (2, 4), (2, 5), (2, 6), (3, 1), (3, 2), (3, 3), (3, 4), (3, 5), (3, 6)}
+    pow_igual2_index : Size=1, Index=None, Ordered=True
+        Key  : Dimen : Domain : Size : Members
+        None :     2 :    G*T :   18 : {(1, 1), (1, 2), (1, 3), (1, 4), (1, 5), (1, 6), (2, 1), (2, 2), (2, 3), (2, 4), (2, 5), (2, 6), (3, 1), (3, 2), (3, 3), (3, 4), (3, 5), (3, 6)}
+    pow_igual3_index : Size=1, Index=None, Ordered=True
+        Key  : Dimen : Domain : Size : Members
+        None :     2 :    G*T :   18 : {(1, 1), (1, 2), (1, 3), (1, 4), (1, 5), (1, 6), (2, 1), (2, 2), (2, 3), (2, 4), (2, 5), (2, 6), (3, 1), (3, 2), (3, 3), (3, 4), (3, 5), (3, 6)}
+    pow_igual4_index : Size=1, Index=None, Ordered=True
+        Key  : Dimen : Domain : Size : Members
+        None :     2 :    G*T :   18 : {(1, 1), (1, 2), (1, 3), (1, 4), (1, 5), (1, 6), (2, 1), (2, 2), (2, 3), (2, 4), (2, 5), (2, 6), (3, 1), (3, 2), (3, 3), (3, 4), (3, 5), (3, 6)}
+    pow_igual5_index : Size=1, Index=None, Ordered=True
+        Key  : Dimen : Domain : Size : Members
+        None :     2 :    G*T :   18 : {(1, 1), (1, 2), (1, 3), (1, 4), (1, 5), (1, 6), (2, 1), (2, 2), (2, 3), (2, 4), (2, 5), (2, 6), (3, 1), (3, 2), (3, 3), (3, 4), (3, 5), (3, 6)}
+    pow_igual6_index : Size=1, Index=None, Ordered=True
+        Key  : Dimen : Domain : Size : Members
+        None :     2 :    G*T :   18 : {(1, 1), (1, 2), (1, 3), (1, 4), (1, 5), (1, 6), (2, 1), (2, 2), (2, 3), (2, 4), (2, 5), (2, 6), (3, 1), (3, 2), (3, 3), (3, 4), (3, 5), (3, 6)}
+    pow_igual_index : Size=1, Index=None, Ordered=True
+        Key  : Dimen : Domain : Size : Members
+        None :     2 :    G*T :   18 : {(1, 1), (1, 2), (1, 3), (1, 4), (1, 5), (1, 6), (2, 1), (2, 2), (2, 3), (2, 4), (2, 5), (2, 6), (3, 1), (3, 2), (3, 3), (3, 4), (3, 5), (3, 6)}
+    r_index : Size=1, Index=None, Ordered=True
+        Key  : Dimen : Domain : Size : Members
+        None :     2 :    G*T :   18 : {(1, 1), (1, 2), (1, 3), (1, 4), (1, 5), (1, 6), (2, 1), (2, 2), (2, 3), (2, 4), (2, 5), (2, 6), (3, 1), (3, 2), (3, 3), (3, 4), (3, 5), (3, 6)}
+    sd_ramp_rule21b_index : Size=1, Index=None, Ordered=True
+        Key  : Dimen : Domain : Size : Members
+        None :     2 :    G*T :   18 : {(1, 1), (1, 2), (1, 3), (1, 4), (1, 5), (1, 6), (2, 1), (2, 2), (2, 3), (2, 4), (2, 5), (2, 6), (3, 1), (3, 2), (3, 3), (3, 4), (3, 5), (3, 6)}
+    sdsu_ramp_rule20_index : Size=1, Index=None, Ordered=True
+        Key  : Dimen : Domain : Size : Members
+        None :     2 :    G*T :   18 : {(1, 1), (1, 2), (1, 3), (1, 4), (1, 5), (1, 6), (2, 1), (2, 2), (2, 3), (2, 4), (2, 5), (2, 6), (3, 1), (3, 2), (3, 3), (3, 4), (3, 5), (3, 6)}
+    su_ramp_rule21a_index : Size=1, Index=None, Ordered=True
+        Key  : Dimen : Domain : Size : Members
+        None :     2 :    G*T :   18 : {(1, 1), (1, 2), (1, 3), (1, 4), (1, 5), (1, 6), (2, 1), (2, 2), (2, 3), (2, 4), (2, 5), (2, 6), (3, 1), (3, 2), (3, 3), (3, 4), (3, 5), (3, 6)}
+    u_index : Size=1, Index=None, Ordered=True
+        Key  : Dimen : Domain : Size : Members
+        None :     2 :    G*T :   18 : {(1, 1), (1, 2), (1, 3), (1, 4), (1, 5), (1, 6), (2, 1), (2, 2), (2, 3), (2, 4), (2, 5), (2, 6), (3, 1), (3, 2), (3, 3), (3, 4), (3, 5), (3, 6)}
+    up_ramp_rule35_index : Size=1, Index=None, Ordered=True
+        Key  : Dimen : Domain : Size : Members
+        None :     2 :    G*T :   18 : {(1, 1), (1, 2), (1, 3), (1, 4), (1, 5), (1, 6), (2, 1), (2, 2), (2, 3), (2, 4), (2, 5), (2, 6), (3, 1), (3, 2), (3, 3), (3, 4), (3, 5), (3, 6)}
+    v_index : Size=1, Index=None, Ordered=True
+        Key  : Dimen : Domain : Size : Members
+        None :     2 :    G*T :   18 : {(1, 1), (1, 2), (1, 3), (1, 4), (1, 5), (1, 6), (2, 1), (2, 2), (2, 3), (2, 4), (2, 5), (2, 6), (3, 1), (3, 2), (3, 3), (3, 4), (3, 5), (3, 6)}
+    w_index : Size=1, Index=None, Ordered=True
+        Key  : Dimen : Domain : Size : Members
+        None :     2 :    G*T :   18 : {(1, 1), (1, 2), (1, 3), (1, 4), (1, 5), (1, 6), (2, 1), (2, 2), (2, 3), (2, 4), (2, 5), (2, 6), (3, 1), (3, 2), (3, 3), (3, 4), (3, 5), (3, 6)}
+
+17 Param Declarations
+    CR : Size=3, Index=G, Domain=Any, Default=None, Mutable=False
+        Key : Value
+          1 :   0.0
+          2 :   0.0
+          3 :   0.0
+    D : Size=3, Index=G, Domain=Any, Default=None, Mutable=False
+        Key : Value
+          1 :     0
+          2 :     0
+          3 :     3
+    DT : Size=3, Index=G, Domain=Any, Default=None, Mutable=False
+        Key : Value
+          1 :     2
+          2 :     2
+          3 :     3
+    De : Size=6, Index=T, Domain=Any, Default=None, Mutable=False
+        Key : Value
+          1 :   240
+          2 :   250
+          3 :   200
+          4 :   170
+          5 :   260
+          6 :   190
+    Pmax : Size=3, Index=G, Domain=Any, Default=None, Mutable=False
+        Key : Value
+          1 : 300.0
+          2 : 200.0
+          3 : 100.0
+    Pmin : Size=3, Index=G, Domain=Any, Default=None, Mutable=False
+        Key : Value
+          1 :    80
+          2 :    50
+          3 :    30
+    R : Size=6, Index=T, Domain=Any, Default=None, Mutable=False
+        Key : Value
+          1 :    10
+          2 :    10
+          3 :    10
+          4 :    10
+          5 :    10
+          6 :    10
+    RD : Size=3, Index=G, Domain=Any, Default=None, Mutable=False
+        Key : Value
+          1 :    30
+          2 :    40
+          3 :    50
+    RU : Size=3, Index=G, Domain=Any, Default=None, Mutable=False
+        Key : Value
+          1 :    50
+          2 :    60
+          3 :    70
+    SD : Size=3, Index=G, Domain=Any, Default=None, Mutable=False
+        Key : Value
+          1 :    80
+          2 :    50
+          3 :    30
+    SU : Size=3, Index=G, Domain=Any, Default=None, Mutable=False
+        Key : Value
+          1 :   100
+          2 :    70
+          3 :    40
+    U : Size=3, Index=G, Domain=Any, Default=None, Mutable=False
+        Key : Value
+          1 :     2
+          2 :     0
+          3 :     0
+    UT : Size=3, Index=G, Domain=Any, Default=None, Mutable=False
+        Key : Value
+          1 :     3
+          2 :     2
+          3 :     1
+    c : Size=3, Index=G, Domain=Any, Default=None, Mutable=False
+        Key : Value
+          1 :     5
+          2 :    15
+          3 :    30
+    cU : Size=3, Index=G, Domain=Any, Default=None, Mutable=False
+        Key : Value
+          1 :   800
+          2 :   500
+          3 :   250
+    pc_0 : Size=3, Index=G, Domain=Any, Default=None, Mutable=False
+        Key : Value
+          1 :    40
+          2 :     0
+          3 :     0
+    u_0 : Size=3, Index=G, Domain=Any, Default=None, Mutable=False
+        Key : Value
+          1 :     1
+          2 :     0
+          3 :     0
+
+16 Var Declarations
+    cSD : Size=18, Index=cSD_index
+        Key    : Lower : Value : Upper     : Fixed : Stale : Domain
+        (1, 1) :   0.0 :  None : 9999999.0 : False :  True :  Reals
+        (1, 2) :   0.0 :  None : 9999999.0 : False :  True :  Reals
+        (1, 3) :   0.0 :  None : 9999999.0 : False :  True :  Reals
+        (1, 4) :   0.0 :  None : 9999999.0 : False :  True :  Reals
+        (1, 5) :   0.0 :  None : 9999999.0 : False :  True :  Reals
+        (1, 6) :   0.0 :  None : 9999999.0 : False :  True :  Reals
+        (2, 1) :   0.0 :  None : 9999999.0 : False :  True :  Reals
+        (2, 2) :   0.0 :  None : 9999999.0 : False :  True :  Reals
+        (2, 3) :   0.0 :  None : 9999999.0 : False :  True :  Reals
+        (2, 4) :   0.0 :  None : 9999999.0 : False :  True :  Reals
+        (2, 5) :   0.0 :  None : 9999999.0 : False :  True :  Reals
+        (2, 6) :   0.0 :  None : 9999999.0 : False :  True :  Reals
+        (3, 1) :   0.0 :  None : 9999999.0 : False :  True :  Reals
+        (3, 2) :   0.0 :  None : 9999999.0 : False :  True :  Reals
+        (3, 3) :   0.0 :  None : 9999999.0 : False :  True :  Reals
+        (3, 4) :   0.0 :  None : 9999999.0 : False :  True :  Reals
+        (3, 5) :   0.0 :  None : 9999999.0 : False :  True :  Reals
+        (3, 6) :   0.0 :  None : 9999999.0 : False :  True :  Reals
+    cSU : Size=18, Index=cSU_index
+        Key    : Lower : Value : Upper     : Fixed : Stale : Domain
+        (1, 1) :   0.0 :  None : 9999999.0 : False :  True :  Reals
+        (1, 2) :   0.0 :  None : 9999999.0 : False :  True :  Reals
+        (1, 3) :   0.0 :  None : 9999999.0 : False :  True :  Reals
+        (1, 4) :   0.0 :  None : 9999999.0 : False :  True :  Reals
+        (1, 5) :   0.0 :  None : 9999999.0 : False :  True :  Reals
+        (1, 6) :   0.0 :  None : 9999999.0 : False :  True :  Reals
+        (2, 1) :   0.0 :  None : 9999999.0 : False :  True :  Reals
+        (2, 2) :   0.0 :  None : 9999999.0 : False :  True :  Reals
+        (2, 3) :   0.0 :  None : 9999999.0 : False :  True :  Reals
+        (2, 4) :   0.0 :  None : 9999999.0 : False :  True :  Reals
+        (2, 5) :   0.0 :  None : 9999999.0 : False :  True :  Reals
+        (2, 6) :   0.0 :  None : 9999999.0 : False :  True :  Reals
+        (3, 1) :   0.0 :  None : 9999999.0 : False :  True :  Reals
+        (3, 2) :   0.0 :  None : 9999999.0 : False :  True :  Reals
+        (3, 3) :   0.0 :  None : 9999999.0 : False :  True :  Reals
+        (3, 4) :   0.0 :  None : 9999999.0 : False :  True :  Reals
+        (3, 5) :   0.0 :  None : 9999999.0 : False :  True :  Reals
+        (3, 6) :   0.0 :  None : 9999999.0 : False :  True :  Reals
+    cp : Size=18, Index=cp_index
+        Key    : Lower : Value : Upper     : Fixed : Stale : Domain
+        (1, 1) :   0.0 :   0.0 : 9999999.0 : False : False :  Reals
+        (1, 2) :   0.0 :   0.0 : 9999999.0 : False : False :  Reals
+        (1, 3) :   0.0 :   0.0 : 9999999.0 : False : False :  Reals
+        (1, 4) :   0.0 :   0.0 : 9999999.0 : False : False :  Reals
+        (1, 5) :   0.0 :   0.0 : 9999999.0 : False : False :  Reals
+        (1, 6) :   0.0 :   0.0 : 9999999.0 : False : False :  Reals
+        (2, 1) :   0.0 :   0.0 : 9999999.0 : False : False :  Reals
+        (2, 2) :   0.0 :   0.0 : 9999999.0 : False : False :  Reals
+        (2, 3) :   0.0 :   0.0 : 9999999.0 : False : False :  Reals
+        (2, 4) :   0.0 :   0.0 : 9999999.0 : False : False :  Reals
+        (2, 5) :   0.0 :   0.0 : 9999999.0 : False : False :  Reals
+        (2, 6) :   0.0 :   0.0 : 9999999.0 : False : False :  Reals
+        (3, 1) :   0.0 :   0.0 : 9999999.0 : False : False :  Reals
+        (3, 2) :   0.0 :   0.0 : 9999999.0 : False : False :  Reals
+        (3, 3) :   0.0 :   0.0 : 9999999.0 : False : False :  Reals
+        (3, 4) :   0.0 :   0.0 : 9999999.0 : False : False :  Reals
+        (3, 5) :   0.0 :   0.0 : 9999999.0 : False : False :  Reals
+        (3, 6) :   0.0 :   0.0 : 9999999.0 : False : False :  Reals
+    delta : Size=0, Index=delta_index
+        Key : Lower : Value : Upper : Fixed : Stale : Domain
+    p : Size=18, Index=p_index
+        Key    : Lower : Value : Upper   : Fixed : Stale : Domain
+        (1, 1) :   0.0 : 170.0 : 99999.0 : False : False :  Reals
+        (1, 2) :   0.0 : 200.0 : 99999.0 : False : False :  Reals
+        (1, 3) :   0.0 : 200.0 : 99999.0 : False : False :  Reals
+        (1, 4) :   0.0 : 170.0 : 99999.0 : False : False :  Reals
+        (1, 5) :   0.0 : 170.0 : 99999.0 : False : False :  Reals
+        (1, 6) :   0.0 : 140.0 : 99999.0 : False : False :  Reals
+        (2, 1) :   0.0 :  70.0 : 99999.0 : False : False :  Reals
+        (2, 2) :   0.0 :  50.0 : 99999.0 : False : False :  Reals
+        (2, 3) :   0.0 :   0.0 : 99999.0 : False : False :  Reals
+        (2, 4) :   0.0 :   0.0 : 99999.0 : False : False :  Reals
+        (2, 5) :   0.0 :  60.0 : 99999.0 : False : False :  Reals
+        (2, 6) :   0.0 :  50.0 : 99999.0 : False : False :  Reals
+        (3, 1) :   0.0 :   0.0 : 99999.0 : False : False :  Reals
+        (3, 2) :   0.0 :   0.0 : 99999.0 : False : False :  Reals
+        (3, 3) :   0.0 :   0.0 : 99999.0 : False : False :  Reals
+        (3, 4) :   0.0 :   0.0 : 99999.0 : False : False :  Reals
+        (3, 5) :   0.0 :  30.0 : 99999.0 : False : False :  Reals
+        (3, 6) :   0.0 :   0.0 : 99999.0 : False : False :  Reals
+    pb : Size=18, Index=pb_index
+        Key    : Lower : Value : Upper   : Fixed : Stale : Domain
+        (1, 1) :   0.0 : 300.0 : 99999.0 : False : False :  Reals
+        (1, 2) :   0.0 : 300.0 : 99999.0 : False : False :  Reals
+        (1, 3) :   0.0 : 300.0 : 99999.0 : False : False :  Reals
+        (1, 4) :   0.0 : 300.0 : 99999.0 : False : False :  Reals
+        (1, 5) :   0.0 : 300.0 : 99999.0 : False : False :  Reals
+        (1, 6) :   0.0 : 150.0 : 99999.0 : False : False :  Reals
+        (2, 1) :   0.0 :  70.0 : 99999.0 : False : False :  Reals
+        (2, 2) :   0.0 :  50.0 : 99999.0 : False : False :  Reals
+        (2, 3) :   0.0 :   0.0 : 99999.0 : False : False :  Reals
+        (2, 4) :   0.0 :   0.0 : 99999.0 : False : False :  Reals
+        (2, 5) :   0.0 :  70.0 : 99999.0 : False : False :  Reals
+        (2, 6) :   0.0 :  50.0 : 99999.0 : False : False :  Reals
+        (3, 1) :   0.0 :   0.0 : 99999.0 : False : False :  Reals
+        (3, 2) :   0.0 :   0.0 : 99999.0 : False : False :  Reals
+        (3, 3) :   0.0 :   0.0 : 99999.0 : False : False :  Reals
+        (3, 4) :   0.0 :   0.0 : 99999.0 : False : False :  Reals
+        (3, 5) :   0.0 :  30.0 : 99999.0 : False : False :  Reals
+        (3, 6) :   0.0 :   0.0 : 99999.0 : False : False :  Reals
+    pbc : Size=18, Index=pbc_index
+        Key    : Lower : Value : Upper   : Fixed : Stale : Domain
+        (1, 1) :   0.0 : 220.0 : 99999.0 : False : False :  Reals
+        (1, 2) :   0.0 : 220.0 : 99999.0 : False : False :  Reals
+        (1, 3) :   0.0 : 220.0 : 99999.0 : False : False :  Reals
+        (1, 4) :   0.0 : 220.0 : 99999.0 : False : False :  Reals
+        (1, 5) :   0.0 : 220.0 : 99999.0 : False : False :  Reals
+        (1, 6) :   0.0 :  70.0 : 99999.0 : False : False :  Reals
+        (2, 1) :   0.0 :  20.0 : 99999.0 : False : False :  Reals
+        (2, 2) :   0.0 :   0.0 : 99999.0 : False : False :  Reals
+        (2, 3) :   0.0 :   0.0 : 99999.0 : False : False :  Reals
+        (2, 4) :   0.0 :   0.0 : 99999.0 : False : False :  Reals
+        (2, 5) :   0.0 :  20.0 : 99999.0 : False : False :  Reals
+        (2, 6) :   0.0 :   0.0 : 99999.0 : False : False :  Reals
+        (3, 1) :   0.0 :   0.0 : 99999.0 : False : False :  Reals
+        (3, 2) :   0.0 :   0.0 : 99999.0 : False : False :  Reals
+        (3, 3) :   0.0 :   0.0 : 99999.0 : False : False :  Reals
+        (3, 4) :   0.0 :   0.0 : 99999.0 : False : False :  Reals
+        (3, 5) :   0.0 :   0.0 : 99999.0 : False : False :  Reals
+        (3, 6) :   0.0 :   0.0 : 99999.0 : False : False :  Reals
+    pc : Size=18, Index=pc_index
+        Key    : Lower : Value : Upper   : Fixed : Stale : Domain
+        (1, 1) :   0.0 :  90.0 : 99999.0 : False : False :  Reals
+        (1, 2) :   0.0 : 120.0 : 99999.0 : False : False :  Reals
+        (1, 3) :   0.0 : 120.0 : 99999.0 : False : False :  Reals
+        (1, 4) :   0.0 :  90.0 : 99999.0 : False : False :  Reals
+        (1, 5) :   0.0 :  90.0 : 99999.0 : False : False :  Reals
+        (1, 6) :   0.0 :  60.0 : 99999.0 : False : False :  Reals
+        (2, 1) :   0.0 :  20.0 : 99999.0 : False : False :  Reals
+        (2, 2) :   0.0 :   0.0 : 99999.0 : False : False :  Reals
+        (2, 3) :   0.0 :   0.0 : 99999.0 : False : False :  Reals
+        (2, 4) :   0.0 :   0.0 : 99999.0 : False : False :  Reals
+        (2, 5) :   0.0 :  10.0 : 99999.0 : False : False :  Reals
+        (2, 6) :   0.0 :   0.0 : 99999.0 : False : False :  Reals
+        (3, 1) :   0.0 :   0.0 : 99999.0 : False : False :  Reals
+        (3, 2) :   0.0 :   0.0 : 99999.0 : False : False :  Reals
+        (3, 3) :   0.0 :   0.0 : 99999.0 : False : False :  Reals
+        (3, 4) :   0.0 :   0.0 : 99999.0 : False : False :  Reals
+        (3, 5) :   0.0 :   0.0 : 99999.0 : False : False :  Reals
+        (3, 6) :   0.0 :   0.0 : 99999.0 : False : False :  Reals
+    r : Size=18, Index=r_index
+        Key    : Lower : Value : Upper   : Fixed : Stale : Domain
+        (1, 1) :   0.0 : 130.0 : 99999.0 : False : False :  Reals
+        (1, 2) :   0.0 : 100.0 : 99999.0 : False : False :  Reals
+        (1, 3) :   0.0 : 100.0 : 99999.0 : False : False :  Reals
+        (1, 4) :   0.0 : 130.0 : 99999.0 : False : False :  Reals
+        (1, 5) :   0.0 : 130.0 : 99999.0 : False : False :  Reals
+        (1, 6) :   0.0 :  10.0 : 99999.0 : False : False :  Reals
+        (2, 1) :   0.0 :   0.0 : 99999.0 : False : False :  Reals
+        (2, 2) :   0.0 :   0.0 : 99999.0 : False : False :  Reals
+        (2, 3) :   0.0 :   0.0 : 99999.0 : False : False :  Reals
+        (2, 4) :   0.0 :   0.0 : 99999.0 : False : False :  Reals
+        (2, 5) :   0.0 :  10.0 : 99999.0 : False : False :  Reals
+        (2, 6) :   0.0 :   0.0 : 99999.0 : False : False :  Reals
+        (3, 1) :   0.0 :   0.0 : 99999.0 : False : False :  Reals
+        (3, 2) :   0.0 :   0.0 : 99999.0 : False : False :  Reals
+        (3, 3) :   0.0 :   0.0 : 99999.0 : False : False :  Reals
+        (3, 4) :   0.0 :   0.0 : 99999.0 : False : False :  Reals
+        (3, 5) :   0.0 :   0.0 : 99999.0 : False : False :  Reals
+        (3, 6) :   0.0 :   0.0 : 99999.0 : False : False :  Reals
+    sR : Size=6, Index=T
+        Key : Lower : Value : Upper     : Fixed : Stale : Domain
+          1 :   0.0 :   0.0 : 9999999.0 : False : False :  Reals
+          2 :   0.0 :   0.0 : 9999999.0 : False : False :  Reals
+          3 :   0.0 :   0.0 : 9999999.0 : False : False :  Reals
+          4 :   0.0 :   0.0 : 9999999.0 : False : False :  Reals
+          5 :   0.0 :   0.0 : 9999999.0 : False : False :  Reals
+          6 :   0.0 :   0.0 : 9999999.0 : False : False :  Reals
+    sn : Size=6, Index=T
+        Key : Lower : Value : Upper     : Fixed : Stale : Domain
+          1 :   0.0 :   0.0 : 9999999.0 : False : False :  Reals
+          2 :   0.0 :   0.0 : 9999999.0 : False : False :  Reals
+          3 :   0.0 :   0.0 : 9999999.0 : False : False :  Reals
+          4 :   0.0 :   0.0 : 9999999.0 : False : False :  Reals
+          5 :   0.0 :   0.0 : 9999999.0 : False : False :  Reals
+          6 :   0.0 :   0.0 : 9999999.0 : False : False :  Reals
+    snminus : Size=6, Index=T
+        Key : Lower : Value : Upper     : Fixed : Stale : Domain
+          1 :   0.0 :   0.0 : 9999999.0 : False : False :  Reals
+          2 :   0.0 :   0.0 : 9999999.0 : False : False :  Reals
+          3 :   0.0 :   0.0 : 9999999.0 : False : False :  Reals
+          4 :   0.0 :   0.0 : 9999999.0 : False : False :  Reals
+          5 :   0.0 :   0.0 : 9999999.0 : False : False :  Reals
+          6 :   0.0 :   0.0 : 9999999.0 : False : False :  Reals
+    snplus : Size=6, Index=T
+        Key : Lower : Value : Upper     : Fixed : Stale : Domain
+          1 :   0.0 :   0.0 : 9999999.0 : False : False :  Reals
+          2 :   0.0 :   0.0 : 9999999.0 : False : False :  Reals
+          3 :   0.0 :   0.0 : 9999999.0 : False : False :  Reals
+          4 :   0.0 :   0.0 : 9999999.0 : False : False :  Reals
+          5 :   0.0 :   0.0 : 9999999.0 : False : False :  Reals
+          6 :   0.0 :   0.0 : 9999999.0 : False : False :  Reals
+    u : Size=18, Index=u_index
+        Key    : Lower : Value : Upper : Fixed : Stale : Domain
+        (1, 1) :     0 :   1.0 :     1 : False : False : Binary
+        (1, 2) :     0 :   1.0 :     1 : False : False : Binary
+        (1, 3) :     0 :   1.0 :     1 : False : False : Binary
+        (1, 4) :     0 :   1.0 :     1 : False : False : Binary
+        (1, 5) :     0 :   1.0 :     1 : False : False : Binary
+        (1, 6) :     0 :   1.0 :     1 : False : False : Binary
+        (2, 1) :     0 :   1.0 :     1 : False : False : Binary
+        (2, 2) :     0 :   1.0 :     1 : False : False : Binary
+        (2, 3) :     0 :   0.0 :     1 : False : False : Binary
+        (2, 4) :     0 :   0.0 :     1 : False : False : Binary
+        (2, 5) :     0 :   1.0 :     1 : False : False : Binary
+        (2, 6) :     0 :   1.0 :     1 : False : False : Binary
+        (3, 1) :     0 :   0.0 :     1 : False : False : Binary
+        (3, 2) :     0 :   0.0 :     1 : False : False : Binary
+        (3, 3) :     0 :   0.0 :     1 : False : False : Binary
+        (3, 4) :     0 :  -0.0 :     1 : False : False : Binary
+        (3, 5) :     0 :   1.0 :     1 : False : False : Binary
+        (3, 6) :     0 :  -0.0 :     1 : False : False : Binary
+    v : Size=18, Index=v_index
+        Key    : Lower : Value : Upper : Fixed : Stale : Domain
+        (1, 1) :     0 :   0.0 :     1 : False : False : Binary
+        (1, 2) :     0 :   0.0 :     1 : False : False : Binary
+        (1, 3) :     0 :   0.0 :     1 : False : False : Binary
+        (1, 4) :     0 :   0.0 :     1 : False : False : Binary
+        (1, 5) :     0 :  -0.0 :     1 : False : False : Binary
+        (1, 6) :     0 :  -0.0 :     1 : False : False : Binary
+        (2, 1) :     0 :   1.0 :     1 : False : False : Binary
+        (2, 2) :     0 :   0.0 :     1 : False : False : Binary
+        (2, 3) :     0 :  -0.0 :     1 : False : False : Binary
+        (2, 4) :     0 :  -0.0 :     1 : False : False : Binary
+        (2, 5) :     0 :   1.0 :     1 : False : False : Binary
+        (2, 6) :     0 :  -0.0 :     1 : False : False : Binary
+        (3, 1) :     0 :   0.0 :     1 : False : False : Binary
+        (3, 2) :     0 :   0.0 :     1 : False : False : Binary
+        (3, 3) :     0 :   0.0 :     1 : False : False : Binary
+        (3, 4) :     0 :  -0.0 :     1 : False : False : Binary
+        (3, 5) :     0 :   1.0 :     1 : False : False : Binary
+        (3, 6) :     0 :  -0.0 :     1 : False : False : Binary
+    w : Size=18, Index=w_index
+        Key    : Lower : Value : Upper : Fixed : Stale : Domain
+        (1, 1) :     0 :   0.0 :     1 : False : False : Binary
+        (1, 2) :     0 :   0.0 :     1 : False : False : Binary
+        (1, 3) :     0 :   0.0 :     1 : False : False : Binary
+        (1, 4) :     0 :   0.0 :     1 : False : False : Binary
+        (1, 5) :     0 :  -0.0 :     1 : False : False : Binary
+        (1, 6) :     0 :  -0.0 :     1 : False : False : Binary
+        (2, 1) :     0 :   0.0 :     1 : False : False : Binary
+        (2, 2) :     0 :   0.0 :     1 : False : False : Binary
+        (2, 3) :     0 :   1.0 :     1 : False : False : Binary
+        (2, 4) :     0 :  -0.0 :     1 : False : False : Binary
+        (2, 5) :     0 :  -0.0 :     1 : False : False : Binary
+        (2, 6) :     0 :  -0.0 :     1 : False : False : Binary
+        (3, 1) :     0 :   0.0 :     1 : False : False : Binary
+        (3, 2) :     0 :   0.0 :     1 : False : False : Binary
+        (3, 3) :     0 :   0.0 :     1 : False : False : Binary
+        (3, 4) :     0 :   0.0 :     1 : False : False : Binary
+        (3, 5) :     0 :  -0.0 :     1 : False : False : Binary
+        (3, 6) :     0 :   1.0 :     1 : False : False : Binary
+
+1 Objective Declarations
+    obj : Size=1, Index=None, Active=True
+        Key  : Active : Sense    : Expression
+        None :   True : minimize : cp[1,1] + cp[1,2] + cp[1,3] + cp[1,4] + cp[1,5] + cp[1,6] + cp[2,1] + cp[2,2] + cp[2,3] + cp[2,4] + cp[2,5] + cp[2,6] + cp[3,1] + cp[3,2] + cp[3,3] + cp[3,4] + cp[3,5] + cp[3,6] + 999999999999.0*sR[1] + 999999999999.0*sR[2] + 999999999999.0*sR[3] + 999999999999.0*sR[4] + 999999999999.0*sR[5] + 999999999999.0*sR[6] + 999999999999.0*sn[1] + 999999999999.0*sn[2] + 999999999999.0*sn[3] + 999999999999.0*sn[4] + 999999999999.0*sn[5] + 999999999999.0*sn[6] + 800*v[1,1] + 5*p[1,1] + 800*v[1,2] + 5*p[1,2] + 800*v[1,3] + 5*p[1,3] + 800*v[1,4] + 5*p[1,4] + 800*v[1,5] + 5*p[1,5] + 800*v[1,6] + 5*p[1,6] + 500*v[2,1] + 15*p[2,1] + 500*v[2,2] + 15*p[2,2] + 500*v[2,3] + 15*p[2,3] + 500*v[2,4] + 15*p[2,4] + 500*v[2,5] + 15*p[2,5] + 500*v[2,6] + 15*p[2,6] + 250*v[3,1] + 30*p[3,1] + 250*v[3,2] + 30*p[3,2] + 250*v[3,3] + 30*p[3,3] + 250*v[3,4] + 30*p[3,4] + 250*v[3,5] + 30*p[3,5] + 250*v[3,6] + 30*p[3,6]
+
+20 Constraint Declarations
+    demand_reserve : Size=6, Index=T, Active=True
+        Key : Lower : Body                     : Upper : Active
+          1 :  10.0 : r[1,1] + r[2,1] + r[3,1] :  +Inf :   True
+          2 :  10.0 : r[1,2] + r[2,2] + r[3,2] :  +Inf :   True
+          3 :  10.0 : r[1,3] + r[2,3] + r[3,3] :  +Inf :   True
+          4 :  10.0 : r[1,4] + r[2,4] + r[3,4] :  +Inf :   True
+          5 :  10.0 : r[1,5] + r[2,5] + r[3,5] :  +Inf :   True
+          6 :  10.0 : r[1,6] + r[2,6] + r[3,6] :  +Inf :   True
+    demand_rule65 : Size=6, Index=T, Active=True
+        Key : Lower : Body                             : Upper : Active
+          1 : 240.0 : p[1,1] + p[2,1] + p[3,1] + sn[1] : 240.0 :   True
+          2 : 250.0 : p[1,2] + p[2,2] + p[3,2] + sn[2] : 250.0 :   True
+          3 : 200.0 : p[1,3] + p[2,3] + p[3,3] + sn[3] : 200.0 :   True
+          4 : 170.0 : p[1,4] + p[2,4] + p[3,4] + sn[4] : 170.0 :   True
+          5 : 260.0 : p[1,5] + p[2,5] + p[3,5] + sn[5] : 260.0 :   True
+          6 : 190.0 : p[1,6] + p[2,6] + p[3,6] + sn[6] : 190.0 :   True
+    demand_rule66a : Size=6, Index=T, Active=True
+        Key : Lower : Body                             : Upper : Active
+          1 :   0.0 : sn[1] - (snplus[1] - snminus[1]) :   0.0 :   True
+          2 :   0.0 : sn[2] - (snplus[2] - snminus[2]) :   0.0 :   True
+          3 :   0.0 : sn[3] - (snplus[3] - snminus[3]) :   0.0 :   True
+          4 :   0.0 : sn[4] - (snplus[4] - snminus[4]) :   0.0 :   True
+          5 :   0.0 : sn[5] - (snplus[5] - snminus[5]) :   0.0 :   True
+          6 :   0.0 : sn[6] - (snplus[6] - snminus[6]) :   0.0 :   True
+    demand_rule67 : Size=6, Index=T, Active=True
+        Key : Lower : Body                        : Upper : Active
+          1 : 250.0 : pb[1,1] + pb[2,1] + pb[3,1] :  +Inf :   True
+          2 : 260.0 : pb[1,2] + pb[2,2] + pb[3,2] :  +Inf :   True
+          3 : 210.0 : pb[1,3] + pb[2,3] + pb[3,3] :  +Inf :   True
+          4 : 180.0 : pb[1,4] + pb[2,4] + pb[3,4] :  +Inf :   True
+          5 : 270.0 : pb[1,5] + pb[2,5] + pb[3,5] :  +Inf :   True
+          6 : 200.0 : pb[1,6] + pb[2,6] + pb[3,6] :  +Inf :   True
+    down_ramp_rule36 : Size=18, Index=down_ramp_rule36_index, Active=True
+        Key    : Lower : Body                                         : Upper : Active
+        (1, 1) :  -Inf :             40 - pc[1,1] - (-30*w[1,1] + 30) :   0.0 :   True
+        (1, 2) :  -Inf : pc[1,1] - pc[1,2] - (-30*w[1,2] + 30*u[1,1]) :   0.0 :   True
+        (1, 3) :  -Inf : pc[1,2] - pc[1,3] - (-30*w[1,3] + 30*u[1,2]) :   0.0 :   True
+        (1, 4) :  -Inf : pc[1,3] - pc[1,4] - (-30*w[1,4] + 30*u[1,3]) :   0.0 :   True
+        (1, 5) :  -Inf : pc[1,4] - pc[1,5] - (-30*w[1,5] + 30*u[1,4]) :   0.0 :   True
+        (1, 6) :  -Inf : pc[1,5] - pc[1,6] - (-30*w[1,6] + 30*u[1,5]) :   0.0 :   True
+        (2, 1) :  -Inf :                        - pc[2,1] + 40*w[2,1] :   0.0 :   True
+        (2, 2) :  -Inf : pc[2,1] - pc[2,2] - (-40*w[2,2] + 40*u[2,1]) :   0.0 :   True
+        (2, 3) :  -Inf : pc[2,2] - pc[2,3] - (-40*w[2,3] + 40*u[2,2]) :   0.0 :   True
+        (2, 4) :  -Inf : pc[2,3] - pc[2,4] - (-40*w[2,4] + 40*u[2,3]) :   0.0 :   True
+        (2, 5) :  -Inf : pc[2,4] - pc[2,5] - (-40*w[2,5] + 40*u[2,4]) :   0.0 :   True
+        (2, 6) :  -Inf : pc[2,5] - pc[2,6] - (-40*w[2,6] + 40*u[2,5]) :   0.0 :   True
+        (3, 1) :  -Inf :                        - pc[3,1] + 50*w[3,1] :   0.0 :   True
+        (3, 2) :  -Inf : pc[3,1] - pc[3,2] - (-50*w[3,2] + 50*u[3,1]) :   0.0 :   True
+        (3, 3) :  -Inf : pc[3,2] - pc[3,3] - (-50*w[3,3] + 50*u[3,2]) :   0.0 :   True
+        (3, 4) :  -Inf : pc[3,3] - pc[3,4] - (-50*w[3,4] + 50*u[3,3]) :   0.0 :   True
+        (3, 5) :  -Inf : pc[3,4] - pc[3,5] - (-50*w[3,5] + 50*u[3,4]) :   0.0 :   True
+        (3, 6) :  -Inf : pc[3,5] - pc[3,6] - (-50*w[3,6] + 50*u[3,5]) :   0.0 :   True
+    logical : Size=18, Index=logical_index, Active=True
+        Key    : Lower : Body                                : Upper : Active
+        (1, 1) :   0.0 :      u[1,1] - 1 - (v[1,1] - w[1,1]) :   0.0 :   True
+        (1, 2) :   0.0 : u[1,2] - u[1,1] - (v[1,2] - w[1,2]) :   0.0 :   True
+        (1, 3) :   0.0 : u[1,3] - u[1,2] - (v[1,3] - w[1,3]) :   0.0 :   True
+        (1, 4) :   0.0 : u[1,4] - u[1,3] - (v[1,4] - w[1,4]) :   0.0 :   True
+        (1, 5) :   0.0 : u[1,5] - u[1,4] - (v[1,5] - w[1,5]) :   0.0 :   True
+        (1, 6) :   0.0 : u[1,6] - u[1,5] - (v[1,6] - w[1,6]) :   0.0 :   True
+        (2, 1) :   0.0 :          u[2,1] - (v[2,1] - w[2,1]) :   0.0 :   True
+        (2, 2) :   0.0 : u[2,2] - u[2,1] - (v[2,2] - w[2,2]) :   0.0 :   True
+        (2, 3) :   0.0 : u[2,3] - u[2,2] - (v[2,3] - w[2,3]) :   0.0 :   True
+        (2, 4) :   0.0 : u[2,4] - u[2,3] - (v[2,4] - w[2,4]) :   0.0 :   True
+        (2, 5) :   0.0 : u[2,5] - u[2,4] - (v[2,5] - w[2,5]) :   0.0 :   True
+        (2, 6) :   0.0 : u[2,6] - u[2,5] - (v[2,6] - w[2,6]) :   0.0 :   True
+        (3, 1) :   0.0 :          u[3,1] - (v[3,1] - w[3,1]) :   0.0 :   True
+        (3, 2) :   0.0 : u[3,2] - u[3,1] - (v[3,2] - w[3,2]) :   0.0 :   True
+        (3, 3) :   0.0 : u[3,3] - u[3,2] - (v[3,3] - w[3,3]) :   0.0 :   True
+        (3, 4) :   0.0 : u[3,4] - u[3,3] - (v[3,4] - w[3,4]) :   0.0 :   True
+        (3, 5) :   0.0 : u[3,5] - u[3,4] - (v[3,5] - w[3,5]) :   0.0 :   True
+        (3, 6) :   0.0 : u[3,6] - u[3,5] - (v[3,6] - w[3,6]) :   0.0 :   True
+    mdt : Size=14, Index=mdt_index, Active=True
+        Key    : Lower : Body                                    : Upper : Active
+        (1, 2) :  -Inf :          w[1,1] + w[1,2] - (1 - u[1,2]) :   0.0 :   True
+        (1, 3) :  -Inf :          w[1,2] + w[1,3] - (1 - u[1,3]) :   0.0 :   True
+        (1, 4) :  -Inf :          w[1,3] + w[1,4] - (1 - u[1,4]) :   0.0 :   True
+        (1, 5) :  -Inf :          w[1,4] + w[1,5] - (1 - u[1,5]) :   0.0 :   True
+        (1, 6) :  -Inf :          w[1,5] + w[1,6] - (1 - u[1,6]) :   0.0 :   True
+        (2, 2) :  -Inf :          w[2,1] + w[2,2] - (1 - u[2,2]) :   0.0 :   True
+        (2, 3) :  -Inf :          w[2,2] + w[2,3] - (1 - u[2,3]) :   0.0 :   True
+        (2, 4) :  -Inf :          w[2,3] + w[2,4] - (1 - u[2,4]) :   0.0 :   True
+        (2, 5) :  -Inf :          w[2,4] + w[2,5] - (1 - u[2,5]) :   0.0 :   True
+        (2, 6) :  -Inf :          w[2,5] + w[2,6] - (1 - u[2,6]) :   0.0 :   True
+        (3, 3) :  -Inf : w[3,1] + w[3,2] + w[3,3] - (1 - u[3,3]) :   0.0 :   True
+        (3, 4) :  -Inf : w[3,2] + w[3,3] + w[3,4] - (1 - u[3,4]) :   0.0 :   True
+        (3, 5) :  -Inf : w[3,3] + w[3,4] + w[3,5] - (1 - u[3,5]) :   0.0 :   True
+        (3, 6) :  -Inf : w[3,4] + w[3,5] + w[3,6] - (1 - u[3,6]) :   0.0 :   True
+    mdt2 : Size=1, Index=G, Active=True
+        Key : Lower : Body                     : Upper : Active
+          3 :   0.0 : u[3,1] + u[3,2] + u[3,3] :   0.0 :   True
+    mut : Size=15, Index=mut_index, Active=True
+        Key    : Lower : Body                              : Upper : Active
+        (1, 3) :  -Inf : v[1,1] + v[1,2] + v[1,3] - u[1,3] :   0.0 :   True
+        (1, 4) :  -Inf : v[1,2] + v[1,3] + v[1,4] - u[1,4] :   0.0 :   True
+        (1, 5) :  -Inf : v[1,3] + v[1,4] + v[1,5] - u[1,5] :   0.0 :   True
+        (1, 6) :  -Inf : v[1,4] + v[1,5] + v[1,6] - u[1,6] :   0.0 :   True
+        (2, 2) :  -Inf :          v[2,1] + v[2,2] - u[2,2] :   0.0 :   True
+        (2, 3) :  -Inf :          v[2,2] + v[2,3] - u[2,3] :   0.0 :   True
+        (2, 4) :  -Inf :          v[2,3] + v[2,4] - u[2,4] :   0.0 :   True
+        (2, 5) :  -Inf :          v[2,4] + v[2,5] - u[2,5] :   0.0 :   True
+        (2, 6) :  -Inf :          v[2,5] + v[2,6] - u[2,6] :   0.0 :   True
+        (3, 1) :  -Inf :                   v[3,1] - u[3,1] :   0.0 :   True
+        (3, 2) :  -Inf :                   v[3,2] - u[3,2] :   0.0 :   True
+        (3, 3) :  -Inf :                   v[3,3] - u[3,3] :   0.0 :   True
+        (3, 4) :  -Inf :                   v[3,4] - u[3,4] :   0.0 :   True
+        (3, 5) :  -Inf :                   v[3,5] - u[3,5] :   0.0 :   True
+        (3, 6) :  -Inf :                   v[3,6] - u[3,6] :   0.0 :   True
+    mut2 : Size=1, Index=G, Active=True
+        Key : Lower : Body            : Upper : Active
+          1 :   2.0 : u[1,1] + u[1,2] :   2.0 :   True
+    pow_igual : Size=18, Index=pow_igual_index, Active=True
+        Key    : Lower : Body                           : Upper : Active
+        (1, 1) :   0.0 : p[1,1] - (pc[1,1] + 80*u[1,1]) :   0.0 :   True
+        (1, 2) :   0.0 : p[1,2] - (pc[1,2] + 80*u[1,2]) :   0.0 :   True
+        (1, 3) :   0.0 : p[1,3] - (pc[1,3] + 80*u[1,3]) :   0.0 :   True
+        (1, 4) :   0.0 : p[1,4] - (pc[1,4] + 80*u[1,4]) :   0.0 :   True
+        (1, 5) :   0.0 : p[1,5] - (pc[1,5] + 80*u[1,5]) :   0.0 :   True
+        (1, 6) :   0.0 : p[1,6] - (pc[1,6] + 80*u[1,6]) :   0.0 :   True
+        (2, 1) :   0.0 : p[2,1] - (pc[2,1] + 50*u[2,1]) :   0.0 :   True
+        (2, 2) :   0.0 : p[2,2] - (pc[2,2] + 50*u[2,2]) :   0.0 :   True
+        (2, 3) :   0.0 : p[2,3] - (pc[2,3] + 50*u[2,3]) :   0.0 :   True
+        (2, 4) :   0.0 : p[2,4] - (pc[2,4] + 50*u[2,4]) :   0.0 :   True
+        (2, 5) :   0.0 : p[2,5] - (pc[2,5] + 50*u[2,5]) :   0.0 :   True
+        (2, 6) :   0.0 : p[2,6] - (pc[2,6] + 50*u[2,6]) :   0.0 :   True
+        (3, 1) :   0.0 : p[3,1] - (pc[3,1] + 30*u[3,1]) :   0.0 :   True
+        (3, 2) :   0.0 : p[3,2] - (pc[3,2] + 30*u[3,2]) :   0.0 :   True
+        (3, 3) :   0.0 : p[3,3] - (pc[3,3] + 30*u[3,3]) :   0.0 :   True
+        (3, 4) :   0.0 : p[3,4] - (pc[3,4] + 30*u[3,4]) :   0.0 :   True
+        (3, 5) :   0.0 : p[3,5] - (pc[3,5] + 30*u[3,5]) :   0.0 :   True
+        (3, 6) :   0.0 : p[3,6] - (pc[3,6] + 30*u[3,6]) :   0.0 :   True
+    pow_igual2 : Size=18, Index=pow_igual2_index, Active=True
+        Key    : Lower : Body                             : Upper : Active
+        (1, 1) :   0.0 : pb[1,1] - (pbc[1,1] + 80*u[1,1]) :   0.0 :   True
+        (1, 2) :   0.0 : pb[1,2] - (pbc[1,2] + 80*u[1,2]) :   0.0 :   True
+        (1, 3) :   0.0 : pb[1,3] - (pbc[1,3] + 80*u[1,3]) :   0.0 :   True
+        (1, 4) :   0.0 : pb[1,4] - (pbc[1,4] + 80*u[1,4]) :   0.0 :   True
+        (1, 5) :   0.0 : pb[1,5] - (pbc[1,5] + 80*u[1,5]) :   0.0 :   True
+        (1, 6) :   0.0 : pb[1,6] - (pbc[1,6] + 80*u[1,6]) :   0.0 :   True
+        (2, 1) :   0.0 : pb[2,1] - (pbc[2,1] + 50*u[2,1]) :   0.0 :   True
+        (2, 2) :   0.0 : pb[2,2] - (pbc[2,2] + 50*u[2,2]) :   0.0 :   True
+        (2, 3) :   0.0 : pb[2,3] - (pbc[2,3] + 50*u[2,3]) :   0.0 :   True
+        (2, 4) :   0.0 : pb[2,4] - (pbc[2,4] + 50*u[2,4]) :   0.0 :   True
+        (2, 5) :   0.0 : pb[2,5] - (pbc[2,5] + 50*u[2,5]) :   0.0 :   True
+        (2, 6) :   0.0 : pb[2,6] - (pbc[2,6] + 50*u[2,6]) :   0.0 :   True
+        (3, 1) :   0.0 : pb[3,1] - (pbc[3,1] + 30*u[3,1]) :   0.0 :   True
+        (3, 2) :   0.0 : pb[3,2] - (pbc[3,2] + 30*u[3,2]) :   0.0 :   True
+        (3, 3) :   0.0 : pb[3,3] - (pbc[3,3] + 30*u[3,3]) :   0.0 :   True
+        (3, 4) :   0.0 : pb[3,4] - (pbc[3,4] + 30*u[3,4]) :   0.0 :   True
+        (3, 5) :   0.0 : pb[3,5] - (pbc[3,5] + 30*u[3,5]) :   0.0 :   True
+        (3, 6) :   0.0 : pb[3,6] - (pbc[3,6] + 30*u[3,6]) :   0.0 :   True
+    pow_igual3 : Size=18, Index=pow_igual3_index, Active=True
+        Key    : Lower : Body                          : Upper : Active
+        (1, 1) :   0.0 : pbc[1,1] - (pc[1,1] + r[1,1]) :   0.0 :   True
+        (1, 2) :   0.0 : pbc[1,2] - (pc[1,2] + r[1,2]) :   0.0 :   True
+        (1, 3) :   0.0 : pbc[1,3] - (pc[1,3] + r[1,3]) :   0.0 :   True
+        (1, 4) :   0.0 : pbc[1,4] - (pc[1,4] + r[1,4]) :   0.0 :   True
+        (1, 5) :   0.0 : pbc[1,5] - (pc[1,5] + r[1,5]) :   0.0 :   True
+        (1, 6) :   0.0 : pbc[1,6] - (pc[1,6] + r[1,6]) :   0.0 :   True
+        (2, 1) :   0.0 : pbc[2,1] - (pc[2,1] + r[2,1]) :   0.0 :   True
+        (2, 2) :   0.0 : pbc[2,2] - (pc[2,2] + r[2,2]) :   0.0 :   True
+        (2, 3) :   0.0 : pbc[2,3] - (pc[2,3] + r[2,3]) :   0.0 :   True
+        (2, 4) :   0.0 : pbc[2,4] - (pc[2,4] + r[2,4]) :   0.0 :   True
+        (2, 5) :   0.0 : pbc[2,5] - (pc[2,5] + r[2,5]) :   0.0 :   True
+        (2, 6) :   0.0 : pbc[2,6] - (pc[2,6] + r[2,6]) :   0.0 :   True
+        (3, 1) :   0.0 : pbc[3,1] - (pc[3,1] + r[3,1]) :   0.0 :   True
+        (3, 2) :   0.0 : pbc[3,2] - (pc[3,2] + r[3,2]) :   0.0 :   True
+        (3, 3) :   0.0 : pbc[3,3] - (pc[3,3] + r[3,3]) :   0.0 :   True
+        (3, 4) :   0.0 : pbc[3,4] - (pc[3,4] + r[3,4]) :   0.0 :   True
+        (3, 5) :   0.0 : pbc[3,5] - (pc[3,5] + r[3,5]) :   0.0 :   True
+        (3, 6) :   0.0 : pbc[3,6] - (pc[3,6] + r[3,6]) :   0.0 :   True
+    pow_igual4 : Size=18, Index=pow_igual4_index, Active=True
+        Key    : Lower : Body                        : Upper : Active
+        (1, 1) :   0.0 : pb[1,1] - (p[1,1] + r[1,1]) :   0.0 :   True
+        (1, 2) :   0.0 : pb[1,2] - (p[1,2] + r[1,2]) :   0.0 :   True
+        (1, 3) :   0.0 : pb[1,3] - (p[1,3] + r[1,3]) :   0.0 :   True
+        (1, 4) :   0.0 : pb[1,4] - (p[1,4] + r[1,4]) :   0.0 :   True
+        (1, 5) :   0.0 : pb[1,5] - (p[1,5] + r[1,5]) :   0.0 :   True
+        (1, 6) :   0.0 : pb[1,6] - (p[1,6] + r[1,6]) :   0.0 :   True
+        (2, 1) :   0.0 : pb[2,1] - (p[2,1] + r[2,1]) :   0.0 :   True
+        (2, 2) :   0.0 : pb[2,2] - (p[2,2] + r[2,2]) :   0.0 :   True
+        (2, 3) :   0.0 : pb[2,3] - (p[2,3] + r[2,3]) :   0.0 :   True
+        (2, 4) :   0.0 : pb[2,4] - (p[2,4] + r[2,4]) :   0.0 :   True
+        (2, 5) :   0.0 : pb[2,5] - (p[2,5] + r[2,5]) :   0.0 :   True
+        (2, 6) :   0.0 : pb[2,6] - (p[2,6] + r[2,6]) :   0.0 :   True
+        (3, 1) :   0.0 : pb[3,1] - (p[3,1] + r[3,1]) :   0.0 :   True
+        (3, 2) :   0.0 : pb[3,2] - (p[3,2] + r[3,2]) :   0.0 :   True
+        (3, 3) :   0.0 : pb[3,3] - (p[3,3] + r[3,3]) :   0.0 :   True
+        (3, 4) :   0.0 : pb[3,4] - (p[3,4] + r[3,4]) :   0.0 :   True
+        (3, 5) :   0.0 : pb[3,5] - (p[3,5] + r[3,5]) :   0.0 :   True
+        (3, 6) :   0.0 : pb[3,6] - (p[3,6] + r[3,6]) :   0.0 :   True
+    pow_igual5 : Size=18, Index=pow_igual5_index, Active=True
+        Key    : Lower : Body             : Upper : Active
+        (1, 1) :  -Inf : p[1,1] - pb[1,1] :   0.0 :   True
+        (1, 2) :  -Inf : p[1,2] - pb[1,2] :   0.0 :   True
+        (1, 3) :  -Inf : p[1,3] - pb[1,3] :   0.0 :   True
+        (1, 4) :  -Inf : p[1,4] - pb[1,4] :   0.0 :   True
+        (1, 5) :  -Inf : p[1,5] - pb[1,5] :   0.0 :   True
+        (1, 6) :  -Inf : p[1,6] - pb[1,6] :   0.0 :   True
+        (2, 1) :  -Inf : p[2,1] - pb[2,1] :   0.0 :   True
+        (2, 2) :  -Inf : p[2,2] - pb[2,2] :   0.0 :   True
+        (2, 3) :  -Inf : p[2,3] - pb[2,3] :   0.0 :   True
+        (2, 4) :  -Inf : p[2,4] - pb[2,4] :   0.0 :   True
+        (2, 5) :  -Inf : p[2,5] - pb[2,5] :   0.0 :   True
+        (2, 6) :  -Inf : p[2,6] - pb[2,6] :   0.0 :   True
+        (3, 1) :  -Inf : p[3,1] - pb[3,1] :   0.0 :   True
+        (3, 2) :  -Inf : p[3,2] - pb[3,2] :   0.0 :   True
+        (3, 3) :  -Inf : p[3,3] - pb[3,3] :   0.0 :   True
+        (3, 4) :  -Inf : p[3,4] - pb[3,4] :   0.0 :   True
+        (3, 5) :  -Inf : p[3,5] - pb[3,5] :   0.0 :   True
+        (3, 6) :  -Inf : p[3,6] - pb[3,6] :   0.0 :   True
+    pow_igual6 : Size=18, Index=pow_igual6_index, Active=True
+        Key    : Lower : Body               : Upper : Active
+        (1, 1) :  -Inf : pc[1,1] - pbc[1,1] :   0.0 :   True
+        (1, 2) :  -Inf : pc[1,2] - pbc[1,2] :   0.0 :   True
+        (1, 3) :  -Inf : pc[1,3] - pbc[1,3] :   0.0 :   True
+        (1, 4) :  -Inf : pc[1,4] - pbc[1,4] :   0.0 :   True
+        (1, 5) :  -Inf : pc[1,5] - pbc[1,5] :   0.0 :   True
+        (1, 6) :  -Inf : pc[1,6] - pbc[1,6] :   0.0 :   True
+        (2, 1) :  -Inf : pc[2,1] - pbc[2,1] :   0.0 :   True
+        (2, 2) :  -Inf : pc[2,2] - pbc[2,2] :   0.0 :   True
+        (2, 3) :  -Inf : pc[2,3] - pbc[2,3] :   0.0 :   True
+        (2, 4) :  -Inf : pc[2,4] - pbc[2,4] :   0.0 :   True
+        (2, 5) :  -Inf : pc[2,5] - pbc[2,5] :   0.0 :   True
+        (2, 6) :  -Inf : pc[2,6] - pbc[2,6] :   0.0 :   True
+        (3, 1) :  -Inf : pc[3,1] - pbc[3,1] :   0.0 :   True
+        (3, 2) :  -Inf : pc[3,2] - pbc[3,2] :   0.0 :   True
+        (3, 3) :  -Inf : pc[3,3] - pbc[3,3] :   0.0 :   True
+        (3, 4) :  -Inf : pc[3,4] - pbc[3,4] :   0.0 :   True
+        (3, 5) :  -Inf : pc[3,5] - pbc[3,5] :   0.0 :   True
+        (3, 6) :  -Inf : pc[3,6] - pbc[3,6] :   0.0 :   True
+    sd_ramp_rule21b : Size=5, Index=sd_ramp_rule21b_index, Active=True
+        Key    : Lower : Body                                           : Upper : Active
+        (3, 1) :  -Inf : pc[3,1] + r[3,1] - (70.0*u[3,1] - 70.0*w[3,2]) :   0.0 :   True
+        (3, 2) :  -Inf : pc[3,2] + r[3,2] - (70.0*u[3,2] - 70.0*w[3,3]) :   0.0 :   True
+        (3, 3) :  -Inf : pc[3,3] + r[3,3] - (70.0*u[3,3] - 70.0*w[3,4]) :   0.0 :   True
+        (3, 4) :  -Inf : pc[3,4] + r[3,4] - (70.0*u[3,4] - 70.0*w[3,5]) :   0.0 :   True
+        (3, 5) :  -Inf : pc[3,5] + r[3,5] - (70.0*u[3,5] - 70.0*w[3,6]) :   0.0 :   True
+    sdsu_ramp_rule20 : Size=10, Index=sdsu_ramp_rule20_index, Active=True
+        Key    : Lower : Body                                                            : Upper : Active
+        (1, 1) :  -Inf : pc[1,1] + r[1,1] - (220.0*u[1,1] - 200.0*v[1,1] - 220.0*w[1,2]) :   0.0 :   True
+        (1, 2) :  -Inf : pc[1,2] + r[1,2] - (220.0*u[1,2] - 200.0*v[1,2] - 220.0*w[1,3]) :   0.0 :   True
+        (1, 3) :  -Inf : pc[1,3] + r[1,3] - (220.0*u[1,3] - 200.0*v[1,3] - 220.0*w[1,4]) :   0.0 :   True
+        (1, 4) :  -Inf : pc[1,4] + r[1,4] - (220.0*u[1,4] - 200.0*v[1,4] - 220.0*w[1,5]) :   0.0 :   True
+        (1, 5) :  -Inf : pc[1,5] + r[1,5] - (220.0*u[1,5] - 200.0*v[1,5] - 220.0*w[1,6]) :   0.0 :   True
+        (2, 1) :  -Inf : pc[2,1] + r[2,1] - (150.0*u[2,1] - 130.0*v[2,1] - 150.0*w[2,2]) :   0.0 :   True
+        (2, 2) :  -Inf : pc[2,2] + r[2,2] - (150.0*u[2,2] - 130.0*v[2,2] - 150.0*w[2,3]) :   0.0 :   True
+        (2, 3) :  -Inf : pc[2,3] + r[2,3] - (150.0*u[2,3] - 130.0*v[2,3] - 150.0*w[2,4]) :   0.0 :   True
+        (2, 4) :  -Inf : pc[2,4] + r[2,4] - (150.0*u[2,4] - 130.0*v[2,4] - 150.0*w[2,5]) :   0.0 :   True
+        (2, 5) :  -Inf : pc[2,5] + r[2,5] - (150.0*u[2,5] - 130.0*v[2,5] - 150.0*w[2,6]) :   0.0 :   True
+    su_ramp_rule21a : Size=6, Index=su_ramp_rule21a_index, Active=True
+        Key    : Lower : Body                                           : Upper : Active
+        (3, 1) :  -Inf : pc[3,1] + r[3,1] - (70.0*u[3,1] - 60.0*v[3,1]) :   0.0 :   True
+        (3, 2) :  -Inf : pc[3,2] + r[3,2] - (70.0*u[3,2] - 60.0*v[3,2]) :   0.0 :   True
+        (3, 3) :  -Inf : pc[3,3] + r[3,3] - (70.0*u[3,3] - 60.0*v[3,3]) :   0.0 :   True
+        (3, 4) :  -Inf : pc[3,4] + r[3,4] - (70.0*u[3,4] - 60.0*v[3,4]) :   0.0 :   True
+        (3, 5) :  -Inf : pc[3,5] + r[3,5] - (70.0*u[3,5] - 60.0*v[3,5]) :   0.0 :   True
+        (3, 6) :  -Inf : pc[3,6] + r[3,6] - (70.0*u[3,6] - 60.0*v[3,6]) :   0.0 :   True
+    up_ramp_rule35 : Size=18, Index=up_ramp_rule35_index, Active=True
+        Key    : Lower : Body                                         : Upper : Active
+        (1, 1) :  -Inf :      pc[1,1] - 40 - (-30*v[1,1] + 50*u[1,1]) :   0.0 :   True
+        (1, 2) :  -Inf : pc[1,2] - pc[1,1] - (-30*v[1,2] + 50*u[1,2]) :   0.0 :   True
+        (1, 3) :  -Inf : pc[1,3] - pc[1,2] - (-30*v[1,3] + 50*u[1,3]) :   0.0 :   True
+        (1, 4) :  -Inf : pc[1,4] - pc[1,3] - (-30*v[1,4] + 50*u[1,4]) :   0.0 :   True
+        (1, 5) :  -Inf : pc[1,5] - pc[1,4] - (-30*v[1,5] + 50*u[1,5]) :   0.0 :   True
+        (1, 6) :  -Inf : pc[1,6] - pc[1,5] - (-30*v[1,6] + 50*u[1,6]) :   0.0 :   True
+        (2, 1) :  -Inf :           pc[2,1] - (-40*v[2,1] + 60*u[2,1]) :   0.0 :   True
+        (2, 2) :  -Inf : pc[2,2] - pc[2,1] - (-40*v[2,2] + 60*u[2,2]) :   0.0 :   True
+        (2, 3) :  -Inf : pc[2,3] - pc[2,2] - (-40*v[2,3] + 60*u[2,3]) :   0.0 :   True
+        (2, 4) :  -Inf : pc[2,4] - pc[2,3] - (-40*v[2,4] + 60*u[2,4]) :   0.0 :   True
+        (2, 5) :  -Inf : pc[2,5] - pc[2,4] - (-40*v[2,5] + 60*u[2,5]) :   0.0 :   True
+        (2, 6) :  -Inf : pc[2,6] - pc[2,5] - (-40*v[2,6] + 60*u[2,6]) :   0.0 :   True
+        (3, 1) :  -Inf :           pc[3,1] - (-60*v[3,1] + 70*u[3,1]) :   0.0 :   True
+        (3, 2) :  -Inf : pc[3,2] - pc[3,1] - (-60*v[3,2] + 70*u[3,2]) :   0.0 :   True
+        (3, 3) :  -Inf : pc[3,3] - pc[3,2] - (-60*v[3,3] + 70*u[3,3]) :   0.0 :   True
+        (3, 4) :  -Inf : pc[3,4] - pc[3,3] - (-60*v[3,4] + 70*u[3,4]) :   0.0 :   True
+        (3, 5) :  -Inf : pc[3,5] - pc[3,4] - (-60*v[3,5] + 70*u[3,5]) :   0.0 :   True
+        (3, 6) :  -Inf : pc[3,6] - pc[3,5] - (-60*v[3,6] + 70*u[3,6]) :   0.0 :   True
+
+83 Declarations: S G T Pmax Pmin UT DT De R CR u_0 D U SU SD RU RD pc_0 c cU u_index u v_index v w_index w delta_index delta p_index p pb_index pb pbc_index pbc pc_index pc r_index r cp_index cp cSU_index cSU cSD_index cSD snplus snminus sn sR obj logical_index logical pow_igual_index pow_igual pow_igual2_index pow_igual2 pow_igual3_index pow_igual3 pow_igual4_index pow_igual4 pow_igual5_index pow_igual5 pow_igual6_index pow_igual6 sdsu_ramp_rule20_index sdsu_ramp_rule20 su_ramp_rule21a_index su_ramp_rule21a sd_ramp_rule21b_index sd_ramp_rule21b up_ramp_rule35_index up_ramp_rule35 down_ramp_rule36_index down_ramp_rule36 demand_rule65 demand_rule66a demand_rule67 demand_reserve mut_index mut mdt_index mdt mdt2 mut2
