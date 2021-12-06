@@ -14,10 +14,11 @@ from pyomo.opt import SolverStatus, TerminationCondition
 import uc_Co
 import os
 
-def solve(G1,T1,S,Piecewise,Pmax,Pmin,UT,DT,De,R,CR,u_0,U,D,SU,SD,RU,RD,pc_0,fixShedu,relax,ambiente):  
+def solve(G1,T1,L1,S,Piecewise,Pmax,Pmin,UT,DT,De,R,CR,u_0,U,D,SU,SD,RU,RD,pc_0,fixShedu,relax,ambiente):  
             
     G = []
     T = []
+    L = L1
     for g in range(1, G1+1):
         G.append(g)
     for t in range(1, T1+1):
@@ -50,9 +51,9 @@ def solve(G1,T1,S,Piecewise,Pmax,Pmin,UT,DT,De,R,CR,u_0,U,D,SU,SD,RU,RD,pc_0,fix
     pc_0_dict = dict(zip(G, pc_0))
 
     # Create the Pyomo model
-    model = uc_Co.uc(G,T,S,Piecewise,Pmax_dict,Pmin_dict,
+    model = uc_Co.uc(G,T,L,S,Piecewise,Pmax_dict,Pmin_dict,
         TU_dict,TD_dict,De_dict,R_dict,CR_dict,u_0_dict,U_dict,D_dict,SU_dict,SD_dict,RU_dict,RD_dict,pc_0_dict,fixShedu,relax,ambiente)
-
+  
     # Create the solver interface and solve the model
     # solver = pyo.SolverFactory('glpk')
     #solver = pyo.SolverFactory('cbc')

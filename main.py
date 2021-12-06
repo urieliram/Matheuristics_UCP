@@ -15,6 +15,7 @@ from egret.model_library.unit_commitment.uc_model_generator import UCFormulation
 from datetime import date
 from datetime import datetime
 from timeit import timeit
+from pyomo.core.base import piecewise
 
 from pyomo.util.infeasible import log_infeasible_constraints
 import routines
@@ -51,9 +52,12 @@ print(localtime, ' ', 'solving --->', instancia)
 
 # /home/uriel/Egret-main/egret/data/model_data.py
 G     = 0      # generators number
-c     = []     # cost
+S     = []     # eslabones de costo variable de arranque
+L     = {}     # eslabones de costo en piecewise
 pc    = []     # piecewise cost
-Piecewise = {} # piecewise cost
+Piecewise = [] # piecewise cost
+C     = []     # cost of segment of piecewise
+Pb    = []     # power of segment of piecewise
 De    = []     # load
 Re    = []     # reserve_requirement
 Pmin  = []     # power min
@@ -72,7 +76,7 @@ t_0   = []     # tiempo que lleva en un estado (prendido(+) o apagado(-))
 u_0   = []     # ultimo estado de la unidad   
 M     = []     # averange cost of priority list
 CR    = []     # cost of generator g running and operating at minimum production P_g ($/h).
-S     = {}     # eslabones de costo variable de arranque
+
 
 T = len(md.data['system']['time_keys'])  # time periods
 
@@ -82,13 +86,12 @@ for i, gen in md.elements("generator", generator_type="thermal", in_service=True
 
     # S.update(gen["startup_cost"])
     S = range(1,len(S))
-    #egret/parser/pglib_uc_parser.py
+    ## egret/parser/pglib_uc_parser.py
     #gen["startup_cost"] = list( (s["lag"], s["cost"]) for s in gen["startup"] )
     #gen["p_cost"] = { "data_type":"cost_curve", "cost_curve_type":"piecewise", 
     #                            "values": list( (c["mw"], c["cost"]) for c in gen["piecewise_production"]) }
     
-    aux = gen["p_cost"]["values"]
-    c.append(aux[len(aux)-1][1])
+    Piecewise.append(gen["p_cost"]["values"])
     Pmin.append(gen["p_min"])
     Pmax.append(gen["p_max"])
     RU.append(gen["ramp_up_60min"])
@@ -99,7 +102,6 @@ for i, gen in md.elements("generator", generator_type="thermal", in_service=True
     DT.append(gen["min_down_time"])
     t_0.append(gen["initial_status"])
     
-    print("t_0",t_0)
     ## prendido
     if t_0[G] > 0:
         u_0.append(1)
@@ -120,13 +122,20 @@ for i, gen in md.elements("generator", generator_type="thermal", in_service=True
     pc_0.append(max(0,gen["initial_p_output"]-gen["p_min"]))
 
     CR.append(0.0) # todo{ dar un valor mas o menos real de instancias del MEM }
-    G = G + 1
-    #  Piecewise dictionary
-    Piecewise[j] = aux
+    G = G + 1    
+    
+L[1] = [1,2,3]
+L[2] = [1,2,3,4]
+L[3] = [1,2,3,4,5]  
+#print(Piecewise)
 
-print("U ==== ",U)
-print("D ==== ",D)
+# for i in range(len(Piecewise)):
+#     for j in range(len(Piecewise[i])):
+#         C.append(Piecewise[i][j])
 
+# print(C)
+    
+    
 Re = md.data['system']['reserve_requirement']["values"]  # reserve requierement
 
 for obj, dem in md.elements("load"):   # load demand
@@ -151,7 +160,7 @@ z_exact = 0
 t_o = time.time()  # Start of the calculation time count
 fixShedu = False   # True si se fija la solución entera U, False, si se desea resolver de manera exacta
 relax = False      # True si se relaja la solución entera U, False, si se desea resolver de manera entera
-model = UC.solve(G,T,S,Piecewise,Pmax,Pmin,UT,DT,De,Re,CR,u_0,U,D,SU,SD,RU,RD,pc_0,fixShedu,relax,ambiente)
+model = UC.solve(G,T,L,S,Piecewise,Pmax,Pmin,UT,DT,De,Re,CR,u_0,U,D,SU,SD,RU,RD,pc_0,fixShedu,relax,ambiente)
  
 #log_infeasible_constraints(model)
 z_exact = model.obj.expr()
