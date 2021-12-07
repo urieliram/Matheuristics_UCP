@@ -98,11 +98,11 @@
          "ramp_startup_limit":40,
          "ramp_shutdown_limit":30,
          "time_up_minimum":1,
-         "time_down_minimum":3,
+         "time_down_minimum":2,
          "power_output_t0":0,
          "unit_on_t0":0,
          "time_up_t0":0,
-         "time_down_t0":0,
+         "time_down_t0":10,
          "startup":[
             {
                "lag":2,

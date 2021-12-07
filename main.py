@@ -125,8 +125,8 @@ for i, gen in md.elements("generator", generator_type="thermal", in_service=True
     G = G + 1    
     
 L[1] = [1,2,3]
-L[2] = [1,2,3,4]
-L[3] = [1,2,3,4,5]  
+L[2] = [1,2,3]
+L[3] = [1,2,3]  
 #print(Piecewise)
 
 # for i in range(len(Piecewise)):

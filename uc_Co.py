@@ -42,36 +42,8 @@ def uc(G,T,L,S,Piecewise,Pmax,Pmin,UT,DT,De,R,CR,u_0,U,D,SU,SD,RU,RD,pc_0,fixShe
     
     model.c    = pyo.Param(model.G , initialize = {1:5,2:15,3:30}    ,within=Any)
     model.cU   = pyo.Param(model.G , initialize = {1:800,2:500,3:250},within=Any)
-        
-    ## https://pyomo.readthedocs.io/en/stable/pyomo_modeling_components/Sets.html
-    ## https://pretagteam.com/question/variable-indexed-by-an-indexed-set-with-pyomo
-    ## https://projects.coin-or.org/Coopr/browser/coopr.doc/trunk/GettingStarted/current/pyomo.txt?rev=6232
-    ## https://stackoverflow.com/questions/59237082/variable-indexed-by-an-indexed-set-with-pyomo
-    ## https://github.com/Pyomo/pyomo/blob/main/examples/pyomo/piecewise/indexed.py
-    
-    # {1:{80,150,300},2:{50,100,200},3:{30,50,100}}
-    # datos = {1:{80,150,300},2:{50,100,200},3:{30,50,100}}
-    ## Sparse Index Sets Example
-    # model.C  = pyo.Param(model.L , initialize=datos, within=Any)
-    
-    
-    # def gl_init(m):
-    #     return ((g,l) for g in m.G for l in m.L[g])
-    # model.GL = pyo.Set(dimen=2, initialize=gl_init)
-    # # datos = {(1,1):5,(1,2):5,(1,3):5,(2,1):15,(2,2):15,(2,3):15,(3,1):30,(3,2):30,(3,3):30}    
-    # model.C  = pyo.Param(model.GL, initialize=datos )
-    # model.C.pprint()
-    
-    # def c_init(model, i, j):
-	#     if i == j:
-	#         return i*i
-	#     else:
-	#         return 0.0
-	# model.C = Param(model.A,  rule=c_init)
-    # model.C.pprint()
-    
-    #model.C    = pyo.Param(model.L)
-    #model.L={1:{80,150,300},2:{50,100,200},3:{30,50,100}}
+    model.mpc  = pyo.Param(model.G , initialize = {1:400,2:750,3:900},within=Any)        
+    # model.mpc  = pyo.Param(model.G , initialize = {1:0,2:0,3:0},within=Any)        
 
     CLP = 999999999999.0 #penalty cost for failing to meet or exceeding load ($/megawatt-hour (MWh)).
     CRP = 999999999999.0 #penalty cost for failing to meet reserve requirement
@@ -99,41 +71,27 @@ def uc(G,T,L,S,Piecewise,Pmax,Pmin,UT,DT,De,R,CR,u_0,U,D,SU,SD,RU,RD,pc_0,fixShe
     model.sn        = pyo.Var( model.T ,           bounds=(0.0,9999999.0)) #surplus demand
     model.sR        = pyo.Var( model.T ,           bounds=(0.0,9999999.0)) #surplus reserve
     
-    model.L.pprint()
-    
-    # compute the per-generator, per-time period production costs.
+       
+    #  Defined index to compute the per-generator, per-time, and segment period production costs.
     def index_G_T_Lg(m):
         return ((g,t,l) for g in m.G for t in m.T for l in range(1,len(m.L[g])+1))
     model.indexGTLg = Set(initialize=index_G_T_Lg, dimen=3)
     
+    #  Defined index to compute the per-generator, and segment period production costs.
     def index_G_Lg(m):
         return ((g,l) for g in m.G for l in range(1,len(m.L[g])+1))
     model.indexGLg = Set(initialize=index_G_Lg, dimen=2)
     
-     # model.indexGTLg.pprint()
-    model.indexGLg.pprint()
+    # model.indexGTLg.pprint()
+    # model.indexGLg.pprint()
     model.pl = Var( model.indexGTLg, bounds=(0.0,99999.0)) ## within=UnitInterval UnitInterval == [0,1]
-      
-    model.Pb = pyo.Param(model.indexGLg, initialize = {(1, 1):80, (1, 2):150, (1, 3):300, (2, 1):50, (2, 2):100, (2, 3):150, (2, 4):200, (3, 1):30, (3, 2):50, (3, 3):70, (3, 4):90, (3, 5):100}, within=Any)
-    model.C  = pyo.Param(model.indexGLg, initialize = {(1, 1):5, (1, 2):5, (1, 3):5, (2, 1):15, (2, 2):15, (2, 3):15, (2, 4):15, (3, 1):30, (3, 2):30, (3, 3):30, (3, 4):30, (3, 5):30}, within=Any)
+    model.Pb = pyo.Param(model.indexGLg, initialize = {(1,1):80, (1,2):150, (1,3):300, (2,1):50, (2,2):100, (2,3):200, (3,1):30, (3,2):50, (3,3):100}, within=Any)
+    model.C  = pyo.Param(model.indexGLg, initialize = {(1,1):5,  (1,2):5,   (1,3):5,   (2,1):15, (2,2):15,  (2,3):15,  (3,1):30, (3,2):30, (3,3):30},  within=Any)
 
     # model.pl.pprint()
-    model.Pb.pprint()
-    model.C.pprint()
-    # def pl_(model, g):
-    #     return pyo.Var()
-    # model.s = pyo.Var(model.pl)
+    # model.Pb.pprint()
+    # model.C.pprint()
     
-    #model.b[i] for i in model.IDX)
-    # INDEX1=[(0,1),(8,3)]
-    # print(type(INDEX1))
-    # model.INDEX1 = Set(dimen=2, initialize=INDEX1)
-    # model.INDEX1.pprint() 
-    # model.X = Var(model.INDEX1, bounds=(-2,2))
-    # model.Z = Var(model.INDEX1)    
-    # for idx in model.L.index_set():
-    #     pl[idx] = [-2.0 + i*step for i in range(num_points)]   # [-2.0, ..., 2.0]
-   
     ## https://pyomo.readthedocs.io/en/stable/working_models.html
     # model.u[3,1].fix(0)
     # model.v[3,1].fix(0)
@@ -150,10 +108,10 @@ def uc(G,T,L,S,Piecewise,Pmax,Pmin,UT,DT,De,R,CR,u_0,U,D,SU,SD,RU,RD,pc_0,fixShe
     #     model.u.set_values(Shedule_dict)
 
     def obj_rule(m): #Costo sin piecewise
-        return sum(m.cp[g,t] + m.cU[g] * m.v[g,t]         for g in m.G for t in m.T) \
-             + sum(m.CR[g] * m.u[g,t]                     for g in m.G for t in m.T) \
-             + sum(m.sR[t] * CLP                                       for t in m.T) \
-             + sum(m.sn[t] * CRP                                       for t in m.T) 
+        return sum(m.cp[g,t] + m.cU[g] * m.v[g,t] + m.mpc[g] * m.u[g,t] for g in m.G for t in m.T) \
+             + sum(m.CR[g] * m.u[g,t]                                   for g in m.G for t in m.T) \
+             + sum(m.sR[t] * CLP                                        for t in m.T) \
+             + sum(m.sn[t] * CRP                                        for t in m.T) 
             #  + sum(m.cU[g] * m.v[g,t] + m.c[g] * m.p[g,t] for g in m.G for t in m.T) 
     model.obj = pyo.Objective(rule = obj_rule)
 
@@ -260,8 +218,7 @@ def uc(G,T,L,S,Piecewise,Pmax,Pmin,UT,DT,De,R,CR,u_0,U,D,SU,SD,RU,RD,pc_0,fixShe
             return sum( m.v[g,i] for i in range(t-value(m.UT[g])+1,t+1)) <= m.u[g,t]        
         else:
             return pyo.Constraint.Skip
-    model.mut = pyo.Constraint(model.G,model.T, rule = mut_rule)
-    
+    model.mut = pyo.Constraint(model.G,model.T, rule = mut_rule)    
 
     def mdt_rule(m,g,t): # minimum-down time eq.(5)
         if t >= value(m.DT[g]):
@@ -277,8 +234,9 @@ def uc(G,T,L,S,Piecewise,Pmax,Pmin,UT,DT,De,R,CR,u_0,U,D,SU,SD,RU,RD,pc_0,fixShe
         else: 
             return pyo.Constraint.Skip        
     model.mdt2 = pyo.Constraint(model.G, rule = mdt_rule2)
+    model.mdt2.pprint()
     
-    #model.mdt2.pprint()         # For entire Constraint List
+    #model.mdt2.pprint()        # For entire Constraint List
     #print(model.mdt2[3].expr)  # For only one index of Constraint List
     
     def mut_rule2(m,g):  # enforce the minimum-up time eq.(3a)
@@ -288,6 +246,7 @@ def uc(G,T,L,S,Piecewise,Pmax,Pmin,UT,DT,De,R,CR,u_0,U,D,SU,SD,RU,RD,pc_0,fixShe
         else: 
             return pyo.Constraint.Skip
     model.mut2 = pyo.Constraint(model.G, rule = mut_rule2)
+    model.mut2.pprint()
 
     #model.mut2.pprint()       # For entire Constraint List
     #print(model.mut2[1].expr)  # For only one index of Constraint List
@@ -300,19 +259,14 @@ def uc(G,T,L,S,Piecewise,Pmax,Pmin,UT,DT,De,R,CR,u_0,U,D,SU,SD,RU,RD,pc_0,fixShe
             return pyo.Constraint.Skip
     model.Piecewise_offer42 = pyo.Constraint(model.indexGTLg, rule = Piecewise_offer42)
     
-    model.Piecewise_offer42.pprint()
-    
     def Piecewise_offer43(m,g,t):  #  eq.(43)
         return sum(m.pl[g,t,l] for l in range(1,value(len(m.L[g]))+1)) == m.pc[g,t]                                        
     model.Piecewise_offer43 = pyo.Constraint(model.G,model.T, rule = Piecewise_offer43)
-    
-    model.Piecewise_offer43.pprint()
     
     def Piecewise_offer44(m,g,t):  #  eq.(44)
         return sum(m.C[g,l] * m.pl[g,t,l] for l in range(1,value(len(m.L[g]))+1)) == m.cp[g,t]                                       
     model.Piecewise_offer44 = pyo.Constraint(model.G,model.T, rule = Piecewise_offer44)
     
-    model.Piecewise_offer44.pprint()
     # # compute the per-generator, per-time period production costs. We'll do this by hand
     # def piecewise_production_costs_index_set_generator(model):
     #     return ((model.G,model.T,i) for g in G for t in T for i in range(len(Piecewise[g,t])-1))
