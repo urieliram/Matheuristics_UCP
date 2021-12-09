@@ -1,20 +1,18 @@
-# --------------------------------------------------------------------------------
-# File: unit_commitment.py
-# Developers: Uriel Iram Lezama Lope
-# Purpose: Solve a Unit Commitment Problem
-# Description: para ejecutar use
-#  python3 main.py anjos.json thinkpad
-# --------------------------------------------------------------------------------
+## --------------------------------------------------------------------------------
+## File: unit_commitment.py
+## Developers: Uriel Iram Lezama Lope
+## Purpose: Solve a Unit Commitment Problem
+## Description: para ejecutar use: python3 main.py anjos.json thinkpad
+##--------------------------------------------------------------------------------
+# from   pyomo.opt import results
+# from   pyomo.opt.results import solver
 import pyomo.environ as pyo
-from pyomo.environ import *
-from pyomo.opt import results
-from pyomo.opt.results import solver
-from pyomo.util.infeasible import log_infeasible_constraints
-from pyomo.opt import SolverStatus, TerminationCondition
+from   pyomo.environ import *
+from   pyomo.util.infeasible import log_infeasible_constraints
+from   pyomo.opt import SolverStatus, TerminationCondition
 import uc_Co
-import os
 
-def solve(G1,T1,L1,S,Piecewise,Pmax,Pmin,UT,DT,De,R,CR,u_0,U,D,SU,SD,RU,RD,pc_0,fixShedu,relax,ambiente):  
+def solve(G1,T1,L1,S,Piecewise,Pmax,Pmin,UT,DT,De,R,CR,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,Pb,C,Cs,Tmin,fixShedu,relax,ambiente):  
             
     G = []
     T = []
@@ -24,7 +22,7 @@ def solve(G1,T1,L1,S,Piecewise,Pmax,Pmin,UT,DT,De,R,CR,u_0,U,D,SU,SD,RU,RD,pc_0,
     for t in range(1, T1+1):
         T.append(t)
 
-    # Aquí se pasa de una solución en arreglo "SOL" a una solución al diccionario "Shedule_dict"
+    ## Aquí se pasa de una solución en arreglo "SOL" a una solución al diccionario "Shedule_dict"
     Shedule_dict = {}
     # for g in range(len(G)):
     #     for t in range(len(T)):
@@ -32,7 +30,7 @@ def solve(G1,T1,L1,S,Piecewise,Pmax,Pmin,UT,DT,De,R,CR,u_0,U,D,SU,SD,RU,RD,pc_0,
     # print("Shedule_dict")
     # print(Shedule_dict)
 
-    # aqui se pasan de arreglos a diccionarios como los lee Pyomo
+    ## Aqui se pasan de arreglos a diccionarios como los lee Pyomo
     Pmax_dict = dict(zip(G, Pmax))
     Pmin_dict = dict(zip(G, Pmin))
     TU_dict   = dict(zip(G, UT))
@@ -50,11 +48,11 @@ def solve(G1,T1,L1,S,Piecewise,Pmax,Pmin,UT,DT,De,R,CR,u_0,U,D,SU,SD,RU,RD,pc_0,
     RD_dict   = dict(zip(G, RD))
     pc_0_dict = dict(zip(G, pc_0))
 
-    # Create the Pyomo model
+    ## Create the Pyomo model
     model = uc_Co.uc(G,T,L,S,Piecewise,Pmax_dict,Pmin_dict,
-        TU_dict,TD_dict,De_dict,R_dict,CR_dict,u_0_dict,U_dict,D_dict,SU_dict,SD_dict,RU_dict,RD_dict,pc_0_dict,fixShedu,relax,ambiente)
+        TU_dict,TD_dict,De_dict,R_dict,CR_dict,u_0_dict,U_dict,D_dict,SU_dict,SD_dict,RU_dict,RD_dict,pc_0_dict,mpc,Pb,C,Cs,Tmin,fixShedu,relax,ambiente)
   
-    # Create the solver interface and solve the model
+    ## Create the solver interface and solve the model
     # solver = pyo.SolverFactory('glpk')
     #solver = pyo.SolverFactory('cbc')
     #https://www.ibm.com/docs/en/icos/12.8.0.0?topic=parameters-relative-mip-gap-tolerance
@@ -73,15 +71,15 @@ def solve(G1,T1,L1,S,Piecewise,Pmax,Pmin,UT,DT,De,R,CR,u_0,U,D,SU,SD,RU,RD,pc_0,
     ## para editar un Lp en pyomo
     ## https://stackoverflow.com/questions/54312316/pyomo-model-lp-file-with-variable-values
     
-    # write LP file
-    #model.write()             # To write the model into a file using .nl format
+    ## write LP file
+    #model.write()             ## To write the model into a file using .nl format
     #filename = os.path.join(os.path.dirname(__file__), 'model.lp')
     #model.write(filename, io_options={'symbolic_solver_labels': True})
     #model.write(filename = str('model') + ".mps", io_options = {"symbolic_solver_labels":True})
-    # print(solver.ExportModelAsLpFormat(False).replace('\\', '').replace(',_', ','), sep='\n')
+    #print(solver.ExportModelAsLpFormat(False).replace('\\', '').replace(',_', ','), sep='\n')
   
-    ## ENVÍA EL PROBLEMA DE OPTIMIZACIÓN AL SOLVER 
-    res = solver.solve(model, tee=False) # timelimit=10; tee=True(para ver log)
+    ## Envía el problema de optimización al solver
+    res = solver.solve(model, tee=False) ## timelimit=10; tee=True(para ver log)
     
     try:
         pyo.assert_optimal_termination(res)
@@ -110,13 +108,14 @@ def solve(G1,T1,L1,S,Piecewise,Pmax,Pmin,UT,DT,De,R,CR,u_0,U,D,SU,SD,RU,RD,pc_0,
     # model.demand.pprint()  # Print constraint
     # model.reserve.pprint()
     # model.display()        # Print the optimal solution     
+    # z = pyo.value(model.obj)
     model.pprint(file)
     file.close()
     
-    #https://stackoverflow.com/questions/51044262/finding-out-reason-of-pyomo-model-infeasibility
+    ##https://stackoverflow.com/questions/51044262/finding-out-reason-of-pyomo-model-infeasibility
     log_infeasible_constraints(model)
 
-    #https://pyomo.readthedocs.io/en/stable/working_models.html
+    ##https://pyomo.readthedocs.io/en/stable/working_models.html
     if (res.solver.status == SolverStatus.ok) and (res.solver.termination_condition == TerminationCondition.optimal):
         print ("this is feasible and optimal")
         return model
@@ -124,10 +123,8 @@ def solve(G1,T1,L1,S,Piecewise,Pmax,Pmin,UT,DT,De,R,CR,u_0,U,D,SU,SD,RU,RD,pc_0,
         print (">>> do something about it? or exit?")
         return None
     else:
-        print ("something else is wrong",str(res.solver))  # something else is wrong
+        print ("something else is wrong",str(res.solver))  ## Something else is wrong
         return None
-
     
-    # z = pyo.value(model.obj)
 
     
