@@ -16,6 +16,7 @@ from datetime import date
 from datetime import datetime
 from timeit import timeit
 from pyomo.core.base import piecewise
+from pyomo.core.base.boolean_var import ScalarBooleanVar
 
 from pyomo.util.infeasible import log_infeasible_constraints
 import routines
@@ -52,7 +53,7 @@ print(localtime, ' ', 'solving --->', instancia)
 
 # /home/uriel/Egret-main/egret/data/model_data.py
 G     = 0      # generators number
-S     = []     # eslabones de costo variable de arranque
+S     = {}     # eslabones de costo variable de arranque
 L     = {}     # eslabones de costo en piecewise
 pc    = []     # piecewise cost
 Piecewise = [] # piecewise cost
@@ -84,8 +85,9 @@ T = len(md.data['system']['time_keys'])  # time periods
 j = 0
 for i, gen in md.elements("generator", generator_type="thermal", in_service=True):        
 
-    # S.update(gen["startup_cost"])
-    S = range(1,len(S))
+    #S.update(gen["startup_cost"])
+    #print("S",S)
+    # S = range(1,len(S))
     ## egret/parser/pglib_uc_parser.py
     #gen["startup_cost"] = list( (s["lag"], s["cost"]) for s in gen["startup"] )
     #gen["p_cost"] = { "data_type":"cost_curve", "cost_curve_type":"piecewise", 
@@ -124,15 +126,19 @@ for i, gen in md.elements("generator", generator_type="thermal", in_service=True
     CR.append(0.0) # todo{ dar un valor mas o menos real de instancias del MEM }
     G = G + 1    
     
+    #TODO{LEER DE JSON}
 L[1] = [1,2,3]
 L[2] = [1,2,3]
-L[3] = [1,2,3]  
-#print(Piecewise)
+L[3] = [1,2,3] 
+ 
+S[1] = [1,2,3]
+S[2] = [1,2,3]
+S[3] = [1,2,3]  
 
+#print(Piecewise)
 # for i in range(len(Piecewise)):
 #     for j in range(len(Piecewise[i])):
 #         C.append(Piecewise[i][j])
-
 # print(C)
     
     
