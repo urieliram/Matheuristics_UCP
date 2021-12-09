@@ -75,7 +75,6 @@ CR    = []     ## cost of generator g running and operating at minimum productio
 T = len(md.data['system']['time_keys'])  ## time periods
 
 ## To get the data from the generators
-j = 0
 for i, gen in md.elements("generator", generator_type="thermal", in_service=True):        
 
     #S.update(gen["startup_cost"])
@@ -123,15 +122,11 @@ for i, gen in md.elements("generator", generator_type="thermal", in_service=True
 L[1] = [1,2,3]
 L[2] = [1,2,3]
 L[3] = [1,2,3,4] 
- 
     
 # TODO{LEER DE JSON}
 S[1] = [1,2,3]
 S[2] = [1,2,3]
-S[3] = [1,2,3,4]  
-    
-# TODO{LEER DE JSON}
-mpc  ={1:400,2:750,3:900} ## minimum power cost ($)
+S[3] = [1,2,3,4]    
 
 # TODO{LEER DE JSON} (dependen del conjunto L)
 Pb   ={(1,1):80, (1,2):150, (1,3):300, (2,1):50, (2,2):100, (2,3):200, (3,1):30, (3,2):50, (3,3):70, (3,4):100} ## (MW)
@@ -141,6 +136,8 @@ C    ={(1,1):5,  (1,2):5,   (1,3):5,   (2,1):15, (2,2):15,  (2,3):15,  (3,1):10,
 Tmin ={(1,1):2,  (1,2):3,   (1,3):4,   (2,1):2,  (2,2):3,   (2,3):4,   (3,1):2,  (3,2):3,  (3,3):4,  (3,4):5}    ## (horas)
 Cs   ={(1,1):800,(1,2):800, (1,3):800, (2,1):500,(2,2):500, (2,3):500, (3,1):25, (3,2):250,(3,3):500,(3,4):1000} ## ($)
 
+# TODO{LEER DE JSON}
+mpc  ={1:400,2:750,3:900} ## minimum power cost ($)
 
 #print(Piecewise)
 # for i in range(len(Piecewise)):
