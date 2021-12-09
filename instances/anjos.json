@@ -35,20 +35,28 @@
             {
                "lag":2,
                "cost":800.0
+            },
+            {
+               "lag":3,
+               "cost":800.0
+            },
+            {
+               "lag":4,
+               "cost":800.0
             }
          ],
          "piecewise_production":[
             {
                "mw":80,
-               "cost":400.0
+               "cost":5.0
             },
             {
                "mw":200,
-               "cost":1000.0
+               "cost":5.0
             },
             {
                "mw":300,
-               "cost":1500.0
+               "cost":5.0
             }
          ],
          "name":"G1"
@@ -71,20 +79,28 @@
             {
                "lag":2,
                "cost":500.0
+            },
+            {
+               "lag":3,
+               "cost":500.0
+            },
+            {
+               "lag":4,
+               "cost":500.0
             }
          ],
          "piecewise_production":[
             {
                "mw":50,
-               "cost":750.0
+               "cost":15.0
             },            
             {
                "mw":100,
-               "cost":1500.0
+               "cost":15.0
             },
             {
                "mw":200,
-               "cost":3000.0
+               "cost":15.0
             }
          ],
          "name":"G2"
@@ -106,21 +122,37 @@
          "startup":[
             {
                "lag":2,
+               "cost":25.0
+            },
+            {
+               "lag":3,
                "cost":250.0
+            },
+            {
+               "lag":4,
+               "cost":500.0
+            },
+            {
+               "lag":5,
+               "cost":1000.0
             }
          ],
          "piecewise_production":[
             {
                "mw":30,
-               "cost":900.0
+               "cost":10.0
             },
             {
                "mw":50,
-               "cost":1500.0
+               "cost":15.0
+            },
+            {
+               "mw":70,
+               "cost":20.0
             },
             {
                "mw":100,
-               "cost":3000.0
+               "cost":30.0
             }
          ],
          "name":"G3"

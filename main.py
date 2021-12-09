@@ -1,29 +1,25 @@
-# --------------------------------------------------------------------------------
-# File: main.py
-# Unit Commitment Problem 
-# Developers: Uriel Iram Lezama Lope
-# Purpose: Programa principal de un modelo de UC
-# Description: Lee una instancia de UCP y la resuelve. 
-# Para correr el programa usar el comando "python3 main.py anjos.json thinkpad"
-# --------------------------------------------------------------------------------
-import copy
-import pyomo as pyo
+## --------------------------------------------------------------------------------
+## File: main.py
+## Unit Commitment Problem 
+## Developers: Uriel Iram Lezama Lope
+## Purpose: Programa principal de un modelo de UC
+## Description: Lee una instancia de UCP y la resuelve. 
+## Para correr el programa usar el comando "python3 main.py anjos.json thinkpad"
+## --------------------------------------------------------------------------------
+# import copy
+# import pyomo as pyo
+# from egret.models.unit_commitment import solve_unit_commitment
+# from egret.model_library.unit_commitment.uc_model_generator import UCFormulation, generate_model
+# from datetime import date
+# from datetime import datetime
+# from timeit import timeit
+# from pyomo.core.base import piecewise
+# from pyomo.core.base.boolean_var import ScalarBooleanVar
+# from pyomo.util.infeasible import log_infeasible_constraints
+
 from egret.parsers.pglib_uc_parser import create_ModelData
-from egret.models.unit_commitment import solve_unit_commitment
-from egret.model_library.unit_commitment.uc_model_generator import UCFormulation, generate_model
-
-from datetime import date
-from datetime import datetime
-from timeit import timeit
-from pyomo.core.base import piecewise
-from pyomo.core.base.boolean_var import ScalarBooleanVar
-
-from pyomo.util.infeasible import log_infeasible_constraints
-import routines
-import util
 import outfiles
 import time
-import sys
 import time
 import unit_commitment as UC
 
@@ -40,48 +36,45 @@ ambiente  = 'thinkpad'
 # instancia = sys.argv[1]
 
 localtime = time.asctime(time.localtime(time.time()))
-#ruta = '/home/uriel/GIT/UCVNS/ucvns/'
 
-md = create_ModelData(ruta+instancia)  # large instance
-#md = create_ModelData('/home/uriel/GIT/UCVNS/ucvns/ca/Scenario400_reserves_5.json')
-# md = create_ModelData('/home/uriel/GIT/UCVNS/ucvns/anjosmodificado.json')   # small instance
+#ruta = '/home/uriel/GIT/UCVNS/ucvns/'
+md = create_ModelData(ruta+instancia)
 
 # Append a list as new line to an old csv file
 # row_file = [localtime,instancia]
 # util.append_list_as_row('solution.csv', row_file)
 print(localtime, ' ', 'solving --->', instancia)
 
-# /home/uriel/Egret-main/egret/data/model_data.py
-G     = 0      # generators number
-S     = {}     # eslabones de costo variable de arranque
-L     = {}     # eslabones de costo en piecewise
-pc    = []     # piecewise cost
-Piecewise = [] # piecewise cost
-C     = []     # cost of segment of piecewise
-Pb    = []     # power of segment of piecewise
-De    = []     # load
-Re    = []     # reserve_requirement
-Pmin  = []     # power min
-Pmax  = []     # power max
-RU    = []     # ramp_up_limit", "ramp_up_60min"
-RD    = []     # ramp_down_limit", "ramp_down_60min"
-SU    = []     # ramp_startup_limit", "startup_capacity"
-SD    = []     # ramp_shutdown_limit", "shutdown_capacity"
-UT    = []     # time_upminimum
-DT    = []     # time_down_minimum
-D     = []     # number of hours generator g is required to be off at t=1 (h).
-U     = []     # number of hours generator g is required to be on at t=1 (h).
-p_0   = []     # power_output_t0
-pc_0  = []     # power_output_t0
-t_0   = []     # tiempo que lleva en un estado (prendido(+) o apagado(-))
-u_0   = []     # ultimo estado de la unidad   
-M     = []     # averange cost of priority list
-CR    = []     # cost of generator g running and operating at minimum production P_g ($/h).
+## extracted from /home/uriel/Egret-main/egret/data/model_data.py
+G     = 0      ## generators number
+S     = {}     ## eslabones de costo variable de arranque
+L     = {}     ## eslabones de costo en piecewise
+pc    = []     ## piecewise cost
+Piecewise = [] ## piecewise cost
+C     = {}     ## cost of segment of piecewise
+Pb    = []     ## power of segment of piecewise
+De    = []     ## load
+Re    = []     ## reserve_requirement
+Pmin  = []     ## power min
+Pmax  = []     ## power max
+RU    = []     ## ramp_up_limit", "ramp_up_60min"
+RD    = []     ## ramp_down_limit", "ramp_down_60min"
+SU    = []     ## ramp_startup_limit", "startup_capacity"
+SD    = []     ## ramp_shutdown_limit", "shutdown_capacity"
+UT    = []     ## time_upminimum
+DT    = []     ## time_down_minimum
+D     = []     ## number of hours generator g is required to be off at t=1 (h).
+U     = []     ## number of hours generator g is required to be on at t=1 (h).
+p_0   = []     ## power_output_t0
+pc_0  = []     ## power_output_t0
+t_0   = []     ## tiempo que lleva en un estado (prendido(+) o apagado(-))
+u_0   = []     ## ultimo estado de la unidad   
+M     = []     ## averange cost of priority list
+CR    = []     ## cost of generator g running and operating at minimum production P_g ($/h).
 
+T = len(md.data['system']['time_keys'])  ## time periods
 
-T = len(md.data['system']['time_keys'])  # time periods
-
-# to get the data from the generators
+## To get the data from the generators
 j = 0
 for i, gen in md.elements("generator", generator_type="thermal", in_service=True):        
 
@@ -104,14 +97,14 @@ for i, gen in md.elements("generator", generator_type="thermal", in_service=True
     DT.append(gen["min_down_time"])
     t_0.append(gen["initial_status"])
     
-    ## prendido
+    ## Caso prendido
     if t_0[G] > 0:
         u_0.append(1)
         aux = UT[G] - t_0[G]
         U.append(aux)
         D.append(0)
         
-    ## apagado
+    ## Caso apagado
     if t_0[G] <= 0: 
         u_0.append(0)   
         aux = DT[G] + t_0[G]
@@ -123,39 +116,52 @@ for i, gen in md.elements("generator", generator_type="thermal", in_service=True
     p_0.append(gen["initial_p_output"])
     pc_0.append(max(0,gen["initial_p_output"]-gen["p_min"]))
 
-    CR.append(0.0) # todo{ dar un valor mas o menos real de instancias del MEM }
+    CR.append(0.0) # TODO{ dar un valor mas o menos real de instancias del MEM }
     G = G + 1    
     
-    #TODO{LEER DE JSON}
+# TODO{LEER DE JSON}
 L[1] = [1,2,3]
 L[2] = [1,2,3]
-L[3] = [1,2,3] 
+L[3] = [1,2,3,4] 
  
+    
+# TODO{LEER DE JSON}
 S[1] = [1,2,3]
 S[2] = [1,2,3]
-S[3] = [1,2,3]  
+S[3] = [1,2,3,4]  
+    
+# TODO{LEER DE JSON}
+mpc  ={1:400,2:750,3:900} ## minimum power cost ($)
+
+# TODO{LEER DE JSON} (dependen del conjunto L)
+Pb   ={(1,1):80, (1,2):150, (1,3):300, (2,1):50, (2,2):100, (2,3):200, (3,1):30, (3,2):50, (3,3):70, (3,4):100} ## (MW)
+C    ={(1,1):5,  (1,2):5,   (1,3):5,   (2,1):15, (2,2):15,  (2,3):15,  (3,1):10, (3,2):15, (3,3):20, (3,4):30}  ## ($)
+
+# TODO{LEER DE JSON} (dependen del conjunto S)
+Tmin ={(1,1):2,  (1,2):3,   (1,3):4,   (2,1):2,  (2,2):3,   (2,3):4,   (3,1):2,  (3,2):3,  (3,3):4,  (3,4):5}    ## (horas)
+Cs   ={(1,1):800,(1,2):800, (1,3):800, (2,1):500,(2,2):500, (2,3):500, (3,1):25, (3,2):250,(3,3):500,(3,4):1000} ## ($)
+
 
 #print(Piecewise)
 # for i in range(len(Piecewise)):
 #     for j in range(len(Piecewise[i])):
 #         C.append(Piecewise[i][j])
-# print(C)
+#print(C)    
     
-    
-Re = md.data['system']['reserve_requirement']["values"]  # reserve requierement
+Re = md.data['system']['reserve_requirement']["values"]  ## reserve requierement
 
-for obj, dem in md.elements("load"):   # load demand
+for obj, dem in md.elements("load"):   ## load demand
     De = dem["p_load"]["values"]
 
-t_o = time.time()  # Start of the calculation time count
+t_o = time.time()  ## Start of the calculation time count
 
-# todo{almacenar en una clase instancia todos los parametros de un modelo}
+# TODO{almacenar en una clase instancia todos los parametros de un modelo}
 # instance = Instance()
 
-# todo{almacenar en una clase Solution}
+# TODO{almacenar en una clase Solution}
 # soluc = Solution()
 
-# Inizialize variables making a empty-solution with all generators in cero
+## Inizialize variables making a empty-solution with all generators in cero
 Uu = [[0 for x in range(T)] for y in range(G)]
 V  = [[0 for x in range(T)] for y in range(G)]
 W  = [[0 for x in range(T)] for y in range(G)]
@@ -163,10 +169,10 @@ P  = [[0 for x in range(T)] for y in range(G)]
 R  = [[0 for x in range(T)] for y in range(G)]
 
 z_exact = 0
-t_o = time.time()  # Start of the calculation time count
-fixShedu = False   # True si se fija la solución entera U, False, si se desea resolver de manera exacta
-relax = False      # True si se relaja la solución entera U, False, si se desea resolver de manera entera
-model = UC.solve(G,T,L,S,Piecewise,Pmax,Pmin,UT,DT,De,Re,CR,u_0,U,D,SU,SD,RU,RD,pc_0,fixShedu,relax,ambiente)
+t_o = time.time()  ## Start of the calculation time count
+fixShedu = False   ## True si se fija   la solución entera Uu, False, si se desea resolver de manera exacta
+relax = False      ## True si se relaja la solución entera Uu, False, si se desea resolver de manera entera
+model = UC.solve(G,T,L,S,Piecewise,Pmax,Pmin,UT,DT,De,Re,CR,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,Pb,C,Cs,Tmin,fixShedu,relax,ambiente)
  
 #log_infeasible_constraints(model)
 z_exact = model.obj.expr()
@@ -174,7 +180,7 @@ t_exact = time.time() - t_o
 print("z_exact = ", z_exact)
 print("t_exact = ", t_exact)
 
-# ALMACENA SOLUCIÓN ENTERA
+## ALMACENA SOLUCIÓN ENTERA
 for t in range(T):
     for g in range(G):
         Uu[g][t] = int(model.u[(g+1, t+1)].value)
@@ -184,7 +190,7 @@ for t in range(T):
         R [g][t] = int(model.r[(g+1, t+1)].value)
         #print(g, t, (model.u[(g, t)].value), (model.v[(g, t)].value), (model.w[(g, t)].value), model.p[(g, t)].value)
 
-# Guarda en archivo csv la solución
+## Guarda en archivo csv la solución
 outfiles.sendtofilesolution(Uu,"U_" + instancia[0:5] + ".csv")
 outfiles.sendtofilesolution(V ,"V_" + instancia[0:5] + ".csv")
 outfiles.sendtofilesolution(W ,"W_" + instancia[0:5] + ".csv")
@@ -203,7 +209,7 @@ outfiles.sendtofilesolution(R ,"R_" + instancia[0:5] + ".csv")
 # print("z_relax = ", z_relax)
 # print("t_relax = ", t_relax)
 
-# # IMPRIME SOLUCIÓN RELAJADA
+## IMPRIME SOLUCIÓN RELAJADA
 # for t in range(T):
 #     for g in range(G):
 #         #U[g][t] = int(model.u[(g, t)].value)
@@ -219,11 +225,11 @@ outfiles.sendtofilesolution(R ,"R_" + instancia[0:5] + ".csv")
 #     z_fixed = pyo.value(model.obj)
 #     print("z = ", z_fixed)
 
-# Guarda en archivo csv la solución Ugvns
+## Guarda en archivo csv la solución Ugvns
 #outfiles.sendtofileU(U,"Uconst_" + instancia + ".csv")
 #outfiles.sendtofileTUTD(TU,TD,"timesTUTD_" + instancia + ".csv")
 
-# # Resultados GVNS
+## Resultados GVNS
 # print("z_fixed = ", z_fixed)
 
 # Append a list as new line to an old csv file
