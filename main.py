@@ -51,7 +51,7 @@ S     = {}     ## eslabones de costo variable de arranque
 L     = {}     ## eslabones de costo en piecewise
 pc    = []     ## piecewise cost
 C     = {}     ## cost of segment of piecewise
-Pb    = []     ## power of segment of piecewise
+Pb    = {}     ## power of segment of piecewise
 De    = []     ## load
 Re    = []     ## reserve_requirement
 Pmin  = []     ## power min
@@ -68,24 +68,24 @@ p_0   = []     ## power_output_t0
 pc_0  = []     ## power_output_t0
 t_0   = []     ## tiempo que lleva en un estado (prendido(+) o apagado(-))
 u_0   = []     ## ultimo estado de la unidad
-mpc   = []     ## cost of generator g running and operating at minimum production Pmin ($/h).
+mpc   = {}     ## cost of generator g running and operating at minimum production Pmin ($/h).
+Tmin  = {}     ## lag   de cada escalón del conjunto S de la función de costo variable de arranque.
+Cs    = {}     ## Costo de cada escalón del conjunto S de la función de costo variable de arranque.
 Piecewise = [] ## piecewise cost
 Startup   = [] ## start-up  cost
 
 T = len(md.data['system']['time_keys'])  ## time periods
-print(md)
+
 ## To get the data from the generators
 for i, gen in md.elements("generator", generator_type="thermal", in_service=True):  
     
     Piecewise.append(gen["p_cost"]["values"])
-    print("lenL",len(Piecewise[G]))
     lista=[]
     for j in range(1,len(Piecewise[G])+1):
         lista.append(j)   
     L[G+1] = lista
     
     Startup.append(gen["startup_cost"])
-    print("lenS",len(Startup[G]))
     lista=[]
     for j in range(1,len(Startup[G])+1):
         lista.append(j)  
@@ -121,20 +121,33 @@ for i, gen in md.elements("generator", generator_type="thermal", in_service=True
     pc_0.append(max(0,gen["initial_p_output"]-gen["p_min"]))
     
     G = G + 1    
-    
-# print("type",type(Piecewise),"Piecewise:",Piecewise)
-# print("type",type(Startup),"Startup:",Startup)
-    
-# TODO{LEER DE JSON} (dependen del conjunto L)
-Pb = {(1,1):80, (1,2):150, (1,3):300, (2,1):50, (2,2):100, (2,3):200, (3,1):30, (3,2):50, (3,3):70, (3,4):100} ## (MW)
-C  = {(1,1):5,  (1,2):5,   (1,3):5,   (2,1):15, (2,2):15,  (2,3):15,  (3,1):10, (3,2):15, (3,3):20, (3,4):30}  ## ($)
 
-# TODO{LEER DE JSON} (dependen del conjunto S)
-Tmin = {(1,1):2,  (1,2):3,   (1,3):4,   (2,1):2,  (2,2):3,   (2,3):4,   (3,1):2,  (3,2):3,  (3,3):4,  (3,4):5}    ## (horas)
-Cs   = {(1,1):800,(1,2):800, (1,3):800, (2,1):500,(2,2):500, (2,3):500, (3,1):25, (3,2):250,(3,3):500,(3,4):1000} ## ($)
-
-# TODO{LEER DE JSON}
-mpc  = {1:400,2:750,3:900} ## minimum power cost ($)
+## Se extraen los diccionarios Pb y C de la lista de listas Piecewise    
+k=0; n=0
+for i in Piecewise:
+    s=len(i)
+    k=k+1
+    n=0
+    for j in i:
+        n=n+1
+        # print(k,",",n,",",s,",",j[0],",",j[1])
+        Pb[k,n] = j[0]
+        C[k,n]  = j[1]
+        ## Se calcula el costo mínimo de operación 
+        if n==1:
+            mpc[k] = j[0]*j[1]
+        
+## Se extraen los diccionarios Tmin y Cs de la lista de listas Startup    
+k=0; n=0
+for i in Startup:
+    s=len(i)
+    k=k+1
+    n=0
+    for j in i:
+        n=n+1
+        # print(k,",",n,",",s,",",j[0],",",j[1])
+        Tmin[k,n] = j[0]
+        Cs[k,n]   = j[1]
 
 #print(Piecewise)
 # for i in range(len(Piecewise)):
