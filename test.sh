@@ -1,5 +1,5 @@
 #!/bin/bash
-mivariable="Inicia script kernel search para UC"
+mivariable="Inicia script para UC"
 echo $mivariable
 
 for i in 45 46 47 48 49 50 51 52 53 54 55 56
