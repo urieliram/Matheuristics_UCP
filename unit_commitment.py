@@ -61,7 +61,7 @@ def solve(G1,T1,L,S,Piecewise,Pmax,Pmin,UT,DT,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,
          solver = pyo.SolverFactory('cplex')
     if ambiente == "yalma":
         solver = pyo.SolverFactory('cplex', executable='/home/uriel/cplex1210/cplex/bin/x86-64_linux/cplex')
-    solver.options['mip tolerances mipgap'] = 0.001  
+    solver.options['mip tolerances mipgap'] = 0.01  
     #solver.options['mip tolerances absmipgap'] = 200
     solver.options['timelimit'] = 300
     
