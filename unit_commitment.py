@@ -12,7 +12,7 @@ from   pyomo.util.infeasible import log_infeasible_constraints
 from   pyomo.opt import SolverStatus, TerminationCondition
 import uc_Co
 
-def solve(G1,T1,L,S,Piecewise,Pmax,Pmin,UT,DT,De,R,CR,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,Pb,C,Cs,Tmin,fixShedu,relax,ambiente):  
+def solve(G1,T1,L,S,Piecewise,Pmax,Pmin,UT,DT,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,Pb,C,Cs,Tmin,fixShedu,relax,ambiente):  
             
     G = []
     T = []
@@ -36,7 +36,6 @@ def solve(G1,T1,L,S,Piecewise,Pmax,Pmin,UT,DT,De,R,CR,u_0,U,D,SU,SD,RU,RD,pc_0,m
     TD_dict   = dict(zip(G, DT))
     De_dict   = dict(zip(T, De))
     R_dict    = dict(zip(T, R))
-    CR_dict   = dict(zip(G, CR))
     u_0_dict  = dict(zip(G, u_0))
     U_dict    = dict(zip(G, U))
     D_dict    = dict(zip(G, D))
@@ -49,7 +48,7 @@ def solve(G1,T1,L,S,Piecewise,Pmax,Pmin,UT,DT,De,R,CR,u_0,U,D,SU,SD,RU,RD,pc_0,m
 
     ## Create the Pyomo model
     model = uc_Co.uc(G,T,L,S,Piecewise,Pmax_dict,Pmin_dict,TU_dict,TD_dict,
-                     De_dict,R_dict,CR_dict,u_0_dict,U_dict,D_dict,SU_dict,
+                     De_dict,R_dict,u_0_dict,U_dict,D_dict,SU_dict,
                      SD_dict,RU_dict,RD_dict,pc_0_dict,mpc,Pb,C,Cs,Tmin,
                      fixShedu,relax,ambiente)
   

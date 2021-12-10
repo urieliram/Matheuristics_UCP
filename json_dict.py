@@ -17,3 +17,8 @@ with open(ruta+instancia) as json_file:
         Pmin.append(gen["p_min"])
     
     print(Pmin)
+    
+    ## egret/parser/pglib_uc_parser.py
+    # gen["startup_cost"] = list( (s["lag"], s["cost"]) for s in gen["startup"] )
+    # ["p_cost"] = { "data_type":"cost_curve", "cost_curve_type":"piecewise", 
+                                # "values": list( (c["mw"], c["cost"]) for c in gen["piecewise_production"]) }
