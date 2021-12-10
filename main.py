@@ -30,8 +30,9 @@ import unit_commitment as UC
 ## ferc       12    934    48   (21-24),(37-44)
 ## ferc(2)    12    978    48   (25-36)
 
-instancia = 'anjos.json'
 instancia = 'UC_45.json'
+instancia = 'anjos.json'
+instancia = 'archivox.json'
 ruta      = 'instances/'
 ambiente  = 'thinkpad'
 # if len(sys.argv) != 3:
@@ -251,4 +252,4 @@ outfiles.sendtofilesolution(R ,"R_" + instancia[0:5] + ".csv")
 
 # row_file = [localtime, instancia, T, N, 
 # round(z_exact,1), round(z_relax,1), round(z_fixed,1), t_exact ]  # data to csv
-# util.append_list_as_row('stat.csv', row_file)
+# util.append_list_as_row('stat.dat', row_file)

@@ -87,7 +87,7 @@ def solve(G1,T1,L,S,Piecewise,Pmax,Pmin,UT,DT,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,
         print("An exception occurred")
         return None
         
-    file = open("modeluc.txt", "w")
+    file = open("modeluc.dat", "w")
     file.write('z: %s \n' % (pyo.value(model.obj)))
     file.write('g, t,\t u,\t v,\t w, \t p \n')       
 
