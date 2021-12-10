@@ -40,7 +40,7 @@ localtime = time.asctime(time.localtime(time.time()))
 #ruta = '/home/uriel/GIT/UCVNS/ucvns/'
 md = create_ModelData(ruta+instancia)
 
-# Append a list as new line to an old csv file
+## Append a list as new line to an old csv file
 # row_file = [localtime,instancia]
 # util.append_list_as_row('solution.csv', row_file)
 print(localtime, ' ', 'solving --->', instancia)
@@ -50,7 +50,6 @@ G     = 0      ## generators number
 S     = {}     ## eslabones de costo variable de arranque
 L     = {}     ## eslabones de costo en piecewise
 pc    = []     ## piecewise cost
-Piecewise = [] ## piecewise cost
 C     = {}     ## cost of segment of piecewise
 Pb    = []     ## power of segment of piecewise
 De    = []     ## load
@@ -68,24 +67,30 @@ U     = []     ## number of hours generator g is required to be on at t=1 (h).
 p_0   = []     ## power_output_t0
 pc_0  = []     ## power_output_t0
 t_0   = []     ## tiempo que lleva en un estado (prendido(+) o apagado(-))
-u_0   = []     ## ultimo estado de la unidad   
-M     = []     ## averange cost of priority list
-CR    = []     ## cost of generator g running and operating at minimum production P_g ($/h).
+u_0   = []     ## ultimo estado de la unidad
+mpc   = []     ## cost of generator g running and operating at minimum production Pmin ($/h).
+Piecewise = [] ## piecewise cost
+Startup   = [] ## start-up  cost
 
 T = len(md.data['system']['time_keys'])  ## time periods
-
+print(md)
 ## To get the data from the generators
-for i, gen in md.elements("generator", generator_type="thermal", in_service=True):        
-
-    #S.update(gen["startup_cost"])
-    #print("S",S)
-    # S = range(1,len(S))
-    ## egret/parser/pglib_uc_parser.py
-    #gen["startup_cost"] = list( (s["lag"], s["cost"]) for s in gen["startup"] )
-    #gen["p_cost"] = { "data_type":"cost_curve", "cost_curve_type":"piecewise", 
-    #                            "values": list( (c["mw"], c["cost"]) for c in gen["piecewise_production"]) }
+for i, gen in md.elements("generator", generator_type="thermal", in_service=True):  
     
     Piecewise.append(gen["p_cost"]["values"])
+    print("lenL",len(Piecewise[G]))
+    lista=[]
+    for j in range(1,len(Piecewise[G])+1):
+        lista.append(j)   
+    L[G+1] = lista
+    
+    Startup.append(gen["startup_cost"])
+    print("lenS",len(Startup[G]))
+    lista=[]
+    for j in range(1,len(Startup[G])+1):
+        lista.append(j)  
+    S[G+1] = lista
+    
     Pmin.append(gen["p_min"])
     Pmax.append(gen["p_max"])
     RU.append(gen["ramp_up_60min"])
@@ -114,30 +119,22 @@ for i, gen in md.elements("generator", generator_type="thermal", in_service=True
 
     p_0.append(gen["initial_p_output"])
     pc_0.append(max(0,gen["initial_p_output"]-gen["p_min"]))
-
-    CR.append(0.0) # TODO{ dar un valor mas o menos real de instancias del MEM }
+    
     G = G + 1    
     
-# TODO{LEER DE JSON}
-L[1] = [1,2,3]
-L[2] = [1,2,3]
-L[3] = [1,2,3,4] 
+# print("type",type(Piecewise),"Piecewise:",Piecewise)
+# print("type",type(Startup),"Startup:",Startup)
     
-# TODO{LEER DE JSON}
-S[1] = [1,2,3]
-S[2] = [1,2,3]
-S[3] = [1,2,3,4]    
-
 # TODO{LEER DE JSON} (dependen del conjunto L)
-Pb   ={(1,1):80, (1,2):150, (1,3):300, (2,1):50, (2,2):100, (2,3):200, (3,1):30, (3,2):50, (3,3):70, (3,4):100} ## (MW)
-C    ={(1,1):5,  (1,2):5,   (1,3):5,   (2,1):15, (2,2):15,  (2,3):15,  (3,1):10, (3,2):15, (3,3):20, (3,4):30}  ## ($)
+Pb = {(1,1):80, (1,2):150, (1,3):300, (2,1):50, (2,2):100, (2,3):200, (3,1):30, (3,2):50, (3,3):70, (3,4):100} ## (MW)
+C  = {(1,1):5,  (1,2):5,   (1,3):5,   (2,1):15, (2,2):15,  (2,3):15,  (3,1):10, (3,2):15, (3,3):20, (3,4):30}  ## ($)
 
 # TODO{LEER DE JSON} (dependen del conjunto S)
-Tmin ={(1,1):2,  (1,2):3,   (1,3):4,   (2,1):2,  (2,2):3,   (2,3):4,   (3,1):2,  (3,2):3,  (3,3):4,  (3,4):5}    ## (horas)
-Cs   ={(1,1):800,(1,2):800, (1,3):800, (2,1):500,(2,2):500, (2,3):500, (3,1):25, (3,2):250,(3,3):500,(3,4):1000} ## ($)
+Tmin = {(1,1):2,  (1,2):3,   (1,3):4,   (2,1):2,  (2,2):3,   (2,3):4,   (3,1):2,  (3,2):3,  (3,3):4,  (3,4):5}    ## (horas)
+Cs   = {(1,1):800,(1,2):800, (1,3):800, (2,1):500,(2,2):500, (2,3):500, (3,1):25, (3,2):250,(3,3):500,(3,4):1000} ## ($)
 
 # TODO{LEER DE JSON}
-mpc  ={1:400,2:750,3:900} ## minimum power cost ($)
+mpc  = {1:400,2:750,3:900} ## minimum power cost ($)
 
 #print(Piecewise)
 # for i in range(len(Piecewise)):
@@ -169,7 +166,7 @@ z_exact = 0
 t_o = time.time()  ## Start of the calculation time count
 fixShedu = False   ## True si se fija   la solución entera Uu, False, si se desea resolver de manera exacta
 relax = False      ## True si se relaja la solución entera Uu, False, si se desea resolver de manera entera
-model = UC.solve(G,T,L,S,Piecewise,Pmax,Pmin,UT,DT,De,Re,CR,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,Pb,C,Cs,Tmin,fixShedu,relax,ambiente)
+model = UC.solve(G,T,L,S,Piecewise,Pmax,Pmin,UT,DT,De,Re,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,Pb,C,Cs,Tmin,fixShedu,relax,ambiente)
  
 #log_infeasible_constraints(model)
 z_exact = model.obj.expr()
@@ -200,7 +197,7 @@ outfiles.sendtofilesolution(R ,"R_" + instancia[0:5] + ".csv")
 # FixShedu = False   # True si se fija la solución entera U, False, si se desea resolver de manera exacta
 # Relax = True       # True si se relaja la solución entera U, False, si se desea resolver de manera entera
 # model = unit_commitment.solve(
-#     N, T, c, Piecewise, pmax, pmin, TU, TD, De, Re, CR, FixShedu, Relax, U, ambiente)
+#     N, T, c, Piecewise, pmax, pmin, TU, TD, De, Re, FixShedu, Relax, U, ambiente)
 # z_relax = pyo.value(model.obj)
 # t_relax = time.time() - t_o
 # print("z_relax = ", z_relax)
@@ -217,7 +214,7 @@ outfiles.sendtofilesolution(R ,"R_" + instancia[0:5] + ".csv")
 # FixShedu = True  # True si se fija la solución entera U, False, si se desea resolver de manera exacta
 # Relax = False    # True si se relaja la solución entera U, False, si se desea resolver de manera entera
 # model = unit_commitment.solve(
-#     N, T, c, Piecewise, pmax, pmin, TU, TD, De, Re, CR, FixShedu, Relax, U, ambiente)
+#     N, T, c, Piecewise, pmax, pmin, TU, TD, De, Re, FixShedu, Relax, U, ambiente)
 # if model != None:
 #     z_fixed = pyo.value(model.obj)
 #     print("z = ", z_fixed)

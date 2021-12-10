@@ -145,7 +145,7 @@ TIME,	 s 	 sR
         Key  : Dimen : Domain : Size : Members
         None :     2 :    G*T :   18 : {(1, 1), (1, 2), (1, 3), (1, 4), (1, 5), (1, 6), (2, 1), (2, 2), (2, 3), (2, 4), (2, 5), (2, 6), (3, 1), (3, 2), (3, 3), (3, 4), (3, 5), (3, 6)}
 
-20 Param Declarations
+19 Param Declarations
     C : Size=10, Index=indexGLg, Domain=Any, Default=None, Mutable=False
         Key    : Value
         (1, 1) :     5
@@ -158,11 +158,6 @@ TIME,	 s 	 sR
         (3, 2) :    15
         (3, 3) :    20
         (3, 4) :    30
-    CR : Size=3, Index=G, Domain=Any, Default=None, Mutable=False
-        Key : Value
-          1 :   0.0
-          2 :   0.0
-          3 :   0.0
     Cs : Size=10, Index=indexGSg, Domain=Any, Default=None, Mutable=False
         Key    : Value
         (1, 1) :   800
@@ -1093,4 +1088,4 @@ TIME,	 s 	 sR
         (3, 5) :  -Inf : pc[3,5] - pc[3,4] - (-60*v[3,5] + 70*u[3,5]) :   0.0 :   True
         (3, 6) :  -Inf : pc[3,6] - pc[3,5] - (-60*v[3,6] + 70*u[3,6]) :   0.0 :   True
 
-101 Declarations: G T L S Pmax Pmin UT DT De R CR u_0 D U SU SD RU RD pc_0 mpc indexGTLg indexGLg indexGTSg indexGSg u_index u v_index v w_index w delta p_index p pb_index pb pbc_index pbc pc_index pc r_index r cp_index cp cSU_index cSU cSD_index cSD snplus snminus sn sR pl Pb C Cs Tmin obj logical_index logical pow_igual_index pow_igual pow_igual2_index pow_igual2 pow_igual3_index pow_igual3 pow_igual4_index pow_igual4 pow_igual5_index pow_igual5 pow_igual6_index pow_igual6 sdsu_ramp_rule20_index sdsu_ramp_rule20 su_ramp_rule21a_index su_ramp_rule21a sd_ramp_rule21b_index sd_ramp_rule21b up_ramp_rule35_index up_ramp_rule35 down_ramp_rule36_index down_ramp_rule36 demand_rule65 demand_rule66a demand_rule67 demand_reserve mut_index mut mdt_index mdt mdt2 mut2 Piecewise_offer42 Piecewise_offer43_index Piecewise_offer43 Piecewise_offer44_index Piecewise_offer44 Start_up_cost54 Start_up_cost57_index Start_up_cost57 Start_up_cost58_index Start_up_cost58
+100 Declarations: G T L S Pmax Pmin UT DT De R u_0 D U SU SD RU RD pc_0 mpc indexGTLg indexGLg indexGTSg indexGSg u_index u v_index v w_index w delta p_index p pb_index pb pbc_index pbc pc_index pc r_index r cp_index cp cSU_index cSU cSD_index cSD snplus snminus sn sR pl Pb C Cs Tmin obj logical_index logical pow_igual_index pow_igual pow_igual2_index pow_igual2 pow_igual3_index pow_igual3 pow_igual4_index pow_igual4 pow_igual5_index pow_igual5 pow_igual6_index pow_igual6 sdsu_ramp_rule20_index sdsu_ramp_rule20 su_ramp_rule21a_index su_ramp_rule21a sd_ramp_rule21b_index sd_ramp_rule21b up_ramp_rule35_index up_ramp_rule35 down_ramp_rule36_index down_ramp_rule36 demand_rule65 demand_rule66a demand_rule67 demand_reserve mut_index mut mdt_index mdt mdt2 mut2 Piecewise_offer42 Piecewise_offer43_index Piecewise_offer43 Piecewise_offer44_index Piecewise_offer44 Start_up_cost54 Start_up_cost57_index Start_up_cost57 Start_up_cost58_index Start_up_cost58

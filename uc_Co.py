@@ -17,7 +17,7 @@
 import pyomo.environ as pyo
 from   pyomo.environ import *
 
-def uc(G,T,L,S,Piecewise,Pmax,Pmin,UT,DT,De,R,CR,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,Pb,C,Cs,Tmin,fixShedu,relax,ambiente):
+def uc(G,T,L,S,Piecewise,Pmax,Pmin,UT,DT,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,Pb,C,Cs,Tmin,fixShedu,relax,ambiente):
     
     model = pyo.ConcreteModel(name="UC")    
     model.G    = pyo.Set(initialize = G)
@@ -31,7 +31,6 @@ def uc(G,T,L,S,Piecewise,Pmax,Pmin,UT,DT,De,R,CR,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,Pb
     model.DT   = pyo.Param(model.G , initialize = DT   , within=Any)
     model.De   = pyo.Param(model.T , initialize = De   , within=Any)
     model.R    = pyo.Param(model.T , initialize = R    , within=Any)
-    model.CR   = pyo.Param(model.G , initialize = CR   , within=Any)
     model.u_0  = pyo.Param(model.G , initialize = u_0  , within=Any)
     model.D    = pyo.Param(model.G , initialize = D    , within=Any)
     model.U    = pyo.Param(model.G , initialize = U    , within=Any)
@@ -120,7 +119,6 @@ def uc(G,T,L,S,Piecewise,Pmax,Pmin,UT,DT,De,R,CR,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,Pb
     def obj_rule(m): #Costo sin piecewise
         # return sum(m.cp[g,t] + m.cU[g] * m.v[g,t] + m.mpc[g] * m.u[g,t] for g in m.G for t in m.T) \
         return sum(m.cp[g,t] + m.cSU[g,t]*m.v[g,t] + m.mpc[g]*m.u[g,t] for g in m.G for t in m.T) \
-             + sum(m.CR[g] * m.u[g,t]                                  for g in m.G for t in m.T) \
              + sum(m.sR[t] * CLP                                       for t in m.T) \
              + sum(m.sn[t] * CRP                                       for t in m.T) 
             #  + sum(m.cU[g] * m.v[g,t] + m.c[g] * m.p[g,t] for g in m.G for t in m.T) 
