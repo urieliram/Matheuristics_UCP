@@ -31,7 +31,6 @@ import unit_commitment as UC
 ## ferc       12    934    48   (21-24),(37-44)
 ## ferc(2)    12    978    48   (25-36)
 
-instancia = 'UC_45.json'
 instancia = 'archivox.json'
 instancia = 'anjos.json'
 ruta      = 'instances/'
