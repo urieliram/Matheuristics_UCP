@@ -1,2 +1,14 @@
-localtime, instancia, T, N, z_exact,z_relax, z, z_inc, t_exact, t, gap_cost, gap_gvng, exitos_k[0], exitos_k[1] , exitos_k[2], exitos_l[0], exitos_l[1] , exitos_l[2]
-
+localtime, instancia, T, G, z_exact, t_exact, t, gap
+Fri Dec 10 11:56:08 2021,anjos.json,6,3,9650.0,0.57
+Fri Dec 10 11:57:11 2021,anjos.json,6,3,9650.0,0.62
+Fri Dec 10 12:37:37 2021,anjos.json,6,3,9650.0,0.65
+Fri Dec 10 12:37:54 2021,anjos.json,6,3,9650.0,0.58
+Fri Dec 10 12:37:59 2021,anjos.json,6,3,9650.0,0.71
+Fri Dec 10 12:38:03 2021,anjos.json,6,3,9650.0,0.6
+Fri Dec 10 12:38:07 2021,anjos.json,6,3,9650.0,0.7
+Fri Dec 10 12:38:11 2021,anjos.json,6,3,9650.0,0.6
+Fri Dec 10 12:38:15 2021,anjos.json,6,3,9650.0,0.7
+Fri Dec 10 12:59:52 2021,anjos.json,6,3,9650.0,0.58
+Fri Dec 10 12:59:59 2021,anjos.json,6,3,9650.0,0.6
+Fri Dec 10 13:22:32 2021,anjos.json,6,3,9650.0,0.64
+Fri Dec 10 13:25:26 2021,anjos.json,6,3,9650.0,0.58
