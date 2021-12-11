@@ -19,8 +19,9 @@
 
 from egret.parsers.pglib_uc_parser import create_ModelData
 import outfiles
+import util
 import time
-import time
+import sys
 import unit_commitment as UC
 
 ## GROUP     #INST  #GEN PERIOD FILES
@@ -31,27 +32,27 @@ import unit_commitment as UC
 ## ferc(2)    12    978    48   (25-36)
 
 instancia = 'UC_45.json'
-instancia = 'anjos.json'
 instancia = 'archivox.json'
+instancia = 'anjos.json'
 ruta      = 'instances/'
 ambiente  = 'thinkpad'
-# if len(sys.argv) != 3:
-#     print("!!! something went wrong, try something like: $python3 ksuc.py name_instance.json yalma")
-#     print("!!! or: $python3 ksuc.py name_instance.json thinkpad")
-#     print("archivo:  ", sys.argv[1])
-#     print("ambiente: ", sys.argv[2])
-#     sys.exit()
-# ambiente = sys.argv[2]
-# instancia = sys.argv[1]
+if ambiente == 'yalma':
+    if len(sys.argv) != 3:
+        print("!!! Something went wrong, try something like: $python3 main.py uc_45.json yalma")
+        print("archivo:  ", sys.argv[1])
+        print("ambiente: ", sys.argv[2])
+        sys.exit()
+    ambiente = sys.argv[2]
+    instancia = sys.argv[1]
 
 localtime = time.asctime(time.localtime(time.time()))
 
-#ruta = '/home/uriel/GIT/UCVNS/ucvns/'
+##ruta = '/home/uriel/GIT/UCVNS/ucvns/'
 md = create_ModelData(ruta+instancia)
 
 ## Append a list as new line to an old csv file
-# row_file = [localtime,instancia]
-# util.append_list_as_row('solution.csv', row_file)
+row_file = [localtime,instancia]
+util.append_list_as_row('solution.csv', row_file)
 print(localtime, ' ', 'solving --->', instancia)
 
 ## extracted from /home/uriel/Egret-main/egret/data/model_data.py
@@ -250,6 +251,5 @@ outfiles.sendtofilesolution(R ,"R_" + instancia[0:5] + ".csv")
 
 # Append a list as new line to an old csv file
 
-# row_file = [localtime, instancia, T, N, 
-# round(z_exact,1), round(z_relax,1), round(z_fixed,1), t_exact ]  # data to csv
-# util.append_list_as_row('stat.dat', row_file)
+row_file = [localtime, instancia, T, G, round(z_exact,1), round(t_exact,2) ]  # data to csv
+util.append_list_as_row('stat.dat', row_file)
