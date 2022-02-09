@@ -12,7 +12,7 @@ from   pyomo.util.infeasible import log_infeasible_constraints
 from   pyomo.opt import SolverStatus, TerminationCondition
 import uc_Co
 
-def solve(G1,T1,L,S,Piecewise,Pmax,Pmin,UT,DT,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,Pb,C,Cs,Tmin,fixShedu,relax,ambiente):  
+def solve(G1,T1,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,Pb,C,Cs,Tmin,fixShedu,relax,ambiente):  
             
     G = []
     T = []
@@ -47,7 +47,9 @@ def solve(G1,T1,L,S,Piecewise,Pmax,Pmin,UT,DT,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,
     pc_0_dict = dict(zip(G, pc_0))
 
     ## Create the Pyomo model
-    model = uc_Co.uc(G,T,L,S,Piecewise,Pmax_dict,Pmin_dict,TU_dict,TD_dict,
+    
+    
+    model = uc_Co.uc(G,T,L,S,Pmax_dict,Pmin_dict,TU_dict,TD_dict,
                      De_dict,R_dict,u_0_dict,U_dict,D_dict,SU_dict,
                      SD_dict,RU_dict,RD_dict,pc_0_dict,mpc,Pb,C,Cs,Tmin,
                      fixShedu,relax,ambiente)
