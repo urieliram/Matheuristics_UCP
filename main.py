@@ -24,6 +24,7 @@ import time
 import sys
 import unit_commitment as UC
 
+## Instances features
 ## GROUP     #INST  #GEN PERIOD FILES
 ##            n      G     T    uc_XX
 ## rts_gmlc   12     73    48   (45-56)
@@ -31,7 +32,7 @@ import unit_commitment as UC
 ## ferc       12    934    48   (21-24),(37-44)
 ## ferc(2)    12    978    48   (25-36)
 
-instancia = 'archivox.json'
+#instancia = 'archivox.json'
 instancia = 'anjos.json'
 ruta      = 'instances/'
 ambiente  = 'thinkpad'
@@ -41,7 +42,7 @@ if ambiente == 'yalma':
         print("archivo:  ", sys.argv[1])
         print("ambiente: ", sys.argv[2])
         sys.exit()
-    ambiente = sys.argv[2]
+    ambiente  = sys.argv[2]
     instancia = sys.argv[1]
 
 localtime = time.asctime(time.localtime(time.time()))
@@ -58,9 +59,9 @@ print(localtime, ' ', 'solving --->', instancia)
 G     = 0      ## generators number
 S     = {}     ## eslabones de costo variable de arranque
 L     = {}     ## eslabones de costo en piecewise
-pc    = []     ## piecewise cost
 C     = {}     ## cost of segment of piecewise
 Pb    = {}     ## power of segment of piecewise
+pc    = []     ## piecewise cost
 De    = []     ## load
 Re    = []     ## reserve_requirement
 Pmin  = []     ## power min
@@ -78,7 +79,7 @@ pc_0  = []     ## power_output_t0
 t_0   = []     ## tiempo que lleva en un estado (prendido(+) o apagado(-))
 u_0   = []     ## ultimo estado de la unidad
 mpc   = {}     ## cost of generator g running and operating at minimum production Pmin ($/h).
-Tmin  = {}     ## lag   de cada escalón del conjunto S de la función de costo variable de arranque.
+Tmin  = {}     ## lag de cada escalón del conjunto S de la función de costo variable de arranque.
 Cs    = {}     ## Costo de cada escalón del conjunto S de la función de costo variable de arranque.
 Piecewise = [] ## piecewise cost
 Startup   = [] ## start-up  cost
@@ -91,10 +92,11 @@ for i, gen in md.elements("generator", generator_type="thermal", in_service=True
     Piecewise.append(gen["p_cost"]["values"])
     lista=[]
     for j in range(1,len(Piecewise[G])+1):
-        lista.append(j)   
+        lista.append(j)
     L[G+1] = lista
     
     Startup.append(gen["startup_cost"])
+    print(Startup)
     lista=[]
     for j in range(1,len(Startup[G])+1):
         lista.append(j)  
@@ -130,6 +132,7 @@ for i, gen in md.elements("generator", generator_type="thermal", in_service=True
     pc_0.append(max(0,gen["initial_p_output"]-gen["p_min"]))
     
     G = G + 1    
+
 
 ## Se extraen los diccionarios Pb y C de la lista de listas Piecewise    
 k=0; n=0
@@ -184,11 +187,12 @@ W  = [[0 for x in range(T)] for y in range(G)]
 P  = [[0 for x in range(T)] for y in range(G)]
 R  = [[0 for x in range(T)] for y in range(G)]
 
-z_exact = 0
-t_o = time.time()  ## Start of the calculation time count
-fixShedu = False   ## True si se fija   la solución entera Uu, False, si se desea resolver de manera exacta
-relax = False      ## True si se relaja la solución entera Uu, False, si se desea resolver de manera entera
-model = UC.solve(G,T,L,S,Piecewise,Pmax,Pmin,UT,DT,De,Re,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,Pb,C,Cs,Tmin,fixShedu,relax,ambiente)
+z_exact  = 0
+t_o      = time.time()  ## Start of the calculation time count
+fixShedu = False   ## True si se fija   la solución entera, False, si se desea resolver de manera exacta
+relax    = False      ## True si se relaja la solución entera, False, si se desea resolver de manera entera
+model    = UC.solve(G,T,L,S,Pmax,Pmin,UT,DT,De,Re,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,
+                   Pb,C,Cs,Tmin,fixShedu,relax,ambiente)
  
 #log_infeasible_constraints(model)
 z_exact = model.obj.expr()
