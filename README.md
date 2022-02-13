@@ -2,9 +2,9 @@
 ---
 + [Introducción](#introduccion)
 + [Implementación](#implementación)
-* [Clases](#clases)
+  * [Clases](#clases)
 + [Pruebas](#pruebas)
-* [Instancias](#instancias)
+  * [Instancias](#instancias)
 + [Ligas](#ligas)
 ---
 
