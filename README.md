@@ -3,7 +3,7 @@
 ---
 + [Introducción](#introduction)
 + [Implementación](#implementación)
-+ [Clases](##clases)
++ [Clases](#clases)
 + [Pruebas](#pruebas)
 + [Instancias](#instancias)
 + [Ligas](#ligas)
