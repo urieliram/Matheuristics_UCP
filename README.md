@@ -1,5 +1,5 @@
 # tc_uc
-Un modelo fuerte y compacto basado en Knueven2020b
+Un modelo fuerte y compacto basado en [Knueven2020](https://pubsonline.informs.org/doi/10.1287/ijoc.2019.0944)
 desarrollado en PYOMO
 
 Instances test features 
