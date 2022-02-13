@@ -4,9 +4,8 @@ desarrollado en PYOMO
 
 Instances test features 
 
-|GROUP           |INST            |GEN             |PERIOD         |FILES   |
+|GROUP           |INST  (n)          |GEN   (G)          |PERIOD   (T)      |FILES (uc_XX)  |
 | :------------- | -------------: | -------------: |-------------: |-------------:|
-|                | n              |  G             |  T            | uc_XX  |
 |rts_gmlc        | 12             |  73            | 48            | (45-56)|
 | ca             |  20            |  610           |  48           | (1-20) |
 |ferc            | 12             |  934           |  48           | (21-24),(37-44)|
