@@ -1,16 +1,15 @@
-# Un modelo fuerte y compacto
+# Un método Mate-heurístico para resolver UC basado en el beneficio.
 ---
 + [Introducción](#introduccion)
 + [Implementación](#implementación)
-+ [Clases](#clases)
+* [Clases](#clases)
 + [Pruebas](#pruebas)
-+ [Instancias](#instancias)
+* [Instancias](#instancias)
 + [Ligas](#ligas)
 ---
-## Introducción
-Un modelo fuerte y compacto basado en [Knueven2020](https://pubsonline.informs.org/doi/10.1287/ijoc.2019.0944)
-desarrollado en PYOMO. 
 
+## Introducción
+El principal componente de este método es un modelo MILP fuerte y compacto **A Tight and Compact MILP** basado en [Knueven2020](https://pubsonline.informs.org/doi/10.1287/ijoc.2019.0944).
 
 ## Implementación
 
@@ -24,12 +23,12 @@ desarrollado en PYOMO.
 ### Instancias
 Características de las instancias utilizadas
 
-|GROUP           |INST  (n)          |GEN   (G)          |PERIOD   (T)      |FILES (uc_XX)  |
-| :------------- | -------------: | -------------: |-------------: |-------------:|
-|rts_gmlc        | 12             |  73            | 48            | (45-56)|
-| ca             | 20            |  610           |  48           | (1-20) |
+|GROUP           |INST  (n)       |GEN   (G)       |PERIOD   (T)   |FILES (uc_XX)   |
+| :------------- | -------------: | -------------: |-------------: |-------------:  |
+|rts_gmlc        | 12             |  73            | 48            | (45-56)        |          |
+| ca             | 20             |  610           |  48           | (1-20)         |
 |ferc            | 12             |  934           |  48           | (21-24),(37-44)|
-|ferc(2)         | 12            |  978           |  48           | (25-36)|
+|ferc(2)         | 12             |  978           |  48           | (25-36)        |
 
 ## Ligas
 
