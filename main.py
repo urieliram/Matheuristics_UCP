@@ -1,22 +1,3 @@
-## --------------------------------------------------------------------------------
-## File: main.py
-## Unit Commitment Problem 
-## Developers: Uriel Iram Lezama Lope
-## Purpose: Programa principal de un modelo de UC
-## Description: Lee una instancia de UCP y la resuelve. 
-## Para correr el programa usar el comando "python3 main.py anjos.json thinkpad"
-## --------------------------------------------------------------------------------
-# import copy
-# import pyomo as pyo
-# from egret.models.unit_commitment import solve_unit_commitment
-# from egret.model_library.unit_commitment.uc_model_generator import UCFormulation, generate_model
-# from datetime import date
-# from datetime import datetime
-# from timeit import timeit
-# from pyomo.core.base import piecewise
-# from pyomo.core.base.boolean_var import ScalarBooleanVar
-# from pyomo.util.infeasible import log_infeasible_constraints
-
 from egret.parsers.pglib_uc_parser import create_ModelData
 import outfiles
 import util
@@ -132,7 +113,6 @@ for i, gen in md.elements("generator", generator_type="thermal", in_service=True
     pc_0.append(max(0,gen["initial_p_output"]-gen["p_min"]))
     
     G = G + 1    
-
 
 ## Se extraen los diccionarios Pb y C de la lista de listas Piecewise    
 k=0; n=0

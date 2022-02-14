@@ -17,7 +17,6 @@
 from   pyomo.environ import *
 import pyomo.environ as pyo
 
-
 def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,
        Pb,C,Cs,Tmin,fixShedu,relax,ambiente):
     
@@ -47,7 +46,7 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,
     # Tmin     = {(1, 1): 2, (1, 2): 3, (1, 3): 4, (2, 1): 2, (2, 2): 3, (2, 3): 4, (3, 1): 2, (3, 2): 3, (3, 3): 4, (3, 4): 5}
     # fixShedu = False
     # relax    = False
-    # ambiente = 'thinkpad'
+    # ambiente = 'localPC'
         
     # print(type(G),',G=',G)
     # print(type(T),',T=',T)
@@ -173,11 +172,11 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,
     #     model.u.fix(0)
     #     model.u.set_values(Shedule_dict)
 
-    def obj_rule(m): #Costo sin piecewise
-        # return sum(m.cp[g,t] + m.cU[g] * m.v[g,t] + m.mpc[g] * m.u[g,t] for g in m.G for t in m.T) \
+    def obj_rule(m): 
         return sum(m.cp[g,t] + m.cSU[g,t]*m.v[g,t] + m.mpc[g]*m.u[g,t] for g in m.G for t in m.T) \
              + sum(m.sR[t] * CLP                                       for t in m.T) \
              + sum(m.sn[t] * CRP                                       for t in m.T) 
+            # return sum(m.cp[g,t] + m.cU[g] * m.v[g,t] + m.mpc[g] * m.u[g,t] for g in m.G for t in m.T) \ #Costo sin piecewise
             #  + sum(m.cU[g] * m.v[g,t] + m.c[g] * m.p[g,t] for g in m.G for t in m.T) 
     model.obj = pyo.Objective(rule = obj_rule)
 
