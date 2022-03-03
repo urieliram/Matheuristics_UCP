@@ -12,7 +12,7 @@ from   pyomo.util.infeasible import log_infeasible_constraints
 from   pyomo.opt import SolverStatus, TerminationCondition
 import uc_Co
 
-def solve(G1,T1,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,Pb,C,Cs,Tmin,fixShedu,relax,ambiente):  
+def solve(G1,T1,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,Pb,C,Cs,Tmin,name_list,fixShedu,relax,ambiente):  
             
     G = []
     T = []
@@ -45,6 +45,7 @@ def solve(G1,T1,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,Pb,C,Cs,Tm
     RU_dict   = dict(zip(G, RU))
     RD_dict   = dict(zip(G, RD))
     pc_0_dict = dict(zip(G, pc_0))
+    name = dict(zip(G, name_list))
 
     ## Create the Pyomo model
     
@@ -52,7 +53,7 @@ def solve(G1,T1,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,Pb,C,Cs,Tm
     model = uc_Co.uc(G,T,L,S,Pmax_dict,Pmin_dict,TU_dict,TD_dict,
                      De_dict,R_dict,u_0_dict,U_dict,D_dict,SU_dict,
                      SD_dict,RU_dict,RD_dict,pc_0_dict,mpc,Pb,C,Cs,Tmin,
-                     fixShedu,relax,ambiente)
+                     name,fixShedu,relax,ambiente)
   
     ## Create the solver interface and solve the model
     # solver = pyo.SolverFactory('glpk')
@@ -63,7 +64,7 @@ def solve(G1,T1,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,Pb,C,Cs,Tm
          solver = pyo.SolverFactory('cplex')
     if ambiente == "yalma":
         solver = pyo.SolverFactory('cplex', executable='/home/uriel/cplex1210/cplex/bin/x86-64_linux/cplex')
-    solver.options['mip tolerances mipgap'] = 0.01  
+    solver.options['mip tolerances mipgap'] = 0.1  
     #solver.options['mip tolerances absmipgap'] = 200
     solver.options['timelimit'] = 300
     

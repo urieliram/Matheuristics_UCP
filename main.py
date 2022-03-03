@@ -1,9 +1,30 @@
-from egret.parsers.pglib_uc_parser import create_ModelData
-import outfiles
-import util
+## --------------------------------------------------------------------------------
+## File: main.py
+## Unit Commitment Problem 
+## Developers: Uriel Iram Lezama Lope
+## Purpose: Programa principal de un modelo de UC
+## Description: Lee una instancia de UCP y la resuelve. 
+## Para correr el programa usar el comando "python3 main.py anjos.json thinkpad"
+## --------------------------------------------------------------------------------
+# import copy
+# import pyomo as pyo
+# from egret.models.unit_commitment import solve_unit_commitment
+# from egret.model_library.unit_commitment.uc_model_generator import UCFormulation, generate_model
+# from datetime import date
+# from datetime import datetime
+# from timeit import timeit
+# from pyomo.core.base import piecewise
+# from pyomo.core.base.boolean_var import ScalarBooleanVar
+# from pyomo.util.infeasible import log_infeasible_constraints
 import time
 import sys
-import unit_commitment as UC
+import uc_Co
+import util
+import pyomo.environ as pyo
+from   pyomo.util.infeasible import log_infeasible_constraints
+from   pyomo.opt import SolverStatus, TerminationCondition
+import reading
+import outfiles
 
 ## Instances features
 ## GROUP     #INST  #GEN PERIOD FILES
@@ -13,176 +34,155 @@ import unit_commitment as UC
 ## ferc       12    934    48   (21-24),(37-44)
 ## ferc(2)    12    978    48   (25-36)
 
-#instancia = 'archivox.json'
+instancia = 'uc_45 - copia.json'
+instancia = 'archivox.json'
+
 instancia = 'anjos.json'
 ruta      = 'instances/'
-ambiente  = 'thinkpad'
+ambiente  = 'localPC'
 if ambiente == 'yalma':
     if len(sys.argv) != 3:
         print("!!! Something went wrong, try something like: $python3 main.py uc_45.json yalma")
         print("archivo:  ", sys.argv[1])
         print("ambiente: ", sys.argv[2])
         sys.exit()
-    ambiente  = sys.argv[2]
+    ambiente = sys.argv[2]
     instancia = sys.argv[1]
 
 localtime = time.asctime(time.localtime(time.time()))
 
-##ruta = '/home/uriel/GIT/UCVNS/ucvns/'
-md = create_ModelData(ruta+instancia)
-
 ## Append a list as new line to an old csv file
 row_file = [localtime,instancia]
 util.append_list_as_row('solution.csv', row_file)
-print(localtime, ' ', 'solving --->', instancia)
+print(localtime, ' ',   'solving json --->', instancia)
 
-## extracted from /home/uriel/Egret-main/egret/data/model_data.py
-G     = 0      ## generators number
-S     = {}     ## eslabones de costo variable de arranque
-L     = {}     ## eslabones de costo en piecewise
-C     = {}     ## cost of segment of piecewise
-Pb    = {}     ## power of segment of piecewise
-pc    = []     ## piecewise cost
-De    = []     ## load
-Re    = []     ## reserve_requirement
-Pmin  = []     ## power min
-Pmax  = []     ## power max
-RU    = []     ## ramp_up_limit", "ramp_up_60min"
-RD    = []     ## ramp_down_limit", "ramp_down_60min"
-SU    = []     ## ramp_startup_limit", "startup_capacity"
-SD    = []     ## ramp_shutdown_limit", "shutdown_capacity"
-UT    = []     ## time_upminimum
-DT    = []     ## time_down_minimum
-D     = []     ## number of hours generator g is required to be off at t=1 (h).
-U     = []     ## number of hours generator g is required to be on at t=1 (h).
-p_0   = []     ## power_output_t0
-pc_0  = []     ## power_output_t0
-t_0   = []     ## tiempo que lleva en un estado (prendido(+) o apagado(-))
-u_0   = []     ## ultimo estado de la unidad
-mpc   = {}     ## cost of generator g running and operating at minimum production Pmin ($/h).
-Tmin  = {}     ## lag de cada escalón del conjunto S de la función de costo variable de arranque.
-Cs    = {}     ## Costo de cada escalón del conjunto S de la función de costo variable de arranque.
-Piecewise = [] ## piecewise cost
-Startup   = [] ## start-up  cost
+##Lee instancia de archivo .json con formato Knueven2020
+G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,Pb,C,mpc,Cs,Tmin,names = reading.reading(ruta+instancia)
 
-T = len(md.data['system']['time_keys'])  ## time periods
-
-## To get the data from the generators
-for i, gen in md.elements("generator", generator_type="thermal", in_service=True):  
-    
-    Piecewise.append(gen["p_cost"]["values"])
-    lista=[]
-    for j in range(1,len(Piecewise[G])+1):
-        lista.append(j)
-    L[G+1] = lista
-    
-    Startup.append(gen["startup_cost"])
-    print(Startup)
-    lista=[]
-    for j in range(1,len(Startup[G])+1):
-        lista.append(j)  
-    S[G+1] = lista
-    
-    Pmin.append(gen["p_min"])
-    Pmax.append(gen["p_max"])
-    RU.append(gen["ramp_up_60min"])
-    RD.append(gen["ramp_down_60min"])
-    SU.append(gen["startup_capacity"])
-    SD.append(gen["shutdown_capacity"])
-    UT.append(gen["min_up_time"])
-    DT.append(gen["min_down_time"])
-    t_0.append(gen["initial_status"])
-    
-    ## Caso prendido
-    if t_0[G] > 0:
-        u_0.append(1)
-        aux = UT[G] - t_0[G]
-        U.append(aux)
-        D.append(0)
-        
-    ## Caso apagado
-    if t_0[G] <= 0: 
-        u_0.append(0)   
-        aux = DT[G] + t_0[G]
-        if aux <= 0:
-            aux = 0
-        U.append(0)
-        D.append(aux) 
-
-    p_0.append(gen["initial_p_output"])
-    pc_0.append(max(0,gen["initial_p_output"]-gen["p_min"]))
-    
-    G = G + 1    
-
-## Se extraen los diccionarios Pb y C de la lista de listas Piecewise    
-k=0; n=0
-for i in Piecewise:
-    s=len(i)
-    k=k+1
-    n=0
-    for j in i:
-        n=n+1
-        # print(k,",",n,",",s,",",j[0],",",j[1])
-        Pb[k,n] = j[0]
-        C[k,n]  = j[1]
-        ## Se calcula el costo mínimo de operación 
-        if n==1:
-            mpc[k] = j[0]*j[1]
-        
-## Se extraen los diccionarios Tmin y Cs de la lista de listas Startup    
-k=0; n=0
-for i in Startup:
-    s=len(i)
-    k=k+1
-    n=0
-    for j in i:
-        n=n+1
-        # print(k,",",n,",",s,",",j[0],",",j[1])
-        Tmin[k,n] = j[0]
-        Cs[k,n]   = j[1]
-
-#print(Piecewise)
-# for i in range(len(Piecewise)):
-#     for j in range(len(Piecewise[i])):
-#         C.append(Piecewise[i][j])
-#print(C)    
-    
-Re = md.data['system']['reserve_requirement']["values"]  ## reserve requierement
-
-for obj, dem in md.elements("load"):   ## load demand
-    De = dem["p_load"]["values"]
-
-t_o = time.time()  ## Start of the calculation time count
-
-# TODO{almacenar en una clase instancia todos los parametros de un modelo}
-# instance = Instance()
-
-# TODO{almacenar en una clase Solution}
-# soluc = Solution()
-
-## Inizialize variables making a empty-solution with all generators in cero
-Uu = [[0 for x in range(T)] for y in range(G)]
-V  = [[0 for x in range(T)] for y in range(G)]
-W  = [[0 for x in range(T)] for y in range(G)]
-P  = [[0 for x in range(T)] for y in range(G)]
-R  = [[0 for x in range(T)] for y in range(G)]
+## -----------------  Caso de ejemplo de anjos.json  --------------------------
+#G        = [1, 2, 3]
+#T        = [1, 2, 3, 4, 5, 6]
+#L        = {1: [1, 2, 3], 2: [1, 2, 3], 3: [1, 2, 3, 4]}
+#S        = {1: [1, 2, 3], 2: [1, 2, 3], 3: [1, 2, 3, 4]}
+#Pmax     = {1: 300.0, 2: 200.0, 3: 100.0}
+#Pmin     = {1: 80, 2: 50, 3: 30}
+#TU       = {1: 3, 2: 2, 3: 1}
+#TD       = {1: 2, 2: 2, 3: 2}
+#De       = {1: 240, 2: 250, 3: 200, 4: 170, 5: 230, 6: 190}
+#R        = {1: 10, 2: 10, 3: 10, 4: 10, 5: 10, 6: 10}
+#u_0      = {1: 1, 2: 0, 3: 0}
+#D        = {1: 0, 2: 0, 3: 0}
+#U        = {1: 2, 2: 0, 3: 0}
+#SU       = {1: 100, 2: 70, 3: 40}
+#SD       = {1: 80, 2: 50, 3: 30}
+#RU       = {1: 50, 2: 60, 3: 70}
+#RD       = {1: 30, 2: 40, 3: 50}
+#pc_0     = {1: 40, 2: 0, 3: 0}
+#mpc      = {1: 400.0, 2: 750.0, 3: 900.0}
+#Pb       = {(1, 1): 80, (1, 2): 150, (1, 3): 300, (2, 1): 50, (2, 2): 100, (2, 3): 200, (3, 1): 30, (3, 2): 50, (3, 3): 70, (3, 4): 100}   
+#C        = {(1, 1): 5.0, (1, 2): 5.0, (1, 3): 5.0, (2, 1): 15.0, (2, 2): 15.0, (2, 3): 15.0, (3, 1): 30.0, (3, 2): 30.0, (3, 3): 30.0, (3, 4): 30.0}
+#Cs       = {(1, 1): 800.0, (1, 2): 800.0, (1, 3): 800.0, (2, 1): 500.0, (2, 2): 500.0, (2, 3): 500.0, (3, 1): 25.0, (3, 2): 250.0, (3, 3): 
+#500.0, (3, 4): 1000.0}
+#Tmin     = {(1, 1): 2, (1, 2): 3, (1, 3): 4, (2, 1): 2, (2, 2): 3, (2, 3): 4, (3, 1): 2, (3, 2): 3, (3, 3): 4, (3, 4): 5}
+#fixShedu = False
+#relax    = False
+#ambiente = 'localPC'
+## ----------------------------------  o  -------------------------------------
 
 z_exact  = 0
-t_o      = time.time()  ## Start of the calculation time count
-fixShedu = False   ## True si se fija   la solución entera, False, si se desea resolver de manera exacta
-relax    = False      ## True si se relaja la solución entera, False, si se desea resolver de manera entera
-model    = UC.solve(G,T,L,S,Pmax,Pmin,UT,DT,De,Re,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,
-                   Pb,C,Cs,Tmin,fixShedu,relax,ambiente)
- 
+t_o      = time.time()  ## Start of the calculation time count.
+fixShedu = False        ## True si se fija la solución entera, False, si se desea resolver de manera exacta.
+relax    = False        ## True si se relaja la solución entera, False, si se desea resolver de manera entera.
+model    = uc_Co.uc(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,
+                    Pb,C,Cs,Tmin,names,fixShedu,relax,ambiente)
+
+## Create the solver interface and solve the model
+# solver = pyo.SolverFactory('glpk')
+# solver = pyo.SolverFactory('cbc')
+# https://www.ibm.com/docs/en/icos/12.8.0.0?topic=parameters-relative-mip-gap-tolerance
+solver = pyo.SolverFactory('cplex')
+if ambiente == "localPC":
+    solver = pyo.SolverFactory('cplex')
+if ambiente == "yalma": 
+    solver = pyo.SolverFactory('cplex', executable='/home/uriel/cplex1210/cplex/bin/x86-64_linux/cplex')
+solver.options['mip tolerances mipgap'] = 0.1  
+#solver.options['mip tolerances absmipgap'] = 200
+solver.options['timelimit'] = 300
+
+## para mostrar una solución en un formato propio
+## https://developers.google.com/optimization/routing/cvrp
+## para editar un Lp en pyomo
+## https://stackoverflow.com/questions/54312316/pyomo-model-lp-file-with-variable-values
+    
+## write LP file
+#model.write()             ## To write the model into a file using .nl format
+#filename = os.path.join(os.path.dirname(__file__), 'model.lp')
+#model.write(filename, io_options={'symbolic_solver_labels': True})
+#model.write(filename = str('model') + ".mps", io_options = {"symbolic_solver_labels":True})
+#print(solver.ExportModelAsLpFormat(False).replace('\\', '').replace(',_', ','), sep='\n')
+  
+## Envía el problema de optimización al solver
+res = solver.solve(model, tee=False) ## timelimit=10; tee=True(para ver log)
+    
+try:
+    pyo.assert_optimal_termination(res)
+except:
+    print("An exception occurred")
+        
+file = open("modeluc.dat", "w")
+file.write('z: %s \n' % (pyo.value(model.obj)))
+file.write('g, t,\t u,\t v,\t w, \t p \n')       
+
+#for g in range(0, len(G)):
+#    file.write('%s, %s, \t %s \n' % (int(g), 0, u_0[g] ))
+
+for t in range(0, len(T)):
+    for g in range(0, len(G)):
+        file.write('%s, %s,\t %s,\t  %s,\t  %s,\t %s \n' %
+        (int(g), int(t), int(model.u[(g+1, t+1)].value),int(model.v[(g+1, t+1)].value),int(model.w[(g+1, t+1)].value), model.p[(g+1, t+1)].value))
+
+file.write('TIME,\t s \t sR \n')
+for t in range(1, len(T)+1):
+    file.write('%s, \t%s,\t %s,\t \n' %
+    (int(t), model.sn[t].value, model.sR[t].value))
+
+# model.obj.pprint()     # Print the objetive function
+# model.demand.pprint()  # Print constraint
+# model.reserve.pprint()
+# model.display()        # Print the optimal solution     
+# z = pyo.value(model.obj)
+model.pprint(file)
+file.close()
+    
+##https://stackoverflow.com/questions/51044262/finding-out-reason-of-pyomo-model-infeasibility
+log_infeasible_constraints(model)
+
+##https://pyomo.readthedocs.io/en/stable/working_models.html
+if (res.solver.status == SolverStatus.ok) and (res.solver.termination_condition == TerminationCondition.optimal):
+    print ("this is feasible and optimal")
+elif res.solver.termination_condition == TerminationCondition.infeasible:
+    print (">>> do something about it? or exit?")
+else:
+    print ("something else is wrong",str(res.solver))  ## Something else is wrong
+
 #log_infeasible_constraints(model)
 z_exact = model.obj.expr()
-t_exact = time.time() - t_o
+#t_exact = time.time() - t_o
 print("z_exact = ", z_exact)
-print("t_exact = ", t_exact)
+#print("t_exact = ", t_exact)
+
+gg = len(G)
+tt = len(T)
+## Inizialize variables making a empty-solution with all generators in cero
+Uu = [[0 for x in range(tt)] for y in range(gg)]
+V  = [[0 for x in range(tt)] for y in range(gg)]
+W  = [[0 for x in range(tt)] for y in range(gg)]
+P  = [[0 for x in range(tt)] for y in range(gg)]
+R  = [[0 for x in range(tt)] for y in range(gg)]
 
 ## ALMACENA SOLUCIÓN ENTERA
-for t in range(T):
-    for g in range(G):
+for t in range(tt):
+    for g in range(gg):
         Uu[g][t] = int(model.u[(g+1, t+1)].value)
         V [g][t] = int(model.v[(g+1, t+1)].value)
         W [g][t] = int(model.w[(g+1, t+1)].value)
@@ -196,43 +196,3 @@ outfiles.sendtofilesolution(V ,"V_" + instancia[0:5] + ".csv")
 outfiles.sendtofilesolution(W ,"W_" + instancia[0:5] + ".csv")
 outfiles.sendtofilesolution(P ,"P_" + instancia[0:5] + ".csv")
 outfiles.sendtofilesolution(R ,"R_" + instancia[0:5] + ".csv")
-
-# print('RELAXED')
-# z_relax = 0
-# t_o = time.time()  # Start of the calculation time count
-# FixShedu = False   # True si se fija la solución entera U, False, si se desea resolver de manera exacta
-# Relax = True       # True si se relaja la solución entera U, False, si se desea resolver de manera entera
-# model = unit_commitment.solve(
-#     N, T, c, Piecewise, pmax, pmin, TU, TD, De, Re, FixShedu, Relax, U, ambiente)
-# z_relax = pyo.value(model.obj)
-# t_relax = time.time() - t_o
-# print("z_relax = ", z_relax)
-# print("t_relax = ", t_relax)
-
-## IMPRIME SOLUCIÓN RELAJADA
-# for t in range(T):
-#     for g in range(G):
-#         #U[g][t] = int(model.u[(g, t)].value)
-#         print(g, t, (model.u[(g, t)].value), (model.v[(g, t)].value), (model.w[(g, t)].value), model.p[(g, t)].value)
-
-# z_fixed = float("inf")
-# print('FIXED SOLUTION')
-# FixShedu = True  # True si se fija la solución entera U, False, si se desea resolver de manera exacta
-# Relax = False    # True si se relaja la solución entera U, False, si se desea resolver de manera entera
-# model = unit_commitment.solve(
-#     N, T, c, Piecewise, pmax, pmin, TU, TD, De, Re, FixShedu, Relax, U, ambiente)
-# if model != None:
-#     z_fixed = pyo.value(model.obj)
-#     print("z = ", z_fixed)
-
-## Guarda en archivo csv la solución Ugvns
-#outfiles.sendtofileU(U,"Uconst_" + instancia + ".csv")
-#outfiles.sendtofileTUTD(TU,TD,"timesTUTD_" + instancia + ".csv")
-
-## Resultados GVNS
-# print("z_fixed = ", z_fixed)
-
-# Append a list as new line to an old csv file
-
-row_file = [localtime, instancia, T, G, round(z_exact,1), round(t_exact,2) ]  # data to csv
-util.append_list_as_row('stat.dat', row_file)
