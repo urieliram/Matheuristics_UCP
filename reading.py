@@ -38,11 +38,11 @@ def reading(file):
     De   = dict(zip(T, demand))
     R    = dict(zip(T, reserves))
     
-    names = []
+    names_list = []
     i = 1
     ## Se obtiene nombre de los generadores y número
     for gen in md['thermal_generators']:  
-        names.append(gen)
+        names_list.append(gen)
         G.append(i)
         i+=1
         
@@ -66,10 +66,11 @@ def reading(file):
     Ulist                = []
     Dlist                = []
     pc_0_list            = []
+    u_0_list             = []
     
     ## To get the data from the generators
     i=1 ## Cuenta los generadores
-    for gen in names:  
+    for gen in names_list:  
         must_run.append(md['thermal_generators'][gen]["must_run"]) #0,
         power_output_minimum.append(md['thermal_generators'][gen]["power_output_minimum"])#80
         power_output_maximum.append(md['thermal_generators'][gen]["power_output_maximum"])#300.0
@@ -118,15 +119,15 @@ def reading(file):
                     
         ## Caso prendido
         if unit_on_t0[i-1] > 0:
-            #u_0.append(1)
+            u_0_list.append(1)
             aux = time_up_minimum[i-1] - time_up_t0[i-1]
-            if aux<0:
+            if aux<=0:
                 aux=0
             Ulist.append(aux)
             Dlist.append(0)            
         ## Caso apagado
         if unit_on_t0[i-1] <= 0: 
-            #u_0.append(0)   
+            u_0_list.append(0)   
             aux = time_down_minimum[i-1] - time_down_t0[i-1]
             if aux <= 0:
                 aux = 0
@@ -172,7 +173,7 @@ def reading(file):
     Pmin = dict(zip(G, power_output_minimum))
     TU   = dict(zip(G, time_up_minimum))     
     TD   = dict(zip(G, time_down_minimum))  
-    u_0  = dict(zip(G, time_up_t0))          
+    u_0  = dict(zip(G, u_0_list))          
     U    = dict(zip(G, Ulist))              
     D    = dict(zip(G, Dlist))                
     SU   = dict(zip(G, ramp_startup_limit))
@@ -180,6 +181,7 @@ def reading(file):
     RU   = dict(zip(G, ramp_up_limit))
     RD   = dict(zip(G, ramp_down_limit))
     pc_0 = dict(zip(G, pc_0_list))  
+    names = dict(zip(G, names_list))  
        
-    return G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,Pb,C,mpc,Cs,Tmin
+    return G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,Pb,C,mpc,Cs,Tmin,names
           #G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,SU,SD,RU,RD,mpc,Pb,C,Cs,Tmin,fixShedu,relax,ambiente

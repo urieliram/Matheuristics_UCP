@@ -14,11 +14,12 @@
 ## Start-up cost          (54), (55), (56)         'MLR_startup_costs',
 ## System constraints     (67)
 ## --------------------------------------------------------------------------------
-from   pyomo.environ import *
+import math
 import pyomo.environ as pyo
+from   pyomo.environ import *
 
 def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,
-       Pb,C,Cs,Tmin,fixShedu,relax,ambiente):
+       Pb,C,Cs,Tmin,names,fixShedu,relax,ambiente):
     
     # G        = [1, 2, 3]
     # T        = [1, 2, 3, 4, 5, 6]
@@ -48,34 +49,35 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,
     # relax    = False
     # ambiente = 'localPC'
         
-    # print(type(G),',G=',G)
-    # print(type(T),',T=',T)
-    # print(type(L),',L=',L)
-    # print(type(S),',S=',S)
-    # print(type(Pmax),',Pmax=',Pmax)
-    # print(type(Pmin),',Pmin=',Pmin)
-    # print(type(UT),',UT=',UT)
-    # print(type(DT),',DT=',DT)
-    # print(type(De),',De=',De)
-    # print(type(R),',R=',R)
-    # print(type(u_0),',u_0=',u_0)
-    # print(type(D),',D=',D)
-    # print(type(U),',U=',U)
-    # print(type(SU),',SU=',SU)
-    # print(type(SD),',SD=',SD)
-    # print(type(RU),',RU=',RU)
-    # print(type(RD),',RD=',RD)
-    # print(type(pc_0),',pc_0=',pc_0)
-    # print(type(mpc),',mpc=',mpc)
-    # print(type(Pb),',Pb=',Pb)
-    # print(type(C),',C=',C)
-    # print(type(Cs),',Cs=',Cs)
-    # print(type(Tmin),',Tmin=',Tmin)
-    # print(type(fixShedu),',fixShedu=',fixShedu)
-    # print(type(relax),',relax=',relax)
-    # print(type(ambiente),',ambiente=',ambiente)
+    # print('G=',G)
+    # print('T=',T)
+    # print('L=',L)
+    # print('S=',S)
+    # print('Pmax=',Pmax)
+    # print('Pmin=',Pmin)
+    # print('UT=',UT)
+    # print('DT=',DT)
+    # print('De=',De)
+    # print('R=',R)
+    # print('u_0=',u_0)
+    # print('D=',D)
+    # print('U=',U)
+    # print('SU=',SU)
+    # print('SD=',SD)
+    # print('RU=',RU)
+    # print('RD=',RD)
+    # print('pc_0=',pc_0)
+    # print('mpc=',mpc)
+    # print('Pb=',Pb)
+    # print('C=',C)
+    # print('Cs=',Cs)
+    # print('Tmin=',Tmin)
+    # print('names=',names)
+    #print(type(fixShedu),',fixShedu=',fixShedu)
+    #print(type(relax),',relax=',relax)
+    #print(type(ambiente),',ambiente=',ambiente)
     
-    model = pyo.ConcreteModel(name="UC")    
+    model      = pyo.ConcreteModel(name="UC")    
     model.G    = pyo.Set(initialize = G)
     model.T    = pyo.Set(initialize = T)  
     model.L    = pyo.Set(model.G, initialize = L) 
@@ -212,7 +214,7 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,
     model.pow_igual5 = pyo.Constraint(model.G,model.T, rule = pow_igual_rule5)    
 
     def pow_igual_rule6(m,g,t): ## pow_pow eq.(17)
-        return m.pc[g,t] <= m.pbc[g,t] 
+        return m.pc[g,t] <= m.pbc[g,t]
     model.pow_igual6 = pyo.Constraint(model.G,model.T, rule = pow_igual_rule6)    
 
     ## ------------------------------START-UP AND SHUT-DOWN RAMPS---------------------------------   
@@ -341,4 +343,10 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,
             return m.cSU[g,t] == m.Cs[g,value(len(m.S[g]))]*m.v[g,t] - sum(((m.Cs[g,value(len(S[g]))]-m.Cs[g,s])*m.delta[g,t,s]) for s in range(1,value(len(m.S[g])) ))  
     model.Start_up_cost58 = pyo.Constraint(model.G,model.T, rule = Start_up_cost58)   
 
+    ## ----------------------------LOCAL BRANCHING------------------------------------------     
+    def Soft_variable_fixing(m):   
+        return m.u[2,1]*1 + m.u[2,2]*1 + m.u[2,3]*1 >=  math.ceil(0.9 * 3)
+    
+    model.local = pyo.Constraint(rule = Soft_variable_fixing)
+    
     return model
