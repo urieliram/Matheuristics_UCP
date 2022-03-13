@@ -17,66 +17,11 @@
 import math
 import pyomo.environ as pyo
 from   pyomo.environ import *
+from pyparsing import null_debug_action
 
 def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,
-       Pb,C,Cs,Tmin,names,fixShedu,relax,ambiente):
-    
-    # G        = [1, 2, 3]
-    # T        = [1, 2, 3, 4, 5, 6]
-    # L        = {1: [1, 2, 3], 2: [1, 2, 3], 3: [1, 2, 3, 4]}
-    # S        = {1: [1, 2, 3], 2: [1, 2, 3], 3: [1, 2, 3, 4]}
-    # Pmax     = {1: 300.0, 2: 200.0, 3: 100.0}
-    # Pmin     = {1: 80, 2: 50, 3: 30}
-    # TU       = {1: 3, 2: 2, 3: 1}
-    # TD       = {1: 2, 2: 2, 3: 2}
-    # De       = {1: 240, 2: 250, 3: 200, 4: 170, 5: 230, 6: 190}
-    # R        = {1: 10, 2: 10, 3: 10, 4: 10, 5: 10, 6: 10}
-    # u_0      = {1: 1, 2: 0, 3: 0}
-    # D        = {1: 0, 2: 0, 3: 0}
-    # U        = {1: 2, 2: 0, 3: 0}
-    # SU       = {1: 100, 2: 70, 3: 40}
-    # SD       = {1: 80, 2: 50, 3: 30}
-    # RU       = {1: 50, 2: 60, 3: 70}
-    # RD       = {1: 30, 2: 40, 3: 50}
-    # pc_0     = {1: 40, 2: 0, 3: 0}
-    # mpc      = {1: 400.0, 2: 750.0, 3: 900.0}
-    # Pb       = {(1, 1): 80, (1, 2): 150, (1, 3): 300, (2, 1): 50, (2, 2): 100, (2, 3): 200, (3, 1): 30, (3, 2): 50, (3, 3): 70, (3, 4): 100}   
-    # C        = {(1, 1): 5.0, (1, 2): 5.0, (1, 3): 5.0, (2, 1): 15.0, (2, 2): 15.0, (2, 3): 15.0, (3, 1): 30.0, (3, 2): 30.0, (3, 3): 30.0, (3, 4): 30.0}
-    # Cs       = {(1, 1): 800.0, (1, 2): 800.0, (1, 3): 800.0, (2, 1): 500.0, (2, 2): 500.0, (2, 3): 500.0, (3, 1): 25.0, (3, 2): 250.0, (3, 3): 
-    # 500.0, (3, 4): 1000.0}
-    # Tmin     = {(1, 1): 2, (1, 2): 3, (1, 3): 4, (2, 1): 2, (2, 2): 3, (2, 3): 4, (3, 1): 2, (3, 2): 3, (3, 3): 4, (3, 4): 5}
-    # fixShedu = False
-    # relax    = False
-    # ambiente = 'localPC'
-        
-    # print('G=',G)
-    # print('T=',T)
-    # print('L=',L)
-    # print('S=',S)
-    # print('Pmax=',Pmax)
-    # print('Pmin=',Pmin)
-    # print('UT=',UT)
-    # print('DT=',DT)
-    # print('De=',De)
-    # print('R=',R)
-    # print('u_0=',u_0)
-    # print('D=',D)
-    # print('U=',U)
-    # print('SU=',SU)
-    # print('SD=',SD)
-    # print('RU=',RU)
-    # print('RD=',RD)
-    # print('pc_0=',pc_0)
-    # print('mpc=',mpc)
-    # print('Pb=',Pb)
-    # print('C=',C)
-    # print('Cs=',Cs)
-    # print('Tmin=',Tmin)
-    # print('names=',names)
-    #print(type(fixShedu),',fixShedu=',fixShedu)
-    #print(type(relax),',relax=',relax)
-    #print(type(ambiente),',ambiente=',ambiente)
-    
+       Pb,C,Cs,Tmin,names,fixShedu,relax):
+
     model      = pyo.ConcreteModel(name="UC")    
     model.G    = pyo.Set(initialize = G)
     model.T    = pyo.Set(initialize = T)  
@@ -345,8 +290,18 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,
 
     ## ---------------------------- LOCAL BRANCHING ------------------------------------------     
     #def Soft_variable_fixing(m):
-    #    return sum( m.u[g,t] for g in m.G for t in m.T ) >=  math.ceil(0.9 * 3)
+    #    return sum( m.u[g,t] for g in m.G for t in m.T ) >= math.ceil(0.9 * 3)
     #model.local = pyo.Constraint(rule = Soft_variable_fixing)
         
     ## Termina y regresa modelo milp
     return model
+
+def print_model():    
+    if True==False:
+        print('G=',G); print('T=',T); print('L=',L); print('S=',S); print('Pmax=',Pmax); print('Pmin=',Pmin);
+        print('UT=',UT); print('DT=',DT); print('De=',De); print('R=',R); print('u_0=',u_0); print('D=',D);
+        print('U=',U); print('SU=',SU); print('SD=',SD); print('RU=',RU); print('RD=',RD); print('pc_0=',pc_0);
+        print('mpc=',mpc); print('Pb=',Pb); print('C=',C); print('Cs=',Cs); print('Tmin=',Tmin); print('names=',names);
+        print(type(fixShedu),',fixShedu=',fixShedu); print(type(relax),',relax=',relax); print(type(ambiente),',ambiente=',ambiente)
+    return 0
+    
