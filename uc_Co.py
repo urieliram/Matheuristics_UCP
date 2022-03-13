@@ -130,15 +130,15 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,
         model.w     = pyo.Var( model.G , model.T , within=Binary)
         model.delta = pyo.Var( model.indexGTSg,    within=Binary) ## within=UnitInterval UnitInterval == [0,1]
     else:        
-        model.u     = pyo.Var( model.G , model.T , within=UnitInterval)
-        model.v     = pyo.Var( model.G , model.T , within=UnitInterval)
-        model.w     = pyo.Var( model.G , model.T , within=UnitInterval)
-        model.delta = pyo.Var( model.indexGTSg,    within=UnitInterval) ## within=UnitInterval UnitInterval == [0,1]
+        model.u     = pyo.Var( model.G , model.T , bounds=(0.0,1.0)) #=UnitInterval)
+        model.v     = pyo.Var( model.G , model.T , bounds=(0.0,1.0))   ## ***
+        model.w     = pyo.Var( model.G , model.T , bounds=(0.0,1.0))
+        model.delta = pyo.Var( model.indexGTSg,    bounds=(0.0,1.0))   ## within=UnitInterval UnitInterval == [0,1]
     model.p         = pyo.Var( model.G , model.T , bounds=(0.0,99999.0))
     model.pb        = pyo.Var( model.G , model.T , bounds=(0.0,99999.0))
-    model.pbc       = pyo.Var( model.G , model.T , bounds=(0.0,99999.0))   ## pbarra' (capacidad máxima de salida con reserva arriba del m.Pmin)
-    model.pc        = pyo.Var( model.G , model.T , bounds=(0.0,99999.0))   ## p' (potencia de salida arriba del m.Pmin)
-    model.r         = pyo.Var( model.G , model.T , bounds=(0.0,99999.0))   ## reserve
+    model.pbc       = pyo.Var( model.G , model.T , bounds=(0.0,99999.0))  ## pbarra' (capacidad máxima de salida con reserva arriba del m.Pmin)
+    model.pc        = pyo.Var( model.G , model.T , bounds=(0.0,99999.0))  ## p' (potencia de salida arriba del m.Pmin)
+    model.r         = pyo.Var( model.G , model.T , bounds=(0.0,99999.0))  ## reserve
     model.cp        = pyo.Var( model.G , model.T , bounds=(0.0,9999999.0))
     model.cSU       = pyo.Var( model.G , model.T , bounds=(0.0,9999999.0))
     model.cSD       = pyo.Var( model.G , model.T , bounds=(0.0,9999999.0))
@@ -175,11 +175,11 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,
     #     model.u.set_values(Shedule_dict)
 
     def obj_rule(m): 
-        return sum(m.cp[g,t] + m.cSU[g,t]*m.v[g,t] + m.mpc[g]*m.u[g,t] for g in m.G for t in m.T) \
-             + sum(m.sR[t] * CLP                                       for t in m.T) \
-             + sum(m.sn[t] * CRP                                       for t in m.T) 
-            # return sum(m.cp[g,t] + m.cU[g] * m.v[g,t] + m.mpc[g] * m.u[g,t] for g in m.G for t in m.T) \ #Costo sin piecewise
-            #  + sum(m.cU[g] * m.v[g,t] + m.c[g] * m.p[g,t] for g in m.G for t in m.T) 
+    #   return sum(m.cp[g,t] + m.cU[g] * m.v[g,t] + m.mpc[g] * m.u[g,t] for g in m.G for t in m.T) \ #Costo sin piecewise
+        return sum(m.cp[g,t] + m.cSU[g,t] * 1 + m.mpc[g]*m.u[g,t] for g in m.G for t in m.T) \
+             + sum(m.sR[t] * CLP                                           for t in m.T) \
+             + sum(m.sn[t] * CRP                                           for t in m.T) 
+    #        + sum(m.cU[g] * m.v[g,t] + m.c[g] * m.p[g,t] for g in m.G for t in m.T) 
     model.obj = pyo.Objective(rule = obj_rule)
 
     ## -----------------------------GARVER------------------------------------------  
@@ -340,13 +340,13 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,
     model.Start_up_cost57 = pyo.Constraint(model.G,model.T, rule = Start_up_cost57)
             
     def Start_up_cost58(m,g,t):  ##  start-up cost eq.(58)
-            return m.cSU[g,t] == m.Cs[g,value(len(m.S[g]))]*m.v[g,t] - sum(((m.Cs[g,value(len(S[g]))]-m.Cs[g,s])*m.delta[g,t,s]) for s in range(1,value(len(m.S[g])) ))  
+            return m.cSU[g,t] == m.Cs[g,value(len(m.S[g]))]*m.v[g,t] - sum(((m.Cs[g,value(len(S[g]))]-m.Cs[g,s])*m.delta[g,t,s]) for s in range(1,value(len(m.S[g]))-1 ))  
     model.Start_up_cost58 = pyo.Constraint(model.G,model.T, rule = Start_up_cost58)   
 
-    ## ----------------------------LOCAL BRANCHING------------------------------------------     
-    def Soft_variable_fixing(m):   
-        return m.u[2,1]*1 + m.u[2,2]*1 + m.u[2,3]*1 >=  math.ceil(0.9 * 3)
-    
-    model.local = pyo.Constraint(rule = Soft_variable_fixing)
-    
+    ## ---------------------------- LOCAL BRANCHING ------------------------------------------     
+    #def Soft_variable_fixing(m):
+    #    return sum( m.u[g,t] for g in m.G for t in m.T ) >=  math.ceil(0.9 * 3)
+    #model.local = pyo.Constraint(rule = Soft_variable_fixing)
+        
+    ## Termina y regresa modelo milp
     return model
