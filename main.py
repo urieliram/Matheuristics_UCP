@@ -25,6 +25,7 @@ from   pyomo.util.infeasible import log_infeasible_constraints
 from   pyomo.opt import SolverStatus, TerminationCondition
 import reading
 import outfiles
+from solution import Solution
 
 ## Instances features
 ## GROUP     #INST  #GEN PERIOD FILES
@@ -35,9 +36,9 @@ import outfiles
 ## ferc(2)    12    978    48   (25-36)
 
 instancia = 'uc_45 - copia.json'
-instancia = 'archivox.json'
+instancia = 'archivox.json'      # z_milp0.1=292812718.45270145, z_lp0.1=279311866.4, z_milp0.001=283849653.53052485
+instancia = 'anjos.json'         # z_milp=9700.0, z_lp=8328.7
 
-instancia = 'anjos.json'
 ruta      = 'instances/'
 ambiente  = 'localPC'
 if ambiente == 'yalma':
@@ -54,9 +55,9 @@ localtime = time.asctime(time.localtime(time.time()))
 ## Append a list as new line to an old csv file
 row_file = [localtime,instancia]
 util.append_list_as_row('solution.csv', row_file)
-print(localtime, ' ',   'solving json --->', instancia)
+print(localtime,  'solving --->', instancia)
 
-##Lee instancia de archivo .json con formato Knueven2020
+##Lee instancia de archivo .json con formato de Knueven2020
 G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,Pb,C,mpc,Cs,Tmin,names = reading.reading(ruta+instancia)
 
 ## -----------------  Caso de ejemplo de anjos.json  --------------------------
@@ -92,22 +93,23 @@ G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,Pb,C,mpc,Cs,Tmin,names = r
 z_exact  = 0
 t_o      = time.time()  ## Start of the calculation time count.
 fixShedu = False        ## True si se fija la solución entera, False, si se desea resolver de manera exacta.
-relax    = False        ## True si se relaja la solución entera, False, si se desea resolver de manera entera.
+relax    = True         ## True si se relaja la solución entera, False, si se desea resolver de manera entera.
 model    = uc_Co.uc(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,
                     Pb,C,Cs,Tmin,names,fixShedu,relax,ambiente)
 
 ## Create the solver interface and solve the model
-# solver = pyo.SolverFactory('glpk')
-# solver = pyo.SolverFactory('cbc')
 # https://www.ibm.com/docs/en/icos/12.8.0.0?topic=parameters-relative-mip-gap-tolerance
-solver = pyo.SolverFactory('cplex')
+solver = pyo.SolverFactory('cplex') #'glpk', 'cbc'
 if ambiente == "localPC":
     solver = pyo.SolverFactory('cplex')
 if ambiente == "yalma": 
     solver = pyo.SolverFactory('cplex', executable='/home/uriel/cplex1210/cplex/bin/x86-64_linux/cplex')
-solver.options['mip tolerances mipgap'] = 0.1  
+solver.options['mip tolerances mipgap'] = 0.001  
 #solver.options['mip tolerances absmipgap'] = 200
-solver.options['timelimit'] = 300
+solver.options['timelimit'] = 3000
+
+#https://www.ibm.com/docs/en/icos/12.8.0.0?topic=parameters-algorithm-continuous-linear-problems
+#solver.options['lpmethod'] = 1
 
 ## para mostrar una solución en un formato propio
 ## https://developers.google.com/optimization/routing/cvrp
@@ -122,12 +124,13 @@ solver.options['timelimit'] = 300
 #print(solver.ExportModelAsLpFormat(False).replace('\\', '').replace(',_', ','), sep='\n')
   
 ## Envía el problema de optimización al solver
-res = solver.solve(model, tee=False) ## timelimit=10; tee=True(para ver log)
+res = solver.solve(model, tee=True) ## timelimit=10; tee=True(para ver log)
     
 try:
     pyo.assert_optimal_termination(res)
-except:
-    print("An exception occurred")
+except Exception as e:
+    print("!!! An exception occurred")
+    print(e)
         
 file = open("modeluc.dat", "w")
 file.write('z: %s \n' % (pyo.value(model.obj)))
@@ -148,20 +151,20 @@ for t in range(1, len(T)+1):
 
 # model.obj.pprint()     # Print the objetive function
 # model.demand.pprint()  # Print constraint
-# model.reserve.pprint()
+# model.reserve.pprint() # Print constraint
 # model.display()        # Print the optimal solution     
 # z = pyo.value(model.obj)
-model.pprint(file)
-file.close()
-    
-##https://stackoverflow.com/questions/51044262/finding-out-reason-of-pyomo-model-infeasibility
-log_infeasible_constraints(model)
+
+#model.pprint(file)
+#file.close()
 
 ##https://pyomo.readthedocs.io/en/stable/working_models.html
 if (res.solver.status == SolverStatus.ok) and (res.solver.termination_condition == TerminationCondition.optimal):
     print ("this is feasible and optimal")
 elif res.solver.termination_condition == TerminationCondition.infeasible:
-    print (">>> do something about it? or exit?")
+    ##https://stackoverflow.com/questions/51044262/finding-out-reason-of-pyomo-model-infeasibility
+    log_infeasible_constraints(model)
+    print (">>> infeasible solution, do something about it? or exit?")
 else:
     print ("something else is wrong",str(res.solver))  ## Something else is wrong
 
@@ -189,6 +192,9 @@ for t in range(tt):
         P [g][t] = int(model.p[(g+1, t+1)].value)
         R [g][t] = int(model.r[(g+1, t+1)].value)
         #print(g, t, (model.u[(g, t)].value), (model.v[(g, t)].value), (model.w[(g, t)].value), model.p[(g, t)].value)
+
+sol = Solution(Uu,V,W,P,R)
+print(sol.u)
 
 ## Guarda en archivo csv la solución
 outfiles.sendtofilesolution(Uu,"U_" + instancia[0:5] + ".csv")
