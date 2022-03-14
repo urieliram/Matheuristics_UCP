@@ -39,9 +39,6 @@ if ambiente == 'yalma':
 
 localtime = time.asctime(time.localtime(time.time()))
 
-## Append a list as new line to an old csv file using as log
-new_row = [localtime,instancia,""]
-util.append_list_as_row('log.csv', new_row)
 print(localtime,        'solving --->', instancia)
 
 ## Lee instancia de archivo .json con formato de Knueven2020
@@ -50,18 +47,38 @@ G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,Pb,C,mpc,Cs,Tmin,names = r
 ## Start of the calculation time count.
 t_o = time.time() 
 
-fix   = False        ## True si se fija la solución entera, False, si se desea resolver de manera exacta.
-relax = False         ## True si se relaja la solución entera, False, si se desea resolver de manera entera.
+gap   = 0.1
+fix   = False  ## True si se fija la solución entera,   False, si se desea resolver de manera exacta.
+relax = True   ## True si se relaja la solución entera, False, si se desea resolver de manera entera.
 model = uc_Co.uc(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,Pb,C,Cs,Tmin,names,fix,relax)
 
 sol = Solution(model    = model,
                nameins  = instancia,
                env      = ambiente,
-               gap      = 0.1,
+               gap      = gap,
                time     = 300,
                tee      = False,
-               tofile   = True)
+               tofile   = True
+               )
+z_lp = sol.solve_problem() ## Prepara solver y resuelve modelo
+print("z_lp = ", z_lp)
+t_lp = time.time() - t_o
 
-z = sol.solve_problem() ## Prepara solver y resuelve modelo
 
-print("z = ", z)
+model = uc_Co.uc(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,Pb,C,Cs,Tmin,names,fix,relax=False)
+sol = Solution(model    = model,
+               nameins  = instancia,
+               env      = ambiente,
+               gap      = gap,
+               time     = 300,
+               tee      = False,
+               tofile   = True
+               )
+z_milp = sol.solve_problem() ## Prepara solver y resuelve modelo
+print("z_milp = ", z_milp)
+t_milp= time.time() - t_o
+
+## Append a list as new line to an old csv file using as log
+## localtime, instancia, T, G, z_lp, t_lp, z_milp, t_milp, gap
+newrow = [localtime,instancia,len(T),len(G),round(z_lp,1),round(t_lp,4),round(z_milp,1),round(t_milp,4),gap]  # data to csv
+util.append_list_as_row('log.csv', newrow)

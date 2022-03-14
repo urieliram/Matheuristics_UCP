@@ -73,11 +73,11 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,
         model.u     = pyo.Var( model.G , model.T , within=Binary)
         model.v     = pyo.Var( model.G , model.T , within=Binary)
         model.w     = pyo.Var( model.G , model.T , within=Binary)
-        model.delta = pyo.Var( model.indexGTSg,    within=Binary) ## within=UnitInterval UnitInterval == [0,1]
+        model.delta = pyo.Var( model.indexGTSg,    within=Binary) 
     else:        
-        model.u     = pyo.Var( model.G , model.T , bounds=(0.0,1.0)) #=UnitInterval)
+        model.u     = pyo.Var( model.G , model.T , bounds=(0.0,1.0))   ## bounds=(0.0,1.0)
         model.v     = pyo.Var( model.G , model.T , bounds=(0.0,1.0))   ## ***
-        model.w     = pyo.Var( model.G , model.T , bounds=(0.0,1.0))
+        model.w     = pyo.Var( model.G , model.T , bounds=(0.0,1.0))   ## within=UnitInterval UnitInterval == [0,1]
         model.delta = pyo.Var( model.indexGTSg,    bounds=(0.0,1.0))   ## within=UnitInterval UnitInterval == [0,1]
     model.p         = pyo.Var( model.G , model.T , bounds=(0.0,99999.0))
     model.pb        = pyo.Var( model.G , model.T , bounds=(0.0,99999.0))
