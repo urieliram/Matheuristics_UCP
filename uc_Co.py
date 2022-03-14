@@ -20,7 +20,7 @@ from   pyomo.environ import *
 from pyparsing import null_debug_action
 
 def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,
-       Pb,C,Cs,Tmin,names,fixShedu,relax):
+       Pb,C,Cs,Tmin,names,fix,relax):
 
     model      = pyo.ConcreteModel(name="UC")    
     model.G    = pyo.Set(initialize = G)
@@ -296,12 +296,12 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,
     ## Termina y regresa modelo milp
     return model
 
-def print_model():    
-    if True==False:
-        print('G=',G); print('T=',T); print('L=',L); print('S=',S); print('Pmax=',Pmax); print('Pmin=',Pmin);
-        print('UT=',UT); print('DT=',DT); print('De=',De); print('R=',R); print('u_0=',u_0); print('D=',D);
-        print('U=',U); print('SU=',SU); print('SD=',SD); print('RU=',RU); print('RD=',RD); print('pc_0=',pc_0);
-        print('mpc=',mpc); print('Pb=',Pb); print('C=',C); print('Cs=',Cs); print('Tmin=',Tmin); print('names=',names);
-        print(type(fixShedu),',fixShedu=',fixShedu); print(type(relax),',relax=',relax); print(type(ambiente),',ambiente=',ambiente)
-    return 0
+# def print_model():    
+#     if True==False:
+#         print('G=',G); print('T=',T); print('L=',L); print('S=',S); print('Pmax=',Pmax); print('Pmin=',Pmin);
+#         print('UT=',UT); print('DT=',DT); print('De=',De); print('R=',R); print('u_0=',u_0); print('D=',D);
+#         print('U=',U); print('SU=',SU); print('SD=',SD); print('RU=',RU); print('RD=',RD); print('pc_0=',pc_0);
+#         print('mpc=',mpc); print('Pb=',Pb); print('C=',C); print('Cs=',Cs); print('Tmin=',Tmin); print('names=',names);
+#         print(type(fix),',fixShedu=',fix); print(type(relax),',relax=',relax); print(type(ambiente),',ambiente=',ambiente)
+#     return 0
     

@@ -47,38 +47,48 @@ G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,Pb,C,mpc,Cs,Tmin,names = r
 ## Start of the calculation time count.
 t_o = time.time() 
 
+## Solve as MILP
 gap   = 0.1
-fix   = False  ## True si se fija la solución entera,   False, si se desea resolver de manera exacta.
-relax = True   ## True si se relaja la solución entera, False, si se desea resolver de manera entera.
+fix   = False  ## True si se fija la solución entera.
+relax = False  ## True si se relaja la solución entera.
 model = uc_Co.uc(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,Pb,C,Cs,Tmin,names,fix,relax)
-
 sol = Solution(model    = model,
                nameins  = instancia,
                env      = ambiente,
                gap      = gap,
                time     = 300,
                tee      = False,
-               tofile   = True
-               )
-z_lp = sol.solve_problem() ## Prepara solver y resuelve modelo
-print("z_lp = ", z_lp)
+               tofile   = True)
+z_milp = sol.solve_problem()
+t_milp = time.time() - t_o
+print("z_milp = ", round(z_milp,1))
+
+## Relax as LP and solve
+model = uc_Co.uc(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,Pb,C,Cs,Tmin,names,fix=False,relax=True)
+sol = Solution(model    = model,
+               nameins  = instancia,
+               env      = ambiente,
+               gap      = gap,
+               time     = 300,
+               tee      = False,
+               tofile   = True)
+z_lp = sol.solve_problem() 
 t_lp = time.time() - t_o
+print("z_lp = ", round(z_lp,1))
 
-
-model = uc_Co.uc(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,Pb,C,Cs,Tmin,names,fix,relax=False)
+## Fix solution and solve the subMILP
+model = uc_Co.uc(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,Pb,C,Cs,Tmin,names,fix=True,relax=False)
 sol = Solution(model    = model,
                nameins  = instancia,
                env      = ambiente,
                gap      = gap,
                time     = 300,
                tee      = False,
-               tofile   = True
-               )
-z_milp = sol.solve_problem() ## Prepara solver y resuelve modelo
-print("z_milp = ", z_milp)
-t_milp= time.time() - t_o
+               tofile   = True)
+z_sub = sol.solve_problem() 
+t_sub = time.time() - t_o
+print("z_sub = ", round(z_sub,1))
 
-## Append a list as new line to an old csv file using as log
-## localtime, instancia, T, G, z_lp, t_lp, z_milp, t_milp, gap
-newrow = [localtime,instancia,len(T),len(G),round(z_lp,1),round(t_lp,4),round(z_milp,1),round(t_milp,4),gap]  # data to csv
-util.append_list_as_row('log.csv', newrow)
+## Append a list as new line to an old csv file using as log:  localtime,instancia,T,G,z_lp,t_lp,z_milp,t_milp,z_sub,t_sub,gap
+row = [localtime,instancia,len(T),len(G),round(z_milp,1),round(t_milp,4),round(z_lp,1),round(t_lp,4),round(z_sub,1),round(t_sub,4),gap]  ## data to csv
+util.append_list_as_row('log.csv', row)
