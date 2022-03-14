@@ -1,4 +1,4 @@
-# Un método Mate-heurístico para resolver UC basado en el beneficio.
+# Un método Mate-heurístico para resolver UC.
 ---
 + [Introducción](#introduccion)
 + [Implementación](#implementación)
