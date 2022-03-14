@@ -14,13 +14,11 @@
 ## Start-up cost          (54), (55), (56)         'MLR_startup_costs',
 ## System constraints     (67)
 ## --------------------------------------------------------------------------------
-import math
 import pyomo.environ as pyo
 from   pyomo.environ import *
-from pyparsing import null_debug_action
 
 def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,
-       Pb,C,Cs,Tmin,names,fix,relax):
+       Pb,C,Cs,Tmin,fix,relax):
 
     model      = pyo.ConcreteModel(name="UC")    
     model.G    = pyo.Set(initialize = G)
@@ -98,30 +96,24 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,
     model.Cs   = pyo.Param(model.indexGSg, initialize = Cs,   within=Any)
     model.Tmin = pyo.Param(model.indexGSg, initialize = Tmin, within=Any)
     
-    ##model.mut2.pprint()        ## For entire Constraint List
-    ##print(model.mut2[1].expr)  ## For only one index of Constraint List
-        
-    ##model.mdt2.pprint()        ## For entire Constraint List
-    ##print(model.mdt2[3].expr)  ## For only one index of Constraint List
-    
+    ## model.mut2.pprint()        ## For entire Constraint List
+    ## print(model.mut2[1].expr)  ## For only one index of Constraint List
+    ## print(model.mdt2[3].expr)  ## For only one index of Constraint List
+    ## model.u.set_values(dict)
+    ## model.u.set_values({(1,3): 1}) ##ojo este no fija
     ## https://pyomo.readthedocs.io/en/stable/working_models.html
-    # model.u[3,1].fix(0)
-    # model.v[3,1].fix(0)
-    # model.v[3,3].fix(0)
-    # model.v[3,4].fix(0)
-    # model.v[3,2].fix(0)
-    # model.u[2,3].fix(0)
-    # model.u[2,4].fix(0)
-    # model.u[2,5].fix(0)
-    # model.u[2,6].fix(0)
-
-    # if(FixShedu == True): #Si se desea usar la solución fixed
-    #     model.u.fix(0)
-    #     model.u.set_values(Shedule_dict)
+    ## model.u[3,1].fix(0)
+    ## model.u.fix(0)
+    
+    ## Si se desea usar la solución fix y calcular un sub-MILP
+    if(fix == True):        
+        model.u[3,1].fix(1)
+        model.u[3,2].fix(1)
+        
 
     def obj_rule(m): 
-    #   return sum(m.cp[g,t] + m.cU[g] * m.v[g,t] + m.mpc[g] * m.u[g,t] for g in m.G for t in m.T) \ #Costo sin piecewise
-        return sum(m.cp[g,t] + m.cSU[g,t] * 1 + m.mpc[g]*m.u[g,t] for g in m.G for t in m.T) \
+    #   return sum(m.cp[g,t] + m.cSU[g] * m.v[g,t] + m.mpc[g] * m.u[g,t] for g in m.G for t in m.T) \ #Costo sin piecewise
+        return sum(m.cp[g,t] + m.cSU[g,t] * m.v[g,t]*1  + m.mpc[g]*m.u[g,t] for g in m.G for t in m.T) \
              + sum(m.sR[t] * CLP                                           for t in m.T) \
              + sum(m.sn[t] * CRP                                           for t in m.T) 
     #        + sum(m.cU[g] * m.v[g,t] + m.c[g] * m.p[g,t] for g in m.G for t in m.T) 
