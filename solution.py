@@ -57,7 +57,7 @@ class Solution:
         #print(solver.ExportModelAsLpFormat(False).replace('\\', '').replace(',_', ','), sep='\n')
         
         ## Envía el problema de optimización al solver
-        result = solver.solve(self.model, tee=self.tee) ## timelimit=10; tee=True(para ver log)
+        result = solver.solve(self.model, tee=self.tee) ## timelimit=10; tee=True (para ver log)
             
         try:
             pyo.assert_optimal_termination(result)
