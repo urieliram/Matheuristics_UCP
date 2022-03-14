@@ -1,18 +1,8 @@
+from   ctypes import util
 import pyomo.environ as pyo
-import outfiles
+import util
 from   pyomo.util.infeasible import log_infeasible_constraints
 from   pyomo.opt import SolverStatus, TerminationCondition
-
-# import copy
-# import pyomo as pyo
-# from egret.models.unit_commitment import solve_unit_commitment
-# from egret.model_library.unit_commitment.uc_model_generator import UCFormulation, generate_model
-# from datetime import date
-# from datetime import datetime
-# from timeit import timeit
-# from pyomo.core.base import piecewise
-# from pyomo.core.base.boolean_var import ScalarBooleanVar
-# from pyomo.util.infeasible import log_infeasible_constraints
 
 class Solution:
     def __init__(self,model,nameins,env,gap,time,tee,tofile):
@@ -28,6 +18,18 @@ class Solution:
        
     def getModel(self):
         return self.model
+    def getUu(self):
+        return self.Uu
+    def getV(self):
+        return self.V
+    def getW(self):
+        return self.W
+    def getP(self):
+        return self.P
+    def getR(self):
+        return self.R
+    def getDelta(self):
+        return self.delta
    
     def solve_problem(self):  
         ## Create the solver interface and solve the model
@@ -38,8 +40,8 @@ class Solution:
         if self.env == "yalma": 
             solver = pyo.SolverFactory('cplex', executable='/home/uriel/cplex1210/cplex/bin/x86-64_linux/cplex')
         solver.options['mip tolerances mipgap'] = self.gap  
-        #solver.options['mip tolerances absmipgap'] = 200
         solver.options['timelimit'] = self.time
+        #solver.options['mip tolerances absmipgap'] = 200
 
         #https://www.ibm.com/docs/en/icos/12.8.0.0?topic=parameters-algorithm-continuous-linear-problems
         #solver.options['lpmethod'] = 1
@@ -93,41 +95,42 @@ class Solution:
 
         ##https://pyomo.readthedocs.io/en/stable/working_models.html
         if (result.solver.status == SolverStatus.ok) and (result.solver.termination_condition == TerminationCondition.optimal):
-            print ("This is feasible and optimal")
+            aux=1+1
+            #print ("This is feasible and optimal")            
         elif result.solver.termination_condition == TerminationCondition.infeasible:
             ##https://stackoverflow.com/questions/51044262/finding-out-reason-of-pyomo-model-infeasibility
             log_infeasible_constraints(self.model)
-            print (">>> infeasible solution, do something about it? or exit?")
+            print ("!!! Infeasible solution, do something about it? or exit?")
         else:
-            print ("something else is wrong",str(result.solver))  ## Something else is wrong
+            print ("Something else is wrong",str(result.solver))  ## Something else is wrong
 
+        ## Inizialize variables making a empty-solution with all generators in cero
+        self.Uu = [[0 for x in range(self.tt)] for y in range(self.gg)]
+        self.V  = [[0 for x in range(self.tt)] for y in range(self.gg)]
+        self.W  = [[0 for x in range(self.tt)] for y in range(self.gg)]
+        self.P  = [[0 for x in range(self.tt)] for y in range(self.gg)]
+        self.R  = [[0 for x in range(self.tt)] for y in range(self.gg)]
+        ## Almacena solución entera
+        for t in range(self.tt):
+            for g in range(self.gg):
+                self.Uu[g][t] = int(self.model.u[(g+1, t+1)].value)
+                self.V [g][t] = int(self.model.v[(g+1, t+1)].value)
+                self.W [g][t] = int(self.model.w[(g+1, t+1)].value)
+                self.P [g][t] = int(self.model.p[(g+1, t+1)].value)
+                self.R [g][t] = int(self.model.r[(g+1, t+1)].value)
+                
         if self.tofile == True:
             self.send_to_File()
-            
+                       
         z_exact = self.model.obj.expr()
         return z_exact
     
     
       
-    def send_to_File(self):       
-        ## Inizialize variables making a empty-solution with all generators in cero
-        Uu = [[0 for x in range(self.tt)] for y in range(self.gg)]
-        V  = [[0 for x in range(self.tt)] for y in range(self.gg)]
-        W  = [[0 for x in range(self.tt)] for y in range(self.gg)]
-        P  = [[0 for x in range(self.tt)] for y in range(self.gg)]
-        R  = [[0 for x in range(self.tt)] for y in range(self.gg)]
-        ## ALMACENA SOLUCIÓN ENTERA
-        for t in range(self.tt):
-            for g in range(self.gg):
-                Uu[g][t] = int(self.model.u[(g+1, t+1)].value)
-                V [g][t] = int(self.model.v[(g+1, t+1)].value)
-                W [g][t] = int(self.model.w[(g+1, t+1)].value)
-                P [g][t] = int(self.model.p[(g+1, t+1)].value)
-                R [g][t] = int(self.model.r[(g+1, t+1)].value)
-                #print(g, t, (model.u[(g, t)].value), (model.v[(g, t)].value), (model.w[(g, t)].value), model.p[(g, t)].value)
-        outfiles.sendtofilesolution(Uu,"U_" + self.nameins[0:5] + ".csv")
-        outfiles.sendtofilesolution(V ,"V_" + self.nameins[0:5] + ".csv")
-        outfiles.sendtofilesolution(W ,"W_" + self.nameins[0:5] + ".csv")
-        outfiles.sendtofilesolution(P ,"P_" + self.nameins[0:5] + ".csv")
-        outfiles.sendtofilesolution(R ,"R_" + self.nameins[0:5] + ".csv")
+    def send_to_File(self):     
+        util.sendtofilesolution(self.Uu,"U_" + self.nameins[0:5] + ".csv")
+        util.sendtofilesolution(self.V ,"V_" + self.nameins[0:5] + ".csv")
+        util.sendtofilesolution(self.W ,"W_" + self.nameins[0:5] + ".csv")
+        util.sendtofilesolution(self.P ,"P_" + self.nameins[0:5] + ".csv")
+        util.sendtofilesolution(self.R ,"R_" + self.nameins[0:5] + ".csv")
         return 0
