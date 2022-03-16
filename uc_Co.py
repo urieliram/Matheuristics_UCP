@@ -18,7 +18,7 @@ import pyomo.environ as pyo
 from   pyomo.environ import *
 
 def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,
-       Pb,C,Cs,Tmin,fix,relax):
+       Pb,C,Cs,Tmin,fix=False,relax=False,fix_Uu=[]):
 
     model      = pyo.ConcreteModel(name="UC")    
     model.G    = pyo.Set(initialize = G)
@@ -106,16 +106,17 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,
     ## model.u.fix(0)
     
     ## Si se desea usar la solución fix y calcular un sub-MILP
-    if(fix == True):        
-        model.u[3,1].fix(1)
-        model.u[3,2].fix(1)
+    if(fix == True): 
+        for row in fix_Uu: 
+            model.u[row[0]+1,row[1]+1].fix(row[2])
+            # print(row)      
         
 
     def obj_rule(m): 
-    #   return sum(m.cp[g,t] + m.cSU[g] * m.v[g,t] + m.mpc[g] * m.u[g,t] for g in m.G for t in m.T) \ #Costo sin piecewise
-        return sum(m.cp[g,t] + m.cSU[g,t] * m.v[g,t]*1  + m.mpc[g]*m.u[g,t] for g in m.G for t in m.T) \
-             + sum(m.sR[t] * CLP                                           for t in m.T) \
-             + sum(m.sn[t] * CRP                                           for t in m.T) 
+    #   return sum(m.cp[g,t] + m.cSU[g,t] * m.v[g,t] + m.mpc[g] * m.u[g,t] for g in m.G for t in m.T) \ #Costo sin piecewise
+        return sum(m.cp[g,t] + m.cSU[g,t] * 1        + m.mpc[g] * m.u[g,t] for g in m.G for t in m.T) \
+             + sum(m.sR[t]   * CLP                                         for t in m.T) \
+             + sum(m.sn[t]   * CRP                                         for t in m.T) 
     #        + sum(m.cU[g] * m.v[g,t] + m.c[g] * m.p[g,t] for g in m.G for t in m.T) 
     model.obj = pyo.Objective(rule = obj_rule)
 
@@ -248,6 +249,7 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,
     model.mut2 = pyo.Constraint(model.G, rule = mut_rule2)
     
     ## ----------------------------PIECEWISE OFFER-------------------------------------------   
+    
     def Piecewise_offer42(m,g,t,l):  ## piecewise offer eq.(42)
         if l > 1:
             return m.pl[g,t,l] <= (m.Pb[g,l]-m.Pb[g,l-1]) * m.u[g,t]
