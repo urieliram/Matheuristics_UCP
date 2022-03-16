@@ -9,16 +9,16 @@
 
 import time
 import sys
-
-from pymysql import NULL
+import numpy as np 
 import uc_Co
 import util
 import reading
 from   solution import Solution
 
-instancia = 'uc_45 - copia.json'
-instancia = 'archivox.json'      # z_milp0.1=292812718.45270145, z_lp0.1=279311866.4, z_milp0.001=283849653.53052485
-instancia = 'anjos.json'         # z_milp=9700.0, z_lp=8328.7
+instancia = 'uc_45 - copia.json' # z_milp=283887541.8, z_lp=279360013.2,z_sub=283892029.8
+instancia = 'anjos.json'         # z_milp=9650.0, z_lp=8328.8, z_sub=9700
+instancia = 'archivox.json'      # z_milp=283849653.5, z_lp=279311866.4,z_sub=283854271.1
+instancia = 'uc_1.json'      # z_milp=283849653.5, z_lp=279311866.4,z_sub=283854271.1
 
 ruta      = 'instances/'
 ambiente  = 'localPC'
@@ -33,7 +33,7 @@ if ambiente == 'yalma':
 
 localtime = time.asctime(time.localtime(time.time()))
 
-print(localtime, 'solving --->', instancia)
+print(localtime,'solving --->',instancia)
 
 ## Lee instancia de archivo .json con formato de Knueven2020
 G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,Pb,C,mpc,Cs,Tmin,names = reading.reading(ruta+instancia)
@@ -41,36 +41,39 @@ G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,Pb,C,mpc,Cs,Tmin,names = r
 ## Start of the calculation time count.
 t_o = time.time() 
 
-## fix   = True si se fija la solución entera.
 ## relax = True si se relaja la solución entera.
-gap   = 0.001
+## fix   = True si se fija la solución entera.
+gap  = 0.001
+time = 30000
 
 ## Solve as a MILP
-model = uc_Co.uc(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,Pb,C,Cs,Tmin,fix= False,relax= False)
-sol   = Solution(model  = model,nameins=instancia,env=ambiente,gap=gap,time=300,
+model = uc_Co.uc(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,Pb,C,Cs,Tmin)
+sol   = Solution(model  = model, nameins=instancia, env=ambiente, gap=gap, time=time,
                  tee    = False,
                  tofile = True)
+z_milp = 0 
 z_milp = sol.solve_problem()
 t_milp = time.time() - t_o
 print("z_milp = ", round(z_milp,1))
 util.imprime_sol(model,sol)
 
-
 ## Relax as LP and solve
-# model = uc_Co.uc(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,Pb,C,Cs,Tmin,fix=False,relax=True)
-# sol = Solution(model   = model,nameins=instancia,env=ambiente,gap=gap,time=300,
-#                 tee    = False,
-#                 tofile = True)
+model = uc_Co.uc(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,Pb,C,Cs,Tmin,relax=True)
+sol = Solution(model   = model, nameins=instancia, env=ambiente, gap=gap, time=time,
+                tee    = False,
+                tofile = True)
 z_lp = 0 
-# z_lp = sol.solve_problem() 
+z_lp = sol.solve_problem() 
 t_lp = time.time() - t_o
 print("z_lp = ", round(z_lp,1))
-# util.imprime_sol(model,sol)
+util.imprime_sol(model,sol)
 
+fix_Uu = sol.constructor()
+# print("fix_Uu = ",fix_Uu)      
 
-## Fix solution and solve the subMILP
-model = uc_Co.uc(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,Pb,C,Cs,Tmin,fix=True,relax=False)
-sol   = Solution(model  = model,nameins=instancia,env=ambiente,gap=gap,time=300,
+# Fix solution and solve the sub-MILP
+model = uc_Co.uc(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,Pb,C,Cs,Tmin,fix=True,fix_Uu=fix_Uu)
+sol   = Solution(model  = model, nameins=instancia, env=ambiente, gap=gap, time=time,
                  tee    = False,
                  tofile = True)
 z_sub = 0

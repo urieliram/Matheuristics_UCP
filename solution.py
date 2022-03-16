@@ -28,8 +28,6 @@ class Solution:
         return self.P
     def getR(self):
         return self.R
-    def getDelta(self):
-        return self.delta
    
     def solve_problem(self):  
         ## Create the solver interface and solve the model
@@ -113,11 +111,11 @@ class Solution:
         ## Almacena solución entera
         for t in range(self.tt):
             for g in range(self.gg):
-                self.Uu[g][t] = int(self.model.u[(g+1, t+1)].value)
-                self.V [g][t] = int(self.model.v[(g+1, t+1)].value)
-                self.W [g][t] = int(self.model.w[(g+1, t+1)].value)
-                self.P [g][t] = int(self.model.p[(g+1, t+1)].value)
-                self.R [g][t] = int(self.model.r[(g+1, t+1)].value)
+                self.Uu[g][t] = round(self.model.u[(g+1, t+1)].value,1)
+                self.V [g][t] = round(self.model.v[(g+1, t+1)].value,1)
+                self.W [g][t] = round(self.model.w[(g+1, t+1)].value,1)
+                self.P [g][t] = round(self.model.p[(g+1, t+1)].value,1)
+                self.R [g][t] = round(self.model.r[(g+1, t+1)].value,1)
                 
         if self.tofile == True:
             self.send_to_File()
@@ -134,3 +132,26 @@ class Solution:
         util.sendtofilesolution(self.P ,"P_" + self.nameins[0:5] + ".csv")
         util.sendtofilesolution(self.R ,"R_" + self.nameins[0:5] + ".csv")
         return 0
+    
+    
+    def constructor(self):    
+        fix_Uu = []
+        UuP = [[0 for x in range(self.tt)] for y in range(self.gg)]
+        
+        ## Almacena solución entera
+        for t in range(self.tt):
+            for g in range(self.gg):
+                UuP[g][t] = self.P[g][t]*self.Uu[g][t]
+                
+                ## Aquí se enlistan los valores de 'u' que serán fijados.
+                ## El criterio para fijar es el de Harjunkoski2020 y además...
+                ## aquellas unidades que quedan en cero o menos, son fijadas a cero (esto es nuevo).
+                if UuP[g][t] >= self.model.Pmin[g+1]:
+                    fix_Uu.append([g,t,1])
+                elif UuP[g][t] <= 0:               
+                    fix_Uu.append([g,t,0])
+                
+        # print("UuP=",UuP)
+        # print("fix_Uu=",fix_Uu)              
+        
+        return fix_Uu
