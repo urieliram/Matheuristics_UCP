@@ -1,20 +1,23 @@
 from   ctypes import util
+import os
 import pyomo.environ as pyo
 import util
 from   pyomo.util.infeasible import log_infeasible_constraints
 from   pyomo.opt import SolverStatus, TerminationCondition
 
 class Solution:
-    def __init__(self,model,nameins,env,gap,time,tee,tofile):
-        self.model    = model
-        self.nameins  = nameins  ## name of instance 
-        self.env      = env      ## enviroment  
-        self.tee      = tee      ## True = activate log of CPLEX
-        self.gap      = gap      ## relative gap in CPLEX
-        self.time     = time     ## max time in CPLEX
-        self.tofile   = tofile   ## True = send to csv file the solution value of U,V,W,P,R 
-        self.gg       = len(model.G)
-        self.tt       = len(model.T)
+    def __init__(self,model,nameins,env,gap=0.001,timelimit=300,tee=False,tofile=False,lpmethod=0,export=False):
+        self.model     = model
+        self.nameins   = nameins      ## name of instance 
+        self.env       = env          ## enviroment  
+        self.tee       = tee          ## True = activate log of CPLEX
+        self.gap       = gap          ## relative gap in CPLEX
+        self.timelimit = timelimit    ## max time in CPLEX
+        self.tofile    = tofile       ## True = send to csv file the solution value of U,V,W,P,R 
+        self.lpmethod  = lpmethod     ## 0=Automatic; 1,2= Primal and dual simplex; 3=Sifting; 4=Barrier, 5 Concurrent (Dual,Barrier, and Primal in opportunistic parallel mode; Dual and Barrier in deterministic parallel mode)
+        self.export    = export       ## True si se exporta el modelo a formato LP y MPS
+        self.gg        = len(model.G)
+        self.tt        = len(model.T)
        
     def getModel(self):
         return self.model
@@ -38,23 +41,25 @@ class Solution:
         if self.env == "yalma": 
             solver = pyo.SolverFactory('cplex', executable='/home/uriel/cplex1210/cplex/bin/x86-64_linux/cplex')
         solver.options['mip tolerances mipgap'] = self.gap  
-        solver.options['timelimit'] = self.time
+        solver.options['timelimit'] = self.timelimit
         #solver.options['mip tolerances absmipgap'] = 200
 
         #https://www.ibm.com/docs/en/icos/12.8.0.0?topic=parameters-algorithm-continuous-linear-problems
-        #solver.options['lpmethod'] = 1
-
+        solver.options['lpmethod'] = self.lpmethod 
+        
         ## para mostrar una solución en un formato propio
         ## https://developers.google.com/optimization/routing/cvrp
         ## para editar un Lp en pyomo
         ## https://stackoverflow.com/questions/54312316/pyomo-model-lp-file-with-variable-values
             
+            
         ## write LP file
-        #model.write()             ## To write the model into a file using .nl format
-        #filename = os.path.join(os.path.dirname(__file__), 'model.lp')
-        #model.write(filename, io_options={'symbolic_solver_labels': True})
-        #model.write(filename = str('model') + ".mps", io_options = {"symbolic_solver_labels":True})
-        #print(solver.ExportModelAsLpFormat(False).replace('\\', '').replace(',_', ','), sep='\n')
+        if self.export == True:
+            self.model.write()             ## To write the model into a file using .nl format
+            filename = os.path.join(os.path.dirname(__file__), self.model.name+'.lp')
+            self.model.write(filename, io_options={'symbolic_solver_labels': True})
+            self.model.write(filename = self.model.name+'.mps', io_options = {"symbolic_solver_labels":True})
+            #print(solver.ExportModelAsLpFormat(False).replace('\\', '').replace(',_', ','), sep='\n')
         
         ## Envía el problema de optimización al solver
         result = solver.solve(self.model, tee=self.tee) ## timelimit=10; tee=True (para ver log)
@@ -148,8 +153,8 @@ class Solution:
                 ## aquellas unidades que quedan en cero o menos, son fijadas a cero (esto es nuevo).
                 if UuP[g][t] >= self.model.Pmin[g+1]:
                     fix_Uu.append([g,t,1])
-                elif UuP[g][t] <= 0:               
-                    fix_Uu.append([g,t,0])
+                #elif UuP[g][t] <= 0:               
+                #    fix_Uu.append([g,t,0])
                 
         # print("UuP=",UuP)
         # print("fix_Uu=",fix_Uu)              
