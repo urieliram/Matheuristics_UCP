@@ -14,11 +14,12 @@
 ## Start-up cost          (54), (55), (56)         'MLR_startup_costs',
 ## System constraints     (67)
 ## --------------------------------------------------------------------------------
+import math
 import pyomo.environ as pyo
 from   pyomo.environ import *
 
 def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,
-       Pb,C,Cs,Tmin,fix=False,relax=False,fix_Uu=[],namemodel='UC'):
+       Pb,C,Cs,Tmin,fix='None',relax=False,fix_Uu=[],namemodel='UC'):
 
     model      = pyo.ConcreteModel(namemodel)    
     model.G    = pyo.Set(initialize = G)
@@ -66,7 +67,7 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,
     def index_G_Sg(m):
         return ((g,s) for g in m.G for s in range(1,len(m.S[g])+1))
     model.indexGSg = Set(initialize=index_G_Sg, dimen=2)
-     
+    
     if(relax == False): #Si se desea relajar las variables enteras como continuas
         model.u     = pyo.Var( model.G , model.T , within=Binary)
         model.v     = pyo.Var( model.G , model.T , within=Binary)
@@ -105,12 +106,6 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,
     ## model.u[3,1].fix(0)
     ## model.u.fix(0)
     
-    ## Si se desea usar la solución fix y calcular un sub-MILP
-    if(fix == True): 
-        for row in fix_Uu: 
-            model.u[row[0]+1,row[1]+1].fix(row[2])
-            # print(row)      
-        
 
     def obj_rule(m): 
     #   return sum(m.cp[g,t] + m.cSU[g,t] * m.v[g,t] + m.mpc[g] * m.u[g,t] for g in m.G for t in m.T) \ #Costo sin piecewise
@@ -275,27 +270,43 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,
     model.Start_up_cost54 = pyo.Constraint(model.indexGTSg, rule = Start_up_cost54)
     
     def Start_up_cost57(m,g,t):  ##  start-up cost eq.(57)
-            return m.v[g,t] >= sum(m.delta[g,t,s] for s in range(1,value(len(m.S[g])) ))  
+        return m.v[g,t] >= sum(m.delta[g,t,s] for s in range(1,value(len(m.S[g])) ))  
     model.Start_up_cost57 = pyo.Constraint(model.G,model.T, rule = Start_up_cost57)
             
     def Start_up_cost58(m,g,t):  ##  start-up cost eq.(58)
-            return m.cSU[g,t] == m.Cs[g,value(len(m.S[g]))]*m.v[g,t] - sum(((m.Cs[g,value(len(S[g]))]-m.Cs[g,s])*m.delta[g,t,s]) for s in range(1,value(len(m.S[g]))-1 ))  
+        return m.cSU[g,t] == m.Cs[g,value(len(m.S[g]))]*m.v[g,t] - sum(((m.Cs[g,value(len(S[g]))]-m.Cs[g,s])*m.delta[g,t,s]) for s in range(1,value(len(m.S[g]))-1 ))  
     model.Start_up_cost58 = pyo.Constraint(model.G,model.T, rule = Start_up_cost58)   
 
-    ## ---------------------------- LOCAL BRANCHING ------------------------------------------     
-    #def Soft_variable_fixing(m):
-    #    return sum( m.u[g,t] for g in m.G for t in m.T ) >= math.ceil(0.9 * 3)
-    #model.local = pyo.Constraint(rule = Soft_variable_fixing)
-        
-    ## Termina y regresa modelo milp
-    return model
 
-# def print_model():    
-#     if True==False:
-#         print('G=',G); print('T=',T); print('L=',L); print('S=',S); print('Pmax=',Pmax); print('Pmin=',Pmin);
-#         print('UT=',UT); print('DT=',DT); print('De=',De); print('R=',R); print('u_0=',u_0); print('D=',D);
-#         print('U=',U); print('SU=',SU); print('SD=',SD); print('RU=',RU); print('RD=',RD); print('pc_0=',pc_0);
-#         print('mpc=',mpc); print('Pb=',Pb); print('C=',C); print('Cs=',Cs); print('Tmin=',Tmin); print('names=',names);
-#         print(type(fix),',fixShedu=',fix); print(type(relax),',relax=',relax); print(type(ambiente),',ambiente=',ambiente)
-#     return 0
+    ## ---------------------------- HARD VARIABLE FIXING ------------------------------------------
     
+    ## Si se desea usar la solución fix y calcular un sub-MILP
+    if(fix == 'Hard'): 
+        for f in fix_Uu: 
+            model.u[f[0]+1,f[1]+1].fix(f[2]) ## Hard fixing            
+
+    ## ---------------------------- SOFT VARIABLE FIXING ------------------------------------------
+    
+    ## Si se desea usar la solución fix y calcular un sub-MILP
+    if(fix == 'Soft'): 
+        for f in fix_Uu: 
+            #model.u[row[0]+1,row[1]+1].fix(row[2]) ## Hard fixing
+            ## Redefinir dominio de variables https://groups.google.com/g/pyomo-forum/c/zMzgOr3qex4?pli=1
+            model.u[f[0]+1,f[1]+1].domain = UnitInterval
+    # print(model.u.display()) ##Show domain variables
+              
+        ## Adding a new restriction (soft variable fixing)  
+        ## https://pyomo.readthedocs.io/en/stable/working_models.html
+        model.cuts = pyo.ConstraintList()
+        expr = 0
+        for f in fix_Uu:      
+            expr += model.u[f[0]+1,f[1]+1]
+        model.cuts.add( expr >= math.ceil( 0.9 * len(fix_Uu)) )    
+        
+    # def Soft_variable_fixing_1(m):
+    #     return sum( m.u[g,t] for g in m.G for t in m.T ) >= math.ceil(0.9 * len(fix_Uu))
+    # model.local = pyo.Constraint(rule = Soft_variable_fixing_1)
+    
+    
+    ## Termina y regresa modelo MILP
+    return model
