@@ -19,7 +19,7 @@ import pyomo.environ as pyo
 from   pyomo.environ import *
 
 def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,
-       Pb,C,Cs,Tmin,fix='None',relax=False,fix_Uu=[],namemodel='UC'):
+       Pb,C,Cs,Tmin,fix='None',relax=False,fix_Uu=[],No_fix_Uu=[],k=10,namemodel='UC'):
 
     model      = pyo.ConcreteModel(namemodel)    
     model.G    = pyo.Set(initialize = G)
@@ -302,6 +302,29 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,
         for f in fix_Uu:      
             expr += model.u[f[0]+1,f[1]+1]
         model.cuts.add( expr >= math.ceil( 0.9 * len(fix_Uu)) )    
+                
+        
+    ## ---------------------------- LOCAL BRANCHING CONSTRAINT ------------------------------------------
+    
+    # print("fix_Uu",fix_Uu)
+    # print("No_fix_Uu",No_fix_Uu)
+    
+    ## Define a neighbourhood
+    if(fix == 'LBC'):        
+        for f in fix_Uu: 
+            #model.u[row[0]+1,row[1]+1].fix(row[2]) ## Hard fixing
+            ## Redefinir dominio de variables https://groups.google.com/g/pyomo-forum/c/zMzgOr3qex4?pli=1
+            model.u[f[0]+1,f[1]+1].domain = UnitInterval
+        
+        model.cuts = pyo.ConstraintList()
+        expr = 0
+        for f in fix_Uu:      
+            expr += 1 - model.u[f[0]+1,f[1]+1]
+        for f in No_fix_Uu:      
+            expr +=     model.u[f[0]+1,f[1]+1]
+            
+        model.cuts.add( expr <= k )  
+        # print(expr)
         
     # def Soft_variable_fixing_1(m):
     #     return sum( m.u[g,t] for g in m.G for t in m.T ) >= math.ceil(0.9 * len(fix_Uu))

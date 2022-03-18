@@ -4,7 +4,8 @@
 ## Developers: Uriel Iram Lezama Lope
 ## Purpose: Programa principal de un modelo de UC
 ## Description: Lee una instancia de UCP y la resuelve. 
-## Para correr el programa usar el comando "python3 main.py anjos.json thinkpad"
+## Para correr el programa usar el comando "python3 main.py anjos.json yalma"
+## Desde script test.sh "sh test.sh"
 ## --------------------------------------------------------------------------------
 
 import time
@@ -22,7 +23,8 @@ instancia = 'anjos.json'         # z_milp=9650.0,      z_lp=8328.8,      z_sub=9
 
 
 ruta        = 'instances/'
-ambiente    = 'localPC'
+ambiente    = 'localPC' ## Recordar cambiar este valor a 'yalma' para pruebas en ese servidor.
+
 if ambiente == 'yalma':
     if len(sys.argv) != 3:
         print("!!! Something went wrong, try something like: $python3 main.py uc_45.json yalma")
@@ -41,11 +43,12 @@ G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,Pb,C,mpc,Cs,Tmin,names = r
 
 ## Lista de Parámetros
 ## relax = True si se relaja la solución entera.
-## fix   = 'Soft',''Hard' si se fija la solución entera de manera suave (dominio continuo) o dura (enteras fijadas).
+## fix   = 'Soft', 'Hard', 'LBC' si se fija la solución entera de manera suave (dominio continuo) o dura (enteras fijadas), o se usa Local Branchong Constraint
 ## tee   = True si se quiere ver el log del solver.
 ## lpmethod = 0 ## 0=Automatic; 1,2= Primal and dual simplex; 3=Sifting; 4=Barrier, 5 Concurrent 
 gap       = 0.001
 timelimit = 3000
+k         = 20
 
 
 ## Relax as LP and solve
@@ -60,7 +63,7 @@ print("t_lp = ", round(t_lp,4),"z_lp = ", round(z_lp,1))
 
 
 ## Seleccionamos las variables que serán fijadas.
-fix_Uu = sol_lp.select_fixed_variables_U()
+fix_Uu , No_fix_Uu = sol_lp.select_fixed_variables_U()
 
 
 # HARD FIX solution and solve the sub-MILP.
@@ -81,12 +84,24 @@ sol_soft = Solution(model = model, nameins=instancia, env=ambiente, gap=gap, tim
 z_soft = 0; z_soft = sol_soft.solve_problem() 
 t_soft = time.time() - t_o
 print("t_soft = ", round(t_soft,4),"z_soft = ", round(z_soft,1), "n_fix_Uu = ", len(fix_Uu))
-#util.imprime_sol(model,sol_soft)
 
 
 ## Imprimimos las posibles variables 'u' que podrían no sean enteras.
-sol_soft.print_U_no_int()
+nU_no_int = sol_soft.print_U_no_int()
 
+
+## LOCAL BRANCHING CUTS solution and solve the sub-MILP.
+t_o = time.time() 
+model   = uc_Co.uc(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,Pb,C,Cs,Tmin,fix='LBC',fix_Uu=fix_Uu,No_fix_Uu=No_fix_Uu,k=k,namemodel=instancia[0:4])
+sol_lbc = Solution(model = model, nameins=instancia, env=ambiente, gap=gap, timelimit=timelimit,
+                    tee   = False, tofile = False)
+z_lbc = 0; z_lbc = sol_lbc.solve_problem() 
+t_lbc = time.time() - t_o
+print("t_lbc = ", round(t_lbc,4),"z_lbc = ", round(z_lbc,1), "n_fix_Uu = ", len(fix_Uu))
+#util.imprime_sol(model,sol_lbc)
+
+## Imprimimos las posibles variables 'u' que podrían no sean enteras.
+nU_no_int = sol_lbc.print_U_no_int()
 
 ## Solve as a MILP
 t_o = time.time() 
@@ -99,8 +114,9 @@ print("t_milp = ", round(t_milp,4),"z_milp = ", round(z_milp,1))
 util.imprime_sol(model,sol_milp)
     
 
-## Append a list as new line to an old csv file using as log:  
-row = [localtime,instancia,len(T),len(G),gap,round(z_lp,1),round(z_milp,1),round(z_hard,1),round(z_soft,1),
-                                             round(t_lp,4),round(t_milp,4),round(t_hard,4),round(t_soft,4), 
-                                             round(z_soft-z_milp,1),len(fix_Uu)]
+## Append a list as new line to an old csv file using as log, the first line of the file as shown.
+## 'localtime,instancia,T,G,gap,z_lp,z_milp,z_hard,z_soft,z_lbc,t_lp,t_milp,t_hard,t_soft,t_lbc,gap_soft_milp,n_fixU,nU_no_int,k'
+row = [localtime,instancia,len(T),len(G),gap,round(z_lp,1),round(z_milp,1),round(z_hard,1),round(z_soft,1),round(z_lbc,1),
+                                             round(t_lp,4),round(t_milp,4),round(t_hard,4),round(t_soft,4),round(t_lbc,4),
+                                             round(z_soft-z_milp,1),len(fix_Uu),nU_no_int,k]
 util.append_list_as_row('stat.csv', row)
