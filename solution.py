@@ -143,6 +143,7 @@ class Solution:
     ## En esta función seleccionamos el conjunto de variables que quedarán en uno para ser fijadas posteriormente.
     def select_fixed_variables_U(self):    
         fix_Uu = []
+        No_fix_Uu = []
         UuP = [[0 for x in range(self.tt)] for y in range(self.gg)]
         
         ## Almacena solución entera
@@ -155,6 +156,8 @@ class Solution:
                 ## y evaluar que sean mayores al límite operativo mínimo.
                 if UuP[g][t] >= self.model.Pmin[g+1]:
                     fix_Uu.append([g,t,1])
+                else:
+                    No_fix_Uu.append([g,t,0])
                     
                 ## aquellas unidades que quedan en cero o menos, son fijadas a cero (dio infactible, sorry!).
                 #elif UuP[g][t] <= 0:               
@@ -163,7 +166,7 @@ class Solution:
         # print("UuP=",UuP)
         # print("fix_Uu=",fix_Uu)              
         
-        return fix_Uu
+        return fix_Uu, No_fix_Uu
     
     def print_U_no_int(self):   
         Uu_no_int = []
@@ -173,4 +176,5 @@ class Solution:
             for g in range(self.gg):
                 if self.Uu[g][t] != 1 and self.Uu[g][t] != 0:
                     Uu_no_int.append([g,t,self.Uu[g][t]])
-        print("U_no_int=",Uu_no_int)            
+        print("U_no_int=",Uu_no_int)   
+        return len(Uu_no_int)        
