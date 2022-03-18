@@ -63,7 +63,8 @@ class Solution:
         
         ## Envía el problema de optimización al solver
         result = solver.solve(self.model, tee=self.tee) ## timelimit=10; tee=True (para ver log)
-            
+        #result.write()
+        
         try:
             pyo.assert_optimal_termination(result)
         except Exception as e:
@@ -139,20 +140,23 @@ class Solution:
         return 0
     
     
-    def constructor(self):    
+    ## En esta función seleccionamos el conjunto de variables que quedarán en uno para ser fijadas posteriormente.
+    def select_fixed_variables_U(self):    
         fix_Uu = []
         UuP = [[0 for x in range(self.tt)] for y in range(self.gg)]
         
         ## Almacena solución entera
         for t in range(self.tt):
             for g in range(self.gg):
-                UuP[g][t] = self.P[g][t]*self.Uu[g][t]
+                UuP[g][t] = self.P[g][t] * self.Uu[g][t]
                 
                 ## Aquí se enlistan los valores de 'u' que serán fijados.
-                ## El criterio para fijar es el de Harjunkoski2020 y además...
-                ## aquellas unidades que quedan en cero o menos, son fijadas a cero (esto es nuevo).
+                ## El criterio para fijar es el de Harjunkoski2020 de multiplicar potencia por valores de 'u' 
+                ## y evaluar que sean mayores al límite operativo mínimo.
                 if UuP[g][t] >= self.model.Pmin[g+1]:
                     fix_Uu.append([g,t,1])
+                    
+                ## aquellas unidades que quedan en cero o menos, son fijadas a cero (dio infactible, sorry!).
                 #elif UuP[g][t] <= 0:               
                 #    fix_Uu.append([g,t,0])
                 
@@ -160,3 +164,13 @@ class Solution:
         # print("fix_Uu=",fix_Uu)              
         
         return fix_Uu
+    
+    def print_U_no_int(self):   
+        Uu_no_int = []
+        
+        ## Almacena solución entera
+        for t in range(self.tt):
+            for g in range(self.gg):
+                if self.Uu[g][t] != 1 and self.Uu[g][t] != 0:
+                    Uu_no_int.append([g,t,self.Uu[g][t]])
+        print("U_no_int=",Uu_no_int)            

@@ -34,7 +34,7 @@ def imprime_sol(model,sol):
     V  = dict(zip(model.T, sol.getV()))
     W  = dict(zip(model.T, sol.getW()))
     P  = dict(zip(model.T, sol.getP()))
-    R  = dict(zip(model.T, sol.getR()))
+    R  = dict(zip(model.T, sol.getR()))    
     # print("u",Uu)
     # print("v",V)
     # print("w",W)
