@@ -6,7 +6,7 @@ from   pyomo.util.infeasible import log_infeasible_constraints
 from   pyomo.opt import SolverStatus, TerminationCondition
 
 class Solution:
-    def __init__(self,model,nameins,env,gap=0.001,timelimit=300,tee=False,tofile=False,lpmethod=0,export=False):
+    def __init__(self,model,nameins,env,gap=0.001,timelimit=300,tee=False,tofile=False,lpmethod=0,cutoff=1e+75,export=False):
         self.model     = model
         self.nameins   = nameins      ## name of instance 
         self.env       = env          ## enviroment  
@@ -14,7 +14,9 @@ class Solution:
         self.gap       = gap          ## relative gap in CPLEX
         self.timelimit = timelimit    ## max time in CPLEX
         self.tofile    = tofile       ## True = send to csv file the solution value of U,V,W,P,R 
-        self.lpmethod  = lpmethod     ## 0=Automatic; 1,2= Primal and dual simplex; 3=Sifting; 4=Barrier, 5 Concurrent (Dual,Barrier, and Primal in opportunistic parallel mode; Dual and Barrier in deterministic parallel mode)
+        self.lpmethod  = lpmethod     ## 0=Automatic; 1,2= Primal and dual simplex; 3=Sifting; 4=Barrier, 5=Concurrent (Dual,Barrier, and Primal in opportunistic parallel mode; Dual and Barrier in deterministic parallel mode)
+        self.cutoff    = cutoff       ## Agrega una cota superior factible, apara yudar a descartar nodos del árbol del B&B
+        
         self.export    = export       ## True si se exporta el modelo a formato LP y MPS
         self.gg        = len(model.G)
         self.tt        = len(model.T)
@@ -41,11 +43,16 @@ class Solution:
         if self.env == "yalma": 
             solver = pyo.SolverFactory('cplex', executable='/home/uriel/cplex1210/cplex/bin/x86-64_linux/cplex')
         solver.options['mip tolerances mipgap'] = self.gap  
-        solver.options['timelimit'] = self.timelimit
-        #solver.options['mip tolerances absmipgap'] = 200
-
+        solver.options['timelimit'] = self.timelimit        
+        
+        #https://www.ibm.com/docs/en/icos/20.1.0?topic=parameters-upper-cutoff
+        if self.cutoff != 1e+75:
+            solver.options['mip tolerances uppercutoff'] = self.cutoff
+        
         #https://www.ibm.com/docs/en/icos/12.8.0.0?topic=parameters-algorithm-continuous-linear-problems
         solver.options['lpmethod'] = self.lpmethod 
+        
+        #solver.options['mip tolerances absmipgap'] = 200
         
         ## para mostrar una solución en un formato propio
         ## https://developers.google.com/optimization/routing/cvrp
