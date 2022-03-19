@@ -18,12 +18,13 @@ import math
 import pyomo.environ as pyo
 from   pyomo.environ import *
 
-def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,
-       Pb,C,Cs,Tmin,fix='None',relax=False,fixed_Uu=[],No_fixed_Uu=[],k=10,namemodel='UC'):
+def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,Pb,C,Cs,Tmin,fix='None',
+       fixed_Uu=[],No_fixed_Uu=[],lower_Pmin=[],percent_lbc = 90,k=20,nameins='model'):
     
-    can_move = 0
+    ## Variables que pueden moverse en el sub-milp
+    n_kernel = 0
 
-    model      = pyo.ConcreteModel(namemodel)    
+    model      = pyo.ConcreteModel(nameins)    
     model.G    = pyo.Set(initialize = G)
     model.T    = pyo.Set(initialize = T)  
     model.L    = pyo.Set(model.G, initialize = L) 
@@ -70,29 +71,30 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,
         return ((g,s) for g in m.G for s in range(1,len(m.S[g])+1))
     model.indexGSg = Set(initialize=index_G_Sg, dimen=2)
     
-    if(relax == False): #Si se desea relajar las variables enteras como continuas
-        model.u     = pyo.Var( model.G , model.T , within=Binary)
-        model.v     = pyo.Var( model.G , model.T , within=Binary)
-        model.w     = pyo.Var( model.G , model.T , within=Binary)
-        model.delta = pyo.Var( model.indexGTSg,    within=Binary) 
+    if(fix == 'relax'): #Si se desea relajar las variables enteras como continuas
+        model.u     = pyo.Var( model.G , model.T , within = UnitInterval)   ## UnitInterval: floating point values in the interval [0,1]
+        model.v     = pyo.Var( model.G , model.T , within = UnitInterval)   
+        model.w     = pyo.Var( model.G , model.T , within = UnitInterval)   
+        model.delta = pyo.Var( model.indexGTSg,    within = UnitInterval)   
     else:        
-        model.u     = pyo.Var( model.G , model.T , within=UnitInterval)   ## bounds=(0.0,1.0)
-        model.v     = pyo.Var( model.G , model.T , within=UnitInterval)   ## UnitInterval == [0,1]
-        model.w     = pyo.Var( model.G , model.T , within=UnitInterval)   ## within = UnitInterval 
-        model.delta = pyo.Var( model.indexGTSg,    within=UnitInterval)   
-    model.p         = pyo.Var( model.G , model.T , bounds=(0.0,99999.0))
-    model.pb        = pyo.Var( model.G , model.T , bounds=(0.0,99999.0))
-    model.pbc       = pyo.Var( model.G , model.T , bounds=(0.0,99999.0))  ## pbarra' (capacidad máxima de salida con reserva arriba del m.Pmin)
-    model.pc        = pyo.Var( model.G , model.T , bounds=(0.0,99999.0))  ## p' (potencia de salida arriba del m.Pmin)
-    model.r         = pyo.Var( model.G , model.T , bounds=(0.0,99999.0))  ## reserve
-    model.cp        = pyo.Var( model.G , model.T , bounds=(0.0,9999999.0))
-    model.cSU       = pyo.Var( model.G , model.T , bounds=(0.0,9999999.0))
-    model.cSD       = pyo.Var( model.G , model.T , bounds=(0.0,9999999.0))
-    model.snplus    = pyo.Var( model.T ,           bounds=(0.0,9999999.0)) ##surplus demand
-    model.snminus   = pyo.Var( model.T ,           bounds=(0.0,9999999.0)) ##surplus demand
-    model.sn        = pyo.Var( model.T ,           bounds=(0.0,9999999.0)) ##surplus demand
-    model.sR        = pyo.Var( model.T ,           bounds=(0.0,9999999.0)) ##surplus reserve         
-    model.pl        = pyo.Var(model.indexGTLg, bounds=(0.0,99999.0)) ## within=UnitInterval UnitInterval == [0,1]   
+        model.u     = pyo.Var( model.G , model.T , within = Binary)
+        model.v     = pyo.Var( model.G , model.T , within = Binary)
+        model.w     = pyo.Var( model.G , model.T , within = Binary)
+        model.delta = pyo.Var( model.indexGTSg,    within = Binary) 
+
+    model.p         = pyo.Var( model.G , model.T , bounds = (0.0,99999.0))
+    model.pb        = pyo.Var( model.G , model.T , bounds = (0.0,99999.0))
+    model.pbc       = pyo.Var( model.G , model.T , bounds = (0.0,99999.0))  ## pbarra' (capacidad máxima de salida con reserva arriba del m.Pmin)
+    model.pc        = pyo.Var( model.G , model.T , bounds = (0.0,99999.0))  ## p' (potencia de salida arriba del m.Pmin)
+    model.r         = pyo.Var( model.G , model.T , bounds = (0.0,99999.0))  ## reserve in general without specific timing
+    model.cp        = pyo.Var( model.G , model.T , bounds = (0.0,9999999.0))
+    model.cSU       = pyo.Var( model.G , model.T , bounds = (0.0,9999999.0))
+    model.cSD       = pyo.Var( model.G , model.T , bounds = (0.0,9999999.0))
+    model.snplus    = pyo.Var( model.T ,           bounds = (0.0,9999999.0)) ##surplus demand
+    model.snminus   = pyo.Var( model.T ,           bounds = (0.0,9999999.0)) ##surplus demand
+    model.sn        = pyo.Var( model.T ,           bounds = (0.0,9999999.0)) ##surplus demand
+    model.sR        = pyo.Var( model.T ,           bounds = (0.0,9999999.0)) ##surplus reserve         
+    model.pl        = pyo.Var(model.indexGTLg,     bounds = (0.0,99999.0)) ## within=UnitInterval UnitInterval == [0,1]   
     
     model.Pb   = pyo.Param(model.indexGLg, initialize = Pb,   within=Any)
     model.C    = pyo.Param(model.indexGLg, initialize = C,    within=Any)
@@ -108,7 +110,6 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,
     ## model.u[3,1].fix(0)
     ## model.u.fix(0)
     
-
     def obj_rule(m): 
     #   return sum(m.cp[g,t] + m.cSU[g,t] * m.v[g,t] + m.mpc[g] * m.u[g,t] for g in m.G for t in m.T) \ #Costo sin piecewise
         return sum(m.cp[g,t] + m.cSU[g,t] * 1        + m.mpc[g] * m.u[g,t] for g in m.G for t in m.T) \
@@ -116,6 +117,7 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,
              + sum(m.sn[t]   * CRP                                         for t in m.T) 
     #        + sum(m.cU[g] * m.v[g,t] + m.c[g] * m.p[g,t] for g in m.G for t in m.T) 
     model.obj = pyo.Objective(rule = obj_rule)
+
 
     ## -----------------------------GARVER------------------------------------------  
 
@@ -125,6 +127,7 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,
         else:
             return m.u[g,t] - m.u[g,t-1] == m.v[g,t] - m.w[g,t]
     model.logical = pyo.Constraint(model.G,model.T,rule = logical_rule)
+    
     
     ## ----------------------------POWER EQUALS------------------------------------  
 
@@ -152,6 +155,7 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,
         return m.pc[g,t] <= m.pbc[g,t]
     model.pow_igual6 = pyo.Constraint(model.G,model.T, rule = pow_igual_rule6)    
 
+
     ## ------------------------------START-UP AND SHUT-DOWN RAMPS---------------------------------   
 
     def sdsu_ramp_rule20(m,g,t):          ## eq.(20) 
@@ -176,6 +180,7 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,
             return pyo.Constraint.Skip    
     model.sd_ramp_rule21b = pyo.Constraint(model.G,model.T, rule = sd_ramp_rule21b)
     
+    
     ## -------------------------------LIMITS & RAMPS------------------------------------------   
         
     def up_ramp_rule35(m,g,t):          ## ramp-up eq.(35)
@@ -191,6 +196,7 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,
         else:
             return m.pc[g,t-1] - m.pc[g,t] <= (m.SD[g]-m.Pmin[g]-m.RD[g])*m.w[g,t] + m.RD[g]*m.u[g,t-1]
     model.down_ramp_rule36 = pyo.Constraint(model.G,model.T, rule = down_ramp_rule36)
+
 
     ## -------------------------------DEMAND & RESERVE----------------------------------------   
  
@@ -212,6 +218,7 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,
         # return sum( m.r[g,t] for g in m.G) + m.sR[t] >= m.R[t] 
         return sum( m.r[g,t] for g in m.G) + 0 >= m.R[t] 
     model.demand_reserve = pyo.Constraint(model.T, rule = demand_reserve)
+
 
     ## --------------------------------MINIMUM UP/DOWN TIME---------------------------------------
 
@@ -245,6 +252,7 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,
             return pyo.Constraint.Skip
     model.mut2 = pyo.Constraint(model.G, rule = mut_rule2)
     
+    
     ## ----------------------------PIECEWISE OFFER-------------------------------------------   
     
     def Piecewise_offer42(m,g,t,l):  ## piecewise offer eq.(42)
@@ -261,6 +269,7 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,
     def Piecewise_offer44(m,g,t):  ## piecewise offer eq.(44)
         return sum(m.C[g,l] * m.pl[g,t,l] for l in range(1,value(len(m.L[g]))+1)) == m.cp[g,t]                                       
     model.Piecewise_offer44 = pyo.Constraint(model.G,model.T, rule = Piecewise_offer44)
+    
     
     ## ----------------------------VARIABLE START-UP COST-------------------------------------------     
     
@@ -285,48 +294,59 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,
     ## Si se desea usar la solución fix y calcular un sub-MILP.
     if(fix == 'Hard'): 
         for f in fixed_Uu: 
-            model.u[f[0]+1,f[1]+1].fix(f[2]) ## Hard fixing            
+            model.u[f[0]+1,f[1]+1].fix(1) ## Hard fixing            
+
 
     ## ---------------------------- SOFT VARIABLE FIXING ------------------------------------------
     
     ## Si se desea usar la solución fix y calcular un sub-MILP.
     if(fix == 'Soft'): 
         for f in fixed_Uu: 
-            model.u[f[0]+1,f[1]+1].domain = UnitInterval
-    # print(model.u.display()) ##Show domain variables to check the change.
+            model.u[f[0]+1,f[1]+1].domain = UnitInterval  ## Soft-fixing I
+        #print(model.u.display()) ##Show domain variables to check the change to UnitInterval.
               
         ## Adding a new restriction.  
         ## https://pyomo.readthedocs.io/en/stable/working_models.html
+        ## Soft-fixing II
         model.cuts = pyo.ConstraintList()
-        expr = 0
+        expr       = 0
+        n_kernel   = math.ceil( (percent_lbc/100) * len(fixed_Uu))
+        
         for f in fixed_Uu:      
             expr += model.u[f[0]+1,f[1]+1]
-        model.cuts.add( expr >= math.ceil( 0.9 * len(fixed_Uu)) )   
+        model.cuts.add( expr >= n_kernel )   
         
-        can_move = math.ceil( 0.9 * len(fixed_Uu))
-        print('Number of variables that can move:',can_move)
+        print('Soft: number of variables Uu that must be into the Kernel (',percent_lbc,'%): ', n_kernel)
                 
         
     ## ---------------------------- LOCAL BRANCHING CONSTRAINT ------------------------------------------
     
-    # print("fixed_Uu",fixed_Uu)
+    # print("fixed_Uu",fixed_Uu)   
     # print("No_fixed_Uu",No_fixed_Uu)
     
     ## Define a neighbourhood with LBC.
-    if(fix == 'LBC'):        
+    if(fix == 'LBC'):
+                
         for f in fixed_Uu: 
-            model.u[f[0]+1,f[1]+1].domain = UnitInterval  ## Soft fixing
-            #model.u[f[0]+1,f[1]+1].fix(f[2])             ## Hard fixing
+            model.u[f[0]+1,f[1]+1].domain = UnitInterval  ## Soft-fixing I
             
-        ## Soft fixing
+        for f in lower_Pmin: 
+            model.u[f[0]+1,f[1]+1].domain = UnitInterval  ## Soft-fixing I
+            
+        ## Soft fixing III
         model.cuts = pyo.ConstraintList()
-        expr = 0
+        expr       = 0
+        n_kernel   = math.ceil((percent_lbc/100) * (len(fixed_Uu) + 0.0*len(lower_Pmin)))   
+         
         for f in fixed_Uu:      
             expr += model.u[f[0]+1,f[1]+1]
-        model.cuts.add( expr >= math.ceil( 0.9 * len(fixed_Uu)) ) 
+            
+        for f in lower_Pmin:      
+            expr += model.u[f[0]+1,f[1]+1]            
+                
+        model.cuts.add( expr >= n_kernel ) 
            
-        can_move = math.ceil( 0.9 * len(fixed_Uu))
-        print('Number of variables that can move:',can_move)
+        print('LBC: number of variables Uu that must be into the Kernel (',percent_lbc,'%): ', n_kernel)
         
         # model.cuts = pyo.ConstraintList()
         expr = 0
@@ -337,11 +357,6 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,
             
         model.cuts.add( expr <= k )  
         # print(expr)
-        
-    # def Soft_variable_fixing_1(m):
-    #     return sum( m.u[g,t] for g in m.G for t in m.T ) >= math.ceil(0.9 * len(fixed_Uu))
-    # model.local = pyo.Constraint(rule = Soft_variable_fixing_1)
-    
-    
-    ## Termina y regresa modelo MILP
-    return model , can_move
+                
+    ## Termina y regresa el modelo MILP
+    return model , n_kernel
