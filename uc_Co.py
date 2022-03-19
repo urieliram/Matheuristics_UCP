@@ -293,7 +293,7 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,
             model.u[f[0]+1,f[1]+1].domain = UnitInterval
     # print(model.u.display()) ##Show domain variables to check the change.
               
-        ## Adding a new restriction (soft variable fixing).  
+        ## Adding a new restriction.  
         ## https://pyomo.readthedocs.io/en/stable/working_models.html
         model.cuts = pyo.ConstraintList()
         expr = 0
@@ -310,8 +310,8 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,
     ## Define a neighbourhood with LBC.
     if(fix == 'LBC'):        
         for f in fixed_Uu: 
-            #model.u[row[0]+1,row[1]+1].fix(row[2])       ## Hard fixing
             model.u[f[0]+1,f[1]+1].domain = UnitInterval  ## Soft fixing
+            #model.u[f[0]+1,f[1]+1].fix(f[2])             ## Hard fixing
             
         ## Soft fixing
         model.cuts = pyo.ConstraintList()
@@ -319,7 +319,6 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,
         for f in fixed_Uu:      
             expr += model.u[f[0]+1,f[1]+1]
         model.cuts.add( expr >= math.ceil( 0.9 * len(fixed_Uu)) )    
-            
         
         # model.cuts = pyo.ConstraintList()
         expr = 0

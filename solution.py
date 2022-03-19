@@ -6,7 +6,7 @@ from   pyomo.util.infeasible import log_infeasible_constraints
 from   pyomo.opt import SolverStatus, TerminationCondition
 
 class Solution:
-    def __init__(self,model,nameins,env,gap=0.001,timelimit=300,tee=False,tofile=False,lpmethod=0,cutoff=1e+75,export=False):
+    def __init__(self,model,nameins,env,gap=0.001,timelimit=300,tee=False,tofile=False,lpmethod=0,cutoff=1e+75,exportLP=False):
         self.model     = model
         self.nameins   = nameins      ## name of instance 
         self.env       = env          ## enviroment  
@@ -17,7 +17,7 @@ class Solution:
         self.lpmethod  = lpmethod     ## 0=Automatic; 1,2= Primal and dual simplex; 3=Sifting; 4=Barrier, 5=Concurrent (Dual,Barrier, and Primal in opportunistic parallel mode; Dual and Barrier in deterministic parallel mode)
         self.cutoff    = cutoff       ## Agrega una cota superior factible, apara yudar a descartar nodos del árbol del B&B
         
-        self.export    = export       ## True si se exporta el modelo a formato LP y MPS
+        self.exportLP    = exportLP       ## True si se exporta el modelo a formato LP y MPS
         self.gg        = len(model.G)
         self.tt        = len(model.T)
        
@@ -61,7 +61,7 @@ class Solution:
             
             
         ## write LP file
-        if self.export == True:
+        if self.exportLP == True:
             self.model.write()             ## To write the model into a file using .nl format
             filename = os.path.join(os.path.dirname(__file__), self.model.name+'.lp')
             self.model.write(filename, io_options={'symbolic_solver_labels': True})
@@ -152,7 +152,7 @@ class Solution:
         fix_Uu = []
         No_fix_Uu = []
         UuP = [[0 for x in range(self.tt)] for y in range(self.gg)]
-        
+        abajo_Pmin = 0
         ## Almacena solución entera
         for t in range(self.tt):
             for g in range(self.gg):
@@ -164,6 +164,10 @@ class Solution:
                 if UuP[g][t] >= self.model.Pmin[g+1]:
                     fix_Uu.append([g,t,1])
                 else:
+                    ## Vamos a contar los que quedaron abajo del minimo pero diferentes de cero,
+                    ## este valor podría ser usado para definir el parámetro k en el LBC
+                    if (UuP[g][t] != 0):
+                        abajo_Pmin = abajo_Pmin + 1
                     No_fix_Uu.append([g,t,0])
                     
                 ## aquellas unidades que quedan en cero o menos, son fijadas a cero (dio infactible, sorry!).
@@ -173,7 +177,7 @@ class Solution:
         # print("UuP=",UuP)
         # print("fix_Uu=",fix_Uu)              
         
-        return fix_Uu, No_fix_Uu
+        return fix_Uu, No_fix_Uu, abajo_Pmin
     
     def print_U_no_int(self):   
         Uu_no_int = []
