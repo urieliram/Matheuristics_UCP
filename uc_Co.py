@@ -20,6 +20,8 @@ from   pyomo.environ import *
 
 def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,
        Pb,C,Cs,Tmin,fix='None',relax=False,fixed_Uu=[],No_fixed_Uu=[],k=10,namemodel='UC'):
+    
+    can_move = 0
 
     model      = pyo.ConcreteModel(namemodel)    
     model.G    = pyo.Set(initialize = G)
@@ -299,7 +301,10 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,
         expr = 0
         for f in fixed_Uu:      
             expr += model.u[f[0]+1,f[1]+1]
-        model.cuts.add( expr >= math.ceil( 0.9 * len(fixed_Uu)) )    
+        model.cuts.add( expr >= math.ceil( 0.9 * len(fixed_Uu)) )   
+        
+        can_move = math.ceil( 0.9 * len(fixed_Uu))
+        print('Number of variables that can move:',can_move)
                 
         
     ## ---------------------------- LOCAL BRANCHING CONSTRAINT ------------------------------------------
@@ -318,7 +323,10 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,
         expr = 0
         for f in fixed_Uu:      
             expr += model.u[f[0]+1,f[1]+1]
-        model.cuts.add( expr >= math.ceil( 0.9 * len(fixed_Uu)) )    
+        model.cuts.add( expr >= math.ceil( 0.9 * len(fixed_Uu)) ) 
+           
+        can_move = math.ceil( 0.9 * len(fixed_Uu))
+        print('Number of variables that can move:',can_move)
         
         # model.cuts = pyo.ConstraintList()
         expr = 0
@@ -336,4 +344,4 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,
     
     
     ## Termina y regresa modelo MILP
-    return model
+    return model , can_move
