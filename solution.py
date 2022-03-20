@@ -201,4 +201,11 @@ class Solution:
                     aux2 = aux2 + 1
                     
         print("Number of U_no_int=", Uu_no_int,", n_Uu_no_int=",aux," , n_Uu_1_0=",aux2)   
-        return len(Uu_no_int), aux, aux2        
+        return len(Uu_no_int), aux, aux2
+    
+        
+        
+        return t_lp, t_lp, z_lp, z_lp 
+
+            
+        
