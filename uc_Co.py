@@ -21,8 +21,8 @@ from   pyomo.environ import *
 def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,Pb,C,Cs,Tmin,fix='None',
        fixed_Uu=[],No_fixed_Uu=[],lower_Pmin=[],percent_lbc = 90,k=20,nameins='model'):
     
-    ## Variables que pueden moverse en el sub-milp
-    n_kernel = 0
+    ## Número de variables que pueden moverse en el Sub-milp
+    n_subset   = 0
 
     model      = pyo.ConcreteModel(nameins)    
     model.G    = pyo.Set(initialize = G)
@@ -30,23 +30,23 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,Pb,C,Cs,Tmin,fi
     model.L    = pyo.Set(model.G, initialize = L) 
     model.S    = pyo.Set(model.G, initialize = S) 
     
-    model.Pmax = pyo.Param(model.G , initialize = Pmax , within=Any)
-    model.Pmin = pyo.Param(model.G , initialize = Pmin , within=Any)
-    model.UT   = pyo.Param(model.G , initialize = UT   , within=Any)
-    model.DT   = pyo.Param(model.G , initialize = DT   , within=Any)
-    model.De   = pyo.Param(model.T , initialize = De   , within=Any)
-    model.R    = pyo.Param(model.T , initialize = R    , within=Any)
-    model.u_0  = pyo.Param(model.G , initialize = u_0  , within=Any)
-    model.D    = pyo.Param(model.G , initialize = D    , within=Any)
-    model.U    = pyo.Param(model.G , initialize = U    , within=Any)
-    model.SU   = pyo.Param(model.G , initialize = SU   , within=Any)
-    model.SD   = pyo.Param(model.G , initialize = SD   , within=Any)
-    model.RU   = pyo.Param(model.G , initialize = RU   , within=Any)
-    model.RD   = pyo.Param(model.G , initialize = RD   , within=Any)
-    model.pc_0 = pyo.Param(model.G , initialize = pc_0 , within=Any) 
-    model.mpc  = pyo.Param(model.G , initialize = mpc  , within=Any)
-    # model.c    = pyo.Param(model.G , initialize = {1:5,2:15,3:30}    ,within=Any)
-    # model.cU   = pyo.Param(model.G , initialize = {1:800,2:500,3:250},within=Any)
+    model.Pmax = pyo.Param(model.G , initialize = Pmax , within = Any)
+    model.Pmin = pyo.Param(model.G , initialize = Pmin , within = Any)
+    model.UT   = pyo.Param(model.G , initialize = UT   , within = Any)
+    model.DT   = pyo.Param(model.G , initialize = DT   , within = Any)
+    model.De   = pyo.Param(model.T , initialize = De   , within = Any)
+    model.R    = pyo.Param(model.T , initialize = R    , within = Any)
+    model.u_0  = pyo.Param(model.G , initialize = u_0  , within = Any)
+    model.D    = pyo.Param(model.G , initialize = D    , within = Any)
+    model.U    = pyo.Param(model.G , initialize = U    , within = Any)
+    model.SU   = pyo.Param(model.G , initialize = SU   , within = Any)
+    model.SD   = pyo.Param(model.G , initialize = SD   , within = Any)
+    model.RU   = pyo.Param(model.G , initialize = RU   , within = Any)
+    model.RD   = pyo.Param(model.G , initialize = RD   , within = Any)
+    model.pc_0 = pyo.Param(model.G , initialize = pc_0 , within = Any) 
+    model.mpc  = pyo.Param(model.G , initialize = mpc  , within = Any)
+    # model.c    = pyo.Param(model.G , initialize = {1:5,2:15,3:30}    ,within = Any)
+    # model.cU   = pyo.Param(model.G , initialize = {1:800,2:500,3:250},within = Any)
        
     CLP = 999999999999.0 #penalty cost for failing to meet or exceeding load ($/megawatt-hour (MWh)).
     CRP = 999999999999.0 #penalty cost for failing to meet reserve requirement
@@ -96,10 +96,10 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,Pb,C,Cs,Tmin,fi
     model.sR        = pyo.Var( model.T ,           bounds = (0.0,9999999.0)) ##surplus reserve         
     model.pl        = pyo.Var(model.indexGTLg,     bounds = (0.0,99999.0)) ## within=UnitInterval UnitInterval == [0,1]   
     
-    model.Pb   = pyo.Param(model.indexGLg, initialize = Pb,   within=Any)
-    model.C    = pyo.Param(model.indexGLg, initialize = C,    within=Any)
-    model.Cs   = pyo.Param(model.indexGSg, initialize = Cs,   within=Any)
-    model.Tmin = pyo.Param(model.indexGSg, initialize = Tmin, within=Any)
+    model.Pb   = pyo.Param(model.indexGLg, initialize = Pb,   within = Any)
+    model.C    = pyo.Param(model.indexGLg, initialize = C,    within = Any)
+    model.Cs   = pyo.Param(model.indexGSg, initialize = Cs,   within = Any)
+    model.Tmin = pyo.Param(model.indexGSg, initialize = Tmin, within = Any)
     
     ## model.mut2.pprint()        ## For entire Constraint List
     ## print(model.mut2[1].expr)  ## For only one index of Constraint List
@@ -310,43 +310,45 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,Pb,C,Cs,Tmin,fi
         ## Soft-fixing II
         model.cuts = pyo.ConstraintList()
         expr       = 0
-        n_kernel   = math.ceil( (percent_lbc/100) * len(fixed_Uu))
+        n_subset   = math.ceil( (percent_lbc/100) * len(fixed_Uu))
         
         for f in fixed_Uu:      
             expr += model.u[f[0]+1,f[1]+1]
-        model.cuts.add( expr >= n_kernel )   
+        model.cuts.add( expr >= n_subset )   
         
-        print('Soft: number of variables Uu that must be into the Kernel (',percent_lbc,'%): ', n_kernel)
+        print('Soft: number of variables Uu that must be into the n_subset (',percent_lbc,'%): ', n_subset)
+        print('Soft: number of variables Uu that must be out  the n_subset (',100-percent_lbc,'%): ', len(fixed_Uu)-n_subset)
                 
         
     ## ---------------------------- LOCAL BRANCHING CONSTRAINT ------------------------------------------
-    
-    # print("fixed_Uu",fixed_Uu)   
-    # print("No_fixed_Uu",No_fixed_Uu)
     
     ## Define a neighbourhood with LBC.
     if(fix == 'LBC'):
                 
         for f in fixed_Uu: 
-            model.u[f[0]+1,f[1]+1].domain = UnitInterval  ## Soft-fixing I
-            
-        for f in lower_Pmin: 
-            model.u[f[0]+1,f[1]+1].domain = UnitInterval  ## Soft-fixing I
+            model.u[f[0]+1,f[1]+1].domain = UnitInterval ## Soft-fixing I
+        
+        # \todo{EVALUAR SI NOS CONVIENE O NO RELAJAR LOS INTENTOS DE ASIGNACIÓN} ********************
+        # for f in lower_Pmin: 
+        #     model.u[f[0]+1,f[1]+1].domain = UnitInterval ## Soft-fixing I
             
         ## Soft fixing III
         model.cuts = pyo.ConstraintList()
-        expr       = 0
-        n_kernel   = math.ceil((percent_lbc/100) * (len(fixed_Uu) + 0.0*len(lower_Pmin)))   
+        expr       = 0 
+        n_subset   = math.ceil((percent_lbc/100) * len(fixed_Uu)) 
+        #n_subset  = math.ceil((percent_lbc/100) * (len(fixed_Uu) + 0.0*len(lower_Pmin)))  
          
         for f in fixed_Uu:      
             expr += model.u[f[0]+1,f[1]+1]
             
+        # \todo{EVALUAR SI NOS CONVIENE O NO INCLUIR LOS INTENTOS DE ASIGNACIÓN}
         for f in lower_Pmin:      
             expr += model.u[f[0]+1,f[1]+1]            
                 
-        model.cuts.add( expr >= n_kernel ) 
+        model.cuts.add( expr >= n_subset ) 
            
-        print('LBC: number of variables Uu that must be into the Kernel (',percent_lbc,'%): ', n_kernel)
+        print('LBC: number of variables Uu that must be into the n_subset (',percent_lbc,'%): ', n_subset)
+        print('LBC: number of variables Uu that must be out  the n_subset  (',100-percent_lbc,'%): ', len(fixed_Uu)-n_subset)
         
         # model.cuts = pyo.ConstraintList()
         expr = 0
@@ -359,4 +361,4 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,Pb,C,Cs,Tmin,fi
         # print(expr)
                 
     ## Termina y regresa el modelo MILP
-    return model , n_kernel
+    return model , n_subset
