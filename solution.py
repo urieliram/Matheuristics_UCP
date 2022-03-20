@@ -4,6 +4,7 @@ import pyomo.environ as pyo
 import util
 from   pyomo.util.infeasible import log_infeasible_constraints
 from   pyomo.opt import SolverStatus, TerminationCondition
+import os
 
 class Solution:
     def __init__(self,model,env,nameins='model',gap=0.001,timelimit=300,tee=False,tofiles=False,lpmethod=0,
@@ -55,6 +56,9 @@ class Solution:
         solver.options['lpmethod'] = self.lpmethod 
         
         #solver.options['mip tolerances absmipgap'] = 200
+        
+        ## Boosting Pyomo
+        solver.options['Threads'] = int((os.cpu_count() + os.cpu_count())/2)
         
         ## para mostrar una solución en un formato propio
         ## https://developers.google.com/optimization/routing/cvrp
@@ -168,18 +172,16 @@ class Solution:
                 if UuP[g][t] >= self.model.Pmin[g+1]:
                     fixed_Uu.append([g,t,1])
                 else:
-                    ## Vamos a contar los que quedaron abajo del minimo pero diferentes de cero,
-                    ## este valor podría ser usado para definir el parámetro k en el LBC
+                    ## Vamos a guardar las variables que quedaron abajo del minimo pero diferentes de cero,
+                    ## podriamos decir que este grupo de variables son intentos de asignación.
+                    ## Este valor puede ser usado para definir el parámetro k en el LBC.                    
                     if (UuP[g][t] != 0):
                         lower_Pmin.append([g,t,1])
                     No_fixed_Uu.append([g,t,0])
                     
-                ## aquellas unidades que quedan en cero o menos, son fijadas a cero (INTENTO INFACTIBLE... sorry!).
+                ## aquellas unidades que quedan en cero o menos, son fijadas a cero, INTENTO INFACTIBLE... sorry :-(.
                 #elif UuP[g][t] <= 0:               
-                #    fix_Uu.append([g,t,0])
-                
-        # print("UuP=",UuP)
-        # print("fix_Uu=",fix_Uu)              
+                #    fix_Uu.append([g,t,0])                
         
         return fixed_Uu, No_fixed_Uu, lower_Pmin
     
