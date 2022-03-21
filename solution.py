@@ -40,32 +40,29 @@ class Solution:
    
     def solve_problem(self):  
         ## Create the solver interface and solve the model
-        # https://www.ibm.com/docs/en/icos/12.8.0.0?topic=parameters-relative-mip-gap-tolerance
-        try:
+        ## https://www.ibm.com/docs/en/icos/12.8.0.0?topic=parameters-relative-mip-gap-tolerance
+        
+        existe = os.path.exists(self.executable)        
+        print(self.executable,existe)        
+        if existe:
+            solver = pyo.SolverFactory('cplex',executable=self.executable) ## executable='/home/uriel/cplex1210/cplex/bin/x86-64_linux/cplex'
+        else:
             solver = pyo.SolverFactory('cplex')
-        except:
-            solver = pyo.SolverFactory('cplex', executable=self.executable,)#validate=False
-            
         # if self.env == "localPC":
         #     solver = pyo.SolverFactory('cplex')
         # if self.env == "yalma": 
-        #     solver = pyo.SolverFactory('cplex', executable=self.executable)
-            #solver = pyo.SolverFactory('cplex', executable='/home/uriel/cplex1210/cplex/bin/x86-64_linux/cplex')
-        solver.options['mip tolerances mipgap'] = self.gap  
-        solver.options['timelimit'] = self.timelimit        
-        
-        #https://www.ibm.com/docs/en/icos/20.1.0?topic=parameters-upper-cutoff
+        #     solver = pyo.SolverFactory('cplex',executable=self.executable) ## executable='/home/uriel/cplex1210/cplex/bin/x86-64_linux/cplex'
+                 
+        ## https://www.ibm.com/docs/en/icos/20.1.0?topic=parameters-upper-cutoff
         if self.cutoff != 1e+75:
             solver.options['mip tolerances uppercutoff'] = self.cutoff
         
-        #https://www.ibm.com/docs/en/icos/12.8.0.0?topic=parameters-algorithm-continuous-linear-problems
-        solver.options['lpmethod'] = self.lpmethod 
-        
-        #solver.options['mip tolerances absmipgap'] = 200
-        
-        ## Boosting Pyomo
-        #solver.options['Threads'] = int((os.cpu_count() + os.cpu_count())/2)
-        
+        ## https://www.ibm.com/docs/en/icos/12.8.0.0?topic=parameters-algorithm-continuous-linear-problems
+        solver.options['lpmethod'                  ] = self.lpmethod         
+        solver.options['mip tolerances mipgap'     ] = self.gap  
+        solver.options['timelimit'                 ] = self.timelimit       
+        #solver.options['mip tolerances absmipgap' ] = 200
+                
         ## para mostrar una solución en un formato propio
         ## https://developers.google.com/optimization/routing/cvrp
         ## para editar un LP en pyomo
@@ -81,7 +78,7 @@ class Solution:
             #print(solver.ExportModelAsLpFormat(False).replace('\\', '').replace(',_', ','), sep='\n')
         
         ## Envía el problema de optimización al solver
-        result = solver.solve(self.model, tee=self.tee) ## timelimit=10; tee=True (para ver log)
+        result = solver.solve(self.model, tee=self.tee)
         #result.write()
         
         try:
@@ -94,9 +91,6 @@ class Solution:
             file = open(self.nameins + '.dat', 'w')
             file.write('z: %s \n' % (pyo.value(self.model.obj)))
             file.write('g, t,\t u,\t v,\t w, \t p \n')       
-
-            #for g in range(0, len(G)):
-            #    file.write('%s, %s, \t %s \n' % (int(g), 0, u_0[g] ))
 
             for t in range(0, self.tt):
                 for g in range(0, self.gg):
@@ -208,10 +202,5 @@ class Solution:
                     
         print("Number of U_no_int=", Uu_no_int,", n_Uu_no_int=",aux," , n_Uu_1_0=",aux2)   
         return len(Uu_no_int), aux, aux2
-    
-        
-        
-        return t_lp, t_lp, z_lp, z_lp 
-
             
         

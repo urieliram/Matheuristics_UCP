@@ -58,7 +58,7 @@ def resultados_lp_milp(instance,ambiente,gap,timelimit):
         
     return precargado, z_milp, z_hard, t_milp, t_hard
 
-def config():
+def config_env():
     #ambiente='localPC',ruta='instances/',executable='/home/uriel/cplex1210/cplex/bin/x86-64_linux/cplex3'
     df = pd.read_csv('config')    
     if len(df.index) == 1:
