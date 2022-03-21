@@ -15,11 +15,11 @@ import util
 import reading
 from   solution import Solution
 
-instancia = 'archivox.json'      
-instancia = 'uc_2.json'         # !!! Instancia donde aparentemente z_lbc es menor que z_milp
+instancia = 'archivox.json'         
+instancia = 'uc_1.json'     
 instancia = 'anjos.json'         
 
-ambiente , ruta , executable = util.config()
+ambiente, ruta, executable, timelimit, gap = util.config()
 
 if ambiente == 'yalma':
     if len(sys.argv) != 3:
@@ -48,8 +48,6 @@ G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,Pb,C,mpc,Cs,Tmin,names = r
 ##          ...'relax' relax the problem as LP and solve it
 ## tee      =  True si se quiere ver el log del solver.
 ## lpmethod =  0 : 0=Automatic; 1,2= Primal and dual simplex; 3=Sifting; 4=Barrier, 5=Concurrent 
-gap       = 0.001
-timelimit = 300
 
 ## Si ya tenemos un resultado previo:
 precargado, z_milp, z_hard, t_milp, t_hard = util.resultados_lp_milp(instancia,ambiente,gap,timelimit)
@@ -60,8 +58,8 @@ precargado, z_milp, z_hard, t_milp, t_hard = util.resultados_lp_milp(instancia,a
 if precargado == False:
     t_o = time.time() 
     model,xx = uc_Co.uc(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,Pb,C,Cs,Tmin,nameins=instancia[0:4])
-    sol_milp = Solution(model = model, nameins=instancia[0:4], env=ambiente, executable=executable, gap=gap, timelimit=timelimit,
-                        tee   = False, tofiles = False, exportLP = False)
+    sol_milp = Solution(model=model, nameins=instancia[0:4], env=ambiente, executable=executable, gap=gap, timelimit=timelimit,
+                        tee  = False, tofiles = False, exportLP = False)
     z_milp = sol_milp.solve_problem()
     t_milp = time.time() - t_o
     print("t_milp = ", round(t_milp,1), "z_milp = ", round(z_milp,1))
@@ -72,8 +70,8 @@ if precargado == False:
 if 1 == 1:
     t_o = time.time() 
     model,xx = uc_Co.uc(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,Pb,C,Cs,Tmin,fix='relax',nameins=instancia[0:4])
-    sol_lp   = Solution(model = model, env=ambiente, executable=executable, nameins=instancia[0:4], gap=gap, timelimit=timelimit,
-                        tee   = False, tofiles = False)
+    sol_lp   = Solution(model=model, env=ambiente, executable=executable, nameins=instancia[0:4], gap=gap, timelimit=timelimit,
+                        tee  = False, tofiles = False)
     z_lp = sol_lp.solve_problem() 
     t_lp = time.time() - t_o
     print("t_lp = ", round(t_lp,1), "z_lp = ", round(z_lp,1))
@@ -94,8 +92,8 @@ if 1 == 1:
 if precargado == False:
     t_o = time.time() 
     model,xx = uc_Co.uc(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,Pb,C,Cs,Tmin,fix='Hard',fixed_Uu=fixed_Uu,nameins=instancia[0:4])
-    sol_hard = Solution(model = model, env=ambiente, executable=executable, nameins=instancia[0:4], gap=gap, timelimit=timelimit,
-                        tee   = False, tofiles = False)
+    sol_hard = Solution(model=model, env=ambiente, executable=executable, nameins=instancia[0:4], gap=gap, timelimit=timelimit,
+                        tee  = False, tofiles = False)
     z_hard = sol_hard.solve_problem()
     t_hard = time.time() - t_o + t_lp
     print("t_hard = ", round(t_hard,1), "z_hard = ", round(z_hard,1), "n_fixed_Uu = ", len(fixed_Uu))
@@ -106,8 +104,8 @@ if precargado == False:
 if 1 == 1:
     t_o = time.time() 
     model,xx = uc_Co.uc(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,Pb,C,Cs,Tmin,fix='Soft',fixed_Uu=fixed_Uu,nameins=instancia[0:4])
-    sol_soft = Solution(model = model, env=ambiente, executable=executable, nameins=instancia[0:4], gap=gap, timelimit=timelimit,
-                        tee   = False, tofiles = False)
+    sol_soft = Solution(model=model, env=ambiente, executable=executable, nameins=instancia[0:4], gap=gap, timelimit=timelimit,
+                        tee  = False, tofiles = False)
     z_soft = sol_soft.solve_problem() 
     t_soft = time.time() - t_o + t_lp
     print("t_soft = ", round(t_soft,1), "z_soft = ", round(z_soft,1), "n_fixed_Uu = ", len(fixed_Uu))
@@ -122,8 +120,8 @@ if 1 == 1:
 if 1 == 1:
     t_o = time.time() 
     model,xx    = uc_Co.uc(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,Pb,C,Cs,Tmin,fix='Soft+pmin',fixed_Uu=fixed_Uu,nameins=instancia[0:4])
-    sol_softcut = Solution(model = model, env=ambiente, executable=executable, nameins=instancia[0:4], gap=gap, cutoff=z_hard, timelimit=timelimit,
-                           tee   = False, tofiles = False)
+    sol_softcut = Solution(model=model, env=ambiente, executable=executable, nameins=instancia[0:4], gap=gap, cutoff=z_hard, timelimit=timelimit,
+                           tee  = False, tofiles = False)
     z_softcut = sol_softcut.solve_problem() 
     t_softcut = time.time() - t_o + t_hard ## t_hard (ya cuenta el tiempo de lp)
     print("t_soft+cut = ", round(t_softcut,4), "z_soft+cut = ", round(z_softcut,1), "n_fixed_Uu = ", len(fixed_Uu))
@@ -133,14 +131,13 @@ if 1 == 1:
 ## -------------------------------- LOCAL BRANCHING CUTS ------------------------------------
 
 ## Include the LOCAL BRANCHING CUT to the solution and solve the sub-MILP (it is using cutoff=z_hard).
-if 1 == 1: 
-    
+if 1 == 1:     
     t_o = time.time()   
     k   = len(lower_Pmin) # El valor de intentos de asignación está siendo usado para definir el parámetro k en el LBC. 
     model,ns = uc_Co.uc(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,Pb,C,Cs,Tmin,fix='LBC+pmin',fixed_Uu=fixed_Uu,No_fixed_Uu=No_fixed_Uu,
                         k=k, lower_Pmin=lower_Pmin, nameins=instancia[0:4])
-    sol_lbc  = Solution(model = model, env=ambiente, executable=executable, nameins=instancia[0:4], gap=gap, cutoff=z_hard, timelimit=timelimit,
-                          tee = False, tofiles = False)
+    sol_lbc  = Solution(model=model, env=ambiente, executable=executable, nameins=instancia[0:4], gap=gap, cutoff=z_hard, timelimit=timelimit,
+                         tee = False, tofiles = False)
     z_lbc = sol_lbc.solve_problem() 
     t_lbc = time.time() - t_o + t_hard ## t_hard (ya cuenta el tiempo de lp)
     print("t_lbc = ", round(t_lbc,1), "z_lbc = ", round(z_lbc,1), "n_fixed_Uu = ", len(fixed_Uu))
@@ -155,6 +152,7 @@ if 1 == 1:
     # \todo{Probar tamaños del n_kernel (!!! al parecer influye mucho en el tiempo de búsqueda)}  
     # \todo{EVALUAR SI NOS CONVIENE O NO INCLUIR LOS INTENTOS DE ASIGNACIÓN}}    
     # \todo{Verificar por que la instancia uc_52.json es infactible ???}
+    # \todo{Podrian fijarse otras variables además de Uu}
 
 ## ------------------------------------ RESULTS -------------------------------------------
 

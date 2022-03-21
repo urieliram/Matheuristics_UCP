@@ -62,13 +62,15 @@ def config():
     #ambiente='localPC',ruta='instances/',executable='/home/uriel/cplex1210/cplex/bin/x86-64_linux/cplex3'
     df = pd.read_csv('config')    
     if len(df.index) == 1:
-        ambiente    = df['ambiente'].values[0]
-        ruta        = df['ruta'].values[0]
-        executable  = df['executable'].values[0]
+        ambiente     = df['ambiente'  ].values[0]
+        ruta         = df['ruta'      ].values[0]
+        executable   = df['executable'].values[0]
+        timelimit    = df['timelimit' ].values[0]
+        gap          = df['gap'       ].values[0]
     else:
-        print('!!! Problema al cargar la configuración, \nrevise el archivo <config>')
-        print('y verifique el formato y rutas de el archivo <config>:')
-        print('ambiente,ruta,executable')
-        print('localPC,instances/,/home/uriel/cplex1210/cplex/bin/x86-64_linux/cplex')
+        print('!!! Problema al cargar la configuración. Verifique el archivo, ')
+        print('formato y rutas del archivo <config>, algo como esto:')
+        print('ambiente,ruta,executable,timelimit,gap')
+        print('localPC,instances/,/home/uriel/cplex1210/cplex/bin/x86-64_linux/cplex,4000,0.001')
                 
-    return ambiente , ruta , executable
+    return ambiente, ruta, executable, timelimit, gap

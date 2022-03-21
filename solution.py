@@ -41,11 +41,15 @@ class Solution:
     def solve_problem(self):  
         ## Create the solver interface and solve the model
         # https://www.ibm.com/docs/en/icos/12.8.0.0?topic=parameters-relative-mip-gap-tolerance
-        solver = pyo.SolverFactory('cplex') #'glpk', 'cbc'
-        if self.env == "localPC":
+        try:
             solver = pyo.SolverFactory('cplex')
-        if self.env == "yalma": 
-            solver = pyo.SolverFactory('cplex', executable=self.executable)
+        except:
+            solver = pyo.SolverFactory('cplex', executable=self.executable,)#validate=False
+            
+        # if self.env == "localPC":
+        #     solver = pyo.SolverFactory('cplex')
+        # if self.env == "yalma": 
+        #     solver = pyo.SolverFactory('cplex', executable=self.executable)
             #solver = pyo.SolverFactory('cplex', executable='/home/uriel/cplex1210/cplex/bin/x86-64_linux/cplex')
         solver.options['mip tolerances mipgap'] = self.gap  
         solver.options['timelimit'] = self.timelimit        
@@ -60,7 +64,7 @@ class Solution:
         #solver.options['mip tolerances absmipgap'] = 200
         
         ## Boosting Pyomo
-        solver.options['Threads'] = int((os.cpu_count() + os.cpu_count())/2)
+        #solver.options['Threads'] = int((os.cpu_count() + os.cpu_count())/2)
         
         ## para mostrar una solución en un formato propio
         ## https://developers.google.com/optimization/routing/cvrp
@@ -126,11 +130,11 @@ class Solution:
             print ("Something else is wrong",str(result.solver))  ## Something else is wrong
 
         ## Inizialize variables making a empty-solution with all generators in cero
-        self.Uu = [[0 for x in range(self.tt)] for y in range(self.gg)]
-        self.V  = [[0 for x in range(self.tt)] for y in range(self.gg)]
-        self.W  = [[0 for x in range(self.tt)] for y in range(self.gg)]
-        self.P  = [[0 for x in range(self.tt)] for y in range(self.gg)]
-        self.R  = [[0 for x in range(self.tt)] for y in range(self.gg)]
+        self.Uu = [[0 for i in range(self.tt)] for j in range(self.gg)]
+        self.V  = [[0 for i in range(self.tt)] for j in range(self.gg)]
+        self.W  = [[0 for i in range(self.tt)] for j in range(self.gg)]
+        self.P  = [[0 for i in range(self.tt)] for j in range(self.gg)]
+        self.R  = [[0 for i in range(self.tt)] for j in range(self.gg)]
         ## Almacena solución entera
         for t in range(self.tt):
             for g in range(self.gg):
