@@ -7,17 +7,18 @@ from   pyomo.opt import SolverStatus, TerminationCondition
 import os
 
 class Solution:
-    def __init__(self,model,env,nameins='model',gap=0.001,timelimit=300,tee=False,tofiles=False,lpmethod=0,
+    def __init__(self,model,env,executable,nameins='model',gap=0.001,timelimit=300,tee=False,tofiles=False,lpmethod=0,
                  cutoff=1e+75,exportLP=False,exportFile=False):
-        self.model     = model
-        self.nameins   = nameins      ## name of instance 
-        self.env       = env          ## enviroment  
-        self.tee       = tee          ## True = activate log of CPLEX
-        self.gap       = gap          ## relative gap in CPLEX
-        self.timelimit = timelimit    ## max time in CPLEX
-        self.tofiles   = tofiles       ## True = send to csv file the solution value of U,V,W,P,R 
-        self.lpmethod  = lpmethod     ## 0=Automatic; 1,2= Primal and dual simplex; 3=Sifting; 4=Barrier, 5=Concurrent (Dual,Barrier, and Primal in opportunistic parallel mode; Dual and Barrier in deterministic parallel mode)
-        self.cutoff    = cutoff       ## Agrega una cota superior factible, apara yudar a descartar nodos del árbol del B&B
+        self.model      = model
+        self.nameins    = nameins     ## name of instance 
+        self.env        = env         ## enviroment  
+        self.executable = executable  ## ruta donde encontramos el ejecutable CPLEX 
+        self.tee        = tee         ## True = activate log of CPLEX
+        self.gap        = gap         ## relative gap in CPLEX
+        self.timelimit  = timelimit   ## max time in CPLEX
+        self.tofiles    = tofiles     ## True = send to csv file the solution value of U,V,W,P,R 
+        self.lpmethod   = lpmethod    ## 0=Automatic; 1,2= Primal and dual simplex; 3=Sifting; 4=Barrier, 5=Concurrent (Dual,Barrier, and Primal in opportunistic parallel mode; Dual and Barrier in deterministic parallel mode)
+        self.cutoff     = cutoff      ## Agrega una cota superior factible, apara yudar a descartar nodos del árbol del B&B
         
         self.exportFile = exportFile  ## True si se exporta la solución a un formato .dat
         self.exportLP   = exportLP    ## True si se exporta el modelo a formato LP y MPS
@@ -44,7 +45,8 @@ class Solution:
         if self.env == "localPC":
             solver = pyo.SolverFactory('cplex')
         if self.env == "yalma": 
-            solver = pyo.SolverFactory('cplex', executable='/home/uriel/cplex1210/cplex/bin/x86-64_linux/cplex')
+            solver = pyo.SolverFactory('cplex', executable=self.executable)
+            #solver = pyo.SolverFactory('cplex', executable='/home/uriel/cplex1210/cplex/bin/x86-64_linux/cplex')
         solver.options['mip tolerances mipgap'] = self.gap  
         solver.options['timelimit'] = self.timelimit        
         

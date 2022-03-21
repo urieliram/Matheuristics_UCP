@@ -57,3 +57,18 @@ def resultados_lp_milp(instance,ambiente,gap,timelimit):
         print('Resultados de <milp> y <hard-fixing> pre-cargados y asignados.')
         
     return precargado, z_milp, z_hard, t_milp, t_hard
+
+def config():
+    #ambiente='localPC',ruta='instances/',executable='/home/uriel/cplex1210/cplex/bin/x86-64_linux/cplex3'
+    df = pd.read_csv('config')    
+    if len(df.index) == 1:
+        ambiente    = df['ambiente'].values[0]
+        ruta        = df['ruta'].values[0]
+        executable  = df['executable'].values[0]
+    else:
+        print('!!! Problema al cargar la configuración, \nrevise el archivo <config>')
+        print('y verifique el formato y rutas de el archivo <config>:')
+        print('ambiente,ruta,executable')
+        print('localPC,instances/,/home/uriel/cplex1210/cplex/bin/x86-64_linux/cplex')
+                
+    return ambiente , ruta , executable
