@@ -14,12 +14,12 @@ import uc_Co
 import util
 import reading
 from   solution import Solution
-
-instancia = 'archivox.json'         
+ 
 instancia = 'uc_1.json'     
-instancia = 'anjos.json'         
+instancia = 'archivox.json'     
+instancia = 'anjos.json'            
 
-ambiente, ruta, executable, timelimit, gap = util.config()
+ambiente, ruta, executable, timelimit, gap = util.config_env()
 
 if ambiente == 'yalma':
     if len(sys.argv) != 3:
