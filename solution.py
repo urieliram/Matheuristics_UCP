@@ -1,5 +1,6 @@
 from   ctypes import util
 import os
+import time
 import pyomo.environ as pyo
 import util
 from   pyomo.util.infeasible import log_infeasible_constraints
@@ -24,6 +25,7 @@ class Solution:
         self.exportLP   = exportLP    ## True si se exporta el modelo a formato LP y MPS
         self.gg         = len(model.G)
         self.tt         = len(model.T)
+        self.S          = model.S
        
     def getModel(self):
         return self.model
@@ -39,36 +41,27 @@ class Solution:
         return self.R
    
     def solve_problem(self):  
-        ## Create the solver interface and solve the model
-        ## https://www.ibm.com/docs/en/icos/12.8.0.0?topic=parameters-relative-mip-gap-tolerance
-        
-        existe = os.path.exists(self.executable)        
-        print(self.executable,existe)        
+                
+        existe = os.path.exists(self.executable)   
         if existe:
             solver = pyo.SolverFactory('cplex',executable=self.executable) ## executable='/home/uriel/cplex1210/cplex/bin/x86-64_linux/cplex'
         else:
             solver = pyo.SolverFactory('cplex')
-        # if self.env == "localPC":
-        #     solver = pyo.SolverFactory('cplex')
-        # if self.env == "yalma": 
-        #     solver = pyo.SolverFactory('cplex',executable=self.executable) ## executable='/home/uriel/cplex1210/cplex/bin/x86-64_linux/cplex'
-                 
+
         ## https://www.ibm.com/docs/en/icos/20.1.0?topic=parameters-upper-cutoff
         if self.cutoff != 1e+75:
             solver.options['mip tolerances uppercutoff'] = self.cutoff
         
         ## https://www.ibm.com/docs/en/icos/12.8.0.0?topic=parameters-algorithm-continuous-linear-problems
-        solver.options['lpmethod'                  ] = self.lpmethod         
-        solver.options['mip tolerances mipgap'     ] = self.gap  
-        solver.options['timelimit'                 ] = self.timelimit       
-        #solver.options['mip tolerances absmipgap' ] = 200
-                
-        ## para mostrar una solución en un formato propio
+        solver.options['lpmethod'                      ] = self.lpmethod         
+        solver.options['mip tolerances mipgap'         ] = self.gap  
+        solver.options['timelimit'                     ] = self.timelimit   
+        
+        ## para mostrar la solución en un formato propio
         ## https://developers.google.com/optimization/routing/cvrp
         ## para editar un LP en pyomo
         ## https://stackoverflow.com/questions/54312316/pyomo-model-lp-file-with-variable-values
-            
-            
+                        
         ## write LP file
         if self.exportLP == True:
             self.model.write()             ## To write the model into a file using .nl format
@@ -79,12 +72,12 @@ class Solution:
         
         ## Envía el problema de optimización al solver
         result = solver.solve(self.model, tee=self.tee)
-        #result.write()
+        #result.write()        
         
         try:
             pyo.assert_optimal_termination(result)
         except Exception as e:
-            print("!!! An exception occurred")
+            print(">>> An exception occurred")
             print(e)
                 
         if self.exportFile == True:    
@@ -111,17 +104,17 @@ class Solution:
         # model.display()        # Print the optimal solution     
         # z = pyo.value(model.obj)
 
-        ##https://pyomo.readthedocs.io/en/stable/working_models.html
-        # maxIterations= 2
         if (result.solver.status == SolverStatus.ok) and (result.solver.termination_condition == TerminationCondition.optimal):
             aux=1+1
             #print ("This is feasible and optimal")            
-        elif result.solver.termination_condition == TerminationCondition.infeasible:
+        elif result.solver.termination_condition == TerminationCondition.infeasible:            
             ##https://stackoverflow.com/questions/51044262/finding-out-reason-of-pyomo-model-infeasibility
-            log_infeasible_constraints(self.model)
+            log_infeasible_constraints(self.model, log_expression=True, log_variables=True)
             print ("!!! Infeasible solution, do something about it, or exit.")
+        elif (result.solver.termination_condition == TerminationCondition.maxTimeLimit):
+            print (">>> The maximum time limit has been reached.")
         else:
-            print ("Something else is wrong",str(result.solver))  ## Something else is wrong
+            print ("!!! Something else is wrong",str(result.solver))  ## Something else is wrong
 
         ## Inizialize variables making a empty-solution with all generators in cero
         self.Uu = [[0 for i in range(self.tt)] for j in range(self.gg)]
@@ -154,8 +147,8 @@ class Solution:
         return 0
     
     
-    ## En esta función seleccionamos el conjunto de variables que quedarán en uno para ser fijadas posteriormente.
-    def select_fixed_variables_U(self):    
+    ## En esta función seleccionamos el conjunto de variables Uu que quedarán en uno para ser fijadas posteriormente.
+    def select_fixed_variables_Uu(self):    
         fixed_Uu    = []  
         No_fixed_Uu = []
         lower_Pmin  = []
@@ -173,22 +166,18 @@ class Solution:
                     fixed_Uu.append([g,t,1])
                 else:
                     ## Vamos a guardar las variables que quedaron abajo del minimo pero diferentes de cero,
-                    ## podriamos decir que este grupo de variables son intentos de asignación.
+                    ## podriamos decir que este grupo de variables son <intentos de asignación>.
                     ## Este valor puede ser usado para definir el parámetro k en el LBC.                    
                     if (UuP[g][t] != 0):
                         lower_Pmin.append([g,t,1])
                     No_fixed_Uu.append([g,t,0])
-                    
-                ## aquellas unidades que quedan en cero o menos, son fijadas a cero, INTENTO INFACTIBLE... sorry :-(.
-                #elif UuP[g][t] <= 0:               
-                #    fix_Uu.append([g,t,0])                
         
         return fixed_Uu, No_fixed_Uu, lower_Pmin
     
     def count_U_no_int(self):   
         Uu_no_int = []
-        aux  = 0
-        aux2 = 0
+        aux       = 0
+        aux2      = 0
         ## Almacena solución entera
         for t in range(self.tt):
             for g in range(self.gg):
@@ -203,4 +192,66 @@ class Solution:
         print("Number of U_no_int=", Uu_no_int,", n_Uu_no_int=",aux," , n_Uu_1_0=",aux2)   
         return len(Uu_no_int), aux, aux2
             
+            
+    ## En esta función seleccionamos el conjunto de variables Uu que quedarán en uno para ser fijadas posteriormente.
+    def select_fixed_variables_delta(self):    
+        fixed_delta = []; No_fixed_delta = []      
+          
+        parameter   = 0.0
+        total       = 0
+        for g,t,s in self.model.indexGTSg:
+            if self.model.delta[(g,t,s)].value != None:
+                
+                if self.model.delta[(g,t,s)].value == parameter:
+                    # print(g,t,s)                    
+                    # print(self.model.delta[(g,t,s)].value)
+                    fixed_delta.append([g,t,s,0])
+                else:
+                    No_fixed_delta.append([g,t,s,0])   
+                total = total + 1     
+            else: ## Si es None                
+                fixed_delta.append([g,t,s,0])
+                
+                
+                
+                   
+        print('----------- total delta')  
+        print(total)        
+        print('----------- delta >=', parameter)  
+        print(len(fixed_delta))
         
+        return fixed_delta, No_fixed_delta
+    
+    
+    ## En esta función seleccionamos el conjunto de variables V que quedarán en uno para ser fijadas posteriormente.
+    def select_fixed_variables_VW(self):    
+        fixed_V   = []; No_fixed_V = []; fixed_W = []; No_fixed_W = []
+        
+        parameter = 0.9
+        total     = 0
+        for t in range(self.tt):
+            for g in range(self.gg):
+                if self.V[g][t] != None:
+                
+                    if self.V[g][t] >= parameter:
+                        fixed_V.append([g,t,1])
+                    else:
+                        No_fixed_V.append([g,t,0])
+                    
+                if self.W[g][t] != None:
+                
+                    if self.W[g][t] >= parameter:
+                        fixed_W.append([g,t,1])
+                    else:
+                        No_fixed_W.append([g,t,0])
+                total = total + 1
+                           
+        print('----------- total VW')  
+        print(total)        
+        print('----------- V >=', parameter) 
+        print(len(fixed_V))         
+        print('----------- W >=', parameter)  
+        print(len(fixed_W))
+        
+        return fixed_V, No_fixed_V, fixed_W, No_fixed_W
+    

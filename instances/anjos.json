@@ -135,6 +135,22 @@
             {
                "lag":5,
                "cost":1000.0
+            },
+            {
+               "lag":6,
+               "cost":1200.0
+            },
+            {
+               "lag":7,
+               "cost":1300.0
+            },
+            {
+               "lag":8,
+               "cost":1500.0
+            },
+            {
+               "lag":9,
+               "cost":2000.0
             }
          ],
          "piecewise_production":[

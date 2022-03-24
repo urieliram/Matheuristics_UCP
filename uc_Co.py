@@ -19,7 +19,7 @@ import pyomo.environ as pyo
 from   pyomo.environ import *
 
 def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,Pb,C,Cs,Tmin,fix='None',
-       fixed_Uu=[],No_fixed_Uu=[],lower_Pmin=[],percent_lbc = 90,k=20,nameins='model'):
+       fixed_Uu=[],No_fixed_Uu=[],lower_Pmin=[],fixed_V=[],fixed_W=[],fixed_delta=[],percent_lbc = 90,k=20,nameins='model'):
     
     ## Número de variables que pueden moverse en el Sub-milp
     n_subset   = 0
@@ -63,12 +63,12 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,Pb,C,Cs,Tmin,fi
     
     ##  Defined index to compute the per-generator, per-time, and  start-up segment cost variable.
     def index_G_T_Sg(m):
-        return ((g,t,s) for g in m.G for t in m.T for s in range(1,len(m.S[g])+1))
+        return ((g,t,s) for g in m.G for t in m.T for s in range(1,len(m.S[g])+1)) ##CHECAR SI REQUIERE +1
     model.indexGTSg = Set(initialize=index_G_T_Sg, dimen=3)    
     
     ##  Defined index to compute the per-generator, and start-up segment cost variable.
     def index_G_Sg(m):
-        return ((g,s) for g in m.G for s in range(1,len(m.S[g])+1))
+        return ((g,s) for g in m.G for s in range(1,len(m.S[g])+1)) ##CHECAR SI REQUIERE +1
     model.indexGSg = Set(initialize=index_G_Sg, dimen=2)
     
     if(fix == 'relax'): #Si se desea relajar las variables enteras como continuas
@@ -113,8 +113,9 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,Pb,C,Cs,Tmin,fi
     def obj_rule(m): 
     #   return sum(m.cp[g,t] + m.cSU[g,t] * m.v[g,t] + m.mpc[g] * m.u[g,t] for g in m.G for t in m.T) \ #Costo sin piecewise
         return sum(m.cp[g,t] + m.cSU[g,t] * 1        + m.mpc[g] * m.u[g,t] for g in m.G for t in m.T) \
-             + sum(m.sR[t]   * CLP                                         for t in m.T) \
-             + sum(m.sn[t]   * CRP                                         for t in m.T) 
+            #  + 0 
+            #  + sum(m.sR[t]   * CLP                                         for t in m.T) \
+            #  + sum(m.sn[t]   * CRP                                         for t in m.T) 
     #        + sum(m.cU[g] * m.v[g,t] + m.c[g] * m.p[g,t] for g in m.G for t in m.T) 
     model.obj = pyo.Objective(rule = obj_rule)
 
@@ -201,13 +202,13 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,Pb,C,Cs,Tmin,fi
     ## -------------------------------DEMAND & RESERVE----------------------------------------   
  
     def demand_rule65(m,t):                      ## demand eq.(65)
-        return sum( m.p[g,t] for g in m.G ) + m.sn[t]  == m.De[t] 
-        # return sum( m.p[g,t] for g in m.G ) + 0  == m.De[t] 
+        # return sum( m.p[g,t] for g in m.G ) + m.sn[t]  == m.De[t] 
+        return sum( m.p[g,t] for g in m.G ) + 0  == m.De[t] 
     model.demand_rule65 = pyo.Constraint(model.T, rule = demand_rule65)
     
-    def demand_rule66a(m,t):                      ## holguras o excesos en la demanda eq.(66a)
-         return m.sn[t] == m.snplus[t] - m.snminus[t]  
-    model.demand_rule66a = pyo.Constraint(model.T, rule = demand_rule66a)
+    # def demand_rule66a(m,t):                      ## holguras o excesos en la demanda eq.(66a)
+    #      return m.sn[t] == m.snplus[t] - m.snminus[t]  
+    # model.demand_rule66a = pyo.Constraint(model.T, rule = demand_rule66a)
 
     def demand_rule67(m,t):                      ## demand + reserve eq.(67)
         # return sum( m.pb[g,t] for g in m.G ) + m.sR[t] >= m.De[t] + m.R[t] 
@@ -292,10 +293,20 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,Pb,C,Cs,Tmin,fi
     ## ---------------------------- HARD VARIABLE FIXING ------------------------------------------
     
     ## Si se desea usar la solución fix y calcular un sub-MILP.
-    if(fix == 'Hard'): 
+    if(fix == 'Hard'):    
         for f in fixed_Uu: 
-            model.u[f[0]+1,f[1]+1].fix(1) ## Hard fixing            
-
+            model.u[f[0]+1,f[1]+1].fix(1) ## Hard fixing
+            
+    if(fix == 'HardUVW'):            
+        for f in fixed_Uu: 
+            model.u[f[0]+1,f[1]+1].fix(1) ## Hard fixing
+        for f in fixed_V: 
+            model.v[f[0]+1,f[1]+1].fix(1) ## Hard fixing
+        for f in fixed_W: 
+             model.w[f[0]+1,f[1]+1].fix(1) ## Hard fixing
+             
+        for g,t,s in model.indexGTSg:
+            model.delta[(g,t,s)].fix(0) ## Hard fixing
 
     ## ---------------------------- SOFT VARIABLE FIXING ------------------------------------------
     
@@ -361,6 +372,11 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,Pb,C,Cs,Tmin,fi
         for f in No_fixed_Uu:                               ## Cuenta los cambios de 0 --> 1
             expr +=     model.u[f[0]+1,f[1]+1]            
         model.cuts.add(expr <= k)                           ## Adding a new restrictions (lbc). 
+        
+        
+        
+        
+        
                 
     ## Termina y regresa el modelo MILP
     return model , n_subset
