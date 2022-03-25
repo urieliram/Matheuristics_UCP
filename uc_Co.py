@@ -18,7 +18,7 @@ import math
 import pyomo.environ as pyo
 from   pyomo.environ import *
 
-def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,Pb,C,Cs,Tmin,fix='None',
+def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,Pb,C,Cs,Tmin,option='None',
        fixed_Uu=[],No_fixed_Uu=[],lower_Pmin=[],fixed_V=[],fixed_W=[],fixed_delta=[],percent_lbc = 90,k=20,nameins='model'):
     
     ## Número de variables que pueden moverse en el Sub-milp
@@ -71,7 +71,7 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,Pb,C,Cs,Tmin,fi
         return ((g,s) for g in m.G for s in range(1,len(m.S[g])+1)) ##CHECAR SI REQUIERE +1
     model.indexGSg = Set(initialize=index_G_Sg, dimen=2)
     
-    if(fix == 'relax'): #Si se desea relajar las variables enteras como continuas
+    if(option == 'relax'): #Si se desea relajar las variables enteras como continuas
         model.u     = pyo.Var( model.G , model.T , within = UnitInterval)   ## UnitInterval: floating point values in the interval [0,1]
         model.v     = pyo.Var( model.G , model.T , within = UnitInterval)   
         model.w     = pyo.Var( model.G , model.T , within = UnitInterval)   
@@ -288,30 +288,36 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,Pb,C,Cs,Tmin,fi
     def Start_up_cost58(m,g,t):  ##  start-up cost eq.(58)
         return m.cSU[g,t] == m.Cs[g,value(len(m.S[g]))]*m.v[g,t] - sum(((m.Cs[g,value(len(S[g]))]-m.Cs[g,s])*m.delta[g,t,s]) for s in range(1,value(len(m.S[g]))-1 ))  
     model.Start_up_cost58 = pyo.Constraint(model.G,model.T, rule = Start_up_cost58)   
-
+    
+    ## ---------------------------- Inequality in delta and v ------------------------------------------
+    
+    if option == 'Ineq':    
+        def Start_up_cost_desigualdad_Uriel(m,g):  ##  start-up cost eq.(54)(s < value(len(m.S[g])) and t >= m.Tmin[g,s+1]):
+            return sum(m.v[g,t] for t in m.T) >= sum(m.delta[g,t,s] for s in range(1,value(len(m.S[g]))+1) for t in m.T)  
+        model.Start_up_cost_desigualdad_Uriel = pyo.Constraint(model.G,rule = Start_up_cost_desigualdad_Uriel)
+    
 
     ## ---------------------------- HARD VARIABLE FIXING ------------------------------------------
     
     ## Si se desea usar la solución fix y calcular un sub-MILP.
-    if(fix == 'Hard'):    
+    if(option == 'Hard'):    
         for f in fixed_Uu: 
-            model.u[f[0]+1,f[1]+1].fix(1) ## Hard fixing
+            model.u[f[0]+1,f[1]+1].fix(1)  ## Hard fixing
             
-    if(fix == 'HardUVW'):            
+    if(option == 'HardUVWdelta'):            
         for f in fixed_Uu: 
-            model.u[f[0]+1,f[1]+1].fix(1) ## Hard fixing
+            model.u[f[0]+1,f[1]+1].fix(1)  ## Hard fixing
         for f in fixed_V: 
-            model.v[f[0]+1,f[1]+1].fix(1) ## Hard fixing
+            model.v[f[0]+1,f[1]+1].fix(1)  ## Hard fixing
         for f in fixed_W: 
-             model.w[f[0]+1,f[1]+1].fix(1) ## Hard fixing
-             
-        for g,t,s in model.indexGTSg:
-            model.delta[(g,t,s)].fix(0) ## Hard fixing
+             model.w[f[0]+1,f[1]+1].fix(1) ## Hard fixing   
+        for f in fixed_delta: 
+             model.delta[f[0],f[1],f[2]].fix(0) ## Hard fixing   
 
     ## ---------------------------- SOFT VARIABLE FIXING ------------------------------------------
     
     ## Si se desea usar la solución fix y calcular un sub-MILP.
-    if(fix == 'Soft' or fix == 'Soft+pmin'): 
+    if(option == 'Soft' or option == 'Soft+pmin'): 
         
         for f in fixed_Uu: 
             model.u[f[0]+1,f[1]+1].domain = UnitInterval  ## Soft-fixing I                
@@ -326,7 +332,7 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,Pb,C,Cs,Tmin,fi
         for f in fixed_Uu:      
             expr += model.u[f[0]+1,f[1]+1]
         
-        if(fix == 'Soft+pmin'):
+        if(option == 'Soft+pmin'):
             # \todo{EVALUAR SI NOS CONVIENE O NO RELAJAR LOS INTENTOS DE ASIGNACIÓN EN EL SOFT-FIXING}
             for f in lower_Pmin: 
                 model.u[f[0]+1,f[1]+1].domain = UnitInterval ## Soft-fixing
@@ -341,7 +347,7 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,Pb,C,Cs,Tmin,fi
     ## ---------------------------- LOCAL BRANCHING CONSTRAINT ------------------------------------------
     
     ## Define a neighbourhood with LBC.
-    if(fix == 'LBC' or fix == 'LBC+pmin'):
+    if(option == 'LBC' or option == 'LBC+pmin'):
                 
         for f in fixed_Uu: 
             model.u[f[0]+1,f[1]+1].domain = UnitInterval ## Soft-fixing I        
@@ -354,7 +360,7 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,Pb,C,Cs,Tmin,fi
         for f in fixed_Uu:      
             expr += model.u[f[0]+1,f[1]+1]                   ## New constraint soft.
             
-        if(fix == 'LBC+pmin'):  
+        if(option == 'LBC+pmin'):  
             # \todo{EVALUAR SI NOS CONVIENE O NO RELAJAR LOS INTENTOS DE ASIGNACIÓN EN EL SOFT-FIXING}
             for f in lower_Pmin: 
                 model.u[f[0]+1,f[1]+1].domain = UnitInterval ## Soft-fixing

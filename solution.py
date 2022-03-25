@@ -82,17 +82,17 @@ class Solution:
                 
         if self.exportFile == True:    
             file = open(self.nameins + '.dat', 'w')
-            file.write('z: %s \n' % (pyo.value(self.model.obj)))
-            file.write('g, t,\t u,\t v,\t w, \t p \n')       
-
+            file.write('z:%s\n' % (pyo.value(self.model.obj)))
+            file.write('g,t,u,v,w,p\n') 
+            
             for t in range(0, self.tt):
                 for g in range(0, self.gg):
-                    file.write('%s, %s,\t %s,\t  %s,\t  %s,\t %s \n' %
+                    file.write('%s,%s,%s,%s,%s,%s\n' %
                     (int(g), int(t), int(self.model.u[(g+1, t+1)].value),int(self.model.v[(g+1, t+1)].value),int(self.model.w[(g+1, t+1)].value), self.model.p[(g+1, t+1)].value))
 
-            file.write('TIME,\t s \t sR \n')
+            file.write('TIME,s,sR\n')
             for t in range(1, self.tt+1):
-                file.write('%s, \t%s,\t %s,\t \n' %
+                file.write('%s,%s,%s,\n' %
                 (int(t), self.model.sn[t].value, self.model.sR[t].value))
                 
             self.model.pprint(file)
@@ -117,11 +117,23 @@ class Solution:
             print ("!!! Something else is wrong",str(result.solver))  ## Something else is wrong
 
         ## Inizialize variables making a empty-solution with all generators in cero
-        self.Uu = [[0 for i in range(self.tt)] for j in range(self.gg)]
-        self.V  = [[0 for i in range(self.tt)] for j in range(self.gg)]
-        self.W  = [[0 for i in range(self.tt)] for j in range(self.gg)]
-        self.P  = [[0 for i in range(self.tt)] for j in range(self.gg)]
-        self.R  = [[0 for i in range(self.tt)] for j in range(self.gg)]
+        self.Uu     = [[0 for i in range(self.tt)] for j in range(self.gg)]
+        self.V      = [[0 for i in range(self.tt)] for j in range(self.gg)]
+        self.W      = [[0 for i in range(self.tt)] for j in range(self.gg)]
+        self.P      = [[0 for i in range(self.tt)] for j in range(self.gg)]
+        self.R      = [[0 for i in range(self.tt)] for j in range(self.gg)]            
+        self.delta  = [[0 for i in range(self.tt)] for j in range(self.gg)]
+        
+        ## Tranformación especial para variable delta de (g,t,s) a (g,t) 
+        for g in range(0, self.gg):
+            for t in range(0, self.tt):
+                position = 0
+                for s in range(0, len(self.model.S[g+1])):
+                    position = position + 1
+                    if self.model.delta[(g+1,t+1,s+1)].value != None and self.model.delta[(g+1,t+1,s+1)].value == 1:
+                        self.delta[g][t] = position
+                        #self.delta[g][t] = self.delta[g][t] + self.model.delta[(g+1,t+1,s+1)].value
+        
         ## Almacena solución entera
         for t in range(self.tt):
             for g in range(self.gg):
@@ -139,11 +151,12 @@ class Solution:
     
       
     def send_to_File(self):     
-        util.sendtofilesolution(self.Uu,"U_" + self.nameins + ".csv")
-        util.sendtofilesolution(self.V ,"V_" + self.nameins + ".csv")
-        util.sendtofilesolution(self.W ,"W_" + self.nameins + ".csv")
-        util.sendtofilesolution(self.P ,"P_" + self.nameins + ".csv")
-        util.sendtofilesolution(self.R ,"R_" + self.nameins + ".csv")
+        util.sendtofilesolution(self.Uu    ,"U_"   + self.nameins + ".csv")
+        util.sendtofilesolution(self.V     ,"V_"   + self.nameins + ".csv")
+        util.sendtofilesolution(self.W     ,"W_"   + self.nameins + ".csv")
+        util.sendtofilesolution(self.P     ,"P_"   + self.nameins + ".csv")
+        util.sendtofilesolution(self.R     ,"R_"   + self.nameins + ".csv")
+        util.sendtofilesolution(self.delta ,"del_" + self.nameins + ".csv")
         return 0
     
     
@@ -193,37 +206,35 @@ class Solution:
         return len(Uu_no_int), aux, aux2
             
             
-    ## En esta función seleccionamos el conjunto de variables Uu que quedarán en uno para ser fijadas posteriormente.
+    ## En esta función seleccionamos el conjunto de variables delta que quedarán en uno/cero para ser fijadas posteriormente.
     def select_fixed_variables_delta(self):    
-        fixed_delta = []; No_fixed_delta = []      
-          
-        parameter   = 0.0
-        total       = 0
+        fixed_delta = []; No_fixed_delta = [] 
+        
+        parameter  = 0.9
+        total      = 0
+        nulos      = 0
         for g,t,s in self.model.indexGTSg:
             if self.model.delta[(g,t,s)].value != None:
                 
-                if self.model.delta[(g,t,s)].value == parameter:
+                if self.model.delta[(g,t,s)].value >= parameter:
+                    fixed_delta.append([g,t,s,1])
                     # print(g,t,s)                    
                     # print(self.model.delta[(g,t,s)].value)
-                    fixed_delta.append([g,t,s,0])
                 else:
-                    No_fixed_delta.append([g,t,s,0])   
-                total = total + 1     
+                    No_fixed_delta.append([g,t,s,0])
             else: ## Si es None                
                 fixed_delta.append([g,t,s,0])
+                nulos = nulos +1
+            total = total + 1
                 
-                
-                
-                   
-        print('----------- total delta')  
-        print(total)        
-        print('----------- delta >=', parameter)  
-        print(len(fixed_delta))
+        print('Total delta        =', total)  
+        print('Nulos delta        =', total)  
+        print('Fixed delta       >=', parameter,len(fixed_delta))
         
         return fixed_delta, No_fixed_delta
     
     
-    ## En esta función seleccionamos el conjunto de variables V que quedarán en uno para ser fijadas posteriormente.
+    ## En esta función seleccionamos el conjunto de variables V,W que quedarán en uno/cero para ser fijadas posteriormente.
     def select_fixed_variables_VW(self):    
         fixed_V   = []; No_fixed_V = []; fixed_W = []; No_fixed_W = []
         
@@ -245,13 +256,10 @@ class Solution:
                     else:
                         No_fixed_W.append([g,t,0])
                 total = total + 1
-                           
-        print('----------- total VW')  
-        print(total)        
-        print('----------- V >=', parameter) 
-        print(len(fixed_V))         
-        print('----------- W >=', parameter)  
-        print(len(fixed_W))
-        
+                
+        print('Total V,W   =',total)  
+        print('Fixed V    >=', parameter, len(fixed_V)) 
+        print('Fixed W    >=', parameter, len(fixed_W)) 
+           
         return fixed_V, No_fixed_V, fixed_W, No_fixed_W
     
