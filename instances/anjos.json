@@ -38,11 +38,11 @@
             },
             {
                "lag":3,
-               "cost":800.0
+               "cost":850.0
             },
             {
                "lag":4,
-               "cost":800.0
+               "cost":900.0
             }
          ],
          "piecewise_production":[
@@ -81,12 +81,12 @@
                "cost":500.0
             },
             {
-               "lag":3,
-               "cost":500.0
+               "lag":4,
+               "cost":550.0
             },
             {
-               "lag":4,
-               "cost":500.0
+               "lag":5,
+               "cost":600.0
             }
          ],
          "piecewise_production":[
@@ -122,7 +122,7 @@
          "startup":[
             {
                "lag":2,
-               "cost":25.0
+               "cost":33.0
             },
             {
                "lag":3,

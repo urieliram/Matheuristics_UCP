@@ -39,6 +39,8 @@ class Solution:
         return self.P
     def getR(self):
         return self.R
+    def getSolverTime(self):
+        return self.solvertime
    
     def solve_problem(self):  
                 
@@ -70,9 +72,11 @@ class Solution:
             self.model.write(filename = self.model.name+'.mps', io_options = {"symbolic_solver_labels":True})
             #print(solver.ExportModelAsLpFormat(False).replace('\\', '').replace(',_', ','), sep='\n')
         
+        t_o = time.time() 
         ## Envía el problema de optimización al solver
         result = solver.solve(self.model, tee=self.tee)
-        #result.write()        
+        #result.write()  
+        self.solvertime = time.time() - t_o      
         
         try:
             pyo.assert_optimal_termination(result)
@@ -224,12 +228,12 @@ class Solution:
                     No_fixed_delta.append([g,t,s,0])
             else: ## Si es None                
                 fixed_delta.append([g,t,s,0])
-                nulos = nulos +1
+                nulos = nulos + 1
             total = total + 1
                 
         print('Total delta        =', total)  
-        print('Nulos delta        =', total)  
-        print('Fixed delta       >=', parameter,len(fixed_delta))
+        print('Nulos delta        =', nulos)  
+        print('Fixed delta       >=', parameter,len(fixed_delta)-nulos)
         
         return fixed_delta, No_fixed_delta
     

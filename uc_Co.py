@@ -94,7 +94,8 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,Pb,C,Cs,Tmin,op
     model.snminus   = pyo.Var( model.T ,           bounds = (0.0,9999999.0)) ##surplus demand
     model.sn        = pyo.Var( model.T ,           bounds = (0.0,9999999.0)) ##surplus demand
     model.sR        = pyo.Var( model.T ,           bounds = (0.0,9999999.0)) ##surplus reserve         
-    model.pl        = pyo.Var(model.indexGTLg,     bounds = (0.0,99999.0)) ## within=UnitInterval UnitInterval == [0,1]   
+    model.pl        = pyo.Var(model.indexGTLg,     bounds = (0.0,99999.0))   ## within=UnitInterval UnitInterval == [0,1]   
+    model.total_cSU = pyo.Var( bounds = (0.0,999999999999.0))                  ## Acumula total
     
     model.Pb   = pyo.Param(model.indexGLg, initialize = Pb,   within = Any)
     model.C    = pyo.Param(model.indexGLg, initialize = C,    within = Any)
@@ -112,7 +113,8 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,Pb,C,Cs,Tmin,op
     
     def obj_rule(m): 
     #   return sum(m.cp[g,t] + m.cSU[g,t] * m.v[g,t] + m.mpc[g] * m.u[g,t] for g in m.G for t in m.T) \ #Costo sin piecewise
-        return sum(m.cp[g,t] + m.cSU[g,t] * 1        + m.mpc[g] * m.u[g,t] for g in m.G for t in m.T) \
+        #return sum(m.cp[g,t] + m.cSU[g,t] * 1        + m.mpc[g] * m.u[g,t] for g in m.G for t in m.T) \
+        return m.total_cSU + sum( m.cp[g,t]           + m.mpc[g] * m.u[g,t] for g in m.G for t in m.T) \
             #  + 0 
             #  + sum(m.sR[t]   * CLP                                         for t in m.T) \
             #  + sum(m.sn[t]   * CRP                                         for t in m.T) 
@@ -120,6 +122,12 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,Pb,C,Cs,Tmin,op
     model.obj = pyo.Objective(rule = obj_rule)
 
 
+    ## -----------------------------TOTAL COSTOS ARRANQUE------------------------------------------  
+    def total_cSU_rule(m):  ## 
+        return m.total_cSU == sum( m.cSU[g,t] * 1 for g in m.G for t in m.T)
+    model.total_cSU_ = pyo.Constraint(rule = total_cSU_rule)    
+    
+    
     ## -----------------------------GARVER------------------------------------------  
 
     def logical_rule(m,g,t):    # logical eq.(2)
@@ -274,26 +282,27 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,Pb,C,Cs,Tmin,op
     
     ## ----------------------------VARIABLE START-UP COST-------------------------------------------     
     
-    def Start_up_cost54(m,g,t,s):  ##  start-up cost eq.(54)
-        if (s < value(len(m.S[g])) and t >= m.Tmin[g,s+1]):
-            return m.delta[g,t,s] <= sum(m.w[g,t-i] for i in range(m.Tmin[g,s],m.Tmin[g,s+1] ))   
+    def Start_up_cost54(m,g,t,s):  ##  start-up cost eq.(54) 
+        #if s < value(len(m.S[g])) :#and t >= m.Tmin[g,s+1]: 
+        if s < value(len(m.S[g])) and  t >= m.Tmin[g,s]:
+            return m.delta[g,t,s] <= sum(m.w[g,t-i] for i in range(m.Tmin[g,s],m.Tmin[g,s+1] ))  #CHECAR A MANO !!!! 
         else:
             return pyo.Constraint.Skip                                   
     model.Start_up_cost54 = pyo.Constraint(model.indexGTSg, rule = Start_up_cost54)
     
     def Start_up_cost57(m,g,t):  ##  start-up cost eq.(57)
-        return m.v[g,t] >= sum(m.delta[g,t,s] for s in range(1,value(len(m.S[g])) ))  
+        return m.v[g,t] >= sum(m.delta[g,t,s] for s in range(1,value(len(m.S[g])) )) 
     model.Start_up_cost57 = pyo.Constraint(model.G,model.T, rule = Start_up_cost57)
             
     def Start_up_cost58(m,g,t):  ##  start-up cost eq.(58)
-        return m.cSU[g,t] == m.Cs[g,value(len(m.S[g]))]*m.v[g,t] - sum(((m.Cs[g,value(len(S[g]))]-m.Cs[g,s])*m.delta[g,t,s]) for s in range(1,value(len(m.S[g]))-1 ))  
+        return m.cSU[g,t] == m.Cs[g,value(len(m.S[g]))]*m.v[g,t] - sum(((m.Cs[g,value(len(S[g]))]-m.Cs[g,s])*m.delta[g,t,s]) for s in range(1,value(len(m.S[g]))  ))  
     model.Start_up_cost58 = pyo.Constraint(model.G,model.T, rule = Start_up_cost58)   
     
-    ## ---------------------------- Inequality in delta and v ------------------------------------------
+    ## ---------------------------- Inequality related with 'delta' and 'v' ------------------------------------------
     
     if option == 'Ineq':    
         def Start_up_cost_desigualdad_Uriel(m,g):  ##  start-up cost eq.(54)(s < value(len(m.S[g])) and t >= m.Tmin[g,s+1]):
-            return sum(m.v[g,t] for t in m.T) >= sum(m.delta[g,t,s] for s in range(1,value(len(m.S[g]))+1) for t in m.T)  
+            return sum(m.v[g,t] for t in m.T) == sum(m.delta[g,t,s] for s in range(1,value(len(m.S[g]))+1) for t in m.T)  
         model.Start_up_cost_desigualdad_Uriel = pyo.Constraint(model.G,rule = Start_up_cost_desigualdad_Uriel)
     
 
