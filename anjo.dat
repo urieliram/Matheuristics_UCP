@@ -1,4 +1,4 @@
-z:9650.0
+z:9666.0
 g,t,u,v,w,p
 0,0,1,0,0,170.0
 1,0,1,1,0,70.0
@@ -158,12 +158,12 @@ TIME,s,sR
     Cs : Size=14, Index=indexGSg, Domain=Any, Default=None, Mutable=False
         Key    : Value
         (1, 1) :  800.0
-        (1, 2) :  800.0
-        (1, 3) :  800.0
+        (1, 2) :  850.0
+        (1, 3) :  900.0
         (2, 1) :  500.0
-        (2, 2) :  500.0
-        (2, 3) :  500.0
-        (3, 1) :   25.0
+        (2, 2) :  550.0
+        (2, 3) :  600.0
+        (3, 1) :   33.0
         (3, 2) :  250.0
         (3, 3) :  500.0
         (3, 4) : 1000.0
@@ -281,7 +281,7 @@ TIME,s,sR
           2 :     0
           3 :     0
 
-17 Var Declarations
+18 Var Declarations
     cSD : Size=18, Index=cSD_index
         Key    : Lower : Value : Upper     : Fixed : Stale : Domain
         (1, 1) :   0.0 :  None : 9999999.0 : False :  True :  Reals
@@ -309,18 +309,18 @@ TIME,s,sR
         (1, 3) :   0.0 :   0.0 : 9999999.0 : False : False :  Reals
         (1, 4) :   0.0 :   0.0 : 9999999.0 : False : False :  Reals
         (1, 5) :   0.0 :   0.0 : 9999999.0 : False : False :  Reals
-        (1, 6) :   0.0 :   0.0 : 9999999.0 : False : False :  Reals
+        (1, 6) :   0.0 :  -0.0 : 9999999.0 : False : False :  Reals
         (2, 1) :   0.0 : 500.0 : 9999999.0 : False : False :  Reals
         (2, 2) :   0.0 :   0.0 : 9999999.0 : False : False :  Reals
         (2, 3) :   0.0 :   0.0 : 9999999.0 : False : False :  Reals
         (2, 4) :   0.0 :   0.0 : 9999999.0 : False : False :  Reals
         (2, 5) :   0.0 :   0.0 : 9999999.0 : False : False :  Reals
-        (2, 6) :   0.0 :   0.0 : 9999999.0 : False : False :  Reals
+        (2, 6) :   0.0 :  -0.0 : 9999999.0 : False : False :  Reals
         (3, 1) :   0.0 :   0.0 : 9999999.0 : False : False :  Reals
-        (3, 2) :   0.0 :  25.0 : 9999999.0 : False : False :  Reals
+        (3, 2) :   0.0 :  33.0 : 9999999.0 : False : False :  Reals
         (3, 3) :   0.0 :  -0.0 : 9999999.0 : False : False :  Reals
         (3, 4) :   0.0 :  -0.0 : 9999999.0 : False : False :  Reals
-        (3, 5) :   0.0 :  25.0 : 9999999.0 : False : False :  Reals
+        (3, 5) :   0.0 :  33.0 : 9999999.0 : False : False :  Reals
         (3, 6) :   0.0 :  -0.0 : 9999999.0 : False : False :  Reals
     cp : Size=18, Index=cp_index
         Key    : Lower : Value : Upper     : Fixed : Stale : Domain
@@ -359,10 +359,10 @@ TIME,s,sR
         (1, 5, 1) :     0 :   0.0 :     1 : False : False : Binary
         (1, 5, 2) :     0 :   0.0 :     1 : False : False : Binary
         (1, 5, 3) :     0 :  None :     1 : False :  True : Binary
-        (1, 6, 1) :     0 :   0.0 :     1 : False : False : Binary
+        (1, 6, 1) :     0 :  -0.0 :     1 : False : False : Binary
         (1, 6, 2) :     0 :   0.0 :     1 : False : False : Binary
         (1, 6, 3) :     0 :  None :     1 : False :  True : Binary
-        (2, 1, 1) :     0 :   0.0 :     1 : False : False : Binary
+        (2, 1, 1) :     0 :   1.0 :     1 : False : False : Binary
         (2, 1, 2) :     0 :   0.0 :     1 : False : False : Binary
         (2, 1, 3) :     0 :  None :     1 : False :  True : Binary
         (2, 2, 1) :     0 :   0.0 :     1 : False : False : Binary
@@ -377,8 +377,8 @@ TIME,s,sR
         (2, 5, 1) :     0 :   0.0 :     1 : False : False : Binary
         (2, 5, 2) :     0 :   0.0 :     1 : False : False : Binary
         (2, 5, 3) :     0 :  None :     1 : False :  True : Binary
-        (2, 6, 1) :     0 :   0.0 :     1 : False : False : Binary
-        (2, 6, 2) :     0 :   0.0 :     1 : False : False : Binary
+        (2, 6, 1) :     0 :  -0.0 :     1 : False : False : Binary
+        (2, 6, 2) :     0 :  -0.0 :     1 : False : False : Binary
         (2, 6, 3) :     0 :  None :     1 : False :  True : Binary
         (3, 1, 1) :     0 :   0.0 :     1 : False : False : Binary
         (3, 1, 2) :     0 :  -0.0 :     1 : False : False : Binary
@@ -386,7 +386,7 @@ TIME,s,sR
         (3, 1, 4) :     0 :  -0.0 :     1 : False : False : Binary
         (3, 1, 5) :     0 :  -0.0 :     1 : False : False : Binary
         (3, 1, 6) :     0 :  -0.0 :     1 : False : False : Binary
-        (3, 1, 7) :     0 :   0.0 :     1 : False : False : Binary
+        (3, 1, 7) :     0 :  -0.0 :     1 : False : False : Binary
         (3, 1, 8) :     0 :  None :     1 : False :  True : Binary
         (3, 2, 1) :     0 :   1.0 :     1 : False : False : Binary
         (3, 2, 2) :     0 :  -0.0 :     1 : False : False : Binary
@@ -394,23 +394,23 @@ TIME,s,sR
         (3, 2, 4) :     0 :  -0.0 :     1 : False : False : Binary
         (3, 2, 5) :     0 :  -0.0 :     1 : False : False : Binary
         (3, 2, 6) :     0 :  -0.0 :     1 : False : False : Binary
-        (3, 2, 7) :     0 :   0.0 :     1 : False : False : Binary
+        (3, 2, 7) :     0 :  -0.0 :     1 : False : False : Binary
         (3, 2, 8) :     0 :  None :     1 : False :  True : Binary
         (3, 3, 1) :     0 :   0.0 :     1 : False : False : Binary
-        (3, 3, 2) :     0 :   0.0 :     1 : False : False : Binary
-        (3, 3, 3) :     0 :  -0.0 :     1 : False : False : Binary
+        (3, 3, 2) :     0 :  -0.0 :     1 : False : False : Binary
+        (3, 3, 3) :     0 :   0.0 :     1 : False : False : Binary
         (3, 3, 4) :     0 :  -0.0 :     1 : False : False : Binary
         (3, 3, 5) :     0 :  -0.0 :     1 : False : False : Binary
         (3, 3, 6) :     0 :  -0.0 :     1 : False : False : Binary
-        (3, 3, 7) :     0 :   0.0 :     1 : False : False : Binary
+        (3, 3, 7) :     0 :  -0.0 :     1 : False : False : Binary
         (3, 3, 8) :     0 :  None :     1 : False :  True : Binary
-        (3, 4, 1) :     0 :  -0.0 :     1 : False : False : Binary
+        (3, 4, 1) :     0 :   0.0 :     1 : False : False : Binary
         (3, 4, 2) :     0 :   0.0 :     1 : False : False : Binary
-        (3, 4, 3) :     0 :   0.0 :     1 : False : False : Binary
+        (3, 4, 3) :     0 :  -0.0 :     1 : False : False : Binary
         (3, 4, 4) :     0 :  -0.0 :     1 : False : False : Binary
-        (3, 4, 5) :     0 :  -0.0 :     1 : False : False : Binary
+        (3, 4, 5) :     0 :   0.0 :     1 : False : False : Binary
         (3, 4, 6) :     0 :  -0.0 :     1 : False : False : Binary
-        (3, 4, 7) :     0 :   0.0 :     1 : False : False : Binary
+        (3, 4, 7) :     0 :  -0.0 :     1 : False : False : Binary
         (3, 4, 8) :     0 :  None :     1 : False :  True : Binary
         (3, 5, 1) :     0 :   1.0 :     1 : False : False : Binary
         (3, 5, 2) :     0 :   0.0 :     1 : False : False : Binary
@@ -418,14 +418,14 @@ TIME,s,sR
         (3, 5, 4) :     0 :  -0.0 :     1 : False : False : Binary
         (3, 5, 5) :     0 :  -0.0 :     1 : False : False : Binary
         (3, 5, 6) :     0 :  -0.0 :     1 : False : False : Binary
-        (3, 5, 7) :     0 :   0.0 :     1 : False : False : Binary
+        (3, 5, 7) :     0 :  -0.0 :     1 : False : False : Binary
         (3, 5, 8) :     0 :  None :     1 : False :  True : Binary
         (3, 6, 1) :     0 :  -0.0 :     1 : False : False : Binary
         (3, 6, 2) :     0 :  -0.0 :     1 : False : False : Binary
         (3, 6, 3) :     0 :  -0.0 :     1 : False : False : Binary
         (3, 6, 4) :     0 :   0.0 :     1 : False : False : Binary
         (3, 6, 5) :     0 :  -0.0 :     1 : False : False : Binary
-        (3, 6, 6) :     0 :   0.0 :     1 : False : False : Binary
+        (3, 6, 6) :     0 :  -0.0 :     1 : False : False : Binary
         (3, 6, 7) :     0 :   0.0 :     1 : False : False : Binary
         (3, 6, 8) :     0 :  None :     1 : False :  True : Binary
     p : Size=18, Index=p_index
@@ -510,15 +510,15 @@ TIME,s,sR
         (3, 6) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
     pl : Size=60, Index=indexGTLg
         Key       : Lower : Value            : Upper   : Fixed : Stale : Domain
-        (1, 1, 1) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-        (1, 1, 2) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-        (1, 1, 3) :   0.0 :             90.0 : 99999.0 : False : False :  Reals
+        (1, 1, 1) :   0.0 :             20.0 : 99999.0 : False : False :  Reals
+        (1, 1, 2) :   0.0 :             70.0 : 99999.0 : False : False :  Reals
+        (1, 1, 3) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
         (1, 2, 1) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-        (1, 2, 2) :   0.0 :             70.0 : 99999.0 : False : False :  Reals
-        (1, 2, 3) :   0.0 :             20.0 : 99999.0 : False : False :  Reals
-        (1, 3, 1) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
+        (1, 2, 2) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
+        (1, 2, 3) :   0.0 :             90.0 : 99999.0 : False : False :  Reals
+        (1, 3, 1) :   0.0 :            120.0 : 99999.0 : False : False :  Reals
         (1, 3, 2) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-        (1, 3, 3) :   0.0 :            120.0 : 99999.0 : False : False :  Reals
+        (1, 3, 3) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
         (1, 4, 1) :   0.0 : 19.9999999999999 : 99999.0 : False : False :  Reals
         (1, 4, 2) :   0.0 :             70.0 : 99999.0 : False : False :  Reals
         (1, 4, 3) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
@@ -622,6 +622,9 @@ TIME,s,sR
           4 :   0.0 :  None : 9999999.0 : False :  True :  Reals
           5 :   0.0 :  None : 9999999.0 : False :  True :  Reals
           6 :   0.0 :  None : 9999999.0 : False :  True :  Reals
+    total_cSU : Size=1, Index=None
+        Key  : Lower : Value : Upper          : Fixed : Stale : Domain
+        None :   0.0 : 566.0 : 999999999999.0 : False : False :  Reals
     u : Size=18, Index=u_index
         Key    : Lower : Value : Upper : Fixed : Stale : Domain
         (1, 1) :     0 :   1.0 :     1 : False : False : Binary
@@ -686,9 +689,9 @@ TIME,s,sR
 1 Objective Declarations
     obj : Size=1, Index=None, Active=True
         Key  : Active : Sense    : Expression
-        None :   True : minimize : cp[1,1] + cSU[1,1] + 400.0*u[1,1] + cp[1,2] + cSU[1,2] + 400.0*u[1,2] + cp[1,3] + cSU[1,3] + 400.0*u[1,3] + cp[1,4] + cSU[1,4] + 400.0*u[1,4] + cp[1,5] + cSU[1,5] + 400.0*u[1,5] + cp[1,6] + cSU[1,6] + 400.0*u[1,6] + cp[2,1] + cSU[2,1] + 750.0*u[2,1] + cp[2,2] + cSU[2,2] + 750.0*u[2,2] + cp[2,3] + cSU[2,3] + 750.0*u[2,3] + cp[2,4] + cSU[2,4] + 750.0*u[2,4] + cp[2,5] + cSU[2,5] + 750.0*u[2,5] + cp[2,6] + cSU[2,6] + 750.0*u[2,6] + cp[3,1] + cSU[3,1] + 900.0*u[3,1] + cp[3,2] + cSU[3,2] + 900.0*u[3,2] + cp[3,3] + cSU[3,3] + 900.0*u[3,3] + cp[3,4] + cSU[3,4] + 900.0*u[3,4] + cp[3,5] + cSU[3,5] + 900.0*u[3,5] + cp[3,6] + cSU[3,6] + 900.0*u[3,6]
+        None :   True : minimize : cp[1,1] + 400.0*u[1,1] + cp[1,2] + 400.0*u[1,2] + cp[1,3] + 400.0*u[1,3] + cp[1,4] + 400.0*u[1,4] + cp[1,5] + 400.0*u[1,5] + cp[1,6] + 400.0*u[1,6] + cp[2,1] + 750.0*u[2,1] + cp[2,2] + 750.0*u[2,2] + cp[2,3] + 750.0*u[2,3] + cp[2,4] + 750.0*u[2,4] + cp[2,5] + 750.0*u[2,5] + cp[2,6] + 750.0*u[2,6] + cp[3,1] + 900.0*u[3,1] + cp[3,2] + 900.0*u[3,2] + cp[3,3] + 900.0*u[3,3] + cp[3,4] + 900.0*u[3,4] + cp[3,5] + 900.0*u[3,5] + cp[3,6] + 900.0*u[3,6] + total_cSU
 
-25 Constraint Declarations
+26 Constraint Declarations
     Piecewise_offer42 : Size=42, Index=indexGTLg, Active=True
         Key       : Lower : Body                   : Upper : Active
         (1, 1, 2) :  -Inf :  pl[1,1,2] - 70*u[1,1] :   0.0 :   True
@@ -820,25 +823,25 @@ TIME,s,sR
         (3, 5) :  -Inf : delta[3,5,1] + delta[3,5,2] + delta[3,5,3] + delta[3,5,4] + delta[3,5,5] + delta[3,5,6] + delta[3,5,7] - v[3,5] :   0.0 :   True
         (3, 6) :  -Inf : delta[3,6,1] + delta[3,6,2] + delta[3,6,3] + delta[3,6,4] + delta[3,6,5] + delta[3,6,6] + delta[3,6,7] - v[3,6] :   0.0 :   True
     Start_up_cost58 : Size=18, Index=Start_up_cost58_index, Active=True
-        Key    : Lower : Body                                                                                                                                                           : Upper : Active
-        (1, 1) :   0.0 :                                                                                                                                        cSU[1,1] - 800.0*v[1,1] :   0.0 :   True
-        (1, 2) :   0.0 :                                                                                                                                        cSU[1,2] - 800.0*v[1,2] :   0.0 :   True
-        (1, 3) :   0.0 :                                                                                                                                        cSU[1,3] - 800.0*v[1,3] :   0.0 :   True
-        (1, 4) :   0.0 :                                                                                                                                        cSU[1,4] - 800.0*v[1,4] :   0.0 :   True
-        (1, 5) :   0.0 :                                                                                                                                        cSU[1,5] - 800.0*v[1,5] :   0.0 :   True
-        (1, 6) :   0.0 :                                                                                                                                        cSU[1,6] - 800.0*v[1,6] :   0.0 :   True
-        (2, 1) :   0.0 :                                                                                                                                        cSU[2,1] - 500.0*v[2,1] :   0.0 :   True
-        (2, 2) :   0.0 :                                                                                                                                        cSU[2,2] - 500.0*v[2,2] :   0.0 :   True
-        (2, 3) :   0.0 :                                                                                                                                        cSU[2,3] - 500.0*v[2,3] :   0.0 :   True
-        (2, 4) :   0.0 :                                                                                                                                        cSU[2,4] - 500.0*v[2,4] :   0.0 :   True
-        (2, 5) :   0.0 :                                                                                                                                        cSU[2,5] - 500.0*v[2,5] :   0.0 :   True
-        (2, 6) :   0.0 :                                                                                                                                        cSU[2,6] - 500.0*v[2,6] :   0.0 :   True
-        (3, 1) :   0.0 : cSU[3,1] - (2000.0*v[3,1] - (1975.0*delta[3,1,1] + 1750.0*delta[3,1,2] + 1500.0*delta[3,1,3] + 1000.0*delta[3,1,4] + 800.0*delta[3,1,5] + 700.0*delta[3,1,6])) :   0.0 :   True
-        (3, 2) :   0.0 : cSU[3,2] - (2000.0*v[3,2] - (1975.0*delta[3,2,1] + 1750.0*delta[3,2,2] + 1500.0*delta[3,2,3] + 1000.0*delta[3,2,4] + 800.0*delta[3,2,5] + 700.0*delta[3,2,6])) :   0.0 :   True
-        (3, 3) :   0.0 : cSU[3,3] - (2000.0*v[3,3] - (1975.0*delta[3,3,1] + 1750.0*delta[3,3,2] + 1500.0*delta[3,3,3] + 1000.0*delta[3,3,4] + 800.0*delta[3,3,5] + 700.0*delta[3,3,6])) :   0.0 :   True
-        (3, 4) :   0.0 : cSU[3,4] - (2000.0*v[3,4] - (1975.0*delta[3,4,1] + 1750.0*delta[3,4,2] + 1500.0*delta[3,4,3] + 1000.0*delta[3,4,4] + 800.0*delta[3,4,5] + 700.0*delta[3,4,6])) :   0.0 :   True
-        (3, 5) :   0.0 : cSU[3,5] - (2000.0*v[3,5] - (1975.0*delta[3,5,1] + 1750.0*delta[3,5,2] + 1500.0*delta[3,5,3] + 1000.0*delta[3,5,4] + 800.0*delta[3,5,5] + 700.0*delta[3,5,6])) :   0.0 :   True
-        (3, 6) :   0.0 : cSU[3,6] - (2000.0*v[3,6] - (1975.0*delta[3,6,1] + 1750.0*delta[3,6,2] + 1500.0*delta[3,6,3] + 1000.0*delta[3,6,4] + 800.0*delta[3,6,5] + 700.0*delta[3,6,6])) :   0.0 :   True
+        Key    : Lower : Body                                                                                                                                                                                : Upper : Active
+        (1, 1) :   0.0 :                                                                                                                cSU[1,1] - (900.0*v[1,1] - (100.0*delta[1,1,1] + 50.0*delta[1,1,2])) :   0.0 :   True
+        (1, 2) :   0.0 :                                                                                                                cSU[1,2] - (900.0*v[1,2] - (100.0*delta[1,2,1] + 50.0*delta[1,2,2])) :   0.0 :   True
+        (1, 3) :   0.0 :                                                                                                                cSU[1,3] - (900.0*v[1,3] - (100.0*delta[1,3,1] + 50.0*delta[1,3,2])) :   0.0 :   True
+        (1, 4) :   0.0 :                                                                                                                cSU[1,4] - (900.0*v[1,4] - (100.0*delta[1,4,1] + 50.0*delta[1,4,2])) :   0.0 :   True
+        (1, 5) :   0.0 :                                                                                                                cSU[1,5] - (900.0*v[1,5] - (100.0*delta[1,5,1] + 50.0*delta[1,5,2])) :   0.0 :   True
+        (1, 6) :   0.0 :                                                                                                                cSU[1,6] - (900.0*v[1,6] - (100.0*delta[1,6,1] + 50.0*delta[1,6,2])) :   0.0 :   True
+        (2, 1) :   0.0 :                                                                                                                cSU[2,1] - (600.0*v[2,1] - (100.0*delta[2,1,1] + 50.0*delta[2,1,2])) :   0.0 :   True
+        (2, 2) :   0.0 :                                                                                                                cSU[2,2] - (600.0*v[2,2] - (100.0*delta[2,2,1] + 50.0*delta[2,2,2])) :   0.0 :   True
+        (2, 3) :   0.0 :                                                                                                                cSU[2,3] - (600.0*v[2,3] - (100.0*delta[2,3,1] + 50.0*delta[2,3,2])) :   0.0 :   True
+        (2, 4) :   0.0 :                                                                                                                cSU[2,4] - (600.0*v[2,4] - (100.0*delta[2,4,1] + 50.0*delta[2,4,2])) :   0.0 :   True
+        (2, 5) :   0.0 :                                                                                                                cSU[2,5] - (600.0*v[2,5] - (100.0*delta[2,5,1] + 50.0*delta[2,5,2])) :   0.0 :   True
+        (2, 6) :   0.0 :                                                                                                                cSU[2,6] - (600.0*v[2,6] - (100.0*delta[2,6,1] + 50.0*delta[2,6,2])) :   0.0 :   True
+        (3, 1) :   0.0 : cSU[3,1] - (2000.0*v[3,1] - (1967.0*delta[3,1,1] + 1750.0*delta[3,1,2] + 1500.0*delta[3,1,3] + 1000.0*delta[3,1,4] + 800.0*delta[3,1,5] + 700.0*delta[3,1,6] + 500.0*delta[3,1,7])) :   0.0 :   True
+        (3, 2) :   0.0 : cSU[3,2] - (2000.0*v[3,2] - (1967.0*delta[3,2,1] + 1750.0*delta[3,2,2] + 1500.0*delta[3,2,3] + 1000.0*delta[3,2,4] + 800.0*delta[3,2,5] + 700.0*delta[3,2,6] + 500.0*delta[3,2,7])) :   0.0 :   True
+        (3, 3) :   0.0 : cSU[3,3] - (2000.0*v[3,3] - (1967.0*delta[3,3,1] + 1750.0*delta[3,3,2] + 1500.0*delta[3,3,3] + 1000.0*delta[3,3,4] + 800.0*delta[3,3,5] + 700.0*delta[3,3,6] + 500.0*delta[3,3,7])) :   0.0 :   True
+        (3, 4) :   0.0 : cSU[3,4] - (2000.0*v[3,4] - (1967.0*delta[3,4,1] + 1750.0*delta[3,4,2] + 1500.0*delta[3,4,3] + 1000.0*delta[3,4,4] + 800.0*delta[3,4,5] + 700.0*delta[3,4,6] + 500.0*delta[3,4,7])) :   0.0 :   True
+        (3, 5) :   0.0 : cSU[3,5] - (2000.0*v[3,5] - (1967.0*delta[3,5,1] + 1750.0*delta[3,5,2] + 1500.0*delta[3,5,3] + 1000.0*delta[3,5,4] + 800.0*delta[3,5,5] + 700.0*delta[3,5,6] + 500.0*delta[3,5,7])) :   0.0 :   True
+        (3, 6) :   0.0 : cSU[3,6] - (2000.0*v[3,6] - (1967.0*delta[3,6,1] + 1750.0*delta[3,6,2] + 1500.0*delta[3,6,3] + 1000.0*delta[3,6,4] + 800.0*delta[3,6,5] + 700.0*delta[3,6,6] + 500.0*delta[3,6,7])) :   0.0 :   True
     demand_reserve : Size=6, Index=T, Active=True
         Key : Lower : Body                     : Upper : Active
           1 :  10.0 : r[1,1] + r[2,1] + r[3,1] :  +Inf :   True
@@ -1089,6 +1092,9 @@ TIME,s,sR
         (3, 4) :  -Inf : pc[3,4] + r[3,4] - (70.0*u[3,4] - 60.0*v[3,4]) :   0.0 :   True
         (3, 5) :  -Inf : pc[3,5] + r[3,5] - (70.0*u[3,5] - 60.0*v[3,5]) :   0.0 :   True
         (3, 6) :  -Inf : pc[3,6] + r[3,6] - (70.0*u[3,6] - 60.0*v[3,6]) :   0.0 :   True
+    total_cSU_ : Size=1, Index=None, Active=True
+        Key  : Lower : Body                                                                                                                                                                                                              : Upper : Active
+        None :   0.0 : total_cSU - (cSU[1,1] + cSU[1,2] + cSU[1,3] + cSU[1,4] + cSU[1,5] + cSU[1,6] + cSU[2,1] + cSU[2,2] + cSU[2,3] + cSU[2,4] + cSU[2,5] + cSU[2,6] + cSU[3,1] + cSU[3,2] + cSU[3,3] + cSU[3,4] + cSU[3,5] + cSU[3,6]) :   0.0 :   True
     up_ramp_rule35 : Size=18, Index=up_ramp_rule35_index, Active=True
         Key    : Lower : Body                                         : Upper : Active
         (1, 1) :  -Inf :      pc[1,1] - 40 - (-30*v[1,1] + 50*u[1,1]) :   0.0 :   True
@@ -1110,4 +1116,4 @@ TIME,s,sR
         (3, 5) :  -Inf : pc[3,5] - pc[3,4] - (-60*v[3,5] + 70*u[3,5]) :   0.0 :   True
         (3, 6) :  -Inf : pc[3,6] - pc[3,5] - (-60*v[3,6] + 70*u[3,6]) :   0.0 :   True
 
-99 Declarations: G T L S Pmax Pmin UT DT De R u_0 D U SU SD RU RD pc_0 mpc indexGTLg indexGLg indexGTSg indexGSg u_index u v_index v w_index w delta p_index p pb_index pb pbc_index pbc pc_index pc r_index r cp_index cp cSU_index cSU cSD_index cSD snplus snminus sn sR pl Pb C Cs Tmin obj logical_index logical pow_igual_index pow_igual pow_igual2_index pow_igual2 pow_igual3_index pow_igual3 pow_igual4_index pow_igual4 pow_igual5_index pow_igual5 pow_igual6_index pow_igual6 sdsu_ramp_rule20_index sdsu_ramp_rule20 su_ramp_rule21a_index su_ramp_rule21a sd_ramp_rule21b_index sd_ramp_rule21b up_ramp_rule35_index up_ramp_rule35 down_ramp_rule36_index down_ramp_rule36 demand_rule65 demand_rule67 demand_reserve mut_index mut mdt_index mdt mdt2 mut2 Piecewise_offer42 Piecewise_offer43_index Piecewise_offer43 Piecewise_offer44_index Piecewise_offer44 Start_up_cost54 Start_up_cost57_index Start_up_cost57 Start_up_cost58_index Start_up_cost58
+101 Declarations: G T L S Pmax Pmin UT DT De R u_0 D U SU SD RU RD pc_0 mpc indexGTLg indexGLg indexGTSg indexGSg u_index u v_index v w_index w delta p_index p pb_index pb pbc_index pbc pc_index pc r_index r cp_index cp cSU_index cSU cSD_index cSD snplus snminus sn sR pl total_cSU Pb C Cs Tmin obj total_cSU_ logical_index logical pow_igual_index pow_igual pow_igual2_index pow_igual2 pow_igual3_index pow_igual3 pow_igual4_index pow_igual4 pow_igual5_index pow_igual5 pow_igual6_index pow_igual6 sdsu_ramp_rule20_index sdsu_ramp_rule20 su_ramp_rule21a_index su_ramp_rule21a sd_ramp_rule21b_index sd_ramp_rule21b up_ramp_rule35_index up_ramp_rule35 down_ramp_rule36_index down_ramp_rule36 demand_rule65 demand_rule67 demand_reserve mut_index mut mdt_index mdt mdt2 mut2 Piecewise_offer42 Piecewise_offer43_index Piecewise_offer43 Piecewise_offer44_index Piecewise_offer44 Start_up_cost54 Start_up_cost57_index Start_up_cost57 Start_up_cost58_index Start_up_cost58
