@@ -18,7 +18,7 @@ import math
 import pyomo.environ as pyo
 from   pyomo.environ import *
 
-def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,Pb,C,Cs,Tmin,option='None',
+def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,Pb,C,Cs,Tunder,option='None',
        fixed_Uu=[],No_fixed_Uu=[],lower_Pmin=[],fixed_V=[],fixed_W=[],fixed_delta=[],percent_lbc = 90,k=20,nameins='model'):
     
     ## Número de variables que pueden moverse en el Sub-milp
@@ -100,7 +100,7 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,Pb,C,Cs,Tmin,op
     model.Pb   = pyo.Param(model.indexGLg, initialize = Pb,   within = Any)
     model.C    = pyo.Param(model.indexGLg, initialize = C,    within = Any)
     model.Cs   = pyo.Param(model.indexGSg, initialize = Cs,   within = Any)
-    model.Tmin = pyo.Param(model.indexGSg, initialize = Tmin, within = Any)
+    model.Tunder = pyo.Param(model.indexGSg, initialize = Tunder, within = Any)
     
     ## model.mut2.pprint()        ## For entire Constraint List
     ## print(model.mut2[1].expr)  ## For only one index of Constraint List
@@ -282,14 +282,15 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,Pb,C,Cs,Tmin,op
     
     ## ----------------------------VARIABLE START-UP COST-------------------------------------------     
     
-    def Start_up_cost54(m,g,t,s):  ##  start-up cost eq.(54) 
-        #if s < value(len(m.S[g])) :#and t >= m.Tmin[g,s+1]: 
-        if s < value(len(m.S[g])) and  t >= m.Tmin[g,s]:
-            return m.delta[g,t,s] <= sum(m.w[g,t-i] for i in range(m.Tmin[g,s],m.Tmin[g,s+1] ))  #CHECAR A MANO !!!! 
+    def Start_up_cost54(m,g,t,s):  ##  start-up cost eq.(54)   #CHECAR A MANO !!!! 
+        #if s < value(len(m.S[g])) #and t >= m.Tunder[g,s+1]:  #CHECAR A MANO !!!! 
+        if s < value(len(m.S[g]))   and t >= m.Tunder[g,s+1]:  #CHECAR A MANO !!!! 
+            # print('s=',s,'t=',t)
+            return m.delta[g,t,s] <= sum(m.w[g,t-i] for i in range(m.Tunder[g,s],m.Tunder[g,s+1]))  #CHECAR A MANO !!!! 
         else:
             return pyo.Constraint.Skip                                   
     model.Start_up_cost54 = pyo.Constraint(model.indexGTSg, rule = Start_up_cost54)
-    
+
     def Start_up_cost57(m,g,t):  ##  start-up cost eq.(57)
         return m.v[g,t] >= sum(m.delta[g,t,s] for s in range(1,value(len(m.S[g])) )) 
     model.Start_up_cost57 = pyo.Constraint(model.G,model.T, rule = Start_up_cost57)
@@ -300,8 +301,8 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,Pb,C,Cs,Tmin,op
     
     ## ---------------------------- Inequality related with 'delta' and 'v' ------------------------------------------
     
-    if option == 'Ineq':    
-        def Start_up_cost_desigualdad_Uriel(m,g):  ##  start-up cost eq.(54)(s < value(len(m.S[g])) and t >= m.Tmin[g,s+1]):
+    if option == 'Milp2':    
+        def Start_up_cost_desigualdad_Uriel(m,g):  ##  start-up cost eq.(54)(s < value(len(m.S[g])) and t >= m.Tunder[g,s+1]):
             return sum(m.v[g,t] for t in m.T) == sum(m.delta[g,t,s] for s in range(1,value(len(m.S[g]))+1) for t in m.T)  
         model.Start_up_cost_desigualdad_Uriel = pyo.Constraint(model.G,rule = Start_up_cost_desigualdad_Uriel)
     
