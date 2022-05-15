@@ -9,25 +9,24 @@
 ## --------------------------------------------------------------------------------
 import time
 import sys
-import numpy as np 
+import numpy as np
+from sympy import solve_undetermined_coeffs 
 import uc_Co
 import util
 import reading
 from   solution import Solution
-      
-instancia = 'uc_52.json'       ## Infactible !!!  
-  
+        
 instancia = 'uc_6.json'        ## ejemplos regulares 5,6    
 instancia = 'uc_2.json'        ## ejemplos dificiles 2,3,4     
 instancia = 'uc_3.json'        ## ejemplos dificiles 2,3,4   
 instancia = 'uc_54.json'               
 instancia = 'uc_53.json'       ## ejemplo de 'delta' relajado diferente de uno  
 instancia = 'uc_47.json'       ## ejemplo sencillo  
-instancia = 'archivox.json'    ## ejemplos sencillo 
-instancia = 'uc_45.json'       ## ejemplo de batalla
+instancia = 'archivox.json'    ## ejemplo sencillo 
 instancia = 'anjos.json'       ## ejemplo de juguete
+instancia = 'uc_45.json'       ## ejemplo de batalla
 
-## Cragamos parámetros de configuración desde archivo <config>
+## Cargamos parámetros de configuración desde archivo <config>
 ambiente, ruta, executable, timelimit, gap = util.config_env()
 z_lp = 0;  z_milp = 0; z_milp2 = 0; z_hard = 0; z_harduvw=0; z_harduvwdel=0; z_soft = 0; z_softcut = 0; z_lbc = 0
 t_lp = 0;  t_milp = 0; t_milp2 = 0; t_hard = 0; t_harduvw=0; t_harduvwdel=0; t_soft = 0; t_softcut = 0; t_lbc = 0;
@@ -49,7 +48,7 @@ localtime = time.asctime(time.localtime(time.time()))
 print(localtime,'Solving --->',instancia)
 
 ## Lee instancia de archivo .json con formato de [Knueven2020]
-G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,Pb,C,mpc,Cs,Tmin,names = reading.reading(ruta+instancia)
+G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,Pb,C,mpc,Cs,Tunder,names = reading.reading(ruta+instancia)
 
 ## Lista de Parámetros
 ## relax    =  True    if the integer solution is relaxed.
@@ -64,51 +63,54 @@ G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,Pb,C,mpc,Cs,Tmin,names = r
 precargado, z_milp, z_hard, t_milp, t_hard = util.resultados_lp_milp(instancia,ambiente,gap,timelimit)
 
 
-## --------------------------------- MILP ---------------------------------------------
-
-## Solve as a MILP
-if 1 == 1: # and precargado == False  
-    t_o = time.time() 
-    model,xx = uc_Co.uc(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,Pb,C,Cs,Tmin,nameins=instancia[0:4])
-    sol_milp = Solution(model=model, nameins=instancia[0:4], env=ambiente, executable=executable, gap=gap, timelimit=timelimit,
-                          tee=False, tofiles=True, exportLP=False, exportFile=True)
-    z_milp = sol_milp.solve_problem()
-    t_milp = time.time() - t_o
-    print("t_milp = ", round(t_milp,1), "z_milp = ", round(z_milp,1), "total_costo_arr=",model.total_cSU.value)
-
-
-## --------------------------------- MILP + Inequality ----------------------------------------
-
-## Solve as a MILP with inequality
-if 1 == 1: # and precargado == False  
-    t_o = time.time() 
-    model,xx = uc_Co.uc(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,Pb,C,Cs,Tmin,option='Ineq',nameins=instancia[0:4])
-    
-    sol_milp2 = Solution(model=model, nameins=instancia[0:4], env=ambiente, executable=executable, gap=gap, timelimit=timelimit,
-                           tee=False, tofiles=False, exportLP=False, exportFile=False)
-    z_milp2 = sol_milp2.solve_problem()
-    t_milp2 = time.time() - t_o
-    print("t_milp2 = ", round(t_milp2,1), "z_milp2 = ", round(z_milp2,1), "total_costo_arr=",model.total_cSU.value)
-
-
 ## --------------------------------- LINEAR RELAXATION -----------------------------------------
 
 ## Relax as LP and solve it
 if 1 == 1:
     t_o = time.time() 
-    model,xx = uc_Co.uc(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,Pb,C,Cs,Tmin,option='relax',nameins=instancia[0:4])
+    model,xx = uc_Co.uc(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,Pb,C,Cs,Tunder,option='relax',nameins=instancia[0:4])
     sol_lp   = Solution(model=model, env=ambiente, executable=executable, nameins=instancia[0:4], gap=gap, timelimit=timelimit,
-                          tee=False, tofiles = False, exportFile=False)
+                          tee=False, tofiles = False)
     z_lp = sol_lp.solve_problem() 
     t_lp = time.time() - t_o
     print("t_lp = ", round(t_lp,1), "z_lp = ", round(z_lp,1))
     
     
+## --------------------------------- MILP ---------------------------------------------
+
+## Solve as a MILP
+if 1 == 1: 
+    t_o = time.time() 
+    model,xx = uc_Co.uc(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,Pb,C,Cs,Tunder,option=None,nameins=instancia[0:4])
+    sol_milp = Solution(model=model, nameins=instancia[0:4], env=ambiente, executable=executable, gap=gap, timelimit=timelimit,
+                          tee=False, tofiles=False, exportLP=False)
+    z_milp = sol_milp.solve_problem()
+    t_milp = time.time() - t_o
+    print("t_milp = ", round(t_milp,1), "z_milp = ", round(z_milp,1), "total_costo_arr=",model.total_cSU.value)
+    #sol_milp.send_to_File()
+
+
+## --------------------------------- MILP + Inequality ----------------------------------------
+
+## Solve as a MILP with valid inequality 
+if 1 == 1: 
+    t_o = time.time() 
+    model,xx = uc_Co.uc(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,Pb,C,Cs,Tunder,option='Milp2',nameins=instancia[0:4])
+    sol_milp2 = Solution(model=model, nameins=instancia[0:4], env=ambiente, executable=executable, gap=gap, timelimit=timelimit,
+                           tee=False, tofiles=False, exportLP=False)
+    z_milp2 = sol_milp2.solve_problem()
+    t_milp2 = time.time() - t_o
+    print("t_milp2 = ", round(t_milp2,1), "z_milp2 = ", round(z_milp2,1), "total_costo_arr=",model.total_cSU.value)
+
+    #sol_milp2.send_to_File(letra="a")
+    ## Compare two solutions 
+    sol_milp.compare(sol_milp2)
+    
 ## --------------------------------- SELECTION VARIABLES TO FIX -----------------------------------------
 
     ## Seleccionamos las variables que serán fijadas, se requiere correr antes <linear relaxation>
-    ## fixed_Uu     variables que Si serán fijadas a 1.
-    ## No_fixed_Uu  variables que No serán fijadas.
+    ## fixed_Uu     variables que SI serán fijadas a 1.
+    ## No_fixed_Uu  variables que NO serán fijadas.
     ## lower_Pmin   variables en que la potencia Pmin del generador fue menor a la mínima y No serán fijadas.
     fixed_Uu, No_fixed_Uu, lower_Pmin = sol_lp.select_fixed_variables_Uu()
     
@@ -124,7 +126,7 @@ if 1 == 1:
 # HARD-FIXING (only Uu) solution and solve the sub-MILP.
 if 1 == 0: # or precargado == False  
     t_o = time.time() 
-    model,xx = uc_Co.uc(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,Pb,C,Cs,Tmin,option='Hard',fixed_Uu=fixed_Uu,fixed_V=fixed_V,fixed_W=fixed_W,nameins=instancia[0:4])
+    model,xx = uc_Co.uc(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,Pb,C,Cs,Tunder,option='Hard',fixed_Uu=fixed_Uu,fixed_V=fixed_V,fixed_W=fixed_W,nameins=instancia[0:4])
     sol_hard = Solution(model=model, env=ambiente, executable=executable, nameins=instancia[0:4], gap=gap, timelimit=timelimit,
                         tee=False, tofiles=False)
     z_hard = sol_hard.solve_problem()
@@ -137,7 +139,7 @@ if 1 == 0: # or precargado == False
 # HARD-FIXING U,V,W solution and solve the sub-MILP.
 if 1 == 0: # or precargado == False
     t_o = time.time() 
-    model,xx = uc_Co.uc(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,Pb,C,Cs,Tmin,option='harduvwdel',fixed_Uu=fixed_Uu,fixed_V=fixed_V,fixed_W=fixed_W,fixed_delta=[],nameins=instancia[0:4])
+    model,xx = uc_Co.uc(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,Pb,C,Cs,Tunder,option='harduvwdel',fixed_Uu=fixed_Uu,fixed_V=fixed_V,fixed_W=fixed_W,fixed_delta=[],nameins=instancia[0:4])
     sol_harduvw = Solution(model=model, env=ambiente, executable=executable, nameins=instancia[0:4], gap=gap, timelimit=timelimit,
                              tee=False, tofiles=False)
     z_harduvw = sol_harduvw.solve_problem()
@@ -150,7 +152,7 @@ if 1 == 0: # or precargado == False
 # HARD-FIXING U,V,W y delta solution and solve the sub-MILP.
 if 1 == 0: # or precargado == False
     t_o = time.time() 
-    model,xx = uc_Co.uc(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,Pb,C,Cs,Tmin,option='harduvwdel',fixed_Uu=fixed_Uu,fixed_V=fixed_V,fixed_W=fixed_W,fixed_delta=fixed_delta,nameins=instancia[0:4])
+    model,xx = uc_Co.uc(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,Pb,C,Cs,Tunder,option='harduvwdel',fixed_Uu=fixed_Uu,fixed_V=fixed_V,fixed_W=fixed_W,fixed_delta=fixed_delta,nameins=instancia[0:4])
     sol_harduvwdel = Solution(model=model, env=ambiente, executable=executable, nameins=instancia[0:4], gap=gap, timelimit=timelimit,
                                 tee=False, tofiles=False)
     z_harduvwdel = sol_harduvwdel.solve_problem()
@@ -163,7 +165,7 @@ if 1 == 0: # or precargado == False
 ## SOFT-FIXING solution and solve the sub-MILP. (Versión sin actualizar el cut-off)
 if 1 == 0:
     t_o = time.time() 
-    model,xx = uc_Co.uc(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,Pb,C,Cs,Tmin,option='Soft',fixed_Uu=fixed_Uu,nameins=instancia[0:4])
+    model,xx = uc_Co.uc(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,Pb,C,Cs,Tunder,option='Soft',fixed_Uu=fixed_Uu,nameins=instancia[0:4])
     sol_soft = Solution(model=model, env=ambiente, executable=executable, nameins=instancia[0:4], gap=gap, timelimit=timelimit,
                           tee=False, tofiles=False)
     z_soft = sol_soft.solve_problem() 
@@ -179,7 +181,7 @@ if 1 == 0:
 ## Use 'Soft+pmin' if the lower subset of Uu-Pmin will be considered.
 if 1 == 0:
     t_o = time.time() 
-    model,xx    = uc_Co.uc(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,Pb,C,Cs,Tmin,option='Soft+pmin',fixed_Uu=fixed_Uu,nameins=instancia[0:4])
+    model,xx    = uc_Co.uc(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,Pb,C,Cs,Tunder,option='Soft+pmin',fixed_Uu=fixed_Uu,nameins=instancia[0:4])
     sol_softcut = Solution(model=model, env=ambiente, executable=executable, nameins=instancia[0:4], gap=gap, cutoff=z_hard, timelimit=timelimit,
                              tee=False, tofiles=False)
     z_softcut = sol_softcut.solve_problem() 
@@ -195,7 +197,7 @@ if 1 == 0:
 if 1 == 0:     
     t_o = time.time()   
     k   = len(lower_Pmin) # El valor de intentos de asignación está siendo usado para definir el parámetro k en el LBC. 
-    model,ns = uc_Co.uc(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,Pb,C,Cs,Tmin,option='LBC+pmin',fixed_Uu=fixed_Uu,No_fixed_Uu=No_fixed_Uu,
+    model,ns = uc_Co.uc(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,Pb,C,Cs,Tunder,option='LBC+pmin',fixed_Uu=fixed_Uu,No_fixed_Uu=No_fixed_Uu,
                         k=k, lower_Pmin=lower_Pmin, nameins=instancia[0:4])
     sol_lbc  = Solution(model=model, env=ambiente, executable=executable, nameins=instancia[0:4], gap=gap, cutoff=z_hard, timelimit=timelimit,
                           tee=False, tofiles=False)
@@ -204,38 +206,41 @@ if 1 == 0:
     print("t_lbc = ", round(t_lbc,1), "z_lbc = ", round(z_lbc,1),)
     # Imprimimos las posibles variables 'u' que podrían no sean enteras en la solución.
     nU_no_int, n_Uu_no_int , n_Uu_1_0 = sol_lbc.count_U_no_int()    
-        
-    # \todo{Verificar que las restricciones de arranque que usan delta en la formulación, se encontraron variables con valor None en la solución}
     
-    # \todo{subir el gap de 0.001 a 0.0001 implica un esfuerzo computacional mucho mayor}
-    # \todo{Calcular el tamaño del slack del subset Sbarra}
-    # \todo{Reducir tiempo de búsqueda o iteraciones en el solver}
-    # \todo{Cambiar valor de k en nuevas iteraciones con una búsqueda local (un LBC completo de A.Lodi)}
+    ## PENDIENTES
+    # \todo{Verificar que las restricciones de arranque que usan delta en la formulación, se encontraron variables con valor None en la solución}
+    # \todo{Revisar la desigualdad válida. El numero de 1´s de las variables de arranque 'V' en un horizonte deben ser igual al número de 1's en la variable delta}
+    # \todo{Fijar la solución entera y probar factibilidad}
+    # \todo{Verificar por qué la instancia uc_52.json es infactible}
+    # \todo{Comparar soluciones entre si en variables u,v,w y delta}
+    # \todo{Podrian fijarse todas las variables (u,v,w y delta) relacionadas con los generadores que se escogen para ser fijados}
+    # \todo{Preparar las instancias del WEM de México} 
+
+    ## PRUEBAS                
+    # \todo{Probar el efecto de la cota obtenida del hard-fix}
+    # \todo{Probar experimentalmente que fijar otras variables enteras además de Uu no impacta mucho}       
+    # \todo{probar que SI conviene incluir los intentos de asignación en las variables soft-fix }
+    # \todo{Probar modificar el tamaño de las variables soft-fix de 90% al 95%}
+    # \todo{Probar cambiar el valor de k en nuevas iteraciones con una búsqueda local (un LBC completo de A.Lodi)}        
+    # \todo{Probar subir el gap de 0.001 a 0.0001 implica un esfuerzo computacional mucho mayor}
+    # \todo{Probar reducir tiempo de búsqueda o iteraciones en el solver}
+    # \todo{Usar la solución factible hard como warm-start a otros métodos} 
+    # \todo{Probar tamaños del n_kernel (!!! al parecer influye mucho en el tiempo de búsqueda)} 
+    # \todo{Probar configuración feasibility vs optimality en el Solver )} 
+
+    ## IDEAS
     # \todo{Hacer un VNS o un VND con movimientos definidos con las variables}
     # \todo{Un movimiento en la búsqueda local puede ser cambiar la asignación del costo de arranque en un periodo adelante o atras para algunos generadores} 
-    # \todo{ Otro mivimiento puede ser fijar todas las variables relacionadas a un generador.}
-            
-    # \todo{EVALUAR SI NOS CONVIENE O NO INCLUIR LOS INTENTOS DE ASIGNACIÓN}}  
-    # \todo{Podrian disminuirse el tamaño de las variables soft de 90% al 95%}
-    
-    # \todo{Podrian fijarse otras variables además de Uu como U,V,W o delta}
     # \todo{Podríamos usar reglas parecidas al paper de Todosijevic para fijar V,W a partir de Uu}
-    # \todo{Podrian fijarse todas las variables (u,v,w y delta) relacionadas con los generadores que se escogen para ser fijados}
-    # \todo{Aplicar corte. numero de 1´s de las variables de arranque 'V' en un horizonte deben ser igual al número de 1's en la variable delta}
-    
-    # \todo{Hacer un KS completo de Guastaroba}
-    # \todo{Probar tamaños del n_kernel (!!! al parecer influye mucho en el tiempo de búsqueda)}  
-    # \todo{Podrian intentarse un KS puro fijando todas las variables (u,v,w y delta) relacionadas con los generadores que se escogen para ser fijados}
     # \todo{Un KS relajando y fijando grupos de variables a manera de buckets}
-    # \todo{Usar la solución factible hard como warm-start a otros métodos}  
-      
-    # \todo{Verificar por qué la instancia uc_52.json es infactible ???}
-    # \todo{Revisar factibilidad de la solución}
+
+    ## DESCARTES  
+    # \todo{Calcular el tamaño del slack del subset Sbarra}
     
-    # \todo{Evaluar el efecto de la cota obtenida del hard-fix} FUNCIONA
     
 ## --------------------------------- KERNEL SEARCH WITH + HARD-CUT-OFF -------------------
-
+# \todo{Podrian intentarse un KS puro fijando todas las variables (u,v,w y delta) relacionadas con los generadores que se escogen para ser fijados}
+# \todo{Hacer un mix de KS de Guastarobacon LB de A.Lodi}
 ## La versión básica de KS consiste en relajar la formulacion y a partir de ello sacar 
 ## las variables del kernel y de los buckets, después de manera iterativa se resulven los 
 ## SUB-MILP´S "restringidos" mas pequeños.
@@ -243,10 +248,10 @@ if 1 == 0:
 ## Use 'Soft+pmin' (lower subset of Uu-Pmin)  as the first and unique bucket to consider
 ## Use relax the integrality variable Uu.
  
- # PENDIENTE
+ # PENDIENTE POR TERMINAR 
 if 1 == 0:
     t_o = time.time() 
-    model,xx    = uc_Co.uc(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,Pb,C,Cs,Tmin,option='KS',fixed_Uu=fixed_Uu,nameins=instancia[0:4])
+    model,xx    = uc_Co.uc(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,Pb,C,Cs,Tunder,option='KS',fixed_Uu=fixed_Uu,nameins=instancia[0:4])
     sol_ks = Solution(model=model, env=ambiente, executable=executable, nameins=instancia[0:4], gap=gap, cutoff=z_hard, timelimit=timelimit,
                         tee=False, tofiles=False)
     z_ks = sol_ks.solve_problem() 
@@ -260,9 +265,9 @@ if 1 == 0:
 
 ## Append a list as new line to an old csv file using as log, the first line of the file as shown.
 ## 'ambiente,localtime,instancia,T,G,gap,timelimit,z_lp,z_hard,z_harduvw,z_harduvwdel,z_milp,z_soft,z_soft+cut,z_lbc,t_lp,t_hard,t_harduvw,t_harduvwdel,t_milp,t_soft,t_soft+cut,t_lbc,gapabs_z_lbc-z_milp,n_fixU,nU_no_int,n_Uu_no_int,n_Uu_1_0,k,bin_sup,comment'
-comment = 'hard-FIXING U,V,W,delta, Soft+pmin,LBC+pmin'
+comment = 'test MILP + new restriction'
 row = [ambiente,localtime,instancia,len(T),len(G),gap,timelimit,
        round(z_lp,1),round(z_hard,1),round(z_harduvw,1),round(z_harduvwdel,1),round(z_milp,1),round(z_milp2,1),round(z_soft,1),round(z_softcut,1),round(z_lbc,1),
        round(t_lp,1),round(t_hard,1),round(t_harduvw,1),round(t_harduvwdel,1),round(t_milp,1),round(t_milp2,1),round(t_soft,1),round(t_softcut,1),round(t_lbc,1),
-       round(((z_milp-z_softcut)/z_milp)*100,4),len(fixed_Uu),nU_no_int,n_Uu_no_int,n_Uu_1_0,k,ns,comment]
+       round(((z_milp-z_milp2)/z_milp)*100,6),len(fixed_Uu),nU_no_int,n_Uu_no_int,n_Uu_1_0,k,ns,comment]
 util.append_list_as_row('stat.csv',row)

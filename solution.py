@@ -3,13 +3,13 @@ import os
 import time
 import pyomo.environ as pyo
 import util
+import numpy as np
 from   pyomo.util.infeasible import log_infeasible_constraints
 from   pyomo.opt import SolverStatus, TerminationCondition
-import os
 
 class Solution:
-    def __init__(self,model,env,executable,nameins='model',gap=0.001,timelimit=300,tee=False,tofiles=False,lpmethod=0,
-                 cutoff=1e+75,exportLP=False,exportFile=False):
+    def __init__(self,model,env,executable,nameins='model',gap=0.0001,timelimit=300,tee=False,tofiles=False,lpmethod=0,
+                 cutoff=1e+75,exportLP=False):
         self.model      = model
         self.nameins    = nameins     ## name of instance 
         self.env        = env         ## enviroment  
@@ -17,11 +17,10 @@ class Solution:
         self.tee        = tee         ## True = activate log of CPLEX
         self.gap        = gap         ## relative gap in CPLEX
         self.timelimit  = timelimit   ## max time in CPLEX
-        self.tofiles    = tofiles     ## True = send to csv file the solution value of U,V,W,P,R 
+        self.tofiles    = tofiles     ## True = send to csv file the solution value of U,V,W,P,R exporta la solución a un formato .dat
         self.lpmethod   = lpmethod    ## 0=Automatic; 1,2= Primal and dual simplex; 3=Sifting; 4=Barrier, 5=Concurrent (Dual,Barrier, and Primal in opportunistic parallel mode; Dual and Barrier in deterministic parallel mode)
         self.cutoff     = cutoff      ## Agrega una cota superior factible, apara yudar a descartar nodos del árbol del B&B
         
-        self.exportFile = exportFile  ## True si se exporta la solución a un formato .dat
         self.exportLP   = exportLP    ## True si se exporta el modelo a formato LP y MPS
         self.gg         = len(model.G)
         self.tt         = len(model.T)
@@ -44,8 +43,8 @@ class Solution:
    
     def solve_problem(self):  
                 
-        existe = os.path.exists(self.executable)   
-        if existe:
+        exist = os.path.exists(self.executable)   
+        if exist:
             solver = pyo.SolverFactory('cplex',executable=self.executable) ## executable='/home/uriel/cplex1210/cplex/bin/x86-64_linux/cplex'
         else:
             solver = pyo.SolverFactory('cplex')
@@ -84,24 +83,6 @@ class Solution:
             print(">>> An exception occurred")
             print(e)
                 
-        if self.exportFile == True:    
-            file = open(self.nameins + '.dat', 'w')
-            file.write('z:%s\n' % (pyo.value(self.model.obj)))
-            file.write('g,t,u,v,w,p\n') 
-            
-            for t in range(0, self.tt):
-                for g in range(0, self.gg):
-                    file.write('%s,%s,%s,%s,%s,%s\n' %
-                    (int(g), int(t), int(self.model.u[(g+1, t+1)].value),int(self.model.v[(g+1, t+1)].value),int(self.model.w[(g+1, t+1)].value), self.model.p[(g+1, t+1)].value))
-
-            file.write('TIME,s,sR\n')
-            for t in range(1, self.tt+1):
-                file.write('%s,%s,%s,\n' %
-                (int(t), self.model.sn[t].value, self.model.sR[t].value))
-                
-            self.model.pprint(file)
-            file.close()
-
         # model.obj.pprint()     # Print the objetive function
         # model.demand.pprint()  # Print constraint
         # model.reserve.pprint() # Print constraint
@@ -154,15 +135,32 @@ class Solution:
         return z_exact
     
       
-    def send_to_File(self):     
-        util.sendtofilesolution(self.Uu    ,"U_"   + self.nameins + ".csv")
-        util.sendtofilesolution(self.V     ,"V_"   + self.nameins + ".csv")
-        util.sendtofilesolution(self.W     ,"W_"   + self.nameins + ".csv")
-        util.sendtofilesolution(self.P     ,"P_"   + self.nameins + ".csv")
-        util.sendtofilesolution(self.R     ,"R_"   + self.nameins + ".csv")
-        util.sendtofilesolution(self.delta ,"del_" + self.nameins + ".csv")
+    def send_to_File(self,letra=""):     
+        util.sendtofilesolution(self.Uu    ,"U_"   + self.nameins + letra +".csv")
+        util.sendtofilesolution(self.V     ,"V_"   + self.nameins + letra +".csv")
+        util.sendtofilesolution(self.W     ,"W_"   + self.nameins + letra +".csv")
+        util.sendtofilesolution(self.P     ,"P_"   + self.nameins + letra +".csv")
+        util.sendtofilesolution(self.R     ,"R_"   + self.nameins + letra +".csv")
+        util.sendtofilesolution(self.delta ,"del_" + self.nameins + letra +".csv")
+        
+        file = open(self.nameins + letra + '.dat', 'w')
+        file.write('z:%s\n' % (pyo.value(self.model.obj)))
+        file.write('g,t,u,v,w,p\n') 
+            
+        for t in range(0, self.tt):
+            for g in range(0, self.gg):
+                file.write('%s,%s,%s,%s,%s,%s\n' %
+                (int(g), int(t), int(self.model.u[(g+1, t+1)].value),int(self.model.v[(g+1, t+1)].value),int(self.model.w[(g+1, t+1)].value), self.model.p[(g+1, t+1)].value))
+
+        file.write('TIME,s,sR\n')
+        for t in range(1, self.tt+1):
+            file.write('%s,%s,%s,\n' %
+            (int(t), self.model.sn[t].value, self.model.sR[t].value))
+                
+        self.model.pprint(file)
+        file.close()
+        
         return 0
-    
     
     ## En esta función seleccionamos el conjunto de variables Uu que quedarán en uno para ser fijadas posteriormente.
     def select_fixed_variables_Uu(self):    
@@ -231,9 +229,9 @@ class Solution:
                 nulos = nulos + 1
             total = total + 1
                 
-        print('Total delta        =', total)  
-        print('Nulos delta        =', nulos)  
-        print('Fixed delta       >=', parameter,len(fixed_delta)-nulos)
+        print('Total delta   =', total)  
+        print('Nulos delta   =', nulos)  
+        print('Fixed delta  >=', parameter,len(fixed_delta)-nulos)
         
         return fixed_delta, No_fixed_delta
     
@@ -267,3 +265,15 @@ class Solution:
            
         return fixed_V, No_fixed_V, fixed_W, No_fixed_W
     
+    ## En esta función comparamos dos soluciones variable por variable.
+    def compare(self,sol2):
+        npArray1 = np.array([self.Uu])
+        npArray2 = np.array([sol2.Uu])
+        print(npArray1) 
+        print(npArray2) 
+        comparison = npArray1 == npArray2
+        equal_arrays = comparison.all() 
+        print('Uu equal_arrays  =',equal_arrays)
+        
+        out_num = np.subtract(npArray1, npArray2) 
+        print ("Uu Difference of two input number : ",type(out_num), out_num) 

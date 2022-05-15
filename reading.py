@@ -26,7 +26,7 @@ def reading(file):
     mpc     = {}   ## cost of generator g running and operating at minimum production Pmin ($/h).
     C       = {}   ## 
     Cs      = {}   ## Costo de cada escalón del conjunto S de la función de costo variable de arranque.
-    Tmin    = {}   ## lag de cada escalón del conjunto S de la función de costo variable de arranque.
+    Tunder    = {}   ## lag de cada escalón del conjunto S de la función de costo variable de arranque.
     Startup = {}   ## start-up  cost
         
     time_periods = md['time_periods']
@@ -156,7 +156,7 @@ def reading(file):
             if n==1:
                 mpc[k] = j[0]*j[1]
                 
-    ## Se extraen los diccionarios Tmin y Cs de la lista de listas Startup    
+    ## Se extraen los diccionarios Tunder y Cs de la lista de listas Startup    
     k=0; n=0
     for i in Startup:
         s=len(i)
@@ -165,7 +165,7 @@ def reading(file):
         for j in i:
             n=n+1
             # print(k,",",n,",",s,",",j[0],",",j[1])
-            Tmin[k,n] = j[0]
+            Tunder[k,n] = j[0]
             Cs[k,n]   = j[1] 
     
     ## Aqui se pasan de arreglos a diccionarios como los usa Pyomo
@@ -207,11 +207,11 @@ def reading(file):
     #C        = {(1, 1): 5.0, (1, 2): 5.0, (1, 3): 5.0, (2, 1): 15.0, (2, 2): 15.0, (2, 3): 15.0, (3, 1): 30.0, (3, 2): 30.0, (3, 3): 30.0, (3, 4): 30.0}
     #Cs       = {(1, 1): 800.0, (1, 2): 800.0, (1, 3): 800.0, (2, 1): 500.0, (2, 2): 500.0, (2, 3): 500.0, (3, 1): 25.0, (3, 2): 250.0, (3, 3): 
     #500.0, (3, 4): 1000.0}
-    #Tmin     = {(1, 1): 2, (1, 2): 3, (1, 3): 4, (2, 1): 2, (2, 2): 3, (2, 3): 4, (3, 1): 2, (3, 2): 3, (3, 3): 4, (3, 4): 5}
+    #Tunder     = {(1, 1): 2, (1, 2): 3, (1, 3): 4, (2, 1): 2, (2, 2): 3, (2, 3): 4, (3, 1): 2, (3, 2): 3, (3, 3): 4, (3, 4): 5}
     #fixShedu = False
     #relax    = False
     #ambiente = 'localPC'
     ## ----------------------------------  o  -------------------------------------
        
-    return G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,Pb,C,mpc,Cs,Tmin,names
-          #G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,SU,SD,RU,RD,mpc,Pb,C,Cs,Tmin,fixShedu,relax,ambiente
+    return G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,Pb,C,mpc,Cs,Tunder,names
+          #G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,SU,SD,RU,RD,mpc,Pb,C,Cs,Tunder,fixShedu,relax,ambiente
