@@ -9,7 +9,7 @@ from   pyomo.opt import SolverStatus, TerminationCondition
 
 class Solution:
     def __init__(self,model,env,executable,nameins='model',gap=0.0001,timelimit=300,tee=False,tofiles=False,lpmethod=0,
-                 cutoff=1e+75,exportLP=False):
+                 cutoff=1e+75,emphasize=1,exportLP=False):
         self.model      = model
         self.nameins    = nameins     ## name of instance 
         self.env        = env         ## enviroment  
@@ -20,7 +20,7 @@ class Solution:
         self.tofiles    = tofiles     ## True = send to csv file the solution value of U,V,W,P,R exporta la solución a un formato .dat
         self.lpmethod   = lpmethod    ## 0=Automatic; 1,2= Primal and dual simplex; 3=Sifting; 4=Barrier, 5=Concurrent (Dual,Barrier, and Primal in opportunistic parallel mode; Dual and Barrier in deterministic parallel mode)
         self.cutoff     = cutoff      ## Agrega una cota superior factible, apara yudar a descartar nodos del árbol del B&B
-        
+        self.emphasize  = emphasize   ## Emphasize optimality=1(default);  feasibility=2.
         self.exportLP   = exportLP    ## True si se exporta el modelo a formato LP y MPS
         self.gg         = len(model.G)
         self.tt         = len(model.T)
@@ -56,7 +56,10 @@ class Solution:
         ## https://www.ibm.com/docs/en/icos/12.8.0.0?topic=parameters-algorithm-continuous-linear-problems
         solver.options['lpmethod'                      ] = self.lpmethod         
         solver.options['mip tolerances mipgap'         ] = self.gap  
+        solver.options['timelimit'                     ] = self.timelimit 
+          
         solver.options['timelimit'                     ] = self.timelimit   
+        solver.options['emphasis mip'                  ] = self.emphasize 
         
         ## para mostrar la solución en un formato propio
         ## https://developers.google.com/optimization/routing/cvrp
@@ -204,7 +207,7 @@ class Solution:
                 if self.Uu[g][t] == 1 or self.Uu[g][t] == 0:
                     aux2 = aux2 + 1
                     
-        print("Number of U_no_int=", Uu_no_int,", n_Uu_no_int=",aux," , n_Uu_1_0=",aux2)   
+        print("U_no_integer=",Uu_no_int,",|U_no_integer|==",aux," , n_Uu_1_0=",aux2)   
         return len(Uu_no_int), aux, aux2
             
             
@@ -238,6 +241,7 @@ class Solution:
     
     ## En esta función seleccionamos el conjunto de variables V,W que quedarán en uno/cero para ser fijadas posteriormente.
     def select_fixed_variables_VW(self):    
+        
         fixed_V   = []; No_fixed_V = []; fixed_W = []; No_fixed_W = []
         
         parameter = 0.9
