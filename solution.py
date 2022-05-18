@@ -124,11 +124,11 @@ class Solution:
         ## Almacena solución entera
         for t in range(self.tt):
             for g in range(self.gg):
-                self.Uu[g][t] = round(self.model.u[(g+1, t+1)].value,4)
-                self.V [g][t] = round(self.model.v[(g+1, t+1)].value,4)
-                self.W [g][t] = round(self.model.w[(g+1, t+1)].value,4)
-                self.P [g][t] = round(self.model.p[(g+1, t+1)].value,4)
-                self.R [g][t] = round(self.model.r[(g+1, t+1)].value,4)
+                self.Uu[g][t] = round(self.model.u[(g+1, t+1)].value,10)
+                self.V [g][t] = round(self.model.v[(g+1, t+1)].value,10)
+                self.W [g][t] = round(self.model.w[(g+1, t+1)].value,10)
+                self.P [g][t] = round(self.model.p[(g+1, t+1)].value,10)
+                self.R [g][t] = round(self.model.r[(g+1, t+1)].value,10)
                 # self.Uu[g][t] = self.model.u[(g+1, t+1)].value
                 # self.V [g][t] = self.model.v[(g+1, t+1)].value
                 # self.W [g][t] = self.model.w[(g+1, t+1)].value
@@ -178,7 +178,7 @@ class Solution:
     def select_fixed_variables_Uu(self):
         fixed_Uu    = []  
         No_fixed_Uu = []
-        lower_Pmin  = []
+        lower_Pmin_Uu  = []
         
         UuP = [[0 for i in range(self.tt)] for j in range(self.gg)]
         ## Almacena solución entera
@@ -196,17 +196,17 @@ class Solution:
                     ## podriamos decir que este grupo de variables son <intentos de asignación>.
                     ## >>> Éste valor puede ser usado para definir el parámetro k en el LBC. <<<                   
                     if (UuP[g][t] != 0):
-                        lower_Pmin.append([g,t])
+                        lower_Pmin_Uu.append([g,t])
                     No_fixed_Uu.append([g,t])  
                     
-        totalUu = len( self.Uu)
-        print('|Uu       |fixed_Uu    |No_fixed_Uu|lower_Pmin|')   
-        print('|',totalUu,'   |   ',len(fixed_Uu),'   |   ',len(No_fixed_Uu),'   |   ',len(lower_Pmin),'   |',)   
+        suma = len(fixed_Uu) + len(No_fixed_Uu)
+        print('|Uu       |fixed_Uu    |No_fixed_Uu|lower_Pmin_Uu|')   
+        print('|',suma,'   |   ',len(fixed_Uu),'   |   ',len(No_fixed_Uu),'   |   ',len(lower_Pmin_Uu),'     |',)   
                        
-        return fixed_Uu, No_fixed_Uu, lower_Pmin
+        return fixed_Uu, No_fixed_Uu, lower_Pmin_Uu
     
     
-    def cuenta_ceros_a_unos(self,fixed_Uu,No_fixed_Uu,lower_Pmin,tag):
+    def cuenta_ceros_a_unos(self,fixed_Uu,No_fixed_Uu,lower_Pmin_Uu,tag):
         uno_a_cero=0
         for i in fixed_Uu:
             if self.Uu[i[0]][i[1]] == 0:
@@ -220,11 +220,11 @@ class Solution:
                 cero_a_uno=cero_a_uno+1
         print(tag,'No_fixed_Uu 0--->1',cero_a_uno)
         cero_a_uno=0
-        for i in lower_Pmin:
+        for i in lower_Pmin_Uu:
             if self.Uu[i[0]][i[1]] == 1:
                 #print(i)
                 cero_a_uno=cero_a_uno+1
-        print(tag,'lower_Pmin  0--->1',cero_a_uno)        
+        print(tag,'lower_Pmin_Uu  0--->1',cero_a_uno)        
         return 0
     
     
@@ -250,7 +250,7 @@ class Solution:
         print('Uu equal_arrays  =',equal_arrays)        
         out_num = np.subtract(npArray1, npArray2) 
         print ("Uu Difference of two input number : ",type(out_num), out_num) 
-                
+        
         
     ## En esta función seleccionamos el conjunto de variables delta que quedarán en uno/cero para ser fijadas posteriormente.
     # def select_fixed_variables_delta(self):    
