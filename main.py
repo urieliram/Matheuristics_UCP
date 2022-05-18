@@ -27,11 +27,11 @@ instancia = 'archivox.json'    ## ejemplo sencillo
 
 ## Cargamos parámetros de configuración desde archivo <config>
 ambiente, ruta, executable, timelimit, gap = util.config_env()
-z_lp=0; z_milp=0; z_milp2=0; z_hard=0; z_soft=0; z_softpmin=0; z_softcut=0; z_lbc=0
-t_lp=0; t_milp=0; t_milp2=0; t_hard=0; t_soft=0; t_softpmin=0; t_softcut=0; t_lbc=0;
+z_lp=0; z_milp=0; z_milp2=0; z_hard=0; z_soft=0; z_softpmin=0; z_softcut=0; z_softcut2=0; z_softcut3=0; z_lbc=0
+t_lp=0; t_milp=0; t_milp2=0; t_hard=0; t_soft=0; t_softpmin=0; t_softcut=0; t_softcut2=0; t_softcut3=0; t_lbc=0;
 nU_no_int=0;  n_Uu_no_int=0;  n_Uu_1_0=0;  k=0; ns=0; fixed_Uu =[]
 
-emph=1 ## Emphasize optimality=1(default);  feasibility=2.
+emph = 2 ## Emphasize optimality=1 (default);  feasibility=2.
 
 if ambiente == 'yalma':
     if len(sys.argv) != 3:
@@ -78,18 +78,12 @@ if 1 == 1:
 ## --------------------------------- SELECTION VARIABLES TO FIX -----------------------------------------
 
     ## Seleccionamos las variables que serán fijadas, se requiere correr antes <linear relaxation>
-    ## fixed_Uu     variables que SI serán fijadas a 1.
-    ## No_fixed_Uu  variables que NO serán fijadas.
-    ## lower_Pmin   variables en que la potencia Pmin del generador fue menor a la mínima y No serán fijadas.
+    ## fixed_Uu    variables que SI serán fijadas a 1.
+    ## No_fixed_Uu variables que NO serán fijadas.
+    ## lower_Pmin  variables en que el producto Pmin*Uu  fue menor a la potencia mínima del generador Pmin y No serán fijadas.
     fixed_Uu, No_fixed_Uu, lower_Pmin = sol_lp.select_fixed_variables_Uu()
-    
-    ## Variables delta a fijar. (deprecared by Uriel)
-    #fixed_delta, No_fixed_delta = sol_lp.select_fixed_variables_delta()
-        
-    ## Variables "V" y "W" a fijar. (deprecared by Uriel)
-    #fixed_V, No_fixed_V, fixed_W, No_fixed_W = sol_lp.select_fixed_variables_VW()
-    
-    
+
+
 ## --------------------------------- MILP ---------------------------------------------
 
 ## Solve as a MILP
@@ -101,7 +95,8 @@ if 1 == 1:
     z_milp = sol_milp.solve_problem()
     t_milp = time.time() - t_o
     print("t_milp= ",round(t_milp,1),"z_milp= ",round(z_milp,1),"total_costo_arr=",model.total_cSU.value)
-    #sol_milp.send_to_File()
+    # sol_milp.send_to_File()
+    sol_milp.cuenta_ceros_a_unos(fixed_Uu, No_fixed_Uu, lower_Pmin,'Milp')
 
 
 ## --------------------------------- MILP2 with Inequality ----------------------------------------
@@ -115,10 +110,12 @@ if 1 == 1:
     z_milp2 = sol_milp2.solve_problem()
     t_milp2 = time.time() - t_o
     print("t_milp2= ",round(t_milp2,1),"z_milp2= ",round(z_milp2,1),"total_costo_arr=",model.total_cSU.value)
-
+    sol_milp2.cuenta_ceros_a_unos(fixed_Uu, No_fixed_Uu, lower_Pmin,'Milp2')
+    
     #sol_milp2.send_to_File(letra="a")
     ## Compare two solutions 
     #sol_milp.compare(sol_milp2)
+    
     
               
 ## --------------------------------- HARD-FIXING (only Uu) ---------------------------------------------
@@ -132,7 +129,7 @@ if 1 == 1: # or precargado == False
     z_hard = sol_hard.solve_problem()
     t_hard = time.time() - t_o + t_lp
     print("t_hard= ",round(t_hard,1),"z_hard= ",round(z_hard,1))
-
+    sol_hard.cuenta_ceros_a_unos(fixed_Uu, No_fixed_Uu, lower_Pmin,'Hard')
 
 ## --------------------------------- SOFT-FIXING ---------------------------------------------
         
@@ -145,9 +142,8 @@ if 1 == 1:
     z_soft = sol_soft.solve_problem() 
     t_soft = time.time() - t_o + t_lp
     print("t_soft= ",round(t_soft,1),"z_soft= ",round(z_soft,1))
-    ## Imprimimos las posibles variables 'u' que podrían no sean enteras.
-    nU_no_int, n_Uu_no_int , n_Uu_1_0 = sol_soft.count_U_no_int()
-    
+    sol_soft.cuenta_ceros_a_unos(fixed_Uu, No_fixed_Uu, lower_Pmin,'Soft')
+
         
 ## -------------------------------- SOFT FIXING + Pmin ------------------------------------
         
@@ -161,8 +157,7 @@ if 1 == 1:
     z_softpmin = sol_softpmin.solve_problem() 
     t_softpmin = time.time() - t_o + t_hard ## t_hard (ya incluye el tiempo de lp)
     print("t_soft+pmin= ",round(t_softpmin,4),"z_soft+pmin= ",round(z_softpmin,1))
-    ## Imprimimos las posibles variables 'u' que podrían no sean enteras.
-    nU_no_int, n_Uu_no_int , n_Uu_1_0 = sol_softpmin.count_U_no_int()
+    sol_softpmin.cuenta_ceros_a_unos(fixed_Uu, No_fixed_Uu, lower_Pmin,'Soft+pmin')
     
 
 ## -------------------------------- SOFT FIXING + CUT-OFF ------------------------------------
@@ -176,8 +171,7 @@ if 1 == 1:
     z_softcut = sol_softcut.solve_problem() 
     t_softcut = time.time() - t_o + t_hard ## t_hard (ya incluye el tiempo de lp)
     print("t_soft+cut= ",round(t_softcut,4),"z_soft+cut= ",round(z_softcut,1))
-    ## Imprimimos las posibles variables 'u' que podrían no sean enteras.
-    nU_no_int, n_Uu_no_int , n_Uu_1_0 = sol_softcut.count_U_no_int()
+    sol_softcut.cuenta_ceros_a_unos(fixed_Uu, No_fixed_Uu, lower_Pmin,'Soft+cut')
     
     
 ## -------------------------------- SOFT FIXING + CUT-OFF + Pmin------------------------------------
@@ -185,20 +179,33 @@ if 1 == 1:
 ## SOFT FIX + CUT-OFF + Pmin solution and solve the sub-MILP (it is using cutoff ---> z_hard).
 if 1 == 1:
     t_o = time.time() 
-    model,xx    = uc_Co.uc(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,Pb,C,Cs,Tunder,option='Soft+pmin',fixed_Uu=fixed_Uu,nameins=instancia[0:4])
+    model,xx    = uc_Co.uc(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,Pb,C,Cs,Tunder,option='Soft2',fixed_Uu=fixed_Uu,nameins=instancia[0:4])
     sol_softcut2 = Solution(model=model,env=ambiente,executable=executable,nameins=instancia[0:4],gap=gap,cutoff=z_hard,timelimit=timelimit,
                              tee=False,emphasize=emph,tofiles=False)
     z_softcut2 = sol_softcut2.solve_problem() 
     t_softcut2 = time.time() - t_o + t_hard ## t_hard (ya incluye el tiempo de lp)
     print("t_soft+cut+pmin= ",round(t_softcut2,4),"z_soft+cut+pmin= ",round(z_softcut2,1))
-    ## Imprimimos las posibles variables 'u' que podrían no sean enteras.
-    nU_no_int, n_Uu_no_int , n_Uu_1_0 = sol_softcut2.count_U_no_int()
+    sol_softcut2.cuenta_ceros_a_unos(fixed_Uu, No_fixed_Uu, lower_Pmin,'Soft+pmin+cut')   
+     
+    
+## --------------------------- SOFT FIXING + CUT-OFF + Pmin + FIXING_0 ------------------------------------
+        
+## SOFT FIX + CUT-OFF + Pmin + FIXING_0  solution and solve the sub-MILP (it is using cutoff ---> z_hard).
+if 1 == 1:
+    t_o = time.time() 
+    model,xx    = uc_Co.uc(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,Pb,C,Cs,Tunder,option='Soft3',fixed_Uu=fixed_Uu,nameins=instancia[0:4])
+    sol_softcut3 = Solution(model=model,env=ambiente,executable=executable,nameins=instancia[0:4],gap=gap,cutoff=z_hard,timelimit=timelimit,
+                             tee=False,emphasize=emph,tofiles=False)
+    z_softcut3 = sol_softcut3.solve_problem() 
+    t_softcut3 = time.time() - t_o + t_hard ## t_hard (ya incluye el tiempo de lp)
+    print("t_soft+cut+pmin+fix0= ",round(t_softcut3,4),"z_soft+cut+pmin+fix0= ",round(z_softcut3,1))
+    sol_softcut3.cuenta_ceros_a_unos(fixed_Uu, No_fixed_Uu, lower_Pmin,'Soft+pmin+cut+fix0')
 
 
 ## --------------------------------- LOCAL BRANCHING CUTS ------------------------------------
 
 ## Include the LOCAL BRANCHING CUT to the solution and solve the sub-MILP (it is using cutoff=z_hard).
- # PENDIENTE ...
+# PENDIENTE ...
 if 1 == 0:     
     t_o = time.time()   
     k   = len(lower_Pmin) # El valor de intentos de asignación está siendo usado para definir el parámetro k en el LBC. 
@@ -207,10 +214,8 @@ if 1 == 0:
     sol_lbc  = Solution(model=model,env=ambiente,executable=executable,nameins=instancia[0:4],gap=gap,cutoff=z_hard,timelimit=timelimit,
                           tee=False,emphasize=emph,tofiles=False)
     z_lbc = sol_lbc.solve_problem() 
-    t_lbc = time.time() - t_o + t_hard ## t_hard (ya incluye el tiempo de lp)
-    print("t_lbc= ",round(t_lbc,1),"z_lbc= ",round(z_lbc,1),)
-    # Imprimimos las posibles variables 'u' que podrían no sean enteras en la solución.
-    nU_no_int, n_Uu_no_int , n_Uu_1_0 = sol_lbc.count_U_no_int()    
+    t_lbc = time.time() - t_o + t_hard ## t_hard (ya incluye el tiempo de lp    
+    sol_lbc.cuenta_ceros_a_unos(fixed_Uu, No_fixed_Uu, lower_Pmin,'Soft+pmin+cut')
     
     ## PENDIENTES
     # \todo{Fijar la solución entera y probar factibilidad}
@@ -264,23 +269,20 @@ if 1 == 0:
     z_ks = sol_ks.solve_problem() 
     t_ks = time.time() - t_o + t_hard ## t_hard (ya incluye el tiempo de lp)
     print("t_ks= ", round(t_ks,4), "z_ks= ", round(z_ks,1), "n_fixed_Uu= ", len(fixed_Uu))
-    ## Imprimimos las posibles variables 'u' que podrían no sean enteras.
-    nU_no_int, n_Uu_no_int , n_Uu_1_0 = sol_ks.count_U_no_int()
     
 
 ## --------------------------------- RESULTS -------------------------------------------
 
 ## Append a list as new line to an old csv file using as log, the first line of the file as shown.
-## 'ambiente,localtime,instancia,T,G,gap,emphasize,timelimit,z_lp,z_hard,z_milp,z_milp2,z_soft,z_softpmin,z_softcut,z_softcut2,z_lbc,
-#                                                       t_lp,t_hard,t_milp,t_milp2,t_soft,t_softpmin,t_softcut,t_softcut2,t_lbc,
+## 'ambiente,localtime,instancia,T,G,gap,emphasize,timelimit,z_lp,z_hard,z_milp,z_milp2,z_soft,z_softpmin,z_softcut,z_softcut2,z_softcut3,z_lbc,
+#                                                       t_lp,t_hard,t_milp,t_milp2,t_soft,t_softpmin,t_softcut,t_softcut2,t_softcut3,t_lbc,
 #                                                       n_fixU,nU_no_int,n_Uu_no_int,n_Uu_1_0,k,bin_sup,comment'
 comment = 'preliminary test'
 row = [ambiente,localtime,instancia,len(T),len(G),gap,emph,timelimit,
-       round(z_lp,1),round(z_hard,1),round(z_milp,1),round(z_milp2,1),round(z_soft,1),round(z_softpmin,1),round(z_softcut,1),round(z_softcut2,1),round(z_lbc,1),
-       round(t_lp,1),round(t_hard,1),round(t_milp,1),round(t_milp2,1),round(t_soft,1),round(t_softpmin,1),round(t_softcut,1),round(t_softcut2,1),round(t_lbc,1),
+       round(z_lp,1),round(z_hard,1),round(z_milp,1),round(z_milp2,1),round(z_soft,1),round(z_softpmin,1),round(z_softcut,1),round(z_softcut2,1),round(z_softcut3,1),round(z_lbc,1),
+       round(t_lp,1),round(t_hard,1),round(t_milp,1),round(t_milp2,1),round(t_soft,1),round(t_softpmin,1),round(t_softcut,1),round(t_softcut2,1),round(t_softcut3,1),round(t_lbc,1),
        len(fixed_Uu),nU_no_int,n_Uu_no_int,n_Uu_1_0,k,ns,comment] #round(((z_milp-z_milp2)/z_milp)*100,6)
 util.append_list_as_row('stat.csv',row)
-
 
 
 ## --------------------------------- HARD-FIXING U,V,W---------------------------------------------

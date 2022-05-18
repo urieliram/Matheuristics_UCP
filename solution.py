@@ -45,7 +45,8 @@ class Solution:
                 
         exist = os.path.exists(self.executable)   
         if exist:
-            solver = pyo.SolverFactory('cplex',executable=self.executable) ## executable='/home/uriel/cplex1210/cplex/bin/x86-64_linux/cplex'
+            solver = pyo.SolverFactory('cplex',executable=self.executable) 
+            ## executable='/home/uriel/cplex1210/cplex/bin/x86-64_linux/cplex'
         else:
             solver = pyo.SolverFactory('cplex')
 
@@ -57,8 +58,6 @@ class Solution:
         solver.options['lpmethod'                      ] = self.lpmethod         
         solver.options['mip tolerances mipgap'         ] = self.gap  
         solver.options['timelimit'                     ] = self.timelimit 
-          
-        solver.options['timelimit'                     ] = self.timelimit   
         solver.options['emphasis mip'                  ] = self.emphasize 
         
         ## para mostrar la solución en un formato propio
@@ -102,7 +101,7 @@ class Solution:
         elif (result.solver.termination_condition == TerminationCondition.maxTimeLimit):
             print (">>> The maximum time limit has been reached.")
         else:
-            print ("!!! Something else is wrong",str(result.solver))  ## Something else is wrong
+            print ("!!! Something else is wrong",str(result.solver)) 
 
         ## Inizialize variables making a empty-solution with all generators in cero
         self.Uu     = [[0 for i in range(self.tt)] for j in range(self.gg)]
@@ -125,19 +124,28 @@ class Solution:
         ## Almacena solución entera
         for t in range(self.tt):
             for g in range(self.gg):
-                self.Uu[g][t] = round(self.model.u[(g+1, t+1)].value,1)
-                self.V [g][t] = round(self.model.v[(g+1, t+1)].value,1)
-                self.W [g][t] = round(self.model.w[(g+1, t+1)].value,1)
-                self.P [g][t] = round(self.model.p[(g+1, t+1)].value,1)
-                self.R [g][t] = round(self.model.r[(g+1, t+1)].value,1)
+                self.Uu[g][t] = round(self.model.u[(g+1, t+1)].value,4)
+                self.V [g][t] = round(self.model.v[(g+1, t+1)].value,4)
+                self.W [g][t] = round(self.model.w[(g+1, t+1)].value,4)
+                self.P [g][t] = round(self.model.p[(g+1, t+1)].value,4)
+                self.R [g][t] = round(self.model.r[(g+1, t+1)].value,4)
+                # self.Uu[g][t] = self.model.u[(g+1, t+1)].value
+                # self.V [g][t] = self.model.v[(g+1, t+1)].value
+                # self.W [g][t] = self.model.w[(g+1, t+1)].value
+                # self.P [g][t] = self.model.p[(g+1, t+1)].value
+                # self.R [g][t] = self.model.r[(g+1, t+1)].value
                 
         if self.tofiles == True:
-            self.send_to_File()
+            self.send_to_File()            
+        
+        ## Imprimimos las posibles variables 'u' que podrían no sean enteras.
+        self.count_U_no_int()    
                        
-        z_exact = self.model.obj.expr()
+        z_exact = self.model.obj.expr()    
+            
         return z_exact
     
-      
+          
     def send_to_File(self,letra=""):     
         util.sendtofilesolution(self.Uu    ,"U_"   + self.nameins + letra +".csv")
         util.sendtofilesolution(self.V     ,"V_"   + self.nameins + letra +".csv")
@@ -162,11 +170,12 @@ class Solution:
                 
         self.model.pprint(file)
         file.close()
-        
+                
         return 0
     
+    
     ## En esta función seleccionamos el conjunto de variables Uu que quedarán en uno para ser fijadas posteriormente.
-    def select_fixed_variables_Uu(self):    
+    def select_fixed_variables_Uu(self):
         fixed_Uu    = []  
         No_fixed_Uu = []
         lower_Pmin  = []
@@ -178,96 +187,57 @@ class Solution:
                 UuP[g][t] = self.P[g][t] * self.Uu[g][t]
                 
                 ## Aquí se enlistan los valores de 'u' que serán fijados.
-                ## El criterio para fijar es el de Harjunkoski2020 de multiplicar potencia por valores de 'u' 
-                ## y evaluar que sean mayores al límite operativo mínimo.
+                ## El criterio para fijar es el de [Harjunkoski2020] de multiplicar la potencia 
+                ## por valores de 'u' y evaluar que sean mayores al límite operativo mínimo.
                 if UuP[g][t] >= self.model.Pmin[g+1]:
-                    fixed_Uu.append([g,t,1])
+                    fixed_Uu.append([g,t])
                 else:
                     ## Vamos a guardar las variables que quedaron abajo del minimo pero diferentes de cero,
                     ## podriamos decir que este grupo de variables son <intentos de asignación>.
-                    ## Este valor puede ser usado para definir el parámetro k en el LBC.                    
+                    ## >>> Éste valor puede ser usado para definir el parámetro k en el LBC. <<<                   
                     if (UuP[g][t] != 0):
-                        lower_Pmin.append([g,t,1])
-                    No_fixed_Uu.append([g,t,0])
-        
+                        lower_Pmin.append([g,t])
+                    No_fixed_Uu.append([g,t])  
+                    
+        totalUu = len( self.Uu)
+        print('|Uu       |fixed_Uu    |No_fixed_Uu|lower_Pmin|')   
+        print('|',totalUu,'   |   ',len(fixed_Uu),'   |   ',len(No_fixed_Uu),'   |   ',len(lower_Pmin),'   |',)   
+                       
         return fixed_Uu, No_fixed_Uu, lower_Pmin
     
+    
+    def cuenta_ceros_a_unos(self,fixed_Uu,No_fixed_Uu,lower_Pmin,tag):
+        uno_a_cero=0
+        for i in fixed_Uu:
+            if self.Uu[i[0]][i[1]] == 0:
+                #print(i)
+                uno_a_cero=uno_a_cero+1
+        print(tag,'fixed_Uu    1--->0',uno_a_cero)
+        cero_a_uno=0
+        for i in No_fixed_Uu:
+            if self.Uu[i[0]][i[1]] == 1:
+                #print(i)
+                cero_a_uno=cero_a_uno+1
+        print(tag,'No_fixed_Uu 0--->1',cero_a_uno)
+        cero_a_uno=0
+        for i in lower_Pmin:
+            if self.Uu[i[0]][i[1]] == 1:
+                #print(i)
+                cero_a_uno=cero_a_uno+1
+        print(tag,'lower_Pmin  0--->1',cero_a_uno)        
+        return 0
+    
+    
     def count_U_no_int(self):   
-        Uu_no_int = []
-        aux       = 0
-        aux2      = 0
-        ## Almacena solución entera
+        Uu_no_int = []   
         for t in range(self.tt):
-            for g in range(self.gg):
-                
+            for g in range(self.gg):                
                 if self.Uu[g][t] != 1 and self.Uu[g][t] != 0:
-                    Uu_no_int.append([g,t,self.Uu[g][t]])
-                    aux = aux + 1
-                    
-                if self.Uu[g][t] == 1 or self.Uu[g][t] == 0:
-                    aux2 = aux2 + 1
-                    
-        print("U_no_integer=",Uu_no_int,",|U_no_integer|==",aux," , n_Uu_1_0=",aux2)   
-        return len(Uu_no_int), aux, aux2
-            
-            
-    ## En esta función seleccionamos el conjunto de variables delta que quedarán en uno/cero para ser fijadas posteriormente.
-    def select_fixed_variables_delta(self):    
-        fixed_delta = []; No_fixed_delta = [] 
-        
-        parameter  = 0.9
-        total      = 0
-        nulos      = 0
-        for g,t,s in self.model.indexGTSg:
-            if self.model.delta[(g,t,s)].value != None:
-                
-                if self.model.delta[(g,t,s)].value >= parameter:
-                    fixed_delta.append([g,t,s,1])
-                    # print(g,t,s)                    
-                    # print(self.model.delta[(g,t,s)].value)
-                else:
-                    No_fixed_delta.append([g,t,s,0])
-            else: ## Si es None                
-                fixed_delta.append([g,t,s,0])
-                nulos = nulos + 1
-            total = total + 1
-                
-        print('Total delta   =', total)  
-        print('Nulos delta   =', nulos)  
-        print('Fixed delta  >=', parameter,len(fixed_delta)-nulos)
-        
-        return fixed_delta, No_fixed_delta
+                    Uu_no_int.append([g,t,self.Uu[g][t]])    
+        if len(Uu_no_int) != 0:
+            print(">>> WARNING se han encontrado no binarios en la solución ---> solution.Uu_no_int=",len(Uu_no_int))   
+        return 0
     
-    
-    ## En esta función seleccionamos el conjunto de variables V,W que quedarán en uno/cero para ser fijadas posteriormente.
-    def select_fixed_variables_VW(self):    
-        
-        fixed_V   = []; No_fixed_V = []; fixed_W = []; No_fixed_W = []
-        
-        parameter = 0.9
-        total     = 0
-        for t in range(self.tt):
-            for g in range(self.gg):
-                if self.V[g][t] != None:
-                
-                    if self.V[g][t] >= parameter:
-                        fixed_V.append([g,t,1])
-                    else:
-                        No_fixed_V.append([g,t,0])
-                    
-                if self.W[g][t] != None:
-                
-                    if self.W[g][t] >= parameter:
-                        fixed_W.append([g,t,1])
-                    else:
-                        No_fixed_W.append([g,t,0])
-                total = total + 1
-                
-        print('Total V,W   =',total)  
-        print('Fixed V    >=', parameter, len(fixed_V)) 
-        print('Fixed W    >=', parameter, len(fixed_W)) 
-           
-        return fixed_V, No_fixed_V, fixed_W, No_fixed_W
     
     ## En esta función comparamos dos soluciones variable por variable.
     def compare(self,sol2):
@@ -277,7 +247,65 @@ class Solution:
         print(npArray2) 
         comparison = npArray1 == npArray2
         equal_arrays = comparison.all() 
-        print('Uu equal_arrays  =',equal_arrays)
-        
+        print('Uu equal_arrays  =',equal_arrays)        
         out_num = np.subtract(npArray1, npArray2) 
         print ("Uu Difference of two input number : ",type(out_num), out_num) 
+                
+        
+    ## En esta función seleccionamos el conjunto de variables delta que quedarán en uno/cero para ser fijadas posteriormente.
+    # def select_fixed_variables_delta(self):    
+    #     fixed_delta = []; No_fixed_delta = [] 
+        
+    #     parameter  = 0.9
+    #     total      = 0
+    #     nulos      = 0
+    #     for g,t,s in self.model.indexGTSg:
+    #         if self.model.delta[(g,t,s)].value != None:
+                
+    #             if self.model.delta[(g,t,s)].value >= parameter:
+    #                 fixed_delta.append([g,t,s,1])
+    #                 # print(g,t,s)                    
+    #                 # print(self.model.delta[(g,t,s)].value)
+    #             else:
+    #                 No_fixed_delta.append([g,t,s,0])
+    #         else: ## Si es None                
+    #             fixed_delta.append([g,t,s,0])
+    #             nulos = nulos + 1
+    #         total = total + 1
+                
+    #     print('Total delta   =', total)  
+    #     print('Nulos delta   =', nulos)  
+    #     print('Fixed delta  >=', parameter,len(fixed_delta)-nulos)
+        
+    #     return fixed_delta, No_fixed_delta
+    
+    
+    ## En esta función seleccionamos el conjunto de variables V,W que quedarán en uno/cero para ser fijadas posteriormente.
+    # def select_fixed_variables_VW(self):    
+        
+    #     fixed_V   = []; No_fixed_V = []; fixed_W = []; No_fixed_W = []
+        
+    #     parameter = 0.9
+    #     total     = 0
+    #     for t in range(self.tt):
+    #         for g in range(self.gg):
+    #             if self.V[g][t] != None:
+                
+    #                 if self.V[g][t] >= parameter:
+    #                     fixed_V.append([g,t,1])
+    #                 else:
+    #                     No_fixed_V.append([g,t,0])
+                    
+    #             if self.W[g][t] != None:
+                
+    #                 if self.W[g][t] >= parameter:
+    #                     fixed_W.append([g,t,1])
+    #                 else:
+    #                     No_fixed_W.append([g,t,0])
+    #             total = total + 1
+                
+    #     print('Total V,W   =',total)  
+    #     print('Fixed V    >=', parameter, len(fixed_V)) 
+    #     print('Fixed W    >=', parameter, len(fixed_W)) 
+           
+    #     return fixed_V, No_fixed_V, fixed_W, No_fixed_W
