@@ -312,24 +312,15 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,Pb,C,Cs,Tunder,
     ## ---------------------------- HARD VARIABLE FIXING ------------------------------------------
     
     ## Si se desea usar la solución fix y calcular un sub-MILP.
-    if(option == 'Hard'):    
+    if option == 'Hard':    
         for f in fixed_Uu: 
             model.u[f[0]+1,f[1]+1].fix(1)  ## Hard fixing
             
-    # if(option == 'HardUVWdelta'):   (deprecared)         
-    #     for f in fixed_Uu: 
-    #         model.u[f[0]+1,f[1]+1].fix(1)  ## Hard fixing
-    #     for f in fixed_V: 
-    #         model.v[f[0]+1,f[1]+1].fix(1)  ## Hard fixing
-    #     for f in fixed_W: 
-    #          model.w[f[0]+1,f[1]+1].fix(1) ## Hard fixing   
-    #     for f in fixed_delta: 
-    #          model.delta[f[0],f[1],f[2]].fix(0) ## Hard fixing   
 
     ## ---------------------------- SOFT VARIABLE FIXING ------------------------------------------
     
     ## Si se desea usar la solución fix y calcular un sub-MILP.
-    if(option == 'Soft' or option == 'Soft+pmin'): 
+    if(option == 'Soft' or option == 'Soft2' or option == 'Soft3'): 
         
         for f in fixed_Uu:  
             model.u[f[0]+1,f[1]+1].domain = UnitInterval  ## Soft-fixing I                
@@ -344,19 +335,23 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,Pb,C,Cs,Tunder,
         for f in fixed_Uu:      
             expr += model.u[f[0]+1,f[1]+1]
         
-        if(option == 'Soft+pmin'):
-            # \todo{DEMOSTRAR QUE SI NOS CONVIENE RELAJAR LOS INTENTOS DE ASIGNACIÓN EN EL SOFT-FIXING}
+        if(option == 'Soft2' or option == 'Soft3'):
+            # \todo{DEMOSTRAR QUE NOS CONVIENE RELAJAR LOS INTENTOS DE ASIGNACIÓN EN EL SOFT-FIXING}
             for f in lower_Pmin: 
                 model.u[f[0]+1,f[1]+1].domain = UnitInterval ## Soft-fixing
             for f in lower_Pmin:      
-                expr += model.u[f[0]+1,f[1]+1]               ## New constraint soft.
-                        
+                expr += model.u[f[0]+1,f[1]+1]               ## New constraint soft.                        
         model.cuts.add(expr >= n_subset)                     ## Adding a new restriction.  
-        
-        #print('Soft: number of variables Uu that should be into the n_subset (',percent_lbc,'%): ', n_subset)
-        print('Soft: number of variables Uu that could be out the n_subset (',100-percent_lbc,'%): ', len(fixed_Uu)-n_subset)
+        #print('Soft: number of variables Uu that could be out the n_subset (',100-percent_lbc,'%): ', len(fixed_Uu)-n_subset)
+
+
+    if(option == 'Soft3'):    
+        for f in No_fixed_Uu:
+            model.u[f[0]+1,f[1]+1].fix(0)  ## Hard fixing
+        for f in lower_Pmin:
+            model.u[f[0]+1,f[1]+1].unfix()  ## unfixing
                 
-        
+
     ## ---------------------------- LOCAL BRANCHING CONSTRAINT ------------------------------------------
     
     ## Define a neighbourhood with LBC.
@@ -392,7 +387,22 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,Pb,C,Cs,Tunder,
             expr +=     model.u[f[0]+1,f[1]+1]            
         model.cuts.add(expr <= k)                           ## Adding a new restrictions (lbc). 
         
-        
-                
     ## Termina y regresa el modelo MILP
     return model , n_subset
+
+
+
+    ## ---------------------------- HARD VARIABLE FIXING (deprecared) ------------------------------------------    
+    # ## Si se desea usar la solución fix y calcular un sub-MILP.
+    # if(option == 'Hard'):    
+    #     for f in fixed_Uu: 
+    #         model.u[f[0]+1,f[1]+1].fix(1)  ## Hard fixing
+    # if(option == 'HardUVWdelta'):   (deprecared)         
+    #     for f in fixed_Uu: 
+    #         model.u[f[0]+1,f[1]+1].fix(1)  ## Hard fixing
+    #     for f in fixed_V: 
+    #         model.v[f[0]+1,f[1]+1].fix(1)  ## Hard fixing
+    #     for f in fixed_W: 
+    #          model.w[f[0]+1,f[1]+1].fix(1) ## Hard fixing   
+    #     for f in fixed_delta: 
+    #          model.delta[f[0],f[1],f[2]].fix(0) ## Hard fixing   
