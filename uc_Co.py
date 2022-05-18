@@ -19,11 +19,8 @@ import pyomo.environ as pyo
 from   pyomo.environ import *
 
 def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,Pb,C,Cs,Tunder,option='None',
-       fixed_Uu=[],No_fixed_Uu=[],lower_Pmin=[],fixed_delta=[],percent_lbc=90,k=20,nameins='model'):
-    
-    ## Total de variables reales, binarias y restricciones
-    vreal=0; vbin=0; nconst=0;
-           
+       fixed_Uu=[],No_fixed_Uu=[],lower_Pmin_Uu=[],fixed_delta=[],percent_lbc=90,k=20,nameins='model'):
+               
     n_subset   = 0 ## Número de variables que podrían moverse en el Sub-milp (Binary support)
 
     model      = pyo.ConcreteModel(nameins)    
@@ -315,16 +312,24 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,Pb,C,Cs,Tunder,
     if option == 'Hard':    
         for f in fixed_Uu: 
             model.u[f[0]+1,f[1]+1].fix(1)  ## Hard fixing
+                        
             
+    ## ---------------------------- FAKE FIXING ------------------------------------------
+    
+    ## Relajamos la restricción de integralidad de las variables Uu candidatas a 1 en la relajación lineal
+    if(option == 'Fake'):            
+        for f in fixed_Uu:  
+            model.u[f[0]+1,f[1]+1].domain = UnitInterval 
+
 
     ## ---------------------------- SOFT VARIABLE FIXING ------------------------------------------
-    
+
     ## Si se desea usar la solución fix y calcular un sub-MILP.
     if(option == 'Soft' or option == 'Soft2' or option == 'Soft3'): 
-        
+
         for f in fixed_Uu:  
             model.u[f[0]+1,f[1]+1].domain = UnitInterval  ## Soft-fixing I                
-              
+
         ## Adding a new restriction.  
         ## https://pyomo.readthedocs.io/en/stable/working_models.html
         ## Soft-fixing II
@@ -337,19 +342,19 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,Pb,C,Cs,Tunder,
         
         if(option == 'Soft2' or option == 'Soft3'):
             # \todo{DEMOSTRAR QUE NOS CONVIENE RELAJAR LOS INTENTOS DE ASIGNACIÓN EN EL SOFT-FIXING}
-            for f in lower_Pmin: 
+            for f in lower_Pmin_Uu: 
                 model.u[f[0]+1,f[1]+1].domain = UnitInterval ## Soft-fixing
-            for f in lower_Pmin:      
+            for f in lower_Pmin_Uu:      
                 expr += model.u[f[0]+1,f[1]+1]               ## New constraint soft.                        
         model.cuts.add(expr >= n_subset)                     ## Adding a new restriction.  
         #print('Soft: number of variables Uu that could be out the n_subset (',100-percent_lbc,'%): ', len(fixed_Uu)-n_subset)
 
-
-    if(option == 'Soft3'):    
+    if(option == 'Soft3'):   
         for f in No_fixed_Uu:
-            model.u[f[0]+1,f[1]+1].fix(0)  ## Hard fixing
-        for f in lower_Pmin:
-            model.u[f[0]+1,f[1]+1].unfix()  ## unfixing
+            model.u[f[0]+1,f[1]+1].fix(0)  ## Hard fixing to 0
+        for f in lower_Pmin_Uu:
+            model.u[f[0]+1,f[1]+1].unfix()   ## Unfixing
+        print('Soft3 -estoy fijando a <0> las No_fixed_Uu - lower_Pmin_Uu',len(No_fixed_Uu),'-',len(lower_Pmin_Uu))
                 
 
     ## ---------------------------- LOCAL BRANCHING CONSTRAINT ------------------------------------------
@@ -363,16 +368,16 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,Pb,C,Cs,Tunder,
         ## Soft fixing III
         model.cuts = pyo.ConstraintList()
         n_subset   = math.ceil((percent_lbc/100) * len(fixed_Uu)) 
-        expr       = 0 
+        expr       = 0
          
         for f in fixed_Uu:      
-            expr += model.u[f[0]+1,f[1]+1]                   ## New constraint soft.
+            expr += model.u[f[0]+1,f[1]+1]               ## New constraint soft.
             
         if(option == 'LBC+pmin'):  
             # \todo{EVALUAR SI NOS CONVIENE O NO RELAJAR LOS INTENTOS DE ASIGNACIÓN EN EL SOFT-FIXING}
-            for f in lower_Pmin: 
+            for f in lower_Pmin_Uu: 
                 model.u[f[0]+1,f[1]+1].domain = UnitInterval ## Soft-fixing
-            for f in lower_Pmin:      
+            for f in lower_Pmin_Uu:      
                 expr += model.u[f[0]+1,f[1]+1]               ## New constraint soft.             
         model.cuts.add(expr >= n_subset)                     ## Adding a new restriction. 
            
