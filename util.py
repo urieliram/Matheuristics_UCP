@@ -68,7 +68,7 @@ def config_env():
         timelimit    = df['timelimit' ].values[0]
         gap          = df['gap'       ].values[0]
     else:
-        print('!!! Problema al cargar la configuración. Verifique el archivo, ')
+        print('!!! Problema al cargar la configuración. Verifique el ')
         print('formato y rutas del archivo <config>, algo como esto:')
         print('ambiente,ruta,executable,timelimit,gap')
         print('localPC,instances/,/home/uriel/cplex1210/cplex/bin/x86-64_linux/cplex,4000,0.001')
