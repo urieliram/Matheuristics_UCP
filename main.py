@@ -31,7 +31,7 @@ z_lp=0; z_milp=0; z_milp2=0; z_hard=0; z_soft=0; z_softpmin=0; z_softcut=0; z_so
 t_lp=0; t_milp=0; t_milp2=0; t_hard=0; t_soft=0; t_softpmin=0; t_softcut=0; t_softcut2=0; t_softcut3=0; t_lbc=0;
 nU_no_int=0;  n_Uu_no_int=0;  n_Uu_1_0=0;  k=0; ns=0; fixed_Uu =[]
 
-emph = 2 ## Emphasize optimality=1 (default);  feasibility=2.
+emph = 1 ## Emphasize optimality=1 (default);  feasibility=2.
 
 if ambiente == 'yalma':
     if len(sys.argv) != 3:
@@ -83,40 +83,6 @@ if 1 == 1:
     ## lower_Pmin_Uu  variables en que el producto Pmin*Uu  fue menor a la potencia mínima del generador Pmin y No serán fijadas.
     fixed_Uu, No_fixed_Uu, lower_Pmin_Uu = sol_lp.select_fixed_variables_Uu()
 
-
-## --------------------------------- MILP ---------------------------------------------
-
-## Solve as a MILP
-if 1 == 1: 
-    t_o = time.time() 
-    model,xx = uc_Co.uc(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,Pb,C,Cs,Tunder,option=None,nameins=instancia[0:4])
-    sol_milp = Solution(model=model,nameins=instancia[0:4],env=ambiente,executable=executable,gap=gap,timelimit=timelimit,
-                          tee=False,tofiles=False,emphasize=emph,exportLP=False)
-    z_milp = sol_milp.solve_problem()
-    t_milp = time.time() - t_o
-    print("t_milp= ",round(t_milp,1),"z_milp= ",round(z_milp,1))#,"total_costo_arr=",model.total_cSU.value
-    # sol_milp.send_to_File()
-    sol_milp.cuenta_ceros_a_unos(fixed_Uu, No_fixed_Uu, lower_Pmin_Uu,'Milp')
-
-
-## --------------------------------- MILP2 with Inequality ----------------------------------------
-
-## Solve the MILP2 with valid inequality 
-if 1 == 0: 
-    t_o = time.time() 
-    model,xx = uc_Co.uc(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,Pb,C,Cs,Tunder,option='Milp2',nameins=instancia[0:4])
-    sol_milp2 = Solution(model=model,nameins=instancia[0:4],env=ambiente,executable=executable,gap=gap,timelimit=timelimit,
-                           tee=False,tofiles=False,emphasize=emph,exportLP=False)
-    z_milp2 = sol_milp2.solve_problem()
-    t_milp2 = time.time() - t_o
-    print("t_milp2= ",round(t_milp2,1),"z_milp2= ",round(z_milp2,1),"total_costo_arr=",model.total_cSU.value)
-    sol_milp2.cuenta_ceros_a_unos(fixed_Uu, No_fixed_Uu, lower_Pmin_Uu,'Milp2')
-    
-    #sol_milp2.send_to_File(letra="a")
-    ## Compare two solutions 
-    #sol_milp.compare(sol_milp2)
-    
-              
 ## --------------------------------- HARD-FIXING (only Uu) ---------------------------------------------
 
 ## HARD-FIXING (only Uu) solution and solve the sub-MILP.
@@ -193,7 +159,7 @@ if 1 == 0:
     sol_softcut.cuenta_ceros_a_unos(fixed_Uu, No_fixed_Uu, lower_Pmin_Uu,'Soft+cut')
     
     
-## -------------------------------- SOFT FIXING + CUT-OFF + Pmin------------------------------------
+## -------------------------------- SOFT FIXING + CUT-OFF + Pmin ------------------------------------
         
 ## SOFT FIX + CUT-OFF + Pmin solution and solve the sub-MILP (it is using cutoff ---> z_hard).
 if 1 == 0:
@@ -220,6 +186,38 @@ if 1 == 1:
     print("t_soft+cut+pmin+fix0= ",round(t_softcut3,4),"z_soft+cut+pmin+fix0= ",round(z_softcut3,1))
     sol_softcut3.cuenta_ceros_a_unos(fixed_Uu, No_fixed_Uu, lower_Pmin_Uu,'Soft+pmin+cut+fix0')
     
+    
+## --------------------------------- MILP ---------------------------------------------
+
+## Solve as a MILP
+if 1 == 1: 
+    t_o = time.time() 
+    model,xx = uc_Co.uc(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,Pb,C,Cs,Tunder,option=None,nameins=instancia[0:4])
+    sol_milp = Solution(model=model,nameins=instancia[0:4],env=ambiente,executable=executable,gap=gap,timelimit=timelimit,
+                          tee=False,tofiles=False,emphasize=emph,exportLP=False)
+    z_milp = sol_milp.solve_problem()
+    t_milp = time.time() - t_o
+    print("t_milp= ",round(t_milp,1),"z_milp= ",round(z_milp,1))#,"total_costo_arr=",model.total_cSU.value
+    # sol_milp.send_to_File()
+    sol_milp.cuenta_ceros_a_unos(fixed_Uu, No_fixed_Uu, lower_Pmin_Uu,'Milp')
+    
+    
+## --------------------------------- MILP2 with Inequality ----------------------------------------
+
+## Solve the MILP2 with valid inequality 
+if 1 == 0: 
+    t_o = time.time() 
+    model,xx = uc_Co.uc(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,Pb,C,Cs,Tunder,option='Milp2',nameins=instancia[0:4])
+    sol_milp2 = Solution(model=model,nameins=instancia[0:4],env=ambiente,executable=executable,gap=gap,timelimit=timelimit,
+                           tee=False,tofiles=False,emphasize=emph,exportLP=False)
+    z_milp2 = sol_milp2.solve_problem()
+    t_milp2 = time.time() - t_o
+    print("t_milp2= ",round(t_milp2,1),"z_milp2= ",round(z_milp2,1),"total_costo_arr=",model.total_cSU.value)
+    sol_milp2.cuenta_ceros_a_unos(fixed_Uu, No_fixed_Uu, lower_Pmin_Uu,'Milp2')
+    
+    #sol_milp2.send_to_File(letra="a")
+    ## Compare two solutions 
+    #sol_milp.compare(sol_milp2)
 
 
 ## --------------------------------- LOCAL BRANCHING CUTS ------------------------------------
@@ -297,6 +295,7 @@ if 1 == 0:
 ## 'ambiente,localtime,instancia,T,G,gap,emphasize,timelimit,z_lp,z_hard,z_milp,z_milp2,z_soft,z_softpmin,z_softcut,z_softcut2,z_softcut3,z_lbc,
 #                                                       t_lp,t_hard,t_milp,t_milp2,t_soft,t_softpmin,t_softcut,t_softcut2,t_softcut3,t_lbc,
 #                                                       n_fixU,nU_no_int,n_Uu_no_int,n_Uu_1_0,k,bin_sup,comment'
+#|bestbound-bestinteger|/(1e-10+|bestinteger|)
 comment = 'preliminary test'
 row = [ambiente,localtime,instancia,len(T),len(G),gap,emph,timelimit,
        round(z_lp,1),round(z_hard,1),round(z_milp,1),round(z_milp2,1),round(z_soft,1),round(z_softpmin,1),round(z_softcut,1),round(z_softcut2,1),round(z_softcut3,1),round(z_lbc,1),

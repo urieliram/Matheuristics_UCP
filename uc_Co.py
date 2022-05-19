@@ -354,7 +354,7 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,Pb,C,Cs,Tunder,
             model.u[f[0]+1,f[1]+1].fix(0)  ## Hard fixing to 0
         for f in lower_Pmin_Uu:
             model.u[f[0]+1,f[1]+1].unfix()   ## Unfixing
-        print('Soft3 -estoy fijando a <0> las No_fixed_Uu - lower_Pmin_Uu',len(No_fixed_Uu),'-',len(lower_Pmin_Uu))
+        print('Soft3 -estoy fijando a <0>: No_fixed_Uu - lower_Pmin_Uu =',len(No_fixed_Uu),'-',len(lower_Pmin_Uu))
                 
 
     ## ---------------------------- LOCAL BRANCHING CONSTRAINT ------------------------------------------
