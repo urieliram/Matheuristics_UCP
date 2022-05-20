@@ -98,10 +98,7 @@ class Solution:
         # model.display()        # Print the optimal solution
 
         if (result.solver.status == SolverStatus.ok) and (result.solver.termination_condition == TerminationCondition.optimal):
-            __data = result.Problem._list
-            LB = __data[0].lower_bound
-            UB = __data[0].upper_bound
-            self.gap_ = abs(LB - UB) /(1e-10 + abs(UB)) #|bestbound-bestinteger|/(1e-10+|bestinteger|)
+            self.fail = False
             
         elif result.solver.termination_condition == TerminationCondition.infeasible:
             ##https://stackoverflow.com/questions/51044262/finding-out-reason-of-pyomo-model-infeasibility
@@ -112,11 +109,21 @@ class Solution:
             #sys.exit("!!! Unfortunately, the program has stopped.") 
         elif (result.solver.termination_condition == TerminationCondition.maxTimeLimit):
             print (">>> The maximum time limit has been reached.")
+            self.fail = False
+
         else:
             print ("!!! Something else is wrong",str(result.solver)) 
             self.fail = True
 
+
         if self.fail == False:
+            
+            ## |bestbound-bestinteger|/(1e-10+|bestinteger|)
+            __data = result.Problem._list
+            LB = __data[0].lower_bound
+            UB = __data[0].upper_bound
+            self.gap_ = abs(LB - UB) /(1e-10 + abs(UB)) 
+            
             ## Inizialize variables making a empty-solution with all generators in cero
             self.Uu     = [[0 for i in range(self.tt)] for j in range(self.gg)]
             self.V      = [[0 for i in range(self.tt)] for j in range(self.gg)]
@@ -185,8 +192,8 @@ class Solution:
     
     ## En esta función seleccionamos el conjunto de variables Uu que quedarán en uno para ser fijadas posteriormente.
     def select_fixed_variables_Uu(self):
-        fixed_Uu       = []  
-        No_fixed_Uu    = []
+        SB_Uu          = []  
+        No_SB_Uu       = []
         lower_Pmin_Uu  = []
         
         ## Almacena la solución entera
@@ -196,39 +203,39 @@ class Solution:
                 UuxP[g][t] = self.P[g][t] * self.Uu[g][t]
                 
                 ## Aquí se enlistan los valores de 'u' que serán fijados.
-                ## El criterio para fijar es el de [Harjunkoski2020] de multiplicar la potencia 
+                ## El criterio para fijar es el propuesto por [Harjunkoski2020] de multiplicar la potencia 
                 ## por valores de 'u' y evaluar que sean mayores al límite operativo mínimo.
                 if UuxP[g][t] >= self.model.Pmin[g+1]:
-                    fixed_Uu.append([g,t])
+                    SB_Uu.append([g,t])
                 else:
                     ## Vamos a guardar las variables que quedaron abajo del minimo pero diferentes de cero,
                     ## podriamos decir que este grupo de variables son <intentos de asignación>.
                     ## >>> Éste valor puede ser usado para definir el parámetro k en el LBC. <<<                   
                     if (UuxP[g][t] != 0):
                         lower_Pmin_Uu.append([g,t])
-                    No_fixed_Uu.append([g,t])  
+                    No_SB_Uu.append([g,t])  
                     
-        suma = len(fixed_Uu) + len(No_fixed_Uu)
-        print('|Uu       |fixed_Uu    |No_fixed_Uu|lower_Pmin_Uu|')   
-        print('|',suma,'   |   ',len(fixed_Uu),'   |   ',len(No_fixed_Uu),'   |   ',len(lower_Pmin_Uu),'     |',)   
+        suma = len(SB_Uu) + len(No_SB_Uu)
+        print('|Uu       |SB_Uu      |No_SB_Uu  |lower_Pmin_Uu|')   
+        print('|',suma,'   |   ',len(SB_Uu),'   |   ',len(No_SB_Uu),'   |   ',len(lower_Pmin_Uu),' |',)   
                        
-        return fixed_Uu, No_fixed_Uu, lower_Pmin_Uu
+        return SB_Uu, No_SB_Uu, lower_Pmin_Uu
     
     
-    def cuenta_ceros_a_unos(self,fixed_Uu,No_fixed_Uu,lower_Pmin_Uu,tag):
+    def cuenta_ceros_a_unos(self,SB_Uu,No_SB_Uu,lower_Pmin_Uu,tag):
         try:
             uno_a_cero=0
-            for i in fixed_Uu:
+            for i in SB_Uu:
                 if self.Uu[i[0]][i[1]] == 0:
                     #print(i)
                     uno_a_cero=uno_a_cero+1
-            print(tag,'fixed_Uu    1--->0',uno_a_cero)
+            print(tag,'SB_Uu    1--->0',uno_a_cero)
             cero_a_uno=0
-            for i in No_fixed_Uu:
+            for i in No_SB_Uu:
                 if self.Uu[i[0]][i[1]] == 1:
                     #print(i)
                     cero_a_uno=cero_a_uno+1
-            print(tag,'No_fixed_Uu 0--->1',cero_a_uno)
+            print(tag,'No_SB_Uu 0--->1',cero_a_uno)
             cero_a_uno=0
             for i in lower_Pmin_Uu:
                 if self.Uu[i[0]][i[1]] == 1:
@@ -237,7 +244,8 @@ class Solution:
             print(tag,'lower_Pmin_Uu  0--->1',cero_a_uno)  
             
         except Exception as e:
-            print('>>> Hubo un error en cuenta_ceros_a_unos')      
+            #print('>>> Hubo un error en <cuenta_ceros_a_unos>')
+            x = 1 
         return 0
     
     
@@ -249,9 +257,9 @@ class Solution:
                     Uu_no_int.append([g,t,self.Uu[g][t]])    
         if len(Uu_no_int) != 0:
             if self.option=='relax':
-                print("Numero de binarios en la solución ---> solution.Uu_no_int=",len(Uu_no_int))   
+                print("Numero de No binarios en la solución ---> solution.Uu_no_int=",len(Uu_no_int))   
             else:
-                print(">>> WARNING se han encontrado no binarios en la solución ---> solution.Uu_no_int=",len(Uu_no_int))   
+                print(">>> WARNING se han encontrado No binarios en la solución ---> solution.Uu_no_int=",len(Uu_no_int),Uu_no_int)   
         return 0
     
     
