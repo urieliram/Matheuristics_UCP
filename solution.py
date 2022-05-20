@@ -1,15 +1,17 @@
 from   ctypes import util
 import os
+import sys
 import time
 import pyomo.environ as pyo
 import util
 import numpy as np
 from   pyomo.util.infeasible import log_infeasible_constraints
 from   pyomo.opt import SolverStatus, TerminationCondition
+import logging
 
 class Solution:
-    def __init__(self,model,env,executable,nameins='model',gap=0.0001,timelimit=300,tee=False,tofiles=False,lpmethod=0,
-                 cutoff=1e+75,emphasize=1,exportLP=False):
+    def __init__(self,model,env,executable,nameins='model',gap=0.0001,timelimit=2000,tee=False,tofiles=False,lpmethod=0,
+                 cutoff=1e+75,emphasize=1,exportLP=False,option=''):
         self.model      = model
         self.nameins    = nameins     ## name of instance 
         self.env        = env         ## enviroment  
@@ -25,7 +27,11 @@ class Solution:
         self.gg         = len(model.G)
         self.tt         = len(model.T)
         self.S          = model.S
-       
+        self.gap_       = 1e+75       ## relative gap calculated with #|bestbound-bestinteger|/(1e-10+|bestinteger|)
+        self.fail       = False
+        self.z_exact    = 1e+75
+        self.option     = option
+               
     def getModel(self):
         return self.model
     def getUu(self):
@@ -55,10 +61,11 @@ class Solution:
             solver.options['mip tolerances uppercutoff'] = self.cutoff
         
         ## https://www.ibm.com/docs/en/icos/12.8.0.0?topic=parameters-algorithm-continuous-linear-problems
+        ##https://www.ibm.com/docs/en/icos/12.8.0.0?topic=cplex-list-parameters
         solver.options['lpmethod'                      ] = self.lpmethod         
         solver.options['mip tolerances mipgap'         ] = self.gap  
         solver.options['timelimit'                     ] = self.timelimit 
-        solver.options['emphasis mip'                  ] = self.emphasize 
+        solver.options['emphasis mip'                  ] = self.emphasize
         
         ## para mostrar la solución en un formato propio
         ## https://developers.google.com/optimization/routing/cvrp
@@ -74,76 +81,78 @@ class Solution:
             #print(solver.ExportModelAsLpFormat(False).replace('\\', '').replace(',_', ','), sep='\n')
         
         t_o = time.time() 
+        
         ## Envía el problema de optimización al solver
-        result = solver.solve(self.model, tee=self.tee)
+        result = solver.solve(self.model,tee=self.tee,logfile='logfile'+ self.option +'.log')
         #result.write()  
         self.solvertime = time.time() - t_o      
-        
+                
         try:
             pyo.assert_optimal_termination(result)
         except Exception as e:
-            print(">>> An exception occurred")
             print(e)
-                
+                            
         # model.obj.pprint()     # Print the objetive function
         # model.demand.pprint()  # Print constraint
         # model.reserve.pprint() # Print constraint
-        # model.display()        # Print the optimal solution     
-        # z = pyo.value(model.obj)
+        # model.display()        # Print the optimal solution
 
         if (result.solver.status == SolverStatus.ok) and (result.solver.termination_condition == TerminationCondition.optimal):
-            aux=1+1
-            #print ("This is feasible and optimal")            
-        elif result.solver.termination_condition == TerminationCondition.infeasible:            
+            __data = result.Problem._list
+            LB = __data[0].lower_bound
+            UB = __data[0].upper_bound
+            self.gap_ = abs(LB - UB) /(1e-10 + abs(UB)) #|bestbound-bestinteger|/(1e-10+|bestinteger|)
+            
+        elif result.solver.termination_condition == TerminationCondition.infeasible:
             ##https://stackoverflow.com/questions/51044262/finding-out-reason-of-pyomo-model-infeasibility
-            log_infeasible_constraints(self.model, log_expression=True, log_variables=True)
-            print ("!!! Infeasible solution, do something about it, or exit.")
+            self.fail = True
+            #print ("!!! Infeasible solution ... wait to unfeasible.log")            
+            #log_infeasible_constraints(self.model,log_expression=True, log_variables=True)           
+            #logging.basicConfig(filename='unfeasible.log', encoding='utf-8', level=logging.INFO)
+            #sys.exit("!!! Unfortunately, the program has stopped.") 
         elif (result.solver.termination_condition == TerminationCondition.maxTimeLimit):
             print (">>> The maximum time limit has been reached.")
         else:
             print ("!!! Something else is wrong",str(result.solver)) 
+            self.fail = True
 
-        ## Inizialize variables making a empty-solution with all generators in cero
-        self.Uu     = [[0 for i in range(self.tt)] for j in range(self.gg)]
-        self.V      = [[0 for i in range(self.tt)] for j in range(self.gg)]
-        self.W      = [[0 for i in range(self.tt)] for j in range(self.gg)]
-        self.P      = [[0 for i in range(self.tt)] for j in range(self.gg)]
-        self.R      = [[0 for i in range(self.tt)] for j in range(self.gg)]            
-        self.delta  = [[0 for i in range(self.tt)] for j in range(self.gg)]
-        
-        ## Tranformación especial para variable delta de (g,t,s) a (g,t) 
-        for g in range(0, self.gg):
-            for t in range(0, self.tt):
-                position = 0
-                for s in range(0, len(self.model.S[g+1])):
-                    position = position + 1
-                    if self.model.delta[(g+1,t+1,s+1)].value != None and self.model.delta[(g+1,t+1,s+1)].value == 1:
-                        self.delta[g][t] = position
-                        #self.delta[g][t] = self.delta[g][t] + self.model.delta[(g+1,t+1,s+1)].value
-        
-        ## Almacena solución entera
-        for t in range(self.tt):
-            for g in range(self.gg):
-                self.Uu[g][t] = round(self.model.u[(g+1, t+1)].value,10)
-                self.V [g][t] = round(self.model.v[(g+1, t+1)].value,10)
-                self.W [g][t] = round(self.model.w[(g+1, t+1)].value,10)
-                self.P [g][t] = round(self.model.p[(g+1, t+1)].value,10)
-                self.R [g][t] = round(self.model.r[(g+1, t+1)].value,10)
-                # self.Uu[g][t] = self.model.u[(g+1, t+1)].value
-                # self.V [g][t] = self.model.v[(g+1, t+1)].value
-                # self.W [g][t] = self.model.w[(g+1, t+1)].value
-                # self.P [g][t] = self.model.p[(g+1, t+1)].value
-                # self.R [g][t] = self.model.r[(g+1, t+1)].value
+        if self.fail == False:
+            ## Inizialize variables making a empty-solution with all generators in cero
+            self.Uu     = [[0 for i in range(self.tt)] for j in range(self.gg)]
+            self.V      = [[0 for i in range(self.tt)] for j in range(self.gg)]
+            self.W      = [[0 for i in range(self.tt)] for j in range(self.gg)]
+            self.P      = [[0 for i in range(self.tt)] for j in range(self.gg)]
+            self.R      = [[0 for i in range(self.tt)] for j in range(self.gg)]            
+            self.delta  = [[0 for i in range(self.tt)] for j in range(self.gg)]
                 
-        if self.tofiles == True:
-            self.send_to_File()            
-        
-        ## Imprimimos las posibles variables 'u' que podrían no sean enteras.
-        self.count_U_no_int()    
-                       
-        z_exact = self.model.obj.expr()    
+            ## Tranformación especial para variable delta de (g,t,s) a (g,t) 
+            for g in range(0, self.gg):
+                for t in range(0, self.tt):
+                    position = 0
+                    for s in range(0, len(self.model.S[g+1])):
+                        position = position + 1
+                        if self.model.delta[(g+1,t+1,s+1)].value != None and self.model.delta[(g+1,t+1,s+1)].value == 1:
+                            self.delta[g][t] = position
+                            #self.delta[g][t] = self.delta[g][t] + self.model.delta[(g+1,t+1,s+1)].value
+                
+            ## Almacena solución entera
+            for t in range(self.tt):
+                for g in range(self.gg):
+                    self.Uu[g][t] = round(self.model.u[(g+1, t+1)].value,10)
+                    self.V [g][t] = round(self.model.v[(g+1, t+1)].value,10)
+                    self.W [g][t] = round(self.model.w[(g+1, t+1)].value,10)
+                    self.P [g][t] = round(self.model.p[(g+1, t+1)].value,10)
+                    self.R [g][t] = round(self.model.r[(g+1, t+1)].value,10)
+                        
+            if self.tofiles == True:
+                self.send_to_File()            
+                
+            ## Imprimimos las posibles variables 'u' que podrían no sean enteras.
+            self.count_U_no_int()    
+                            
+            self.z_exact = self.model.obj.expr()   
             
-        return z_exact
+        return self.z_exact, self.gap_
     
           
     def send_to_File(self,letra=""):     
@@ -176,26 +185,26 @@ class Solution:
     
     ## En esta función seleccionamos el conjunto de variables Uu que quedarán en uno para ser fijadas posteriormente.
     def select_fixed_variables_Uu(self):
-        fixed_Uu    = []  
-        No_fixed_Uu = []
+        fixed_Uu       = []  
+        No_fixed_Uu    = []
         lower_Pmin_Uu  = []
         
-        UuP = [[0 for i in range(self.tt)] for j in range(self.gg)]
-        ## Almacena solución entera
+        ## Almacena la solución entera
+        UuxP = [[0 for i in range(self.tt)] for j in range(self.gg)]
         for t in range(self.tt):
             for g in range(self.gg):
-                UuP[g][t] = self.P[g][t] * self.Uu[g][t]
+                UuxP[g][t] = self.P[g][t] * self.Uu[g][t]
                 
                 ## Aquí se enlistan los valores de 'u' que serán fijados.
                 ## El criterio para fijar es el de [Harjunkoski2020] de multiplicar la potencia 
                 ## por valores de 'u' y evaluar que sean mayores al límite operativo mínimo.
-                if UuP[g][t] >= self.model.Pmin[g+1]:
+                if UuxP[g][t] >= self.model.Pmin[g+1]:
                     fixed_Uu.append([g,t])
                 else:
                     ## Vamos a guardar las variables que quedaron abajo del minimo pero diferentes de cero,
                     ## podriamos decir que este grupo de variables son <intentos de asignación>.
                     ## >>> Éste valor puede ser usado para definir el parámetro k en el LBC. <<<                   
-                    if (UuP[g][t] != 0):
+                    if (UuxP[g][t] != 0):
                         lower_Pmin_Uu.append([g,t])
                     No_fixed_Uu.append([g,t])  
                     
@@ -207,24 +216,28 @@ class Solution:
     
     
     def cuenta_ceros_a_unos(self,fixed_Uu,No_fixed_Uu,lower_Pmin_Uu,tag):
-        uno_a_cero=0
-        for i in fixed_Uu:
-            if self.Uu[i[0]][i[1]] == 0:
-                #print(i)
-                uno_a_cero=uno_a_cero+1
-        print(tag,'fixed_Uu    1--->0',uno_a_cero)
-        cero_a_uno=0
-        for i in No_fixed_Uu:
-            if self.Uu[i[0]][i[1]] == 1:
-                #print(i)
-                cero_a_uno=cero_a_uno+1
-        print(tag,'No_fixed_Uu 0--->1',cero_a_uno)
-        cero_a_uno=0
-        for i in lower_Pmin_Uu:
-            if self.Uu[i[0]][i[1]] == 1:
-                #print(i)
-                cero_a_uno=cero_a_uno+1
-        print(tag,'lower_Pmin_Uu  0--->1',cero_a_uno)        
+        try:
+            uno_a_cero=0
+            for i in fixed_Uu:
+                if self.Uu[i[0]][i[1]] == 0:
+                    #print(i)
+                    uno_a_cero=uno_a_cero+1
+            print(tag,'fixed_Uu    1--->0',uno_a_cero)
+            cero_a_uno=0
+            for i in No_fixed_Uu:
+                if self.Uu[i[0]][i[1]] == 1:
+                    #print(i)
+                    cero_a_uno=cero_a_uno+1
+            print(tag,'No_fixed_Uu 0--->1',cero_a_uno)
+            cero_a_uno=0
+            for i in lower_Pmin_Uu:
+                if self.Uu[i[0]][i[1]] == 1:
+                    #print(i)
+                    cero_a_uno=cero_a_uno+1
+            print(tag,'lower_Pmin_Uu  0--->1',cero_a_uno)  
+            
+        except Exception as e:
+            print('>>> Hubo un error en cuenta_ceros_a_unos')      
         return 0
     
     
@@ -235,7 +248,10 @@ class Solution:
                 if self.Uu[g][t] != 1 and self.Uu[g][t] != 0:
                     Uu_no_int.append([g,t,self.Uu[g][t]])    
         if len(Uu_no_int) != 0:
-            print(">>> WARNING se han encontrado no binarios en la solución ---> solution.Uu_no_int=",len(Uu_no_int))   
+            if self.option=='relax':
+                print("No binarios en la solución ---> solution.Uu_no_int=",len(Uu_no_int))   
+            else:
+                print(">>> WARNING se han encontrado no binarios en la solución ---> solution.Uu_no_int=",len(Uu_no_int))   
         return 0
     
     

@@ -19,7 +19,7 @@ import pyomo.environ as pyo
 from   pyomo.environ import *
 
 def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,Pb,C,Cs,Tunder,option='None',
-       fixed_Uu=[],No_fixed_Uu=[],lower_Pmin_Uu=[],fixed_delta=[],percent_lbc=90,k=20,nameins='model'):
+       fixed_Uu=[],No_fixed_Uu=[],lower_Pmin_Uu=[],percent_lbc=90,k=20,nameins='model'):
                
     n_subset   = 0 ## Número de variables que podrían moverse en el Sub-milp (Binary support)
 
@@ -314,47 +314,70 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,Pb,C,Cs,Tunder,
             model.u[f[0]+1,f[1]+1].fix(1)  ## Hard fixing
                         
             
-    ## ---------------------------- FAKE FIXING ------------------------------------------
+    ## ---------------------------- SOFT0 FIXING ------------------------------------------
     
     ## Relajamos la restricción de integralidad de las variables Uu candidatas a 1 en la relajación lineal
-    if(option == 'Fake'):            
+    if(option == 'Soft0' or option == 'Soft4' or option == 'Soft5'):    
+        for f in No_fixed_Uu:
+            model.u[f[0]+1,f[1]+1].fix(0)                ## Hard fixing to '0' those elements outside of Sopport Binary      
+              
         for f in fixed_Uu:  
-            model.u[f[0]+1,f[1]+1].domain = UnitInterval 
-
-
-    ## ---------------------------- SOFT VARIABLE FIXING ------------------------------------------
-
-    ## Si se desea usar la solución fix y calcular un sub-MILP.
-    if(option == 'Soft' or option == 'Soft2' or option == 'Soft3'): 
-
-        for f in fixed_Uu:  
-            model.u[f[0]+1,f[1]+1].domain = UnitInterval  ## Soft-fixing I                
-
+            model.u[f[0]+1,f[1]+1].domain = UnitInterval ## We remove the integrality constraint of the Binary Support 
+            
+        for f in lower_Pmin_Uu:
+            model.u[f[0]+1,f[1]+1].unfix()               ## Unfixing
+            model.u[f[0]+1,f[1]+1].domain = UnitInterval ## Soft-fixing I
+            
         ## Adding a new restriction.  
         ## https://pyomo.readthedocs.io/en/stable/working_models.html
         ## Soft-fixing II
         model.cuts = pyo.ConstraintList()
-        n_subset   = math.ceil( (percent_lbc/100) * len(fixed_Uu))
-        expr       = 0
+        n_subset   = math.ceil((percent_lbc/100) * len(fixed_Uu))
+        expr       = 0        
         
-        for f in fixed_Uu:      
-            expr += model.u[f[0]+1,f[1]+1]
-        
-        if(option == 'Soft2' or option == 'Soft3'):
-            # \todo{DEMOSTRAR QUE NOS CONVIENE RELAJAR LOS INTENTOS DE ASIGNACIÓN EN EL SOFT-FIXING}
-            for f in lower_Pmin_Uu: 
-                model.u[f[0]+1,f[1]+1].domain = UnitInterval ## Soft-fixing
-            for f in lower_Pmin_Uu:      
-                expr += model.u[f[0]+1,f[1]+1]               ## New constraint soft.                        
-        model.cuts.add(expr >= n_subset)                     ## Adding a new restriction.  
-        #print('Soft: number of variables Uu that could be out the n_subset (',100-percent_lbc,'%): ', len(fixed_Uu)-n_subset)
+        if option != 'Soft5':       ## Sin ninguna restricción de n_subset=90%     
+            if option == 'Soft0':   ## Se hace n_subset=90% solo a al Soporte Binario    
+                for f in fixed_Uu:      
+                    expr += model.u[f[0]+1,f[1]+1]
+            if option == 'Soft4':  ## Se hace n_subset=90% al Soporte Binario (Titulares) y a Candidatos (la banca) identificados en LR
+                for f in lower_Pmin_Uu:   
+                    expr += model.u[f[0]+1,f[1]+1]  ## New constraint soft.                        
+            model.cuts.add(expr >= n_subset)        ## Adding a new restriction.  
 
-    if(option == 'Soft3'):   
-        for f in No_fixed_Uu:
-            model.u[f[0]+1,f[1]+1].fix(0)  ## Hard fixing to 0
-        for f in lower_Pmin_Uu:
-            model.u[f[0]+1,f[1]+1].unfix()   ## Unfixing
-        print('Soft3 -estoy fijando a <0>: No_fixed_Uu - lower_Pmin_Uu =',len(No_fixed_Uu),'-',len(lower_Pmin_Uu))
+
+    ## ---------------------------- SOFT VARIABLE FIXING ------------------------------------------
+
+    # ## Si se desea usar la solución fix y calcular un sub-MILP.
+    # if(option == 'Soft' or option == 'Soft2' or option == 'Soft3'): 
+
+    #     for f in fixed_Uu:  
+    #         model.u[f[0]+1,f[1]+1].domain = UnitInterval  ## Soft-fixing I                
+
+    #     ## Adding a new restriction.  
+    #     ## https://pyomo.readthedocs.io/en/stable/working_models.html
+    #     ## Soft-fixing II
+    #     model.cuts = pyo.ConstraintList()
+    #     n_subset   = math.ceil( (percent_lbc/100) * len(fixed_Uu))
+    #     expr       = 0
+        
+    #     for f in fixed_Uu:      
+    #         expr += model.u[f[0]+1,f[1]+1]
+        
+    #     if(option == 'Soft2' or option == 'Soft3'):
+    #         # \todo{DEMOSTRAR QUE NOS CONVIENE RELAJAR LOS INTENTOS DE ASIGNACIÓN EN EL SOFT-FIXING}
+    #         for f in lower_Pmin_Uu: 
+    #             model.u[f[0]+1,f[1]+1].domain = UnitInterval ## Soft-fixing
+    #         for f in lower_Pmin_Uu:      
+    #             expr += model.u[f[0]+1,f[1]+1]               ## New constraint soft.                        
+    #     model.cuts.add(expr >= n_subset)                     ## Adding a new restriction.  
+    #     #print('Soft: number of variables Uu that could be outside  the n_subset (',100-percent_lbc,'%): ', len(fixed_Uu)-n_subset)
+
+    # if(option == 'Soft3'):   
+    #     print('Soft3 -estoy fijando a <0>: No_fixed_Uu - lower_Pmin_Uu =',len(No_fixed_Uu),'-',len(lower_Pmin_Uu))
+    #     for f in No_fixed_Uu:
+    #         model.u[f[0]+1,f[1]+1].fix(0)  ## Hard fixing to 0
+    #     for f in lower_Pmin_Uu:
+    #         model.u[f[0]+1,f[1]+1].unfix()   ## Unfixing
                 
 
     ## ---------------------------- LOCAL BRANCHING CONSTRAINT ------------------------------------------
@@ -382,7 +405,7 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,Pb,C,Cs,Tunder,
         model.cuts.add(expr >= n_subset)                     ## Adding a new restriction. 
            
         #print('LBC: number of variables Uu that must be into the n_subset (',percent_lbc,'%): ', n_subset)
-        print('LBC: number of variables Uu that must be out the n_subset (',100-percent_lbc,'%): ', len(fixed_Uu)-n_subset)
+        print('LBC: number of variables Uu that must be outside the n_subset (',100-percent_lbc,'%): ', len(fixed_Uu)-n_subset)
         
         ## Local branching constraint
         expr = 0        
