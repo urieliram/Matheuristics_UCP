@@ -65,12 +65,32 @@ def config_env():
         ambiente     = df['ambiente'  ].values[0]
         ruta         = df['ruta'      ].values[0]
         executable   = df['executable'].values[0]
-        timelimit    = df['timelimit' ].values[0]
+        timeheu      = df['timeheu'   ].values[0]
+        timemilp     = df['timemilp'  ].values[0]
         gap          = df['gap'       ].values[0]
     else:
         print('!!! Problema al cargar la configuración. Verifique el ')
         print('formato y rutas del archivo <config>, algo como esto:')
-        print('ambiente,ruta,executable,timelimit,gap')
-        print('localPC,instances/,/home/uriel/cplex1210/cplex/bin/x86-64_linux/cplex,4000,0.001')
+        print('ambiente,ruta,executable,timeheu,timemilp,gap')
+        print('localPC,instances/,/home/uriel/cplex1210/cplex/bin/x86-64_linux/cplex,4000,40000,0.001')
                 
-    return ambiente, ruta, executable, timelimit, gap
+    return ambiente, ruta, executable, timeheu, timemilp, gap
+
+
+#https://naps.com.mx/blog/leer-archivos-en-python-por-linea-palabra/
+#https://appdividend.com/2021/12/09/how-to-find-string-between-two-strings-in-python/#:~:text=To%20find%20a%20string%20between,if%20it%20finds%20a%20match.
+#https://myprogrammingtutorial.com/python-get-first-word-in-string/#:~:text=The%20easiest%20way%20to%20get,provided%20as%20an%20input%20parameter.
+#https://www.geeksforgeeks.org/python-string-find/
+
+def ETL_Coplex_Log(filex):
+    lista = []
+    with open(filex) as fname:
+        lineas = fname.readlines()
+        for linea in lineas:
+            lista.append(linea.strip('\n'))
+    print (lista)
+    
+    
+    
+    
+    return 0

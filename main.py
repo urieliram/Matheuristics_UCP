@@ -15,6 +15,8 @@ import util
 import reading
 from   solution import Solution
 
+#util.ETL_Coplex_Log('logfileMilp.log')
+
 instancia = 'uc_6.json'        ## ejemplos regulares 5,6    
 instancia = 'uc_2.json'        ## ejemplos dificiles 2,3,4     
 instancia = 'uc_3.json'        ## ejemplos dificiles 2,3,4   
@@ -23,15 +25,18 @@ instancia = 'uc_53.json'       ## ejemplo de 'delta' relajado diferente de uno
 instancia = 'uc_45.json'       ## ejemplo de batalla
 instancia = 'uc_47.json'       ## ejemplo sencillo  
 instancia = 'anjos.json'       ## ejemplo de juguete
+instancia = 'uc_52.json'       ## ejemplo sencillo  
 instancia = 'archivox.json'    ## ejemplo sencillo
 
 ## Cargamos parámetros de configuración desde archivo <config>
-ambiente, ruta, executable, timelimit, gap = util.config_env()
-z_lp=0; z_milp=0; z_milp2=0; z_hard=0; z_soft=0; z_softpmin=0; z_softcut=0; z_softcut2=0; z_softcut3=0; z_lbc=0
-t_lp=0; t_milp=0; t_milp2=0; t_hard=0; t_soft=0; t_softpmin=0; t_softcut=0; t_softcut2=0; t_softcut3=0; t_lbc=0;
-nU_no_int=0;  n_Uu_no_int=0;  n_Uu_1_0=0;  k=0; ns=0; fixed_Uu =[]
+ambiente, ruta, executable, timeheu, timemilp, gap = util.config_env()
+z_lp=0; z_milp=0; z_milp2=0; z_hard=0; z_soft0=0; z_soft4=0; z_soft5=0; z_lbc=0;
+t_lp=0; t_milp=0; t_milp2=0; t_hard=0; t_soft0=0; t_soft4=0; t_soft5=0; t_lbc=0;
+g_lp=0; g_milp=0; g_milp2=0; g_hard=0; g_soft0=0; g_soft4=0; g_soft5=0; g_lbc=0; 
+k=0; ns=0;  nU_no_int=0; n_Uu_no_int=0; n_Uu_1_0=0;
+fixed_Uu=[]
 
-emph = 1 ## Emphasize optimality=1 (default);  feasibility=2.
+emph = 0 ## Emphasize balanced=0 (default); feasibility=1;
 
 if ambiente == 'yalma':
     if len(sys.argv) != 3:
@@ -68,18 +73,18 @@ G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,Pb,C,mpc,Cs,Tunder,names =
 if 1 == 1:
     t_o = time.time() 
     model,xx = uc_Co.uc(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,Pb,C,Cs,Tunder,option='relax',nameins=instancia[0:4])
-    sol_lp   = Solution(model=model,env=ambiente,executable=executable,nameins=instancia[0:4],gap=gap,timelimit=timelimit,
-                          tee=False,tofiles=False,emphasize=emph,exportLP=False)
-    z_lp = sol_lp.solve_problem() 
-    t_lp = time.time() - t_o
+    sol_lp   = Solution(model=model,env=ambiente,executable=executable,nameins=instancia[0:4],gap=gap,timelimit=timeheu,
+                          tee=False,tofiles=False,emphasize=emph,exportLP=False,option='relax')
+    z_lp,g_lp = sol_lp.solve_problem() 
+    t_lp      = time.time() - t_o
     print("t_lp= ",round(t_lp,1),"z_lp= ",round(z_lp,1))
     
     
 ## --------------------------------- SELECTION VARIABLES TO FIX -----------------------------------------
 
     ## Seleccionamos las variables que serán fijadas, se requiere correr antes <linear relaxation>
-    ## fixed_Uu    variables que SI serán fijadas a 1.
-    ## No_fixed_Uu variables que NO serán fijadas.
+    ## fixed_Uu       variables que SI serán fijadas a 1.
+    ## No_fixed_Uu    variables que NO serán fijadas.
     ## lower_Pmin_Uu  variables en que el producto Pmin*Uu  fue menor a la potencia mínima del generador Pmin y No serán fijadas.
     fixed_Uu, No_fixed_Uu, lower_Pmin_Uu = sol_lp.select_fixed_variables_Uu()
 
@@ -89,132 +94,167 @@ if 1 == 1:
 if 1 == 1: # or precargado == False  
     t_o = time.time() 
     model,xx = uc_Co.uc(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,Pb,C,Cs,Tunder,option='Hard',fixed_Uu=fixed_Uu,nameins=instancia[0:4])
-    sol_hard = Solution(model=model,env=ambiente,executable=executable,nameins=instancia[0:4],gap=gap,timelimit=timelimit,
-                        tee=False,emphasize=emph,tofiles=False)
-    z_hard = sol_hard.solve_problem()
-    t_hard = time.time() - t_o + t_lp
-    print("t_hard= ",round(t_hard,1),"z_hard= ",round(z_hard,1))
+    sol_hard = Solution(model=model,env=ambiente,executable=executable,nameins=instancia[0:4],gap=gap,timelimit=timemilp,
+                        tee=False,emphasize=emph,tofiles=False,option='Hard')
+    z_hard,g_hard  = sol_hard.solve_problem()
+    t_hard         = time.time() - t_o + t_lp
+    print("t_hard= ",round(t_hard,1),"z_hard= ",round(z_hard,1),"g_hard= ",round(g_hard,5) )
     
     ## Almacenamos la solución de Uu.
-    fixed_Uu, No_fixed_Uu, x = sol_hard.select_fixed_variables_Uu()
+    ## ES MUY IMPORTANTE GUARDAR LAS VARIABLES 'Uu=0' Y 'Uu=1' DE LA PRIMERA SOLUCIÓN FACTIBLE 'HARD'.
+    fixed_Uu2, No_fixed_Uu2, lower_Pmin_Uu2 = sol_hard.select_fixed_variables_Uu()
     
-    sol_hard.cuenta_ceros_a_unos(fixed_Uu, No_fixed_Uu, x,'Hard')    
+    sol_hard.cuenta_ceros_a_unos(fixed_Uu, No_fixed_Uu, lower_Pmin_Uu2,'Hard')    
 
     
-## --------------------------------- FAKE-FIXING (only Uu) ---------------------------------------------
+## --------------------------------- SOFT0-FIXING (only Uu) --------------------------------------------
 
-## FAKE-FIXING (only Uu) solution and solve the sub-MILP.
-## >>> Sin la restricción de 90%
-if 1 == 0: # or precargado == False  
+## SOFT0-FIXING (only Uu) solution and solve the sub-MILP.
+## Con la restricción del 90% del soporte binario.
+if 1 == 1: # or precargado == False  
     t_o = time.time() 
-    model,xx = uc_Co.uc(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,Pb,C,Cs,Tunder,option='Fake',fixed_Uu=fixed_Uu,nameins=instancia[0:4])
-    sol_fake = Solution(model=model,env=ambiente,executable=executable,nameins=instancia[0:4],gap=gap,timelimit=timelimit,
-                        tee=False,emphasize=emph,tofiles=False)
-    z_fake = sol_fake.solve_problem()
-    t_fake = time.time() - t_o + t_lp
-    print("t_fake= ",round(t_fake,1),"z_fake= ",round(z_fake,1))
-    sol_fake.cuenta_ceros_a_unos(fixed_Uu, No_fixed_Uu, lower_Pmin_Uu,'Fake')
+    model,xx = uc_Co.uc(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,Pb,C,Cs,Tunder,option='Soft0',fixed_Uu=fixed_Uu2,No_fixed_Uu=No_fixed_Uu2,lower_Pmin_Uu=lower_Pmin_Uu,nameins=instancia[0:4])
+    sol_soft0 = Solution(model=model,env=ambiente,executable=executable,nameins=instancia[0:4],gap=gap,cutoff=z_hard,timelimit=timeheu,
+                        tee=False,emphasize=emph,tofiles=False,option='Soft0')
+    z_soft0,g_soft0 = sol_soft0.solve_problem()
+    t_soft0         = time.time() - t_o + t_lp
+    print("t_soft0= ",round(t_soft0,1),"z_soft0= ",round(z_soft0,1),"g_soft0= ",round(g_soft0,5) )
+    
+    sol_soft0.cuenta_ceros_a_unos(fixed_Uu2, No_fixed_Uu2, lower_Pmin_Uu,'Soft0')
+
+    
+## --------------------------------- SOFT4-FIXING (only Uu) ---------------------------------------------
+
+## SOFT4-FIXING (only Uu) solution and solve the sub-MILP.
+## Se aplica la restricción de n_subset=90% al Soporte Binario (Titulares) y a Candidatos (la banca) identificados en LR
+if 1 == 1: # or precargado == False  
+    t_o = time.time() 
+    model,xx = uc_Co.uc(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,Pb,C,Cs,Tunder,option='Soft4',fixed_Uu=fixed_Uu2,No_fixed_Uu=No_fixed_Uu2,lower_Pmin_Uu=lower_Pmin_Uu,nameins=instancia[0:4])
+    sol_soft4 = Solution(model=model,env=ambiente,executable=executable,nameins=instancia[0:4],gap=gap,cutoff=z_hard,timelimit=timeheu,
+                        tee=False,emphasize=emph,tofiles=False,option='Soft4')
+    z_soft4,g_soft4 = sol_soft4.solve_problem()
+    t_soft4         = time.time() - t_o + t_lp
+    print("t_soft4= ",round(t_soft4,1),"z_soft4= ",round(z_soft4,1),"g_soft4= ",round(g_soft4,5) )
+    
+    sol_soft4.cuenta_ceros_a_unos(fixed_Uu2, No_fixed_Uu2, lower_Pmin_Uu,'Soft4')
+    
+
+## --------------------------------- SOFT5-FIXING (only Uu) ---------------------------------------------
+
+## SOFT5-FIXING (only Uu) solution and solve the sub-MILP.
+## Sin ninguna restricción de del 90%.
+if 1 == 1: # or precargado == False  
+    t_o = time.time() 
+    model,xx = uc_Co.uc(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,Pb,C,Cs,Tunder,option='Soft5',fixed_Uu=fixed_Uu2,No_fixed_Uu=No_fixed_Uu2,lower_Pmin_Uu=lower_Pmin_Uu,nameins=instancia[0:4])
+    sol_soft5 = Solution(model=model,env=ambiente,executable=executable,nameins=instancia[0:4],gap=gap,cutoff=z_hard,timelimit=timeheu,
+                        tee=False,emphasize=emph,tofiles=False,option='Soft5')
+    z_soft5,g_soft5 = sol_soft5.solve_problem()
+    t_soft5         = time.time() - t_o + t_lp
+    print("t_soft5= ",round(t_soft5,1),"z_soft5= ",round(z_soft5,1),"g_soft5= ",round(g_soft5,5) )
+    
+    sol_soft5.cuenta_ceros_a_unos(fixed_Uu2, No_fixed_Uu2, lower_Pmin_Uu,'Soft5')
 
 
-## --------------------------------- SOFT-FIXING ---------------------------------------------
+## --------------------------------- SOFT-FIXING (deprecared)---------------------------------------------
         
 ## SOFT-FIXING solution and solve the sub-MILP. (Versión sin actualizar el cut-off)
-if 1 == 0:
-    t_o = time.time() 
-    model,xx = uc_Co.uc(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,Pb,C,Cs,Tunder,option='Soft',fixed_Uu=fixed_Uu,nameins=instancia[0:4])
-    sol_soft = Solution(model=model,env=ambiente,executable=executable,nameins=instancia[0:4],gap=gap,timelimit=timelimit,
-                          tee=False,emphasize=emph,tofiles=False)
-    z_soft = sol_soft.solve_problem() 
-    t_soft = time.time() - t_o + t_lp
-    print("t_soft= ",round(t_soft,1),"z_soft= ",round(z_soft,1))
-    sol_soft.cuenta_ceros_a_unos(fixed_Uu, No_fixed_Uu, lower_Pmin_Uu,'Soft')
+# if 1 == 0:
+#     t_o = time.time() 
+#     model,xx = uc_Co.uc(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,Pb,C,Cs,Tunder,option='Soft',fixed_Uu=fixed_Uu,nameins=instancia[0:4])
+#     sol_soft = Solution(model=model,env=ambiente,executable=executable,nameins=instancia[0:4],gap=gap,timelimit=timelimit,
+#                           tee=False,emphasize=emph,tofiles=False,option='Soft')
+#     z_soft,g_soft = sol_soft.solve_problem() 
+#     t_soft        = time.time() - t_o + t_lp
+#     print("t_soft= ",round(t_soft,1),"z_soft= ",round(z_soft,1),"g_soft= ",round(g_soft,5))
+#     sol_soft.cuenta_ceros_a_unos(fixed_Uu, No_fixed_Uu, lower_Pmin_Uu,'Soft')
 
         
-## -------------------------------- SOFT FIXING + Pmin ------------------------------------
+## -------------------------------- SOFT FIXING + Pmin (deprecared)------------------------------------
         
 ## SOFT FIX + Pmin solution and solve the sub-MILP (Versión sin actualizar el cut-off)
 ## Use 'Soft+pmin' if the lower subset of Uu-Pmin will be considered.
-if 1 == 0:
-    t_o = time.time() 
-    model,xx    = uc_Co.uc(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,Pb,C,Cs,Tunder,option='Soft+pmin',fixed_Uu=fixed_Uu,lower_Pmin_Uu=lower_Pmin_Uu,nameins=instancia[0:4])
-    sol_softpmin = Solution(model=model,env=ambiente,executable=executable,nameins=instancia[0:4],gap=gap,timelimit=timelimit,
-                             tee=False,emphasize=emph,tofiles=False)
-    z_softpmin = sol_softpmin.solve_problem() 
-    t_softpmin = time.time() - t_o + t_lp
-    print("t_soft+pmin= ",round(t_softpmin,4),"z_soft+pmin= ",round(z_softpmin,1))
-    sol_softpmin.cuenta_ceros_a_unos(fixed_Uu, No_fixed_Uu, lower_Pmin_Uu,'Soft+pmin')
+# if 1 == 0:
+#     t_o = time.time() 
+#     model,xx     = uc_Co.uc(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,Pb,C,Cs,Tunder,option='Soft+pmin',fixed_Uu=fixed_Uu,lower_Pmin_Uu=lower_Pmin_Uu,nameins=instancia[0:4])
+#     sol_softpmin = Solution(model=model,env=ambiente,executable=executable,nameins=instancia[0:4],gap=gap,timelimit=timelimit,
+#                              tee=False,emphasize=emph,tofiles=False,option='Soft+pmin')
+#     z_softpmin,g_softpmin = sol_softpmin.solve_problem() 
+#     t_softpmin            = time.time() - t_o + t_lp
+#     print("t_soft+pmin= ",round(t_softpmin,4),"z_soft+pmin= ",round(z_softpmin,1),"g_soft+pmin= ",round(g_softpmin,5))
+#     sol_softpmin.cuenta_ceros_a_unos(fixed_Uu, No_fixed_Uu, lower_Pmin_Uu,'Soft+pmin')
     
 
-## -------------------------------- SOFT FIXING + CUT-OFF ------------------------------------
+## -------------------------------- SOFT FIXING + CUT-OFF (deprecared)------------------------------------
         
 ## SOFT FIX + CUT-OFF solution and solve the sub-MILP (it is using cutoff ---> z_hard).
-if 1 == 0:
-    t_o = time.time() 
-    model,xx    = uc_Co.uc(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,Pb,C,Cs,Tunder,option='Soft',fixed_Uu=fixed_Uu,nameins=instancia[0:4])
-    sol_softcut = Solution(model=model,env=ambiente,executable=executable,nameins=instancia[0:4],gap=gap,cutoff=z_hard,timelimit=timelimit,
-                             tee=False,emphasize=emph,tofiles=False)
-    z_softcut = sol_softcut.solve_problem() 
-    t_softcut = time.time() - t_o + t_hard ## t_hard (ya incluye el tiempo de lp)
-    print("t_soft+cut= ",round(t_softcut,4),"z_soft+cut= ",round(z_softcut,1))
-    sol_softcut.cuenta_ceros_a_unos(fixed_Uu, No_fixed_Uu, lower_Pmin_Uu,'Soft+cut')
+# if 1 == 0:
+#     t_o = time.time() 
+#     model,xx    = uc_Co.uc(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,Pb,C,Cs,Tunder,option='Soft',fixed_Uu=fixed_Uu,nameins=instancia[0:4])
+#     sol_softcut = Solution(model=model,env=ambiente,executable=executable,nameins=instancia[0:4],gap=gap,cutoff=z_hard,timelimit=timelimit,
+#                              tee=False,emphasize=emph,tofiles=False,option='Soft')
+#     z_softcut,g_softcut = sol_softcut.solve_problem() 
+#     t_softcut           = time.time() - t_o + t_hard ## t_hard (ya incluye el tiempo de lp)
+#     print("t_soft+cut= ",round(t_softcut,4),"z_soft+cut= ",round(z_softcut,1),"g_soft+cut= ",round(g_softcut,5))
+#     sol_softcut.cuenta_ceros_a_unos(fixed_Uu, No_fixed_Uu, lower_Pmin_Uu,'Soft+cut')
     
     
-## -------------------------------- SOFT FIXING + CUT-OFF + Pmin ------------------------------------
+## -------------------------------- SOFT FIXING + CUT-OFF + Pmin (deprecared)------------------------------------
         
 ## SOFT FIX + CUT-OFF + Pmin solution and solve the sub-MILP (it is using cutoff ---> z_hard).
-if 1 == 0:
-    t_o = time.time() 
-    model,xx    = uc_Co.uc(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,Pb,C,Cs,Tunder,option='Soft2',fixed_Uu=fixed_Uu,nameins=instancia[0:4])
-    sol_softcut2 = Solution(model=model,env=ambiente,executable=executable,nameins=instancia[0:4],gap=gap,cutoff=z_hard,timelimit=timelimit,
-                             tee=False,emphasize=emph,tofiles=False)
-    z_softcut2 = sol_softcut2.solve_problem() 
-    t_softcut2 = time.time() - t_o + t_hard ## t_hard (ya incluye el tiempo de lp)
-    print("t_soft+cut+pmin= ",round(t_softcut2,4),"z_soft+cut+pmin= ",round(z_softcut2,1))
-    sol_softcut2.cuenta_ceros_a_unos(fixed_Uu, No_fixed_Uu, lower_Pmin_Uu,'Soft+pmin+cut')   
+# if 1 == 0:
+#     t_o = time.time() 
+#     model,xx     = uc_Co.uc(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,Pb,C,Cs,Tunder,option='Soft2',fixed_Uu=fixed_Uu,nameins=instancia[0:4])
+#     sol_softcut2 = Solution(model=model,env=ambiente,executable=executable,nameins=instancia[0:4],gap=gap,cutoff=z_hard,timelimit=timelimit,
+#                              tee=False,emphasize=emph,tofiles=False,option='Soft2')
+#     z_softcut2,g_softcut2 = sol_softcut2.solve_problem() 
+#     t_softcut2            = time.time() - t_o + t_hard ## t_hard (ya incluye el tiempo de lp)
+#     print("t_soft+cut+pmin= ",round(t_softcut2,4),"z_soft+cut+pmin= ",round(z_softcut2,1),"g_soft+cut+pmin= ",round(g_softcut2,5))
+#     sol_softcut2.cuenta_ceros_a_unos(fixed_Uu, No_fixed_Uu, lower_Pmin_Uu,'Soft+pmin+cut')   
      
     
-## --------------------------- SOFT FIXING + CUT-OFF + Pmin + FIXING_0 ------------------------------------
+## --------------------------- SOFT FIXING + CUT-OFF + Pmin + FIXING_0 (deprecared)------------------------------------
         
 ## SOFT FIX + CUT-OFF + Pmin + FIXING_0  solution and solve the sub-MILP (it is using cutoff ---> z_hard).
-if 1 == 1:
-    t_o = time.time() 
-    model,xx    = uc_Co.uc(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,Pb,C,Cs,Tunder,option='Soft3',fixed_Uu=fixed_Uu,No_fixed_Uu=No_fixed_Uu,lower_Pmin_Uu=lower_Pmin_Uu,nameins=instancia[0:4])
-    sol_softcut3 = Solution(model=model,env=ambiente,executable=executable,nameins=instancia[0:4],gap=gap,cutoff=z_hard,timelimit=timelimit,
-                             tee=False,emphasize=emph,tofiles=False)
-    z_softcut3 = sol_softcut3.solve_problem() 
-    t_softcut3 = time.time() - t_o + t_hard ## t_hard (ya incluye el tiempo de lp)
-    print("t_soft+cut+pmin+fix0= ",round(t_softcut3,4),"z_soft+cut+pmin+fix0= ",round(z_softcut3,1))
-    sol_softcut3.cuenta_ceros_a_unos(fixed_Uu, No_fixed_Uu, lower_Pmin_Uu,'Soft+pmin+cut+fix0')
+# if 1 == 1:
+#     t_o = time.time() 
+#     model,xx     = uc_Co.uc(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,Pb,C,Cs,Tunder,option='Soft3',fixed_Uu=fixed_Uu2,No_fixed_Uu=No_fixed_Uu2,lower_Pmin_Uu=lower_Pmin_Uu,nameins=instancia[0:4])
+#     sol_softcut3 = Solution(model=model,env=ambiente,executable=executable,nameins=instancia[0:4],gap=gap,cutoff=z_hard,timelimit=timelimit,
+#                              tee=False,emphasize=emph,tofiles=False,option='Soft3')
+#     z_softcut3,g_softcut3 = sol_softcut3.solve_problem() 
+#     t_softcut3            = time.time() - t_o + t_hard ## t_hard (ya incluye el tiempo de lp)
+#     print("t_soft+cut+pmin+fix0= ",round(t_softcut3,4),"z_soft+cut+pmin+fix0= ",round(z_softcut3,1),"g_soft+cut+pmin+fix0= ",round(g_softcut3,5))
     
-    
+#     sol_softcut3.cuenta_ceros_a_unos(fixed_Uu, No_fixed_Uu, lower_Pmin_Uu,'Soft+pmin+cut+fix0')
+
+
 ## --------------------------------- MILP ---------------------------------------------
 
 ## Solve as a MILP
 if 1 == 1: 
     t_o = time.time() 
     model,xx = uc_Co.uc(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,Pb,C,Cs,Tunder,option=None,nameins=instancia[0:4])
-    sol_milp = Solution(model=model,nameins=instancia[0:4],env=ambiente,executable=executable,gap=gap,timelimit=timelimit,
-                          tee=False,tofiles=False,emphasize=emph,exportLP=False)
-    z_milp = sol_milp.solve_problem()
-    t_milp = time.time() - t_o
-    print("t_milp= ",round(t_milp,1),"z_milp= ",round(z_milp,1))#,"total_costo_arr=",model.total_cSU.value
-    # sol_milp.send_to_File()
-    sol_milp.cuenta_ceros_a_unos(fixed_Uu, No_fixed_Uu, lower_Pmin_Uu,'Milp')
+    sol_milp = Solution(model=model,nameins=instancia[0:4],env=ambiente,executable=executable,gap=gap,timelimit=timemilp,
+                          tee=False,tofiles=False,emphasize=emph,exportLP=False,option='Milp')
+    z_milp,g_milp = sol_milp.solve_problem()
+    t_milp        = time.time() - t_o
+    print("t_milp= ",round(t_milp,1),"z_milp= ",round(z_milp,1),"g_milp= ",round(g_milp,5))#,"total_costo_arr=",model.total_cSU.value
     
+    sol_milp.cuenta_ceros_a_unos(fixed_Uu2, No_fixed_Uu2, lower_Pmin_Uu,'Milp')
+    # sol_milp.send_to_File()    
     
 ## --------------------------------- MILP2 with Inequality ----------------------------------------
 
 ## Solve the MILP2 with valid inequality 
-if 1 == 0: 
+if 1 == 1: 
     t_o = time.time() 
-    model,xx = uc_Co.uc(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,Pb,C,Cs,Tunder,option='Milp2',nameins=instancia[0:4])
-    sol_milp2 = Solution(model=model,nameins=instancia[0:4],env=ambiente,executable=executable,gap=gap,timelimit=timelimit,
-                           tee=False,tofiles=False,emphasize=emph,exportLP=False)
-    z_milp2 = sol_milp2.solve_problem()
-    t_milp2 = time.time() - t_o
-    print("t_milp2= ",round(t_milp2,1),"z_milp2= ",round(z_milp2,1),"total_costo_arr=",model.total_cSU.value)
-    sol_milp2.cuenta_ceros_a_unos(fixed_Uu, No_fixed_Uu, lower_Pmin_Uu,'Milp2')
+    model,xx  = uc_Co.uc(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,Pb,C,Cs,Tunder,option='Milp2',nameins=instancia[0:4])
+    sol_milp2 = Solution(model=model,nameins=instancia[0:4],env=ambiente,executable=executable,gap=gap,timelimit=timemilp,
+                           tee=False,tofiles=False,emphasize=emph,exportLP=False,option='Milp2')
+    z_milp2,g_milp2 = sol_milp2.solve_problem()
+    t_milp2         = time.time() - t_o
+    print("t_milp2= ",round(t_milp2,1),"z_milp2= ",round(z_milp2,1),"g_milp2= ",round(g_milp2,5)) #"total_costo_arr=",model.total_cSU.value
     
+    sol_milp2.cuenta_ceros_a_unos(fixed_Uu2, No_fixed_Uu2, lower_Pmin_Uu,'Milp2')
     #sol_milp2.send_to_File(letra="a")
     ## Compare two solutions 
     #sol_milp.compare(sol_milp2)
@@ -229,8 +269,8 @@ if 1 == 0:
     k   = len(lower_Pmin_Uu) # El valor de intentos de asignación está siendo usado para definir el parámetro k en el LBC. 
     model,ns = uc_Co.uc(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,Pb,C,Cs,Tunder,option='LBC+pmin',fixed_Uu=fixed_Uu,No_fixed_Uu=No_fixed_Uu,
                         k=k,lower_Pmin_Uu=lower_Pmin_Uu,nameins=instancia[0:4])
-    sol_lbc  = Solution(model=model,env=ambiente,executable=executable,nameins=instancia[0:4],gap=gap,cutoff=z_hard,timelimit=timelimit,
-                          tee=False,emphasize=emph,tofiles=False)
+    sol_lbc  = Solution(model=model,env=ambiente,executable=executable,nameins=instancia[0:4],gap=gap,cutoff=z_hard,timelimit=timeheu,
+                          tee=False,emphasize=emph,tofiles=False,option='LBC+pmin')
     z_lbc = sol_lbc.solve_problem() 
     t_lbc = time.time() - t_o + t_hard ## t_hard (ya incluye el tiempo de lp    
     sol_lbc.cuenta_ceros_a_unos(fixed_Uu, No_fixed_Uu, lower_Pmin_Uu,'Soft+pmin+cut')
@@ -262,7 +302,6 @@ if 1 == 0:
 
     ## DESCARTES  
     # \todo{Calcular el tamaño del slack del subset Sbarra}
-
     
     ## TERMINADAS
     # \todo{Revisar la desigualdad válida. El numero de 1´s de las variables de arranque 'V' en un horizonte deben ser igual al número de 1's en la variable delta}
@@ -282,7 +321,7 @@ if 1 == 0:
 if 1 == 0:
     t_o = time.time() 
     model,xx    = uc_Co.uc(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,Pb,C,Cs,Tunder,option='KS',fixed_Uu=fixed_Uu,nameins=instancia[0:4])
-    sol_ks = Solution(model=model,env=ambiente,executable=executable,nameins=instancia[0:4],gap=gap,cutoff=z_hard,timelimit=timelimit,
+    sol_ks = Solution(model=model,env=ambiente,executable=executable,nameins=instancia[0:4],gap=gap,cutoff=z_hard,timelimit=timeheu,
                         tee=False,emphasize=emph,tofiles=False)
     z_ks = sol_ks.solve_problem() 
     t_ks = time.time() - t_o + t_hard ## t_hard (ya incluye el tiempo de lp)
@@ -296,11 +335,12 @@ if 1 == 0:
 #                                                       t_lp,t_hard,t_milp,t_milp2,t_soft,t_softpmin,t_softcut,t_softcut2,t_softcut3,t_lbc,
 #                                                       n_fixU,nU_no_int,n_Uu_no_int,n_Uu_1_0,k,bin_sup,comment'
 #|bestbound-bestinteger|/(1e-10+|bestinteger|)
-comment = 'preliminary test'
-row = [ambiente,localtime,instancia,len(T),len(G),gap,emph,timelimit,
-       round(z_lp,1),round(z_hard,1),round(z_milp,1),round(z_milp2,1),round(z_soft,1),round(z_softpmin,1),round(z_softcut,1),round(z_softcut2,1),round(z_softcut3,1),round(z_lbc,1),
-       round(t_lp,1),round(t_hard,1),round(t_milp,1),round(t_milp2,1),round(t_soft,1),round(t_softpmin,1),round(t_softcut,1),round(t_softcut2,1),round(t_softcut3,1),round(t_lbc,1),
-       len(fixed_Uu),nU_no_int,n_Uu_no_int,n_Uu_1_0,k,ns,comment] #round(((z_milp-z_milp2)/z_milp)*100,6)
+comment = 'Soft0, Con la restricción del 90perc a las variables fijadas por el Hard'
+row = [ambiente,localtime,instancia,len(T),len(G),gap,emph,timeheu,timemilp,
+    round(z_lp,1),round(z_hard,1),round(z_milp,1),round(z_milp2,1),round(z_soft0,1),round(z_soft4,1),round(z_soft5,1),round(z_lbc,1),
+    round(t_lp,1),round(t_hard,1),round(t_milp,1),round(t_milp2,1),round(t_soft0,1),round(t_soft4,1),round(t_soft5,1),round(t_lbc,1),
+                  round(g_hard,5),round(g_milp,5),round(g_milp2,5),round(g_soft0,5),round(g_soft4,5),round(g_soft5,5),round(g_lbc,5),
+                  k,ns,comment] #round(((z_milp-z_milp2)/z_milp)*100,6)
 util.append_list_as_row('stat.csv',row)
 
 
