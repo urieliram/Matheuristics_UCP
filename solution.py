@@ -249,7 +249,7 @@ class Solution:
                     Uu_no_int.append([g,t,self.Uu[g][t]])    
         if len(Uu_no_int) != 0:
             if self.option=='relax':
-                print("No binarios en la solución ---> solution.Uu_no_int=",len(Uu_no_int))   
+                print("Numero de binarios en la solución ---> solution.Uu_no_int=",len(Uu_no_int))   
             else:
                 print(">>> WARNING se han encontrado no binarios en la solución ---> solution.Uu_no_int=",len(Uu_no_int))   
         return 0
