@@ -317,7 +317,7 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,Pb,C,Cs,Tunder,
     ## ---------------------------- SOFT0 FIXING ------------------------------------------
     
     ## Relajamos la restricción de integralidad de las variables Uu candidatas a 1 en la relajación lineal
-    if(option == 'Soft0' or option == 'Soft4' or option == 'Soft5'):    
+    if(option == 'Soft0' or option == 'Soft4' or option == 'Soft5' or option == 'Soft6'):    
         for f in No_fixed_Uu:
             model.u[f[0]+1,f[1]+1].fix(0)                ## Hard fixing to '0' those elements outside of Sopport Binary      
               
@@ -336,12 +336,12 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,Pb,C,Cs,Tunder,
         expr       = 0        
         
         if option != 'Soft5':       ## Sin ninguna restricción de n_subset=90%     
-            if option == 'Soft0':   ## Se hace n_subset=90% solo a al Soporte Binario    
+            if option == 'Soft0' or option == 'Soft6':   ## Se hace n_subset=90% solo a al Soporte Binario    
                 for f in fixed_Uu:      
                     expr += model.u[f[0]+1,f[1]+1]
             if option == 'Soft4':  ## Se hace n_subset=90% al Soporte Binario (Titulares) y a Candidatos (la banca) identificados en LR
                 for f in lower_Pmin_Uu:   
-                    expr += model.u[f[0]+1,f[1]+1]  ## New constraint soft.                        
+                    expr += model.u[f[0]+1,f[1]+1]  ## New constraint soft.                             
             model.cuts.add(expr >= n_subset)        ## Adding a new restriction.  
 
 

@@ -30,9 +30,9 @@ instancia = 'archivox.json'    ## ejemplo sencillo
 
 ## Cargamos parámetros de configuración desde archivo <config>
 ambiente, ruta, executable, timeheu, timemilp, gap = util.config_env()
-z_lp=0; z_milp=0; z_milp2=0; z_hard=0; z_soft0=0; z_soft4=0; z_soft5=0; z_lbc=0;
-t_lp=0; t_milp=0; t_milp2=0; t_hard=0; t_soft0=0; t_soft4=0; t_soft5=0; t_lbc=0;
-g_lp=0; g_milp=0; g_milp2=0; g_hard=0; g_soft0=0; g_soft4=0; g_soft5=0; g_lbc=0; 
+z_lp=0; z_milp=0; z_milp2=0; z_hard=0; z_soft0=0; z_soft4=0; z_soft5=0;  z_soft6=0; z_lbc=0;
+t_lp=0; t_milp=0; t_milp2=0; t_hard=0; t_soft0=0; t_soft4=0; t_soft5=0;  t_soft6=0; t_lbc=0;
+g_lp=0; g_milp=0; g_milp2=0; g_hard=0; g_soft0=0; g_soft4=0; g_soft5=0;  g_soft6=0; g_lbc=0; 
 k=0; ns=0;  nU_no_int=0; n_Uu_no_int=0; n_Uu_1_0=0;
 fixed_Uu=[]
 
@@ -107,7 +107,7 @@ if 1 == 1: # or precargado == False
     sol_hard.cuenta_ceros_a_unos(fixed_Uu, No_fixed_Uu, lower_Pmin_Uu2,'Hard')    
 
     
-## --------------------------------- SOFT0-FIXING (only Uu) --------------------------------------------
+## --------------------------------- SOFT0-FIXING (only Uu) + CUT --------------------------------------------
 
 ## SOFT0-FIXING (only Uu) solution and solve the sub-MILP.
 ## Con la restricción del 90% del soporte binario.
@@ -117,13 +117,13 @@ if 1 == 1: # or precargado == False
     sol_soft0 = Solution(model=model,env=ambiente,executable=executable,nameins=instancia[0:4],gap=gap,cutoff=z_hard,timelimit=timeheu,
                         tee=False,emphasize=emph,tofiles=False,option='Soft0')
     z_soft0,g_soft0 = sol_soft0.solve_problem()
-    t_soft0         = time.time() - t_o + t_lp
+    t_soft0         = time.time() - t_o + t_hard ## t_hard (ya incluye el tiempo de lp)
     print("t_soft0= ",round(t_soft0,1),"z_soft0= ",round(z_soft0,1),"g_soft0= ",round(g_soft0,5) )
     
     sol_soft0.cuenta_ceros_a_unos(fixed_Uu2, No_fixed_Uu2, lower_Pmin_Uu,'Soft0')
 
-    
-## --------------------------------- SOFT4-FIXING (only Uu) ---------------------------------------------
+   
+## --------------------------------- SOFT4-FIXING (only Uu) + CUT ---------------------------------------------
 
 ## SOFT4-FIXING (only Uu) solution and solve the sub-MILP.
 ## Se aplica la restricción de n_subset=90% al Soporte Binario (Titulares) y a Candidatos (la banca) identificados en LR
@@ -133,13 +133,13 @@ if 1 == 1: # or precargado == False
     sol_soft4 = Solution(model=model,env=ambiente,executable=executable,nameins=instancia[0:4],gap=gap,cutoff=z_hard,timelimit=timeheu,
                         tee=False,emphasize=emph,tofiles=False,option='Soft4')
     z_soft4,g_soft4 = sol_soft4.solve_problem()
-    t_soft4         = time.time() - t_o + t_lp
+    t_soft4         = time.time() - t_o + t_hard ## t_hard (ya incluye el tiempo de lp)
     print("t_soft4= ",round(t_soft4,1),"z_soft4= ",round(z_soft4,1),"g_soft4= ",round(g_soft4,5) )
     
     sol_soft4.cuenta_ceros_a_unos(fixed_Uu2, No_fixed_Uu2, lower_Pmin_Uu,'Soft4')
     
 
-## --------------------------------- SOFT5-FIXING (only Uu) ---------------------------------------------
+## --------------------------------- SOFT5-FIXING (only Uu) + CUT ---------------------------------------------
 
 ## SOFT5-FIXING (only Uu) solution and solve the sub-MILP.
 ## Sin ninguna restricción de del 90%.
@@ -149,10 +149,26 @@ if 1 == 1: # or precargado == False
     sol_soft5 = Solution(model=model,env=ambiente,executable=executable,nameins=instancia[0:4],gap=gap,cutoff=z_hard,timelimit=timeheu,
                         tee=False,emphasize=emph,tofiles=False,option='Soft5')
     z_soft5,g_soft5 = sol_soft5.solve_problem()
-    t_soft5         = time.time() - t_o + t_lp
+    t_soft5         = time.time() - t_o + t_hard ## t_hard (ya incluye el tiempo de lp)
     print("t_soft5= ",round(t_soft5,1),"z_soft5= ",round(z_soft5,1),"g_soft5= ",round(g_soft5,5) )
     
     sol_soft5.cuenta_ceros_a_unos(fixed_Uu2, No_fixed_Uu2, lower_Pmin_Uu,'Soft5')
+
+
+## --------------------------------- SOFT6-FIXING (only Uu) --------------------------------------------
+
+## SOFT6-FIXING (only Uu) solution and solve the sub-MILP.
+## Con la restricción del 90% del soporte binario.
+if 1 == 1: # or precargado == False  
+    t_o = time.time() 
+    model,xx = uc_Co.uc(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,Pb,C,Cs,Tunder,option='Soft6',fixed_Uu=fixed_Uu2,No_fixed_Uu=No_fixed_Uu2,lower_Pmin_Uu=lower_Pmin_Uu,nameins=instancia[0:4])
+    sol_soft6 = Solution(model=model,env=ambiente,executable=executable,nameins=instancia[0:4],gap=gap,timelimit=timeheu,
+                        tee=False,emphasize=emph,tofiles=False,option='Soft6')
+    z_soft6,g_soft6 = sol_soft6.solve_problem()
+    t_soft6         = time.time() - t_o + t_lp ## t_hard (ya incluye el tiempo de lp)
+    print("t_soft6= ",round(t_soft6,1),"z_soft6= ",round(z_soft6,1),"g_soft6= ",round(g_soft6,5) )
+    
+    sol_soft6.cuenta_ceros_a_unos(fixed_Uu2, No_fixed_Uu2, lower_Pmin_Uu,'Soft6')
 
 
 ## --------------------------------- SOFT-FIXING (deprecared)---------------------------------------------
@@ -337,9 +353,9 @@ if 1 == 0:
 #|bestbound-bestinteger|/(1e-10+|bestinteger|)
 comment = 'Soft0, Con la restricción del 90perc a las variables fijadas por el Hard'
 row = [ambiente,localtime,instancia,len(T),len(G),gap,emph,timeheu,timemilp,
-    round(z_lp,1),round(z_hard,1),round(z_milp,1),round(z_milp2,1),round(z_soft0,1),round(z_soft4,1),round(z_soft5,1),round(z_lbc,1),
-    round(t_lp,1),round(t_hard,1),round(t_milp,1),round(t_milp2,1),round(t_soft0,1),round(t_soft4,1),round(t_soft5,1),round(t_lbc,1),
-                  round(g_hard,5),round(g_milp,5),round(g_milp2,5),round(g_soft0,5),round(g_soft4,5),round(g_soft5,5),round(g_lbc,5),
+    round(z_lp,1),round(z_hard,1),round(z_milp,1),round(z_milp2,1),round(z_soft0,1),round(z_soft4,1),round(z_soft5,1),round(z_soft6,1),round(z_lbc,1),
+    round(t_lp,1),round(t_hard,1),round(t_milp,1),round(t_milp2,1),round(t_soft0,1),round(t_soft4,1),round(t_soft5,1),round(t_soft6,1),round(t_lbc,1),
+                  round(g_hard,5),round(g_milp,5),round(g_milp2,5),round(g_soft0,5),round(g_soft4,5),round(g_soft5,5),round(g_soft6,5),round(g_lbc,5),
                   k,ns,comment] #round(((z_milp-z_milp2)/z_milp)*100,6)
 util.append_list_as_row('stat.csv',row)
 
