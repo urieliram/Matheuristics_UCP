@@ -18,8 +18,7 @@ import math
 import pyomo.environ as pyo
 from   pyomo.environ import *
 
-def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,Pb,C,Cs,Tunder,option='None',
-       SB_Uu=[],No_SB_Uu=[],lower_Pmin_Uu=[],percent_lbc=90,k=20,nameins='model'):
+def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,Pb,C,Cs,Tunder,option='None',SB_Uu=[],No_SB_Uu=[],lower_Pmin_Uu=[],percent_lbc=90,k=20,nameins='model'):
                
     n_subset   = 0 ## Número de variables que podrían moverse en el Sub-milp (Binary support)
 
@@ -313,23 +312,66 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,Pb,C,Cs,Tunder,
         for f in SB_Uu: 
             model.u[f[0]+1,f[1]+1].fix(1)  ## Hard fixing
                         
-            
+                        
     ## ---------------------------- SOFT0 FIXING ------------------------------------------
     
     ## Relajamos la restricción de integralidad de las variables 'Uu' candidatas a '1' en la relajación lineal
-    if(option == 'Soft0' or option == 'Soft4' or option == 'Soft5'):    
+    ## y fijamos la solución a cero de las variables fuera del Soporte Binario
+    ## Liberamos las variables candidatas por LP 'lower_Pmin_Uu'
+    ## Sin ninguna restricción de n_subset=90%   
+    if(option == 'Soft0'):    
         for f in No_SB_Uu:
             model.u[f[0]+1,f[1]+1].fix(0)                ## Hard fixing to '0' those elements outside of Sopport Binary      
-              
+        for f in SB_Uu:  
+            model.u[f[0]+1,f[1]+1].domain = UnitInterval ## We remove the integrality constraint of the Binary Support 
+            model.u[f[0]+1,f[1]+1].unfix() # .fix(1) 
+        for f in lower_Pmin_Uu:
+            model.u[f[0]+1,f[1]+1].domain = UnitInterval ## Soft-fixing I
+            model.u[f[0]+1,f[1]+1].unfix()               ## Unfixing
+
+
+    ## ---------------------------- SOFT4 FIXING ------------------------------------------
+    
+    ## Relajamos la restricción de integralidad de las variables 'Uu' candidatas a '1' en la relajación lineal.
+    ## Hacemos que el 90% de las variables del soporte SB_Uu sigan en el.
+    ## Liberamos las variables candidatas por LP 'lower_Pmin_Uu'
+    if(option == 'Soft4'):    
+        for f in No_SB_Uu:
+            model.u[f[0]+1,f[1]+1].fix(0)                ## Hard fixing to '0' those elements outside of Sopport Binary      
         for f in SB_Uu:  
             model.u[f[0]+1,f[1]+1].domain = UnitInterval ## We remove the integrality constraint of the Binary Support 
             model.u[f[0]+1,f[1]+1].unfix() 
+        for f in lower_Pmin_Uu:
+            model.u[f[0]+1,f[1]+1].domain = UnitInterval ## Soft-fixing I
+            model.u[f[0]+1,f[1]+1].unfix()               ## Unfixing
+        ## Adding a new restriction.  
+        ## https://pyomo.readthedocs.io/en/stable/working_models.html
+        ## Soft-fixing II
+        model.cuts = pyo.ConstraintList()
+        n_subset   = math.ceil((percent_lbc/100) * (len(SB_Uu))) #-len(lower_Pmin_Uu)
+        expr       = 0        
+        ## Se hace n_subset=90% solo a el - Soporte Binario -  
+        for f in SB_Uu:      
+            expr += model.u[f[0]+1,f[1]+1]
+        model.cuts.add(expr >= n_subset)      
 
-        if option != 'Soft0':
-            for f in lower_Pmin_Uu:
-                model.u[f[0]+1,f[1]+1].domain = UnitInterval ## Soft-fixing I
-                model.u[f[0]+1,f[1]+1].unfix()               ## Unfixing
+
+    ## ---------------------------- SOFT5 FIXING ------------------------------------------
+    
+    ## Relajamos la restricción de integralidad de las variables 'Uu' candidatas a '1' en la relajación lineal.
+    ## Hacemos que el 90% de las variables del Soporte  Binario 'SB_Uu' sigan en el.Además de los candidatos 'lower_Pmin_Uu' identificados en la LR
+    ## Por último liberamos las variables candidatas por LP 'lower_Pmin_Uu'
+    if(option == 'Soft5'):    
+        for f in No_SB_Uu:
+            model.u[f[0]+1,f[1]+1].fix(0)                ## Hard fixing to '0' those elements outside of Sopport Binary      
+        for f in SB_Uu:  
+            model.u[f[0]+1,f[1]+1].domain = UnitInterval ## We remove the integrality constraint of the Binary Support 
+            model.u[f[0]+1,f[1]+1].unfix() 
+        for f in lower_Pmin_Uu:
+            model.u[f[0]+1,f[1]+1].domain = UnitInterval ## Soft-fixing I
+            model.u[f[0]+1,f[1]+1].unfix()               ## Unfixing
             
+        # Elementos disjuntos entre dos listas o conjuntos
         # print('SB_Uu        ',type(No_SB_Uu),  len(No_SB_Uu))
         # print('lower_Pmin_Uu',type(lower_Pmin_Uu),len(lower_Pmin_Uu))
         # a = No_SB_Uu
@@ -345,51 +387,42 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,Pb,C,Cs,Tunder,
         model.cuts = pyo.ConstraintList()
         n_subset   = math.ceil((percent_lbc/100) * len(SB_Uu))
         expr       = 0        
-        
-        if option != 'Soft0':                          ## Sin ninguna restricción de n_subset=90%     
-            if option == 'Soft4' or option == 'Soft5': ## Se hace n_subset=90% solo a el Soporte Binario    
-                for f in SB_Uu:      
-                    expr += model.u[f[0]+1,f[1]+1]
-            if option == 'Soft5':                      ## Se hace n_subset=90% al Soporte Binario (Titulares) y a Candidatos (la banca) identificados en LR
-                for f in lower_Pmin_Uu:   
-                    expr += model.u[f[0]+1,f[1]+1]      
-            model.cuts.add(expr >= n_subset)           ## Adding a new restriction.
+        ## Se hace n_subset=90% al Soporte Binario 'SB_Uu' y a Candidatos 'lower_Pmin_Uu' identificados en LR
+        for f in SB_Uu:      
+            expr += model.u[f[0]+1,f[1]+1]
+        for f in lower_Pmin_Uu:   
+            expr += model.u[f[0]+1,f[1]+1]      
+        model.cuts.add(expr >= n_subset)        
 
 
-    ## ---------------------------- SOFT VARIABLE FIXING ------------------------------------------
+                        
+    ## ---------------------------- PURE-SOFT FIXING ------------------------------------------
+    
+    ## Relajamos la restricción de integralidad de las variables 'Uu' candidatas a '1' en la relajación lineal
+    ## y fijamos la solución a cero de las variables fuera del Soporte Binario
+    ## Liberamos las variables candidatas por LP 'lower_Pmin_Uu'
+    if(option == 'Softp'):    
+        for f in No_SB_Uu:
+            model.u[f[0]+1,f[1]+1].fix(0)                ## Hard fixing to '0' those elements outside of Sopport Binary      
+        for f in SB_Uu:  
+            model.u[f[0]+1,f[1]+1].domain = UnitInterval ## We remove the integrality constraint of the Binary Support 
+            model.u[f[0]+1,f[1]+1].unfix() # .fix(1) 
+        for f in lower_Pmin_Uu:
+            model.u[f[0]+1,f[1]+1].domain = UnitInterval ## Soft-fixing I
+            model.u[f[0]+1,f[1]+1].unfix()               ## Unfixing
+        ## Adding a new restriction.  
+        ## https://pyomo.readthedocs.io/en/stable/working_models.html
+        ## Soft-fixing II
+        model.cuts = pyo.ConstraintList()
+        n_subset   = math.ceil((percent_lbc/100) * (len(SB_Uu))) #-len(lower_Pmin_Uu)
+        expr       = 0        
+        ## Se hace n_subset=90% solo a el - Soporte Binario -  
+        for f in SB_Uu:      
+            expr += model.u[f[0]+1,f[1]+1]
+        model.cuts.add(expr >= n_subset)      
 
-    # ## Si se desea usar la solución fix y calcular un sub-MILP.
-    # if(option == 'Soft' or option == 'Soft2' or option == 'Soft3'): 
 
-    #     for f in SB_Uu:  
-    #         model.u[f[0]+1,f[1]+1].domain = UnitInterval  ## Soft-fixing I                
 
-    #     ## Adding a new restriction.  
-    #     ## https://pyomo.readthedocs.io/en/stable/working_models.html
-    #     ## Soft-fixing II
-    #     model.cuts = pyo.ConstraintList()
-    #     n_subset   = math.ceil( (percent_lbc/100) * len(SB_Uu))
-    #     expr       = 0
-        
-    #     for f in SB_Uu:      
-    #         expr += model.u[f[0]+1,f[1]+1]
-        
-    #     if(option == 'Soft2' or option == 'Soft3'):
-    #         # \todo{DEMOSTRAR QUE NOS CONVIENE RELAJAR LOS INTENTOS DE ASIGNACIÓN EN EL SOFT-FIXING}
-    #         for f in lower_Pmin_Uu: 
-    #             model.u[f[0]+1,f[1]+1].domain = UnitInterval ## Soft-fixing
-    #         for f in lower_Pmin_Uu:      
-    #             expr += model.u[f[0]+1,f[1]+1]               ## New constraint soft.                        
-    #     model.cuts.add(expr >= n_subset)                     ## Adding a new restriction.  
-    #     #print('Soft: number of variables Uu that could be outside  the n_subset (',100-percent_lbc,'%): ', len(SB_Uu)-n_subset)
-
-    # if(option == 'Soft3'):   
-    #     print('Soft3 -estoy fijando a <0>: No_SB_Uu - lower_Pmin_Uu =',len(No_SB_Uu),'-',len(lower_Pmin_Uu))
-    #     for f in No_SB_Uu:
-    #         model.u[f[0]+1,f[1]+1].fix(0)  ## Hard fixing to 0
-    #     for f in lower_Pmin_Uu:
-    #         model.u[f[0]+1,f[1]+1].unfix()   ## Unfixing
-                
 
     ## ---------------------------- LOCAL BRANCHING CONSTRAINT ------------------------------------------
     
@@ -429,19 +462,3 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,Pb,C,Cs,Tunder,
     ## Termina y regresa el modelo MILP
     return model , n_subset
 
-
-
-    ## ---------------------------- HARD VARIABLE FIXING (deprecared) ------------------------------------------    
-    # ## Si se desea usar la solución fix y calcular un sub-MILP.
-    # if(option == 'Hard'):    
-    #     for f in SB_Uu: 
-    #         model.u[f[0]+1,f[1]+1].fix(1)  ## Hard fixing
-    # if(option == 'HardUVWdelta'):   (deprecared)         
-    #     for f in SB_Uu: 
-    #         model.u[f[0]+1,f[1]+1].fix(1)  ## Hard fixing
-    #     for f in fixed_V: 
-    #         model.v[f[0]+1,f[1]+1].fix(1)  ## Hard fixing
-    #     for f in fixed_W: 
-    #          model.w[f[0]+1,f[1]+1].fix(1) ## Hard fixing   
-    #     for f in fixed_delta: 
-    #          model.delta[f[0],f[1],f[2]].fix(0) ## Hard fixing   
