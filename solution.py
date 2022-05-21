@@ -83,7 +83,7 @@ class Solution:
         t_o = time.time() 
         
         ## Envía el problema de optimización al solver
-        result = solver.solve(self.model,tee=self.tee,logfile='logfile'+ self.option +'.log')
+        result = solver.solve(self.model,tee=self.tee,logfile='logfile'+ self.option +self.nameins+'.log')
         #result.write()  
         self.solvertime = time.time() - t_o      
                 
@@ -115,7 +115,6 @@ class Solution:
             print ("!!! Something else is wrong",str(result.solver)) 
             self.fail = True
 
-
         if self.fail == False:
             
             ## |bestbound-bestinteger|/(1e-10+|bestinteger|)
@@ -145,11 +144,11 @@ class Solution:
             ## Almacena solución entera
             for t in range(self.tt):
                 for g in range(self.gg):
-                    self.Uu[g][t] = round(self.model.u[(g+1, t+1)].value,10)
-                    self.V [g][t] = round(self.model.v[(g+1, t+1)].value,10)
-                    self.W [g][t] = round(self.model.w[(g+1, t+1)].value,10)
-                    self.P [g][t] = round(self.model.p[(g+1, t+1)].value,10)
-                    self.R [g][t] = round(self.model.r[(g+1, t+1)].value,10)
+                    self.Uu[g][t] = round(self.model.u[(g+1, t+1)].value,5)
+                    self.V [g][t] = round(self.model.v[(g+1, t+1)].value,5)
+                    self.W [g][t] = round(self.model.w[(g+1, t+1)].value,5)
+                    self.P [g][t] = round(self.model.p[(g+1, t+1)].value,5)
+                    self.R [g][t] = round(self.model.r[(g+1, t+1)].value,5)
                         
             if self.tofiles == True:
                 self.send_to_File()            
@@ -191,29 +190,39 @@ class Solution:
     
     
     ## En esta función seleccionamos el conjunto de variables Uu que quedarán en uno para ser fijadas posteriormente.
-    def select_fixed_variables_Uu(self):
-        SB_Uu          = []  
-        No_SB_Uu       = []
-        lower_Pmin_Uu  = []
+    def select_binary_support_Uu(self,optional='LR'):
+        SB_Uu         = []  
+        No_SB_Uu      = []
+        lower_Pmin_Uu = []
         
         ## Almacena la solución entera
         UuxP = [[0 for i in range(self.tt)] for j in range(self.gg)]
-        for t in range(self.tt):
-            for g in range(self.gg):
-                UuxP[g][t] = self.P[g][t] * self.Uu[g][t]
-                
-                ## Aquí se enlistan los valores de 'u' que serán fijados.
-                ## El criterio para fijar es el propuesto por [Harjunkoski2020] de multiplicar la potencia 
-                ## por valores de 'u' y evaluar que sean mayores al límite operativo mínimo.
-                if UuxP[g][t] >= self.model.Pmin[g+1]:
-                    SB_Uu.append([g,t])
-                else:
-                    ## Vamos a guardar las variables que quedaron abajo del minimo pero diferentes de cero,
-                    ## podriamos decir que este grupo de variables son <intentos de asignación>.
-                    ## >>> Éste valor puede ser usado para definir el parámetro k en el LBC. <<<                   
-                    if (UuxP[g][t] != 0):
-                        lower_Pmin_Uu.append([g,t])
-                    No_SB_Uu.append([g,t])  
+        
+        if optional=='LR':
+            for t in range(self.tt):
+                for g in range(self.gg):
+                    UuxP[g][t] = self.P[g][t] * self.Uu[g][t]
+                    
+                    ## Aquí se enlistan los valores de 'u' que serán fijados.
+                    ## El criterio para fijar es el propuesto por [Harjunkoski2020] de multiplicar la potencia 
+                    ## por valores de 'u' y evaluar que sean mayores al límite operativo mínimo.
+                    if UuxP[g][t] >= self.model.Pmin[g+1]:
+                        SB_Uu.append([g,t])
+                    else:
+                        ## Vamos a guardar las variables que quedaron abajo del minimo pero diferentes de cero,
+                        ## podriamos decir que este grupo de variables son <intentos de asignación>.
+                        ## >>> Éste valor puede ser usado para definir el parámetro k en el LBC. <<<                   
+                        if (UuxP[g][t] != 0):
+                            lower_Pmin_Uu.append([g,t])
+                        No_SB_Uu.append([g,t])  
+                        
+        if optional=='Other':
+            for t in range(self.tt):
+                for g in range(self.gg):
+                    if self.Uu[g][t] == 1:
+                        SB_Uu.append([g,t])
+                    if self.Uu[g][t] == 0:
+                        No_SB_Uu.append([g,t])
                     
         suma = len(SB_Uu) + len(No_SB_Uu)
         print('|Uu       |SB_Uu      |No_SB_Uu  |lower_Pmin_Uu|')   
@@ -221,31 +230,46 @@ class Solution:
                        
         return SB_Uu, No_SB_Uu, lower_Pmin_Uu
     
+    def update_lower_Pmin_Uu(self,lower_Pmin_Uu_o,tag):
+        lower_Pmin_Uu = []
+        ceros=0
+        try:
+            for i in lower_Pmin_Uu_o:
+                if self.Uu[i[0]][i[1]] == 0:
+                    ceros=ceros+1
+                    lower_Pmin_Uu.append(i)
+            print(tag,'update lower_Pmin_Uu (#0) --->',ceros)  
+            
+        except Exception as e:
+            xx = 1 
+            print('>>> Hubo un error en <update_lower_Pmin_Uu>')            
+        return lower_Pmin_Uu
     
-    def cuenta_ceros_a_unos(self,SB_Uu,No_SB_Uu,lower_Pmin_Uu,tag):
+    
+    def cuenta_ceros_a_unos(self,SB_Uu_o,No_SB_Uu_o,lower_Pmin_Uu_o,tag):
         try:
             uno_a_cero=0
-            for i in SB_Uu:
+            for i in SB_Uu_o:
                 if self.Uu[i[0]][i[1]] == 0:
                     #print(i)
                     uno_a_cero=uno_a_cero+1
             print(tag,'SB_Uu    1--->0',uno_a_cero)
             cero_a_uno=0
-            for i in No_SB_Uu:
+            for i in No_SB_Uu_o:
                 if self.Uu[i[0]][i[1]] == 1:
                     #print(i)
                     cero_a_uno=cero_a_uno+1
             print(tag,'No_SB_Uu 0--->1',cero_a_uno)
             cero_a_uno=0
-            for i in lower_Pmin_Uu:
+            for i in lower_Pmin_Uu_o:
                 if self.Uu[i[0]][i[1]] == 1:
                     #print(i)
                     cero_a_uno=cero_a_uno+1
             print(tag,'lower_Pmin_Uu  0--->1',cero_a_uno)  
             
         except Exception as e:
+            xx = 1 
             #print('>>> Hubo un error en <cuenta_ceros_a_unos>')
-            x = 1 
         return 0
     
     
@@ -257,9 +281,9 @@ class Solution:
                     Uu_no_int.append([g,t,self.Uu[g][t]])    
         if len(Uu_no_int) != 0:
             if self.option=='relax':
-                print("Numero de No binarios en la solución ---> solution.Uu_no_int=",len(Uu_no_int))   
+                print(self.option+" Numero de No binarios en la solución ---> solution.Uu_no_int=",len(Uu_no_int))   
             else:
-                print(">>> WARNING se han encontrado No binarios en la solución ---> solution.Uu_no_int=",len(Uu_no_int),Uu_no_int)   
+                print(self.option+" >>> WARNING se han encontrado No binarios en la solución ---> solution.Uu_no_int=",len(Uu_no_int),Uu_no_int)   
         return 0
     
     
@@ -275,61 +299,3 @@ class Solution:
         out_num = np.subtract(npArray1, npArray2) 
         print ("Uu Difference of two input number : ",type(out_num), out_num) 
         
-        
-    ## En esta función seleccionamos el conjunto de variables delta que quedarán en uno/cero para ser fijadas posteriormente.
-    # def select_fixed_variables_delta(self):    
-    #     fixed_delta = []; No_fixed_delta = [] 
-        
-    #     parameter  = 0.9
-    #     total      = 0
-    #     nulos      = 0
-    #     for g,t,s in self.model.indexGTSg:
-    #         if self.model.delta[(g,t,s)].value != None:
-                
-    #             if self.model.delta[(g,t,s)].value >= parameter:
-    #                 fixed_delta.append([g,t,s,1])
-    #                 # print(g,t,s)                    
-    #                 # print(self.model.delta[(g,t,s)].value)
-    #             else:
-    #                 No_fixed_delta.append([g,t,s,0])
-    #         else: ## Si es None                
-    #             fixed_delta.append([g,t,s,0])
-    #             nulos = nulos + 1
-    #         total = total + 1
-                
-    #     print('Total delta   =', total)  
-    #     print('Nulos delta   =', nulos)  
-    #     print('Fixed delta  >=', parameter,len(fixed_delta)-nulos)
-        
-    #     return fixed_delta, No_fixed_delta
-    
-    
-    ## En esta función seleccionamos el conjunto de variables V,W que quedarán en uno/cero para ser fijadas posteriormente.
-    # def select_fixed_variables_VW(self):    
-        
-    #     fixed_V   = []; No_fixed_V = []; fixed_W = []; No_fixed_W = []
-        
-    #     parameter = 0.9
-    #     total     = 0
-    #     for t in range(self.tt):
-    #         for g in range(self.gg):
-    #             if self.V[g][t] != None:
-                
-    #                 if self.V[g][t] >= parameter:
-    #                     fixed_V.append([g,t,1])
-    #                 else:
-    #                     No_fixed_V.append([g,t,0])
-                    
-    #             if self.W[g][t] != None:
-                
-    #                 if self.W[g][t] >= parameter:
-    #                     fixed_W.append([g,t,1])
-    #                 else:
-    #                     No_fixed_W.append([g,t,0])
-    #             total = total + 1
-                
-    #     print('Total V,W   =',total)  
-    #     print('Fixed V    >=', parameter, len(fixed_V)) 
-    #     print('Fixed W    >=', parameter, len(fixed_W)) 
-           
-    #     return fixed_V, No_fixed_V, fixed_W, No_fixed_W
