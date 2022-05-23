@@ -1,5 +1,6 @@
 from csv import writer
 import pandas as pd
+import matplotlib.pyplot as plt
 
 #https://thispointer.com/python-how-to-append-a-new-row-to-an-existing-csv-file/#:~:text=Open%20our%20csv%20file%20in,in%20the%20associated%20csv%20file
 def append_list_as_row(file_name, list_of_elem):
@@ -76,21 +77,17 @@ def config_env():
                 
     return ambiente, ruta, executable, timeheu, timemilp, gap
 
-
-#https://naps.com.mx/blog/leer-archivos-en-python-por-linea-palabra/
-#https://appdividend.com/2021/12/09/how-to-find-string-between-two-strings-in-python/#:~:text=To%20find%20a%20string%20between,if%20it%20finds%20a%20match.
-#https://myprogrammingtutorial.com/python-get-first-word-in-string/#:~:text=The%20easiest%20way%20to%20get,provided%20as%20an%20input%20parameter.
-#https://www.geeksforgeeks.org/python-string-find/
-
-def ETL_Coplex_Log(filex):
-    lista = []
-    with open(filex) as fname:
-        lineas = fname.readlines()
-        for linea in lineas:
-            lista.append(linea.strip('\n'))
-    print (lista)
-    
-    
-    
-    
-    return 0
+CYAN = '#76ced6' ; LILA = '#777bd4'; VERDE='#17cb49'; LETRASNARA='#ff8000'; AZUL='#168fff'; OTROAZUL = "b-"; ROJO= "r-";
+def print_serie(serie_,title_,ytitle_,xtitle_,namefile_):
+    fig, ax1 = plt.subplots(figsize=(6,4))
+    plt.title(title_,fontsize='large',color=LETRASNARA)
+    ax1.set_xlabel(xtitle_, color=LETRASNARA, fontsize='large')
+    ax1.set_ylabel(ytitle_, color=LETRASNARA, fontsize='large')
+    plt.tick_params(colors = LETRASNARA, which='both')
+    ax1.spines['bottom'].set_color(LETRASNARA)
+    ax1.spines['top'   ].set_color(LETRASNARA) 
+    ax1.spines['right' ].set_color(LETRASNARA)
+    ax1.spines['left'  ].set_color(LETRASNARA)    
+    plt.plot(serie_)
+    plt.savefig(namefile_, transparent=True)         
+    plt.show()

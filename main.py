@@ -14,7 +14,7 @@ import uc_Co
 import util
 import reading
 from   solution import Solution
-
+from   Extract import Extract
 #util.ETL_Coplex_Log('logfileMilp.log')
 
 instancia = 'uc_52.json'       ## analizar infactibilidad
@@ -23,11 +23,11 @@ instancia = 'uc_2.json'        ## ejemplos dificiles 2,3,4
 instancia = 'uc_3.json'        ## ejemplos dificiles 2,3,4   
 instancia = 'uc_54.json'               
 instancia = 'uc_53.json'       ## ejemplo de 'delta' relajado diferente de uno  
-instancia = 'anjos.json'       ## ejemplo de juguete
 instancia = 'uc_22.json'       ## ejemplo dificil   
-instancia = 'archivox.json'    ## ejemplo sencillo
 instancia = 'uc_6.json'        ## ejemplos regulares 5,6
 instancia = 'uc_45.json'       ## ejemplo de batalla  
+instancia = 'archivox.json'    ## ejemplo sencillo
+instancia = 'anjos.json'       ## ejemplo de juguete
 
 ## Cargamos parámetros de configuración desde archivo <config>
 ambiente, ruta, executable, timeheu, timemilp, gap = util.config_env()
@@ -93,7 +93,7 @@ if 1 == 1:
 ## --------------------------------- HARD-FIXING (only Uu) ---------------------------------------------
 
 ## HARD-FIXING (only Uu) solution and solve the sub-MILP.
-if 1 == 1: 
+if 1 == 0: 
     t_o = time.time() 
     timehard = timeheu / 3
     model,xx = uc_Co.uc(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,Pb,C,Cs,Tunder,option='Hard',SB_Uu=SB_Uu,nameins=instancia[0:4])
@@ -116,7 +116,7 @@ if 1 == 1:
 
 ## SOFT0-FIXING (only Uu) solution and solve the sub-MILP.
 ## Sin ninguna restricción de del 90%.
-if 1 == 1:
+if 1 == 0:
     t_o = time.time() 
     model,xx = uc_Co.uc(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,Pb,C,Cs,Tunder,option='Soft0',SB_Uu=SB_Uu2,No_SB_Uu=No_SB_Uu2,lower_Pmin_Uu=lower_Pmin_Uu2,nameins=instancia[0:4])
     sol_soft0 = Solution(model=model,env=ambiente,executable=executable,nameins=instancia[0:4],gap=gap,cutoff=z_hard,timelimit=timeheu,
@@ -133,7 +133,7 @@ if 1 == 1:
 
 ## SOFT4-FIXING (only Uu) solution and solve the sub-MILP.
 ## Se aplica la restricción de n_subset=90% al Soporte Binario (Titulares)
-if 1 == 1:
+if 1 == 0:
     t_o = time.time() 
     model,xx = uc_Co.uc(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,Pb,C,Cs,Tunder,option='Soft4',SB_Uu=SB_Uu2,No_SB_Uu=No_SB_Uu2,lower_Pmin_Uu=lower_Pmin_Uu2,nameins=instancia[0:4])
     sol_soft4 = Solution(model=model,env=ambiente,executable=executable,nameins=instancia[0:4],gap=gap,cutoff=z_hard,timelimit=timeheu,
@@ -150,7 +150,7 @@ if 1 == 1:
 
 ## SOFT5-FIXING (only Uu) solution and solve the sub-MILP.
 ## Se aplica la restricción de n_subset=90% al Soporte Binario (Titulares) y a Candidatos (la banca) identificados en LR
-if 1 == 1: 
+if 1 == 0: 
     t_o = time.time() 
     model,xx = uc_Co.uc(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,Pb,C,Cs,Tunder,option='Soft5',SB_Uu=SB_Uu2,No_SB_Uu=No_SB_Uu2,lower_Pmin_Uu=lower_Pmin_Uu2,nameins=instancia[0:4])
     sol_soft5 = Solution(model=model,env=ambiente,executable=executable,nameins=instancia[0:4],gap=gap,cutoff=z_hard,timelimit=timeheu,
@@ -165,9 +165,8 @@ if 1 == 1:
 
 ## --------------------------------- PURE SOFT-FIXING (only Uu) + CUT --------------------------------------------
 
-## SOFT0-FIXING (only Uu) solution and solve the sub-MILP.
-## Sin ninguna restricción de del 90%.
-if 1 == 1:
+## SOFTP-FIXING (only Uu) solution and solve the sub-MILP.
+if 1 == 0:
     t_o = time.time() 
     model,xx = uc_Co.uc(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,Pb,C,Cs,Tunder,option='Softp',SB_Uu=SB_Uu,No_SB_Uu=No_SB_Uu,lower_Pmin_Uu=lower_Pmin_Uu,nameins=instancia[0:4])
     sol_softp = Solution(model=model,env=ambiente,executable=executable,nameins=instancia[0:4],gap=gap,timelimit=timeheu,
@@ -191,8 +190,10 @@ if 1 == 1:
     z_milp,g_milp = sol_milp.solve_problem()
     t_milp        = time.time() - t_o
     print("t_milp= ",round(t_milp,1),"z_milp= ",round(z_milp,1),"g_milp= ",round(g_milp,5))#,"total_costo_arr=",model.total_cSU.value
-      
-
+    #ext    = Extract()
+    bb,vari = Extract().extract('logfile'+'Milp'+instancia[0:4]+'.log')
+    print(bb)
+    util.print_serie(bb['bestInteger'],'BestInteger','$','time','ploty.png')
     
 ## ---------------------------------------- MILP2 with Inequality ------------------------------------------------
 
