@@ -10,7 +10,7 @@ from   pyomo.opt import SolverStatus, TerminationCondition
 import logging
 
 class Solution:
-    def __init__(self,model,env,executable,nameins='model',gap=0.0001,timelimit=2000,tee=False,tofiles=False,lpmethod=0,
+    def __init__(self,model,env,executable,nameins='model',gap=0.0001,timelimit=300,tee=False,tofiles=False,lpmethod=0,
                  cutoff=1e+75,emphasize=1,exportLP=False,option=''):
         self.model      = model
         self.nameins    = nameins     ## name of instance 

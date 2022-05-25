@@ -3,6 +3,8 @@ import pandas as pd
 import re
 import matplotlib.pyplot as plt
 
+## https://colab.research.google.com/drive/15mttuecwMf7bfe6hvb8uK2sAhqsQ2Gkw#scrollTo=kiJzGJszxwGu
+
 class Extract:
   def findPos(self,file,spected, starter = "Node  Left"):
     file = open(file,"r")
@@ -26,8 +28,10 @@ class Extract:
     time = None
     ticks = None
     cuts = None
-    f = open(fn,"r")    
+    f = open(fn,"r")
     for i in f:
+      if re.findall(r"\d{1,}[+]{1}\d{1,}",i):
+        i = " ".join(i.split("+"))
       if("Cover cuts applied" in i or "Performing restart 1" in i):
         table_start = False
       if("Elapsed time" in i):
@@ -147,6 +151,7 @@ class Extract:
       if("Gomory fractional" in i):
         variables["gomoryFract"] = int(i.replace(" ","").replace("\n","").split(":")[1])
         
+    ## ------------------------------- Limpia seconds --------------------------------------------------
     df=pd.DataFrame.from_dict(tables).rename(columns={"seconds":"seconds","ticks":"ticks","solution":"solution","Node":"node","Left":"nodesLeft","Objective":"objective","IInf":"iinf","Integer":"bestInteger","Bound":"BestBound","ItCnt":"itCnt","Gap":"gap","cuts":"cuts"})
     df['seconds'] = df['seconds'].fillna(0)
     eps=np.arange(0, 1, 1/(len(df)), dtype=float)
@@ -161,16 +166,17 @@ class Extract:
     return df,variables
 
 
-    
-  def plot_four_in_one(self,df,df2,df3,name1='MILP',name2='Hard-fix',name3='Soft-fix',nameins=''):        
+  def plot_four_in_one(self,df1,df2,df3,name1='MILP',name2='Hard-fix',name3='Soft-fix',nameins='',id=''):        
     ## https://pandas.pydata.org/pandas-docs/version/0.20.1/visualization.html
     #try:
     if 1==1:
         ## https://pandas.pydata.org/pandas-docs/version/0.20.1/visualization.html
+        ## https://matplotlib.org/3.5.0/tutorials/colors/colors.html
         fig, axa = plt.subplots(2, 2, figsize=(9,7))
         ## Imprime costo
-        ax1=df.plot.line( x='seconds',y='bestInteger',style='o-',label='',ax=axa[0,0])
-        ax2=df.plot.line( x='seconds',y='BestBound'  ,color= ax1.lines[-1].get_color(),style='o-',label=name1,ax=ax1)
+        ax1=df1.plot.line( x='seconds',y='bestInteger',color='magenta',style='o-',label='',ax=axa[0,0])
+        #ax2=df.plot.line( x='seconds',y='BestBound'  ,color= ax1.lines[-1].get_color(),style='o-',label=name1,ax=ax1)
+        ax2=df1.plot.line( x='seconds',y='BestBound'  ,color='magenta',style='o-',label=name1,ax=ax1)
 
         ax3=df3.plot.line(x='seconds',y='bestInteger',color='blue',style='o-',label='',ax=ax2)
         df3.plot.line(    x='seconds',y='BestBound'  ,color='blue',style='o-',label=name3 ,ax=ax3)
@@ -178,27 +184,27 @@ class Extract:
         lines, labels = ax2.get_legend_handles_labels()
         ax2.legend(lines[0:], labels[0:])
         ## Imprime gap
-        ax4=df.plot.line( x='seconds',y='gap',style='o-',label=name1,ax=axa[1,0])
+        ax4=df1.plot.line( x='seconds',y='gap',color='magenta',style='o-',label=name1,ax=axa[1,0])
         df3.plot.line(    x='seconds',y='gap',color='blue' ,style='o-',label=name3,ax=ax4)  
         ax4.set(ylabel='gap') 
         ax2.set(ylabel='cost')
 
         ## Imprime costo
-        ax5=df2.plot.line(x='seconds',y='bestInteger',style='o-',label='',ax=axa[0,1])
-        ax6=df2.plot.line(x='seconds',y='BestBound',color= ax1.lines[-4].get_color()   ,style='o-',label=name2,ax=ax5)
-        ax7=df3.plot.line(x='seconds',y='bestInteger',color='blue' ,style='o-',label='',ax=ax6)
-        df3.plot.line(    x='seconds',y='BestBound'  ,color='blue' ,style='o-',label=name3,ax=ax7)
+        ax5=df2.plot.line(x='seconds',y='bestInteger',color='orangered',style='o-',label='',ax=axa[0,1])
+        ax6=df2.plot.line(x='seconds',y='BestBound'  ,color='orangered',style='o-',label=name2,ax=ax5)
+        ax7=df3.plot.line(x='seconds',y='bestInteger',color='blue'     ,style='o-',label='',ax=ax6)
+        df3.plot.line(    x='seconds',y='BestBound'  ,color='blue'     ,style='o-',label=name3,ax=ax7)
         ## Legend except 1st lines/labels
         lines, labels = ax6.get_legend_handles_labels()
         ax6.legend(lines[0:], labels[0:])
         ## Imprime gap
-        ax8=df2.plot.line(x='seconds',y='gap',style='o-',label=name2,ax=axa[1,1])
+        ax8=df2.plot.line(x='seconds',y='gap',style='o-',color='orangered',label=name2,ax=axa[1,1])
         df3.plot.line(    x='seconds',y='gap',style='o-',color='blue',label=name3,ax=ax8)
         ax8.set(ylabel='gap') 
         ax5.set(ylabel='cost')
 
         plt.style.use('seaborn-pastel') ## ggplot seaborn-pastel Solarize_Light2 https://matplotlib.org/stable/gallery/style_sheets/style_sheets_reference.html
-        plt.savefig('four_in_one_'+nameins+'.png', transparent=True)  
+        plt.savefig('four_in_one_'+nameins+'_'+id+'.png', transparent=True)  
         plt.show()
     #except:
         #print('Error en <plot_four_in_one>')
