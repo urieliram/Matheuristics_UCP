@@ -330,12 +330,12 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,Pb,C,Cs,Tunder,
             model.u[f[0]+1,f[1]+1].unfix()               ## Unfixing
 
 
-    ## ---------------------------- SOFT4 FIXING ------------------------------------------
+    ## ---------------------------- SOFT4 & SOFT7 FIXING ------------------------------------------
     
     ## Relajamos la restricción de integralidad de las variables 'Uu' candidatas a '1' en la relajación lineal.
     ## Hacemos que el 90% de las variables del soporte SB_Uu sigan en el.
     ## Liberamos las variables candidatas por LP 'lower_Pmin_Uu'
-    if(option == 'Soft4'):    
+    if(option == 'Soft4' or option == 'Soft7'):    
         for f in No_SB_Uu:
             model.u[f[0]+1,f[1]+1].fix(0)                ## Hard fixing to '0' those elements outside of Sopport Binary      
         for f in SB_Uu:  
@@ -364,23 +364,12 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,Pb,C,Cs,Tunder,
     if(option == 'Soft5'):    
         for f in No_SB_Uu:
             model.u[f[0]+1,f[1]+1].fix(0)                ## Hard fixing to '0' those elements outside of Sopport Binary      
-        for f in SB_Uu:  
+        for f in SB_Uu:           ##SB
             model.u[f[0]+1,f[1]+1].domain = UnitInterval ## We remove the integrality constraint of the Binary Support 
             model.u[f[0]+1,f[1]+1].unfix() 
-        for f in lower_Pmin_Uu:
+        for f in lower_Pmin_Uu:   ##B
             model.u[f[0]+1,f[1]+1].domain = UnitInterval ## Soft-fixing I
             model.u[f[0]+1,f[1]+1].unfix()               ## Unfixing
-            
-        # Elementos disjuntos entre dos listas o conjuntos
-        # print('SB_Uu        ',type(No_SB_Uu),  len(No_SB_Uu))
-        # print('lower_Pmin_Uu',type(lower_Pmin_Uu),len(lower_Pmin_Uu))
-        # a = No_SB_Uu
-        # b = lower_Pmin_Uu        
-        # print(len(list(i for i in a if i not in b)))
-        # print(len(list(i for i in b if i not in a)))   
-        # lower_Pmin_Uu = list(i for i in b if i not in a) 
-        # print('lower_Pmin_Uu',type(lower_Pmin_Uu),len(lower_Pmin_Uu))
-        
         ## Adding a new restriction.  
         ## https://pyomo.readthedocs.io/en/stable/working_models.html
         ## Soft-fixing II
@@ -388,13 +377,11 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,Pb,C,Cs,Tunder,
         n_subset   = math.ceil((percent_lbc/100) * len(SB_Uu))
         expr       = 0        
         ## Se hace n_subset=90% al Soporte Binario 'SB_Uu' y a Candidatos 'lower_Pmin_Uu' identificados en LR
-        for f in SB_Uu:      
+        for f in SB_Uu:           ##SB
             expr += model.u[f[0]+1,f[1]+1]
-        for f in lower_Pmin_Uu:   
+        for f in lower_Pmin_Uu:   ##B
             expr += model.u[f[0]+1,f[1]+1]      
         model.cuts.add(expr >= n_subset)        
-
-
                         
     ## ---------------------------- PURE-SOFT FIXING ------------------------------------------
     
@@ -406,7 +393,7 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,Pb,C,Cs,Tunder,
             model.u[f[0]+1,f[1]+1].fix(0)                ## Hard fixing to '0' those elements outside of Sopport Binary      
         for f in SB_Uu:  
             model.u[f[0]+1,f[1]+1].domain = UnitInterval ## We remove the integrality constraint of the Binary Support 
-            model.u[f[0]+1,f[1]+1].unfix() # .fix(1) 
+            model.u[f[0]+1,f[1]+1].unfix() 
         for f in lower_Pmin_Uu:
             model.u[f[0]+1,f[1]+1].domain = UnitInterval ## Soft-fixing I
             model.u[f[0]+1,f[1]+1].unfix()               ## Unfixing
@@ -420,8 +407,6 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,Pb,C,Cs,Tunder,
         for f in SB_Uu:      
             expr += model.u[f[0]+1,f[1]+1]
         model.cuts.add(expr >= n_subset)      
-
-
 
 
     ## ---------------------------- LOCAL BRANCHING CONSTRAINT ------------------------------------------
