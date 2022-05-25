@@ -216,7 +216,7 @@ class Solution:
                             lower_Pmin_Uu.append([g,t])
                         No_SB_Uu.append([g,t])  
                         
-        if optional=='Other':
+        if optional=='NotLR':
             for t in range(self.tt):
                 for g in range(self.gg):
                     if self.Uu[g][t] == 1:
@@ -230,7 +230,9 @@ class Solution:
                        
         return SB_Uu, No_SB_Uu, lower_Pmin_Uu
     
+    
     def update_lower_Pmin_Uu(self,lower_Pmin_Uu_o,tag):
+    ## Esta función actualiza las variables en cero que siguen quedando en el conjunto B.
         lower_Pmin_Uu = []
         ceros=0
         try:
@@ -247,6 +249,7 @@ class Solution:
     
     
     def cuenta_ceros_a_unos(self,SB_Uu_o,No_SB_Uu_o,lower_Pmin_Uu_o,tag):
+    ## Esta función cuenta aquellos elementos que han cambiado de estado de cero a uno
         try:
             uno_a_cero=0
             for i in SB_Uu_o:

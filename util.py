@@ -76,18 +76,3 @@ def config_env():
         print('localPC,instances/,/home/uriel/cplex1210/cplex/bin/x86-64_linux/cplex,4000,40000,0.001')
                 
     return ambiente, ruta, executable, timeheu, timemilp, gap
-
-CYAN = '#76ced6' ; LILA = '#777bd4'; VERDE='#17cb49'; LETRASNARA='#ff8000'; AZUL='#168fff'; OTROAZUL = "b-"; ROJO= "r-";
-def print_serie(serie_,title_,ytitle_,xtitle_,namefile_):
-    fig, ax1 = plt.subplots(figsize=(6,4))
-    plt.title(title_,fontsize='large',color=LETRASNARA)
-    ax1.set_xlabel(xtitle_, color=LETRASNARA, fontsize='large')
-    ax1.set_ylabel(ytitle_, color=LETRASNARA, fontsize='large')
-    plt.tick_params(colors = LETRASNARA, which='both')
-    ax1.spines['bottom'].set_color(LETRASNARA)
-    ax1.spines['top'   ].set_color(LETRASNARA) 
-    ax1.spines['right' ].set_color(LETRASNARA)
-    ax1.spines['left'  ].set_color(LETRASNARA)    
-    plt.plot(serie_)
-    plt.savefig(namefile_, transparent=True)         
-    plt.show()
