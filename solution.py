@@ -83,7 +83,10 @@ class Solution:
         t_o = time.time() 
         
         ## Envía el problema de optimización al solver
-        result = solver.solve(self.model,tee=self.tee,logfile='logfile'+ self.option +self.nameins+'.log')
+        if self.option == 'lbc1':
+            result = solver.solve(self.model,tee=self.tee,logfile='logfile'+ self.option +self.nameins+'.log',warmstart=True)
+        else:
+            result = solver.solve(self.model,tee=self.tee,logfile='logfile'+ self.option +self.nameins+'.log')
         #result.write()  
         self.solvertime = time.time() - t_o      
                 
@@ -190,7 +193,7 @@ class Solution:
     
     
     ## En esta función seleccionamos el conjunto de variables Uu que quedarán en uno para ser fijadas posteriormente.
-    def select_binary_support_Uu(self,optional='LR'):
+    def select_binary_support_Uu(self,optional=''):
         SB_Uu         = []  
         No_SB_Uu      = []
         lower_Pmin_Uu = []
@@ -198,13 +201,14 @@ class Solution:
         ## Almacena la solución entera
         UuxP = [[0 for i in range(self.tt)] for j in range(self.gg)]
         
-        if optional=='LR':
+        ## [Harjunkoski2021]
+        if optional == 'LR':
             for t in range(self.tt):
                 for g in range(self.gg):
                     UuxP[g][t] = self.P[g][t] * self.Uu[g][t]
                     
                     ## Aquí se enlistan los valores de 'u' que serán fijados.
-                    ## El criterio para fijar es el propuesto por [Harjunkoski2020] de multiplicar la potencia 
+                    ## El criterio para fijar es el propuesto por [Harjunkoski2021] de multiplicar la potencia 
                     ## por valores de 'u' y evaluar que sean mayores al límite operativo mínimo.
                     if UuxP[g][t] >= self.model.Pmin[g+1]:
                         SB_Uu.append([g,t])
@@ -216,13 +220,14 @@ class Solution:
                             lower_Pmin_Uu.append([g,t])
                         No_SB_Uu.append([g,t])  
                         
-        if optional=='NotLR':
+        if optional != 'LR':
             for t in range(self.tt):
                 for g in range(self.gg):
                     if self.Uu[g][t] == 1:
                         SB_Uu.append([g,t])
                     if self.Uu[g][t] == 0:
                         No_SB_Uu.append([g,t])
+                        
                     
         suma = len(SB_Uu) + len(No_SB_Uu)
         print('|Uu       |SB_Uu      |No_SB_Uu  |lower_Pmin_Uu|')   

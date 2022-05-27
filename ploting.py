@@ -7,7 +7,7 @@ import util
 
 ## --------------------------------- GRAFICAS -------------------------------------------
 
-instancia = 'uc_02.json'       ## ejemplo de batalla 
+instancia = 'archivox.json'    ## ejemplo sencillo
 
 instancia = 'uc_56.json'       ## ejemplo de batalla  
 instancia = 'uc_55.json'       ## ejemplo de batalla  
@@ -20,7 +20,19 @@ instancia = 'uc_48.json'       ## ejemplo de batalla
 instancia = 'uc_47.json'       ## ejemplo de batalla  
 instancia = 'uc_46.json'       ## ejemplo de batalla  
 instancia = 'uc_45.json'       ## ejemplo de batalla  
-instancia = 'archivox.json'    ## ejemplo sencillo
+
+instancia = 'uc_38.json'       ## ejemplo medio 
+instancia = 'uc_39.json'       ## ejemplo medio 
+instancia = 'uc_40.json'       ## ejemplo medio 
+instancia = 'uc_41.json'       ## ejemplo medio 
+instancia = 'uc_43.json'       ## ejemplo medio 
+
+#instancia = 'uc_02.json'      ## ejemplo de batalla 
+#instancia = 'uc_22.json'      ## ejemplo de batalla 
+#instancia = 'uc_21.json'      ## ejemplo de batalla 
+#instancia = 'uc_02.json'      ## ejemplo de batalla 
+#instancia = 'uc_01.json'      ## ejemplo de batalla 
+#instancia = 'uc_24.json'      ## ejemplo de batalla 
 
 ## Cargamos parámetros de configuración desde archivo <config>
 ambiente, ruta, executable, timeheu, timemilp, gap = util.config_env()
@@ -32,19 +44,20 @@ if ambiente == 'yalma':
     instancia = sys.argv[1]
 
 ##Recordar que el pibite es el tercer dataframe bb3
-print('Ploting '+instancia[0:5]+'.log')
-bb1,vari = Extract().extract('logfile'+'Milp'+instancia[0:5]+'.log')  
-bb2,vari = Extract().extract('logfile'+'Hard'+instancia[0:5]+'.log') 
-bb3,vari = Extract().extract('logfile'+'Soft7'+instancia[0:5]+'.log')   
-Extract().plot_four_in_one(bb1,bb2,bb3,'Milp','Hard','Soft7',instancia[0:5],id='a')
+# print('Ploting '+instancia[0:5]+'.log')
+# bb1,vari = Extract().extract('logfile'+'Milp'+instancia[0:5]+'.log')  
+# bb2,vari = Extract().extract('logfile'+'Hard'+instancia[0:5]+'.log') 
+# bb3,vari = Extract().extract('logfile'+'Soft7'+instancia[0:5]+'.log')   
+# Extract().plot_four_in_one(bb1,bb2,bb3,'Milp','Hard','Soft7',instancia[0:5],id='a')
 
-bb1,vari = Extract().extract('logfile'+'Hard2'+instancia[0:5]+'.log') 
-bb2,vari = Extract().extract('logfile'+'Hard3'+instancia[0:5]+'.log') 
-bb3,vari = Extract().extract('logfile'+'Hard'+instancia[0:5]+'.log')    
-Extract().plot_four_in_one(bb1,bb2,bb3,'Hard2','Hard3','Hard',instancia[0:5],id='a')
+bb1,vari = Extract().extract('logfile'+'Milp' +instancia[0:5]+'.log') 
+bb2,vari = Extract().extract('logfile'+'Hard' +instancia[0:5]+'.log') 
+bb3,vari = Extract().extract('logfile'+'lbc0'+instancia[0:5]+'.log')    
+Extract().plot_four_in_one(bb1,bb2,bb3,'Milp','Hard','lbc0',instancia[0:5],id='a')
+
+bb1,vari = Extract().extract('logfile'+'lbc0' +instancia[0:5]+'.log') 
+bb2,vari = Extract().extract('logfile'+'Hard' +instancia[0:5]+'.log') 
+bb3,vari = Extract().extract('logfile'+'Soft7'+instancia[0:5]+'.log')    
+Extract().plot_four_in_one(bb1,bb2,bb3,'lbc0','Hard','Soft7',instancia[0:5],id='b')
 
 
-# bb1,vari = Extract().extract('logfile'+'Softp'+instancia[0:5]+'.log')   
-# bb2,vari = Extract().extract('logfile'+'Soft4'+instancia[0:5]+'.log') 
-# bb3,vari = Extract().extract('logfile'+'Soft7'+instancia[0:5]+'.log')  
-# Extract().plot_four_in_one(bb1,bb2,bb3,'Softp','Soft4','Soft7',instancia[0:5],id='b')
