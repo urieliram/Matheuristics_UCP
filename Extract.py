@@ -203,9 +203,11 @@ class Extract:
         ax8.set(ylabel='gap') 
         ax5.set(ylabel='cost')
 
+        plt.suptitle('instance: '+nameins, fontsize=14)
         plt.style.use('seaborn-pastel') ## ggplot seaborn-pastel Solarize_Light2 https://matplotlib.org/stable/gallery/style_sheets/style_sheets_reference.html
         plt.savefig('four_in_one_'+nameins+'_'+id+'.png', transparent=True)  
         plt.show()
+        
     #except:
         #print('Error en <plot_four_in_one>')
       
