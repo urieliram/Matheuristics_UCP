@@ -26,10 +26,10 @@ def reading(file):
     mpc     = {}   ## cost of generator g running and operating at minimum production Pmin ($/h).
     C       = {}   ## 
     Cs      = {}   ## Costo de cada escalón del conjunto S de la función de costo variable de arranque.
-    Tunder    = {}   ## lag de cada escalón del conjunto S de la función de costo variable de arranque.
+    Tunder  = {}   ## lag de cada escalón del conjunto S de la función de costo variable de arranque.
     Startup = {}   ## start-up  cost
         
-    time_periods = md['time_periods']
+    time_periods = int(md['time_periods'])
     demand       = md['demand']  
     reserves     = md['reserves']  
 
@@ -67,7 +67,7 @@ def reading(file):
     Dlist                = []
     pc_0_list            = []
     u_0_list             = []
-    
+    abajo_min =0
     ## To get the data from the generators
     i=1 ## Cuenta los generadores
     for gen in names_list:  
@@ -133,14 +133,31 @@ def reading(file):
                 aux = 0
             Ulist.append(0)
             Dlist.append(aux)
+        
+        ###############################################################
+        ## Con este código corrian todas las instancias factibles
+        ## incrementaba la potencia de t_o de los generadores prendidos 
+        ## los demás abajo del mínimo los ponia a cero.    
+        if False:
+            aux = power_output_t0[i-1] - power_output_minimum[i-1]
+            if aux<0:
+                aux=0
+            pc_0_list.append(aux)
+        ###############################################################
             
         aux = power_output_t0[i-1] - power_output_minimum[i-1]
-        if aux<0:
-            aux=0
-        pc_0_list.append(aux)
-            
-        i+=1 ## Se incrementa un generador    
-                
+        if aux<0:     
+            #aux=0                        ## mayoria infactibles
+            #power_output_minimum[i-1]=0  ## minoria infactibles      
+            aux=power_output_t0[i-1]
+            abajo_min=abajo_min+1
+        else:
+            aux=power_output_t0[i-1]
+                        
+        pc_0_list.append(aux)            
+        i+=1 ## Se incrementa un generador            
+    print(">>> generadores abajo del límite mínimo:",abajo_min)         
+       
     ## Se extraen los diccionarios Pb y C de la lista de listas Piecewise    
     k=0; n=0
     for i in Piecewise:
@@ -181,7 +198,7 @@ def reading(file):
     RU   = dict(zip(G, ramp_up_limit))
     RD   = dict(zip(G, ramp_down_limit))
     pc_0 = dict(zip(G, pc_0_list))  
-    names = dict(zip(G, names_list))  
+    names= dict(zip(G, names_list))  
     
     ## -----------------  Caso de ejemplo de anjos.json  --------------------------
     #G        = [1, 2, 3]
