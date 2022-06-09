@@ -83,12 +83,12 @@ class Solution:
         t_o = time.time() 
         
         ## Envía el problema de optimización al solver
-        if self.option == 'lbc1':
-            result = solver.solve(self.model,tee=self.tee,logfile='logfile'+ self.option +self.nameins+'.log',warmstart=True)
+        if self.option=='Hard' or self.option=='lbc1' or self.option=='lbc2' or self.option=='Hard2':
+            result = solver.solve(self.model,tee=self.tee,logfile='logfile'+self.option+self.nameins+'.log',warmstart=True)
         else:
-            result = solver.solve(self.model,tee=self.tee,logfile='logfile'+ self.option +self.nameins+'.log')
+            result = solver.solve(self.model,tee=self.tee,logfile='logfile'+self.option+self.nameins+'.log')
         #result.write()  
-        self.solvertime = time.time() - t_o      
+        self.solvertime = time.time() - t_o
                 
         try:
             pyo.assert_optimal_termination(result)
@@ -245,7 +245,7 @@ class Solution:
                 if self.Uu[i[0]][i[1]] == 0:
                     ceros=ceros+1
                     lower_Pmin_Uu.append(i)
-            print(tag,'update lower_Pmin_Uu (#0) --->',ceros)  
+            print(tag,'update lower_Pmin_Uu (#0) ->',ceros)  
             
         except Exception as e:
             xx = 1 
@@ -261,19 +261,19 @@ class Solution:
                 if self.Uu[i[0]][i[1]] == 0:
                     #print(i)
                     uno_a_cero=uno_a_cero+1
-            print(tag,'SB_Uu    1--->0',uno_a_cero)
+            print(tag,'SB_Uu    1->0',uno_a_cero)
             cero_a_uno=0
             for i in No_SB_Uu_o:
                 if self.Uu[i[0]][i[1]] == 1:
                     #print(i)
                     cero_a_uno=cero_a_uno+1
-            print(tag,'No_SB_Uu 0--->1',cero_a_uno)
+            print(tag,'No_SB_Uu 0->1',cero_a_uno)
             cero_a_uno=0
             for i in lower_Pmin_Uu_o:
                 if self.Uu[i[0]][i[1]] == 1:
                     #print(i)
                     cero_a_uno=cero_a_uno+1
-            print(tag,'lower_Pmin_Uu  0--->1',cero_a_uno)  
+            print(tag,'lower_Pmin_Uu  0->1',cero_a_uno)  
             
         except Exception as e:
             xx = 1 
