@@ -23,29 +23,25 @@ instancia = 'uc_03.json'       ## ejemplos dificiles 2,3,4
 instancia = 'uc_54.json'               
 instancia = 'uc_53.json'       ## ejemplo de 'delta' relajado diferente de uno  
 instancia = 'anjos.json'       ## ejemplo de juguete
-instancia = 'uc_45.json'       ## ejemplo de batalla  
 instancia = 'uc_22.json'       ## ejemplo dificil  
 instancia = 'uc_06.json'       ## ejemplos regulares 5,6
-instancia = 'uc_47.json'       ## ejemplo sencillo    
 
-instancia = 'uc_56.json'       ## ejemplo de sencillo  
-instancia = 'uc_55.json'       ## ejemplo de sencillo  
-instancia = 'uc_54.json'       ## ejemplo de sencillo  
-instancia = 'uc_53.json'       ## ejemplo de sencillo  
-instancia = 'uc_51.json'       ## ejemplo de sencillo  
-instancia = 'uc_50.json'       ## ejemplo de sencillo  
-instancia = 'uc_49.json'       ## ejemplo de sencillo  
-instancia = 'uc_48.json'       ## ejemplo de sencillo  
-instancia = 'uc_47.json'       ## ejemplo de sencillo  
-instancia = 'uc_46.json'       ## ejemplo de sencillo  
+instancia = 'uc_56.json'       ## ejemplo sencillo  
+instancia = 'uc_55.json'       ## ejemplo sencillo  
+instancia = 'uc_54.json'       ## ejemplo sencillo  
+instancia = 'uc_53.json'       ## ejemplo sencillo  
+instancia = 'uc_51.json'       ## ejemplo sencillo  
+instancia = 'uc_50.json'       ## ejemplo sencillo  
+instancia = 'uc_49.json'       ## ejemplo sencillo  
+instancia = 'uc_48.json'       ## ejemplo sencillo  
+instancia = 'uc_47.json'       ## ejemplo sencillo  
+instancia = 'uc_46.json'       ## ejemplo sencillo  
 
 instancia = 'uc_02.json'       ## ejemplos dificiles 2,3,4  
 instancia = 'uc_21.json'       ## ejemplos dificiles 2,3,4  
-instancia = 'uc_45.json'       ## ejemplo de sencillo   
+instancia = 'uc_45.json'       ## ejemplo sencillo   
 
 #instancia = 'uc_52.json'       ## analizar infactibilidad 
-#instancia = 'uc_45.json'       ## 
-
 #instancia = 'dirdat_18.json'   ## analizar infactibilidad 
 #instancia = 'dirdat_21.json'   ## analizar infactibilidad 
 #instancia = 'dirdat_26.json'   ## analizar infactibilidad 
@@ -87,6 +83,7 @@ G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,Pb,C,mpc,Cs,Tunder,names =
 ## tee      =  True si se quiere ver el log del solver.
 ## lpmethod =  0 : 0=Automatic; 1,2= Primal and dual simplex; 3=Sifting; 4=Barrier, 5=Concurrent 
 
+
 ## Validaciones básicas
 gen0=0
 for i in pc_0:
@@ -127,7 +124,7 @@ if 1 == 1:
 
 ## ----------------------------------- HARD-FIXING (only Uu) ---------------------------------------------
 ## HARD-FIXING (only Uu) solution and solve the sub-MILP. (Require run the LP)
-if 1 == 0: 
+if 1 == 1: 
     t_o = time.time() 
     timehard = timeheu
     model,xx = uc_Co.uc(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,Pb,C,Cs,Tunder,option='Hard',SB_Uu=SB_Uu,lower_Pmin_Uu=lower_Pmin_Uu,nameins=instancia[0:5])
@@ -148,7 +145,7 @@ if 1 == 0:
 ## ----------------------------------- HARD-FIXING 2 (only Uu) ---------------------------------------------
 ## HARD-FIXING (only Uu) solution and solve the sub-MILP. (Require run the LP and HF1)
 ## FIX-->No_SB_Uu2, UNFIX-->[No_SB_Uu2,lower_Pmin_Uu2]
-if 1 == 0: 
+if 1 == 1: 
     t_o = time.time() 
     timehard2 = timeheu
     model,xx = uc_Co.uc(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,Pb,C,Cs,Tunder,option='Hard2',SB_Uu=SB_Uu2,No_SB_Uu=No_SB_Uu2,lower_Pmin_Uu=lower_Pmin_Uu2,nameins=instancia[0:5])
@@ -178,7 +175,7 @@ if 1 == 0:
     
       
 ## --------------------------------------- LOCAL BRANCHING 1 ------------------------------------------
-## LBC COUNTINPUS VERSION without soft-fixing
+## LBC COUNTINOUS VERSION without soft-fixing
 ## Include the LOCAL BRANCHING CUT to the solution and solve the sub-MILP (it is using cutoff=z_hard).
 if 1 == 0:
     SB_Uu3 = SB_Uu2.copy()
@@ -207,7 +204,7 @@ if 1 == 0:
     SB_Uu3 = SB_Uu2.copy()
     No_SB_Uu3 = No_SB_Uu2.copy()
     lower_Pmin_Uu3 = lower_Pmin_Uu2.copy()
-    for iter in range(5):
+    for iter in range(10):
         t_o = time.time() 
         model,xx = uc_Co.uc(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,Pb,C,Cs,Tunder,option='lbc2',SB_Uu=SB_Uu3,No_SB_Uu=No_SB_Uu3,lower_Pmin_Uu=lower_Pmin_Uu3,nameins=instancia[0:5])
         sol_lbc2 = Solution(model=model,env=ambiente,executable=executable,nameins=instancia[0:5],gap=gap,cutoff=z_hard,timelimit=timeheu,
@@ -223,7 +220,7 @@ if 1 == 0:
 
 ## ---------------------------------------------- MILP ----------------------------------------------------------
 ## Solve as a MILP
-if 1 == 1: 
+if 1 == 0: 
     t_o = time.time() 
     model,xx = uc_Co.uc(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,Pb,C,Cs,Tunder,option=None,nameins=instancia[0:5])
     sol_milp = Solution(model=model,nameins=instancia[0:5],env=ambiente,executable=executable,gap=gap,timelimit=timemilp,
