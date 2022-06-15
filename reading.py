@@ -134,27 +134,32 @@ def reading(file):
             Ulist.append(0)
             Dlist.append(aux)
         
-        ###############################################################
-        ## Con este código corrian todas las instancias factibles
-        ## incrementaba la potencia de t_o de los generadores prendidos 
-        ## los demás abajo del mínimo los ponia a cero.    
-        if False:
+        ######################################################################
+        ## Con este código corren todas las instancias a factibilidad (menos 52)
+        ## Se incrementaba la potencia de t_o de los generadores prendidos 
+        ## y los que están abajo del mínimo los pone a cero.    
+        ## Es decir, no considera la potencia de arranque.
+        if True:
             aux = power_output_t0[i-1] - power_output_minimum[i-1]
             if aux<0:
                 aux=0
             pc_0_list.append(aux)
-        ###############################################################
+        ######################################################################
             
-        aux = power_output_t0[i-1] - power_output_minimum[i-1]
-        if aux<0:     
-            #aux=0                        ## mayoria infactibles
-            #power_output_minimum[i-1]=0  ## minoria infactibles      
-            aux=power_output_t0[i-1]
-            abajo_min=abajo_min+1
-        else:
-            aux=power_output_t0[i-1]
-                        
-        pc_0_list.append(aux)            
+            
+        ######################################################################
+        ## Este código si considera las potencias de arranque de los generadores
+        # aux = power_output_t0[i-1] - power_output_minimum[i-1]
+        # if aux<0:     
+        #     #aux=0                        ## mayoria infactibles
+        #     #power_output_minimum[i-1]=0  ## minoria infactibles      
+        #     aux=power_output_t0[i-1]
+        #     abajo_min=abajo_min+1
+        # else:
+        #     aux=power_output_t0[i-1] 
+        # pc_0_list.append(aux)          
+        ######################################################################
+                                 
         i+=1 ## Se incrementa un generador            
     print(">>> generadores abajo del límite mínimo:",abajo_min)         
        
