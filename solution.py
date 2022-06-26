@@ -1,4 +1,5 @@
 from   ctypes import util
+from math import ceil
 import os
 import sys
 import time
@@ -176,15 +177,15 @@ class Solution:
         file.write('z:%s\n' % (pyo.value(self.model.obj)))
         file.write('g,t,u,v,w,p\n') 
             
-        for t in range(0, self.tt):
-            for g in range(0, self.gg):
+        for g in range(0, self.gg):
+            for t in range(0, self.tt):
                 file.write('%s,%s,%s,%s,%s,%s\n' %
-                (int(g), int(t), int(self.model.u[(g+1, t+1)].value),int(self.model.v[(g+1, t+1)].value),int(self.model.w[(g+1, t+1)].value), self.model.p[(g+1, t+1)].value))
+                ( int(t), int(g), ceil(self.model.u[(g+1, t+1)].value),ceil(self.model.v[(g+1, t+1)].value),ceil(self.model.w[(g+1, t+1)].value), util.trunc(self.model.p[(g+1, t+1)].value,4)))
 
-        file.write('TIME,s,sR\n')
-        for t in range(1, self.tt+1):
-            file.write('%s,%s,%s,\n' %
-            (int(t), self.model.sn[t].value, self.model.sR[t].value))
+        # file.write('TIME,s,sR\n')
+        # for t in range(1, self.tt+1):
+        #     file.write('%s,%s,%s,\n' %
+        #     (int(t), self.model.sn[t].value, self.model.sR[t].value))
                 
         self.model.pprint(file)
         file.close()

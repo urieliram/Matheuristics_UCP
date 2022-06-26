@@ -1,4 +1,9 @@
 import json
+import util
+import shutil
+import os
+import pandas as pd
+import numpy as np
 
 def reading(file):
     with open(file) as json_file:
@@ -9,7 +14,8 @@ def reading(file):
     S       = {}   ## eslabones de costo variable de arranque
     L       = {}   ## eslabones de costo en piecewise
     C       = {}   ## cost of segment of piecewise
-    Pb      = {}   ## power of segment of piecewise
+    Pb      = {}   ## maximum power available for piecewise segment L for generator g (MW).
+    Cb      = {}   ## cost of generator g producing Pb MW of power ($/h).
     De      = {}   ## load
     R       = {}   ## reserve_requirement
     Pmin    = {}   ## power min
@@ -68,6 +74,7 @@ def reading(file):
     pc_0_list            = []
     u_0_list             = []
     abajo_min =0
+    
     ## To get the data from the generators
     i=1 ## Cuenta los generadores
     for gen in names_list:  
@@ -89,15 +96,19 @@ def reading(file):
         
         ## Para obtener los piece del costo de los generadores
         lista_aux = []
-        lista = []
-        j = 1
+        j = 0
         for piece in piecewise_production:
             lista_aux.append((piece['mw'],piece['cost']))
-            lista.append(j)
             j+=1            
         Piecewise.append(lista_aux)
-        L[i] = lista
         
+        lista = []
+        jj=1
+        for ii in range(j-1):
+            lista.append(jj)
+            jj= jj+1
+        L[i] = lista
+                
         ## Para obtener segmentos del costo variables de arranque
         lista_aux2 = []
         lista2 = []
@@ -139,14 +150,26 @@ def reading(file):
         ## Se incrementaba la potencia de t_o de los generadores prendidos 
         ## y los que están abajo del mínimo los pone a cero.    
         ## Es decir, no considera la potencia de arranque.
-        if True:
+        if False: ## (Original que está mal)
             aux = power_output_t0[i-1] - power_output_minimum[i-1]
             if aux<0:
                 aux=0
             pc_0_list.append(aux)
         ######################################################################
-            
-            
+        
+        if True:
+            #           10             -            100            =    -90 
+            aux = power_output_t0[i-1] - power_output_minimum[i-1]         
+            if aux<0:
+                if aux==0:
+                    abajo_min=abajo_min+1
+                aux = power_output_t0[i-1]
+                #print('abajo_min[name]=',gen)
+            else:
+                aux = power_output_t0[i-1]
+            #aux=0
+            pc_0_list.append(aux)
+        
         ######################################################################
         ## Este código si considera las potencias de arranque de los generadores
         # aux = power_output_t0[i-1] - power_output_minimum[i-1]
@@ -157,38 +180,46 @@ def reading(file):
         #     abajo_min=abajo_min+1
         # else:
         #     aux=power_output_t0[i-1] 
-        # pc_0_list.append(aux)          
+        # pc_0_list.append(aux)            
         ######################################################################
                                  
-        i+=1 ## Se incrementa un generador            
-    print(">>> generadores abajo del límite mínimo:",abajo_min)         
+        i+=1 ## Se incrementa un generador                  
        
     ## Se extraen los diccionarios Pb y C de la lista de listas Piecewise    
     k=0; n=0
     for i in Piecewise:
-        s=len(i)
         k=k+1
         n=0
         for j in i:
             n=n+1
-            # print(k,",",n,",",s,",",j[0],",",j[1])
-            Pb[k,n] = j[0]
-            C[k,n]  = j[1]
+            C[k,n] = j[1]
             ## Se calcula el costo mínimo de operación mpc
             if n==1:
-                mpc[k] = j[0]*j[1]
+                mpc[k] = j[0]*j[1] 
+        del C[(k,n)]           
+        
+    k=0; n=0
+    for i in Piecewise:
+        k=k+1
+        n=0
+        for j in i:
+            if n!=0:
+                #print(k,",",n,",",j[0],",",j[1])
+                Pb[k,n] = j[0]
+                Cb[k,n] = j[1]   
+            n=n+1    
+                
                 
     ## Se extraen los diccionarios Tunder y Cs de la lista de listas Startup    
     k=0; n=0
     for i in Startup:
-        s=len(i)
         k=k+1
         n=0
         for j in i:
             n=n+1
-            # print(k,",",n,",",s,",",j[0],",",j[1])
+            # print(k,",",n,",",j[0],",",j[1])
             Tunder[k,n] = j[0]
-            Cs[k,n]   = j[1] 
+            Cs[k,n]     = j[1] 
     
     ## Aqui se pasan de arreglos a diccionarios como los usa Pyomo
     Pmax = dict(zip(G, power_output_maximum))
@@ -204,6 +235,7 @@ def reading(file):
     RD   = dict(zip(G, ramp_down_limit))
     pc_0 = dict(zip(G, pc_0_list))  
     names= dict(zip(G, names_list))  
+    
     
     ## -----------------  Caso de ejemplo de anjos.json  --------------------------
     #G        = [1, 2, 3]
@@ -234,6 +266,115 @@ def reading(file):
     #relax    = False
     #ambiente = 'localPC'
     ## ----------------------------------  o  -------------------------------------
+    
+    #to_dirdat(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,Pb,C,mpc,Cs,Tunder,names)
+    
+    #validation(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,Pb,C,mpc,Cs,Tunder,names,abajo_min)
        
-    return G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,Pb,C,mpc,Cs,Tunder,names
-          #G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,SU,SD,RU,RD,mpc,Pb,C,Cs,Tunder,fixShedu,relax,ambiente
+    return G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,Pb,Cb,C,mpc,Cs,Tunder,names
+          
+def validation(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,Pb,Cb,C,mpc,Cs,Tunder,names,abajo_min): 
+    
+    ## Validaciones básicas
+    
+    print('>>> generadores abajo del límite mínimo:',abajo_min)  
+       
+    print('*** Capacidades totales de los generadores en el tiempo cero ***')
+    gen0=0
+    for i in pc_0:
+        gen0 = pc_0[i] + gen0 
+    print('potencia p_0            =',gen0)
+    maxi=0
+    for i in Pmax:
+        if u_0[i]==1:
+          maxi = Pmax[i] + maxi
+    maxi = maxi - gen0
+    print('capacidad subir gen_0   =',maxi)    
+    mini=0
+    for i in Pmin:
+        if u_0[i]==1:
+          mini = Pmin[i] + mini
+    mini = gen0 - mini
+    print('capacidad bajar gen_0   =',mini)
+    
+    rampUp=0
+    for i in RU:
+        if u_0[i]==1:
+          rampUp = util.trunc(RU[i] + rampUp,1)
+    print('rampUp_0                =',rampUp)    
+    rampDown=0
+    for i in RD:
+        if u_0[i]==1:
+          rampDown = util.trunc(RD[i] + rampDown,1)
+    print('rampDown_0              =',rampDown)
+    startUp=0
+    for i in SU:
+        if u_0[i]==0:
+          startUp = SU[i] + startUp
+    print('startUp_0               =',startUp)
+    shutDown=0
+    for i in SD:
+        if u_0[i]==1:
+          shutDown = SD[i] + shutDown
+    print('shutDown_0              =',shutDown)    
+        
+    print('Delta demanda  De_0     =',De[1]-gen0)
+    print('Reserve  R_0            =',R[1])    
+    
+    lista1 = []
+    for i in range(2,len(De)):
+        lista1.append(De[i-1]-De[i])
+    print('máx demanda subida      =',abs(util.trunc(min(lista1),1)) )
+    print('máx demanda bajada      =',abs(util.trunc(max(lista1),1) ))
+        
+    lista2 = []
+    for i in range(2,len(R)):
+        lista2.append(R[i-1]-R[i])
+    print('máx reserva subida      =',util.trunc(max(lista2),1) )
+    print('máx reserva bajada      =',util.trunc(min(lista2),1) )
+    
+    #print(gen0,maxi,mini,startUp,shutDown,rampUp,rampDown,De[1],R[1],
+          #util.trunc(max(lista1)),util.trunc(min(lista1)),util.trunc(max(lista2)),util.trunc(min(lista2)))
+        
+    return 0
+
+def to_dirdat(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,Pb,C,mpc,Cs,Tunder,names):    
+    print('Exporting instance data to dirdat csv files...')
+    
+## Deleting an non-empty folder dirdat
+    shutil.rmtree('dirdat', ignore_errors=True)
+    os.mkdir('dirdat')    
+##  Escribiendo HORIZOMDA.csv
+    data = {'periodos': [len(T)],'duracion': [60],'bandera': [0],'dias': [1]}
+    df = pd.DataFrame(data)
+    df.to_csv('dirdat/HORIZOMDA.csv',header=False, index=False)
+    
+##  Escribiendo PRODEM.csv
+    index = list(range(len(De)))
+    my_list = list(De.values())
+    df = pd.DataFrame(columns = index)  
+    df_length = len(df)
+    df.loc[df_length] = my_list
+    df.to_csv('dirdat/PRODEM.csv',header=False, index=False)
+    
+##  Escribiendo RRESUS.csv
+    index = list(range(len(R)))
+    my_list = list(R.values())
+    df = pd.DataFrame(columns = index)  
+    df_length = len(df)
+    df.loc[df_length] = my_list
+    df.to_csv('dirdat/RRESUS.csv',header=False, index=False)
+
+##  Escribiendo UNITRC.csv
+##  Escribiendo ASIGNRC.csv
+##  Escribiendo LIUNITRC.csv
+##  Escribiendo LSUNITRC.csv
+##  Escribiendo RAMPASRC.csv
+##  Escribiendo ARRARC.csv
+##  Escribiendo OPPARORC.csv
+##  Escribiendo UNITRCCI.csv
+##  Escribiendo CGMRC.csv
+##  Escribiendo COVAARRC.csv
+##  Escribiendo POTVERC.csv
+##  Escribiendo PREVERC.csv
+##  Escribiendo UNIHMDA.csv
