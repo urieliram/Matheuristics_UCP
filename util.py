@@ -1,3 +1,5 @@
+from math import ceil
+import numpy as np
 from csv import writer
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -18,12 +20,12 @@ def sendtofilesolution(U,name):
     cadena = ""
     for g in range(N):
         for t in range(T):
-            cadena = cadena + str(U[g][t])+","
+            cadena = cadena + str(ceil(U[g][t]))+","
         cadena = cadena + "\n"
         file.write(cadena)
         cadena = ""
     file.close()
-
+    
 def sendtofileTUTD(TU,TD,name):
     N = len(TU)
     file = open(name, "w")
@@ -76,3 +78,7 @@ def config_env():
         print('localPC,instances/,/home/uriel/cplex1210/cplex/bin/x86-64_linux/cplex,4000,40000,0.001')
                 
     return ambiente, ruta, executable, timeheu, timemilp, gap
+
+
+def trunc(values, decs=1):
+    return np.trunc(values*10**decs)/(10**decs)

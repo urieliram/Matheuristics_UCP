@@ -10,15 +10,19 @@
 ##                                                 'garver_power_vars',
 ##                                                 'garver_power_avail_vars',
 ## Ramp limits            (35), (36)               'damcikurt_ramping',
-## Piecewise production   (42), (43), (44)         'Garver1962',
+## Piecewise production   (50)                     'Hua and Baldick 2017',
 ## Start-up cost          (54), (55), (56)         'MLR_startup_costs',
 ## System constraints     (67)
+##  
+## (Alternative) Piecewise production   (42), (43), (44)         'Garver1962',
 ## --------------------------------------------------------------------------------
 import math
+from pickle import FALSE
+import numpy as np
 import pyomo.environ as pyo
 from   pyomo.environ import *
 
-def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,Pb,C,Cs,Tunder,option='None',SB_Uu=[],No_SB_Uu=[],lower_Pmin_Uu=[],percent_lbc=90,k=10,nameins='model'):
+def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,Pb,Cb,C,Cs,Tunder,option='None',SB_Uu=[],No_SB_Uu=[],lower_Pmin_Uu=[],percent_lbc=90,k=10,nameins='model'):
                
     n_subset   = 0 ## Número de variables que podrían moverse en el Sub-milp (Binary support)
 
@@ -96,16 +100,17 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,Pb,C,Cs,Tunder,
     model.total_cSU = pyo.Var( bounds = (0.0,999999999999.0))                ## Acumula total prendidos
     model.total_cSD = pyo.Var( bounds = (0.0,999999999999.0))                ## Acumula total apagados
     
-    model.Pb   = pyo.Param(model.indexGLg, initialize = Pb,   within = Any)
-    model.C    = pyo.Param(model.indexGLg, initialize = C,    within = Any)
-    model.Cs   = pyo.Param(model.indexGSg, initialize = Cs,   within = Any)
+    model.Pb     = pyo.Param(model.indexGLg, initialize = Pb,     within = Any)
+    model.Cb     = pyo.Param(model.indexGLg, initialize = Cb,     within = Any)
+    model.C      = pyo.Param(model.indexGLg, initialize = C,      within = Any)
+    model.Cs     = pyo.Param(model.indexGSg, initialize = Cs,     within = Any)
     model.Tunder = pyo.Param(model.indexGSg, initialize = Tunder, within = Any)
     
     ## model.mut2.pprint()        ## For entire Constraint List
     ## print(model.mut2[1].expr)  ## For only one index of Constraint List
     ## print(model.mdt2[3].expr)  ## For only one index of Constraint List
     ## model.u.set_values(dict)
-    ## model.u.set_values({(1,3): 1}) ##ojo este no fija
+    ## model.u.set_values({(1,3): 1}) ## OJO este no fija !!!
     ## https://pyomo.readthedocs.io/en/stable/working_models.html
     ## model.u[3,1].fix(0)
     ## model.u.fix(0)
@@ -113,7 +118,8 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,Pb,C,Cs,Tunder,
     def obj_rule(m): 
     #   return sum(m.cp[g,t] + m.cSU[g,t] * m.v[g,t] + m.mpc[g] * m.u[g,t] for g in m.G for t in m.T) \ #Costo sin piecewise
         #return sum(m.cp[g,t] + m.cSU[g,t] * 1        + m.mpc[g] * m.u[g,t] for g in m.G for t in m.T) \
-        return m.total_cSD + m.total_cSU + sum( m.cp[g,t] + m.mpc[g] * m.u[g,t] for g in m.G for t in m.T) \
+        #return m.total_cSD + m.total_cSU + sum( m.cp[g,t] + m.mpc[g] * m.u[g,t] for g in m.G for t in m.T) \
+        return 0 + m.total_cSU + sum( m.cp[g,t] + m.mpc[g] * m.u[g,t] for g in m.G for t in m.T) \
             #  + 0 
             #  + sum(m.sR[t]   * CLP                                         for t in m.T) \
             #  + sum(m.sn[t]   * CRP                                         for t in m.T) 
@@ -122,20 +128,20 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,Pb,C,Cs,Tunder,
     
 
     ## -----------------------------TOTAL COSTOS APAGADO------------------------------------------  
-    def total_cSD_rule(m):  ## 
+    def total_cSD_rule(m):  ## to account for stoppages
         return m.total_cSD == sum( m.cSD[g,t] * 1 for g in m.G for t in m.T)
     model.total_cSD_ = pyo.Constraint(rule = total_cSD_rule)    
 
 
     ## -----------------------------TOTAL COSTOS ARRANQUE------------------------------------------  
-    def total_cSU_rule(m):  ## 
+    def total_cSU_rule(m):  ## to count starts
         return m.total_cSU == sum( m.cSU[g,t] * 1 for g in m.G for t in m.T)
     model.total_cSU_ = pyo.Constraint(rule = total_cSU_rule)    
      
     
     ## -----------------------------GARVER------------------------------------------  
 
-    def logical_rule(m,g,t):    # logical eq.(2)
+    def logical_rule(m,g,t):    ## logical eq.(2)
         if t == 1:
             return m.u[g,t] - m.u_0[g]   == m.v[g,t] - m.w[g,t]
         else:
@@ -149,15 +155,15 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,Pb,C,Cs,Tunder,
         return m.p[g,t] == m.pc[g,t] + m.Pmin[g] * m.u[g,t]
     model.pow_igual = pyo.Constraint(model.G,model.T, rule = pow_igual_rule)    
 
-    def pow_igual_rule2(m,g,t): ## iguala pb a pcb eq.(13)
-        return m.pb[g,t] == m.pbc[g,t] + m.Pmin[g] * m.u[g,t]
-    model.pow_igual2 = pyo.Constraint(model.G,model.T, rule = pow_igual_rule2)    
+    # def pow_igual_rule2(m,g,t): ## iguala pb a pcb eq.(13)
+    #     return m.pb[g,t] == m.pbc[g,t] + m.Pmin[g] * m.u[g,t]
+    # model.pow_igual2 = pyo.Constraint(model.G,model.T, rule = pow_igual_rule2)    
 
-    def pow_igual_rule3(m,g,t): ## iguala pb a pcb eq.(14)
-        return m.pbc[g,t] == m.pc[g,t] + m.r[g,t]
-    model.pow_igual3 = pyo.Constraint(model.G,model.T, rule = pow_igual_rule3)
+    # def pow_igual_rule3(m,g,t): ## iguala pb a pbc eq.(14)
+    #     return m.pbc[g,t] == m.pc[g,t] + m.r[g,t]
+    # model.pow_igual3 = pyo.Constraint(model.G,model.T, rule = pow_igual_rule3)
 
-    def pow_igual_rule4(m,g,t): ## iguala pb a pcb eq.(15)
+    def pow_igual_rule4(m,g,t): ## iguala pb a pbc eq.(15)
         return m.pb[g,t] == m.p[g,t] + m.r[g,t]
     model.pow_igual4 = pyo.Constraint(model.G,model.T, rule = pow_igual_rule4)    
 
@@ -165,9 +171,13 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,Pb,C,Cs,Tunder,
         return m.p[g,t] <= m.pb[g,t] 
     model.pow_igual5 = pyo.Constraint(model.G,model.T, rule = pow_igual_rule5)    
 
-    def pow_igual_rule6(m,g,t): ## pow_pow eq.(17)
-        return m.pc[g,t] <= m.pbc[g,t]
-    model.pow_igual6 = pyo.Constraint(model.G,model.T, rule = pow_igual_rule6)    
+    # def pow_igual_rule6(m,g,t): ## pow_pow eq.(17)
+    #     return m.pc[g,t] <= m.pbc[g,t]
+    # model.pow_igual6 = pyo.Constraint(model.G,model.T, rule = pow_igual_rule6)    
+    
+    def Piecewise_offer44b(m,g,t):  ## piecewise offer eq.(44b)
+        return m.pc[g,t] <= ( m.Pmax[g] -m.Pmin[g] ) * m.u[g,t]                                       
+    model.Piecewise_offer44b = pyo.Constraint(model.G,model.T, rule = Piecewise_offer44b)
 
 
     ## ------------------------------START-UP AND SHUT-DOWN RAMPS---------------------------------   
@@ -210,7 +220,7 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,Pb,C,Cs,Tunder,
         else:
             return m.pc[g,t-1] - m.pc[g,t] <= (m.SD[g]-m.Pmin[g]-m.RD[g])*m.w[g,t] + m.RD[g]*m.u[g,t-1]
     model.down_ramp_rule36 = pyo.Constraint(model.G,model.T, rule = down_ramp_rule36)
-
+    
 
     ## -------------------------------DEMAND & RESERVE----------------------------------------   
  
@@ -269,20 +279,184 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,Pb,C,Cs,Tunder,
     
     ## ----------------------------PIECEWISE OFFER-------------------------------------------   
     
-    def Piecewise_offer42(m,g,t,l):  ## piecewise offer eq.(42)
-        if l > 1:
-            return m.pl[g,t,l] <= (m.Pb[g,l]-m.Pb[g,l-1]) * m.u[g,t]
-        else: 
-            return pyo.Constraint.Skip
-    model.Piecewise_offer42 = pyo.Constraint(model.indexGTLg, rule = Piecewise_offer42)
+    if  False: 
+        def Piecewise_offer51(m,g,t,l):  ## piecewise offer eq.(51)
+            if l == 1:                
+                #return pyo.Constraint.Skip   
+                return m.cp[g,t] >= m.Cb[g,l]*m.p[g,t] + (m.C[g,l] - m.Cb[g,l]*m.Pmin[g])*m.u[g,t]
+            if l >= 2:
+                return m.cp[g,t] >= m.Cb[g,l]*m.p[g,t] + (m.Cb[g,l-1] - m.Cb[g,l]*m.Pb[g,l-1])*m.u[g,t]
+        model.Piecewise_offer51 = pyo.Constraint(model.indexGTLg, rule = Piecewise_offer51)
     
-    def Piecewise_offer43(m,g,t):  ## piecewise offer eq.(43)
-        return sum(m.pl[g,t,l] for l in range(1,value(len(m.L[g]))+1)) == m.pc[g,t]                                        
-    model.Piecewise_offer43 = pyo.Constraint(model.G,model.T, rule = Piecewise_offer43)
+    if  False: 
+        def Piecewise_offer51(m,g,t,l):  ## piecewise offer eq.(51)
+            if l == 1:   
+                x0 = 0  # m.Pmin[g]           ## PowerGenerationPiecewisePoints
+                x1 = m.Pmin[g] #m.Pb[g,l-1]
+                y0 = 0                  ## Production_cost
+                y1 = m.C[g,l] * 60
+                slope = (y1 - y0)/ (x1 - x0) 
+                intercept = -slope*x0 + y0
+                print('l=',l,'slope',slope,'intercept',intercept)
+                return m.cp[g,t] >= slope*m.pc[g,t] + intercept*m.u[g,t] 
+            if l >= 2:
+                x0 = m.Pb[g,l-1]         ## PowerGenerationPiecewisePoints
+                x1 = m.Pb[g,l]
+                y0 = m.C[g,l-1] * 60        ## Production_cost
+                y1 = m.C[g,l] * 60
+                slope = (y1 - y0)/ (x1 - x0) 
+                intercept = -slope*x0 + y0
+                print('l=',l,'slope',slope,'intercept',intercept)
+                return m.cp[g,t] >= slope*m.pc[g,t] + intercept*m.u[g,t] 
+                   
+        #PowerGeneratedAboveMinimum =? pc
+        model.Piecewise_offer51 = pyo.Constraint(model.indexGTLg, rule = Piecewise_offer51)
+        
+        def _production_cost_function(m, g, t, i):
+            return m.TimePeriodLengthHours * m.PowerGenerationPiecewiseCostValues[g,t][i]
+       
     
-    def Piecewise_offer44(m,g,t):  ## piecewise offer eq.(44)
-        return sum(m.C[g,l] * m.pl[g,t,l] for l in range(1,value(len(m.L[g]))+1)) == m.cp[g,t]                                       
-    model.Piecewise_offer44 = pyo.Constraint(model.G,model.T, rule = Piecewise_offer44)
+    if  True:  ##  Garver 1962
+        def Piecewise_offer42(m,g,t,l):  ## piecewise offer eq.(42)
+            if l == 1:
+                return m.pl[g,t,l] <= (m.Pb[g,l]-m.Pmin[g]  ) * m.u[g,t]
+            if l > 1:
+                return m.pl[g,t,l] <= (m.Pb[g,l]-m.Pb[g,l-1]) * m.u[g,t]
+        model.Piecewise_offer42 = pyo.Constraint(model.indexGTLg, rule = Piecewise_offer42)
+        
+        def Piecewise_offer43(m,g,t):   ## piecewise offer eq.(43)
+            return sum(m.pl[g,t,l] for l in range(1,value(len(m.L[g]))+1)) == m.pc[g,t]                                        
+        model.Piecewise_offer43 = pyo.Constraint(model.G,model.T, rule = Piecewise_offer43)
+        
+        def Piecewise_offer44(m,g,t):   ## piecewise offer eq.(44)
+            return sum(m.C[g,l] * m.pl[g,t,l] for l in range(1,value(len(m.L[g]))+1)) == m.cp[g,t]                                       
+        model.Piecewise_offer44 = pyo.Constraint(model.G,model.T, rule = Piecewise_offer44)
+        
+        
+    if  True:  ##  Knueven et al. (2018b)          
+        ## Tightened the bounds on pl(t)->(43),(44) with the start-up and shutdown variables using the start-up and shutdown ramp:
+        Cv = []
+        Cw = []
+        for g in G:
+            auxv=[]
+            auxw=[]
+            for l in L[g]:
+                a=0       
+                if Pb[g,l] <= SU[g]:
+                   a=0     
+                if l==1 : ## Case Pb[g,0] = Pmin[g]
+                    if Pmin[g] < SU[g] and SU[g] < Pb[g,l]:
+                        a=Pb[g,l]-SU[g]   
+                    if Pmin[g] >= SU[g]:
+                        a=Pb[g,l]-Pmin[g]  
+                if l!=1:
+                    if Pb[g,l-1] < SU[g] and SU[g] < Pb[g,l]:
+                        a=Pb[g,l]-SU[g]   
+                    if Pb[g,l-1] >= SU[g]:
+                        a=Pb[g,l]-Pb[g,l-1]  
+                auxv.append(a)
+                b=0 
+                if Pb[g,l] <= SD[g]:
+                   b=0    
+                if l==1: ## Case Pb[g,0] = Pmin[g]
+                    if Pmin[g] < SD[g] and SD[g] < Pb[g,l]:
+                        b=Pb[g,l]-SD[g]   
+                    if Pmin[g] >= SD[g]:
+                        b=Pb[g,l]-Pmin[g]  
+                if l!=1: 
+                    if  Pb[g,l-1] < SD[g] and SD[g] < Pb[g,l]:
+                        b=Pb[g,l]-SD[g]   
+                    if  Pb[g,l-1] >= SD[g]:
+                        b=Pb[g,l]-Pb[g,l-1]  
+                auxw.append(b)
+                #print('g,l',g,l)
+            Cv.append(auxv)
+            Cw.append(auxw)      
+              
+        # print('Pb',Pb)    
+        # print('SU',SU)    
+        # print('SD',SD)    
+        # print('Cv',Cv)    
+        # print('Cw',Cw)            
+            
+        def Piecewise_offer46(m,g,t,l):  ## piecewise offer eq.(46)  Knueven et al. (2018b)      
+            if m.UT[g] > 1:
+                if l == 1:  ## Case Pb[g,0] = Pmin[g]
+                    if t < len(m.T):
+                        return m.pl[g,t,l] <= (m.Pb[g,l]-m.Pmin[g]  )*m.u[g,t] - Cv[g-1][l-1]*m.v[g,t] - Cw[g-1][l-1]*m.w[g,t+1]
+                    if t == len(m.T):
+                        return m.pl[g,t,l] <= (m.Pb[g,l]-m.Pmin[g]  )*m.u[g,t] - Cv[g-1][l-1]*m.v[g,t] - 0
+                if l > 1:
+                    if t < len(m.T):
+                        return m.pl[g,t,l] <= (m.Pb[g,l]-m.Pb[g,l-1])*m.u[g,t] - Cv[g-1][l-1]*m.v[g,t] - Cw[g-1][l-1]*m.w[g,t+1]
+                    if t == len(m.T):
+                        return m.pl[g,t,l] <= (m.Pb[g,l]-m.Pb[g,l-1])*m.u[g,t] - Cv[g-1][l-1]*m.v[g,t] - 0
+            else: ## UT[g] == 1
+                return pyo.Constraint.Skip         
+        model.Piecewise_offer46 = pyo.Constraint(model.indexGTLg, rule = Piecewise_offer46)
+        
+        
+        def Piecewise_offer47a(m,g,t,l):  ## piecewise offer eq.(47a)  Knueven et al. (2018b)     
+            if m.UT[g]==1:
+                if l == 1:  ## Case Pb[g,0] = Pmin[g]
+                    return m.pl[g,t,l] <= (m.Pb[g,l]-m.Pmin[g]  )*m.u[g,t] - Cv[g-1][l-1]*m.v[g,t] 
+                if l > 1:
+                    return m.pl[g,t,l] <= (m.Pb[g,l]-m.Pb[g,l-1])*m.u[g,t] - Cv[g-1][l-1]*m.v[g,t]
+            else:
+                return pyo.Constraint.Skip                 
+        model.Piecewise_offer47a = pyo.Constraint(model.indexGTLg, rule = Piecewise_offer47a)       
+         
+        
+        def Piecewise_offer47b(m,g,t,l):  ## piecewise offer eq.(47b)  Knueven et al. (2018b)     
+            if m.UT[g]==1:
+                if l == 1:  ## Case Pb[g,0] = Pmin[g]
+                    if t < len(m.T):
+                        return m.pl[g,t,l] <= (m.Pb[g,l]-m.Pmin[g]  )*m.u[g,t] - Cw[g-1][l-1]*m.w[g,t+1]
+                    if t == len(m.T):
+                        return m.pl[g,t,l] <= (m.Pb[g,l]-m.Pmin[g]  )*m.u[g,t] - 0
+                if l > 1:
+                    if t < len(m.T):
+                        return m.pl[g,t,l] <= (m.Pb[g,l]-m.Pb[g,l-1])*m.u[g,t] - Cw[g-1][l-1]*m.w[g,t+1]
+                    if t == len(m.T):
+                        return m.pl[g,t,l] <= (m.Pb[g,l]-m.Pb[g,l-1])*m.u[g,t] - 0                       
+            else:
+                return pyo.Constraint.Skip                 
+        model.Piecewise_offer47b = pyo.Constraint(model.indexGTLg, rule = Piecewise_offer47b)
+        
+        def Piecewise_offer48a(m,g,t,l):  ## piecewise offer eq.(48a)  Knueven et al. (2018b)     
+            if m.UT[g]==1 and SU[g]!=SD[g]:
+                posit = max(0,Cv[g-1][l-1] - Cw[g-1][l-1])      
+                if l == 1:  ## Case Pb[g,0] = Pmin[g]
+                    if t < len(m.T):         
+                        return m.pl[g,t,l] <= (m.Pb[g,l]-m.Pmin[g]  )*m.u[g,t] - Cv[g-1][l-1]*m.v[g,t] - posit*m.w[g,t+1]
+                    if t == len(m.T):  
+                        return pyo.Constraint.Skip                   
+                if l > 1:
+                    if t < len(m.T):  
+                        return m.pl[g,t,l] <= (m.Pb[g,l]-m.Pb[g,l-1])*m.u[g,t] - Cv[g-1][l-1]*m.v[g,t] - posit*m.w[g,t+1]
+                    if t == len(m.T):    
+                        return pyo.Constraint.Skip  
+            else:
+                return pyo.Constraint.Skip                 
+        model.Piecewise_offer48a = pyo.Constraint(model.indexGTLg, rule = Piecewise_offer48a)       
+                        
+        # (NO FUNCIONA)
+        # def Piecewise_offer48b(m,g,t,l):  ## piecewise offer eq.(48b)  Knueven et al. (2018b)     
+        #     if m.UT[g]==1 and SU[g]!=SD[g]:
+        #         posit = max(0,Cw[g-1][l-1] - Cv[g-1][l-1]) 
+        #         if l == 1:  ## Case Pb[g,0] = Pmin[g]
+        #             if t < len(m.T):              
+        #                 return m.pl[g,t,l] <= (m.Pb[g,l]-m.Pmin[g]  )*m.u[g,t] - Cw[g-1][l-1]*m.w[g,t+1] - posit*m.v[g,t]
+        #             if t == len(m.T):
+        #                 return pyo.Constraint.Skip                     
+        #         if l > 1:
+        #             if t < len(m.T):             
+        #                 return m.pl[g,t,l] <= (m.Pb[g,l]-m.Pb[g,l-1])*m.u[g,t] - Cw[g-1][l-1]*m.w[g,t+1] - posit*m.v[g,t]
+        #             if t == len(m.T):   
+        #                 return pyo.Constraint.Skip                                 
+        #     else:
+        #         return pyo.Constraint.Skip                 
+        # model.Piecewise_offer48b = pyo.Constraint(model.indexGTLg, rule = Piecewise_offer48b)               
     
     
     ## ----------------------------VARIABLE START-UP COST-------------------------------------------     
@@ -316,8 +490,10 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,mpc,Pb,C,Cs,Tunder,
     
     ## Si se desea fijar LR->SB y resolver un sub-MILP.
     if option == 'Hard':    
-        for f in SB_Uu: 
-            model.u[f[0]+1,f[1]+1].fix(1) ## Hard fixing
+        for f in No_SB_Uu: 
+            model.u[f[0]+1,f[1]+1].fix(0) ## Hard fixing
+        #for f in SB_Uu: 
+        #    model.u[f[0]+1,f[1]+1].fix(1) ## Hard fixing
         for f in lower_Pmin_Uu:
             model.u[f[0]+1,f[1]+1] = 1
             
