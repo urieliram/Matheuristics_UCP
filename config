@@ -1,2 +1,2 @@
 ambiente,ruta,executable,timeheu,timemilp,gap
-localPC,instances/,/home/uriel/cplex1210/cplex/bin/x86-64_linux/cplex,4000,40000,0.0001
+localPC,instances/,/home/uriel/cplex1210/cplex/bin/x86-64_linux/cplex,4000,40000,0.00001
