@@ -28,12 +28,13 @@ def reading(file):
     TD      = {}   ## time_down_minimum
     D       = {}   ## number of hours generator g is required to be off at t=1 (h).
     U       = {}   ## number of hours generator g is required to be on at t=1 (h).
-    pc_0    = {}   ## power_output_t0
+    TD_0    = {}   ## Number of hours that the unit has been offline before the scheduling horizon.
+    p_0     = {}   ## power_output_t0
     mpc     = {}   ## cost of generator g running and operating at minimum production Pmin ($/h).
     C       = {}   ## 
     Cs      = {}   ## Costo de cada escalón del conjunto S de la función de costo variable de arranque.
     Tunder  = {}   ## lag de cada escalón del conjunto S de la función de costo variable de arranque.
-    Startup = {}   ## start-up  cost
+    Startup = {}   ## start-up cost
         
     time_periods = int(md['time_periods'])
     demand       = md['demand']  
@@ -71,7 +72,8 @@ def reading(file):
     Startup              = []
     Ulist                = []
     Dlist                = []
-    pc_0_list            = []
+    TD0list              = []
+    p_0_list             = []
     u_0_list             = []
     abajo_min =0
     
@@ -94,7 +96,7 @@ def reading(file):
         startup = (md['thermal_generators'][gen]["startup"]) # variable start-up cost
         piecewise_production = md['thermal_generators'][gen]["piecewise_production"] #piecewise cost
         
-        ## Para obtener los piece del costo de los generadores
+        ## Para obtener los piecewise del costo de los generadores
         lista_aux = []
         j = 0
         for piece in piecewise_production:
@@ -109,16 +111,19 @@ def reading(file):
             jj= jj+1
         L[i] = lista
                 
-        ## Para obtener segmentos del costo variables de arranque
+        ## Obtiene segmentos del costo variable de arranque
         lista_aux2 = []
         lista2 = []
-        j = 1
+        j = 1        
         for segment in startup:
-            lista_aux2.append((segment['lag'],segment['cost']))
-            lista2.append(j)
-            j+=1            
+            if segment['lag']>=time_down_minimum[i-1]:
+                lista_aux2.append((segment['lag'],segment['cost']))
+                lista2.append(j)
+                j+=1         
+            
         Startup.append(lista_aux2)
         S[i] = lista2
+        
                 
         ## Validaciones
         if power_output_t0[i-1] !=0 and unit_on_t0[i-1] == 0:
@@ -129,21 +134,19 @@ def reading(file):
             quit()
                     
         ## Caso prendido
-        if unit_on_t0[i-1] > 0:
+        if unit_on_t0[i-1] == 1:
             u_0_list.append(1)
-            aux = time_up_minimum[i-1] - time_up_t0[i-1]
-            if aux<=0:
-                aux=0
+            aux=max(0,time_up_minimum[i-1]-time_up_t0[i-1])
             Ulist.append(aux)
-            Dlist.append(0)            
+            Dlist.append(0)
+            TD0list.append(0)
         ## Caso apagado
-        if unit_on_t0[i-1] <= 0: 
+        if unit_on_t0[i-1] == 0: 
             u_0_list.append(0)   
-            aux = time_down_minimum[i-1] - time_down_t0[i-1]
-            if aux <= 0:
-                aux = 0
+            aux=max(0,time_down_minimum[i-1] - time_down_t0[i-1])
             Ulist.append(0)
             Dlist.append(aux)
+            TD0list.append(time_down_t0[i-1])    
         
         ######################################################################
         ## Con este código corren todas las instancias a factibilidad (menos 52)
@@ -154,34 +157,18 @@ def reading(file):
             aux = power_output_t0[i-1] - power_output_minimum[i-1]
             if aux<0:
                 aux=0
-            pc_0_list.append(aux)
+            p_0_list.append(aux)
         ######################################################################
         
-        if True:
-            #           10             -            100            =    -90 
-            aux = power_output_t0[i-1] - power_output_minimum[i-1]         
-            if aux<0:
-                if aux==0:
-                    abajo_min=abajo_min+1
-                aux = power_output_t0[i-1]
-                #print('abajo_min[name]=',gen)
-            else:
-                aux = power_output_t0[i-1]
-            #aux=0
-            pc_0_list.append(aux)
-        
-        ######################################################################
-        ## Este código si considera las potencias de arranque de los generadores
-        # aux = power_output_t0[i-1] - power_output_minimum[i-1]
-        # if aux<0:     
-        #     #aux=0                        ## mayoria infactibles
-        #     #power_output_minimum[i-1]=0  ## minoria infactibles      
-        #     aux=power_output_t0[i-1]
-        #     abajo_min=abajo_min+1
-        # else:
-        #     aux=power_output_t0[i-1] 
-        # pc_0_list.append(aux)            
-        ######################################################################
+        ########################################################################
+        ## Este código considera las potencias de arranque de los generadores
+        #           10             -          100             =   -90  prendido
+        #           0              -          100             =   -100 apagado       
+        if power_output_t0[i-1]<power_output_minimum[i-1] and power_output_t0[i-1]!=0: ## potencia abajo del mínimo
+            abajo_min=abajo_min+1
+            print('estado=',gen,unit_on_t0[i-1])
+        p_0_list.append(power_output_t0[i-1])
+        ########################################################################
                                  
         i+=1 ## Se incrementa un generador                  
        
@@ -207,8 +194,7 @@ def reading(file):
                 #print(k,",",n,",",j[0],",",j[1])
                 Pb[k,n] = j[0]
                 Cb[k,n] = j[1]   
-            n=n+1    
-                
+            n=n+1
                 
     ## Se extraen los diccionarios Tunder y Cs de la lista de listas Startup    
     k=0; n=0
@@ -228,12 +214,13 @@ def reading(file):
     TD   = dict(zip(G, time_down_minimum))  
     u_0  = dict(zip(G, u_0_list))          
     U    = dict(zip(G, Ulist))              
-    D    = dict(zip(G, Dlist))                
+    D    = dict(zip(G, Dlist))             
+    TD_0 = dict(zip(G, TD0list))                
     SU   = dict(zip(G, ramp_startup_limit))
     SD   = dict(zip(G, ramp_shutdown_limit))
     RU   = dict(zip(G, ramp_up_limit))
     RD   = dict(zip(G, ramp_down_limit))
-    pc_0 = dict(zip(G, pc_0_list))  
+    p_0  = dict(zip(G, p_0_list))  
     names= dict(zip(G, names_list))  
     
     
@@ -255,7 +242,7 @@ def reading(file):
     #SD       = {1: 80, 2: 50, 3: 30}
     #RU       = {1: 50, 2: 60, 3: 70}
     #RD       = {1: 30, 2: 40, 3: 50}
-    #pc_0     = {1: 40, 2: 0, 3: 0}
+    #p_0     = {1: 40, 2: 0, 3: 0}
     #mpc      = {1: 400.0, 2: 750.0, 3: 900.0}
     #Pb       = {(1, 1): 80, (1, 2): 150, (1, 3): 300, (2, 1): 50, (2, 2): 100, (2, 3): 200, (3, 1): 30, (3, 2): 50, (3, 3): 70, (3, 4): 100}   
     #C        = {(1, 1): 5.0, (1, 2): 5.0, (1, 3): 5.0, (2, 1): 15.0, (2, 2): 15.0, (2, 3): 15.0, (3, 1): 30.0, (3, 2): 30.0, (3, 3): 30.0, (3, 4): 30.0}
@@ -267,22 +254,22 @@ def reading(file):
     #ambiente = 'localPC'
     ## ----------------------------------  o  -------------------------------------
     
-    #to_dirdat(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,Pb,C,mpc,Cs,Tunder,names)
+    #to_dirdat(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,SU,SD,RU,RD,p_0,Pb,C,mpc,Cs,Tunder,names)
     
-    #validation(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,Pb,C,mpc,Cs,Tunder,names,abajo_min)
+    #validation(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,Pb,Cb,C,mpc,Cs,Tunder,names,abajo_min)
        
-    return G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,Pb,Cb,C,mpc,Cs,Tunder,names
+    return G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,Pb,Cb,C,mpc,Cs,Tunder,names
           
-def validation(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,Pb,Cb,C,mpc,Cs,Tunder,names,abajo_min): 
-    
-    ## Validaciones básicas
-    
+          
+# (EN PROCESO ...)
+def validation(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,Pb,Cb,C,mpc,Cs,Tunder,names,abajo_min): 
+        
     print('>>> generadores abajo del límite mínimo:',abajo_min)  
        
     print('*** Capacidades totales de los generadores en el tiempo cero ***')
     gen0=0
-    for i in pc_0:
-        gen0 = pc_0[i] + gen0 
+    for i in p_0:
+        gen0 = p_0[i] + gen0 
     print('potencia p_0            =',gen0)
     maxi=0
     for i in Pmax:
@@ -338,7 +325,8 @@ def validation(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,Pb,Cb,C,mpc
         
     return 0
 
-def to_dirdat(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,SU,SD,RU,RD,pc_0,Pb,C,mpc,Cs,Tunder,names):    
+# (EN PROCESO ...)
+def to_dirdat(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,SU,SD,RU,RD,p_0,Pb,C,mpc,Cs,Tunder,names):    
     print('Exporting instance data to dirdat csv files...')
     
 ## Deleting an non-empty folder dirdat

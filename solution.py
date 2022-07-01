@@ -1,14 +1,14 @@
-from   ctypes import util
+# from ctypes import util
 from math import ceil
 import os
 import sys
+import logging
 import time
 import pyomo.environ as pyo
 import util
 import numpy as np
 from   pyomo.util.infeasible import log_infeasible_constraints
 from   pyomo.opt import SolverStatus, TerminationCondition
-import logging
 
 class Solution:
     def __init__(self,model,env,executable,nameins='model',gap=0.0001,timelimit=300,tee=False,tofiles=False,lpmethod=0,
@@ -77,9 +77,9 @@ class Solution:
         if self.exportLP == True:
             self.model.write()             ## To write the model into a file using .nl format
             filename = os.path.join(os.path.dirname(__file__), self.model.name+'.lp')
-            self.model.write(filename, io_options={'symbolic_solver_labels': True})
-            self.model.write(filename = self.model.name+'.mps', io_options = {"symbolic_solver_labels":True})
-            #print(solver.ExportModelAsLpFormat(False).replace('\\', '').replace(',_', ','), sep='\n')
+        ## write MPS file
+            #self.model.write(filename, io_options={'symbolic_solver_labels': True})
+            #self.model.write(filename = self.model.name+'.mps', io_options = {"symbolic_solver_labels":True})
         
         t_o = time.time() 
         
@@ -107,8 +107,9 @@ class Solution:
         elif result.solver.termination_condition == TerminationCondition.infeasible:
             ##https://stackoverflow.com/questions/51044262/finding-out-reason-of-pyomo-model-infeasibility
             self.fail = True
-            #print ("!!! Infeasible solution ... wait to unfeasible.log")            
-            #log_infeasible_constraints(self.model,log_expression=True, log_variables=True)           
+            print("!!! Infeasible solution ...")
+            # print(log_infeasible_constraints(self.model, log_expression=True, log_variables=True))
+            # logging.basicConfig(filename='example.log', encoding='utf-8', level=logging.INFO)
             #logging.basicConfig(filename='unfeasible.log', encoding='utf-8', level=logging.INFO)
             #sys.exit("!!! Unfortunately, the program has stopped.") 
         elif (result.solver.termination_condition == TerminationCondition.maxTimeLimit):
@@ -118,7 +119,12 @@ class Solution:
         else:
             print ("!!! Something else is wrong",str(result.solver)) 
             self.fail = True
-
+            
+        # if self.fail == True:
+        #     file = open(self.nameins +'_infeasible_model_' +'.dat', 'w')
+        #     self.model.pprint(file)
+        #     file.close()
+            
         if self.fail == False:
             
             ## |bestbound-bestinteger|/(1e-10+|bestinteger|)
@@ -135,7 +141,7 @@ class Solution:
             self.R      = [[0 for i in range(self.tt)] for j in range(self.gg)]            
             self.delta  = [[0 for i in range(self.tt)] for j in range(self.gg)]
                 
-            ## Tranformación especial para variable delta de (g,t,s) a (g,t) 
+            ## Tranformación especial para variable delta de (g,t,s) a (g,t)[s] 
             for g in range(0, self.gg):
                 for t in range(0, self.tt):
                     position = 0
@@ -191,7 +197,6 @@ class Solution:
         file.close()
                 
         return 0
-    
     
     ## En esta función seleccionamos el conjunto de variables Uu que quedarán en uno para ser fijadas posteriormente.
     def select_binary_support_Uu(self,optional=''):
