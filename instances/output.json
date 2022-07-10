@@ -1,145 +1,61 @@
 {
     "time_periods": 24,
     "demand": [
-      25061.1402188,
-      25061.06710108011,
-      25061.077754140024,
-      25061.34964175029,
-      25061.053870780335,
-      25061.44498694016,
-      25061.53942249031,
-      25061.406898310124,
-      25061.59416993007,
-      25061.70890494997,
-      25061.74008048015,
-      25061.62933451994,
-      25061.37697771014,
-      25061.599467610176,
-      25061.85910752988,
-      25061.352458900285,
-      25061.23960295032,
-      25061.97960328005,
-      25061.18035254988,
-      25061.75909101994,
-      25061.26753508009,
-      25061.11123375005,
-      25061.9034538,
-      25061.98408663023
+        20854.90062	,
+19458.8275	,
+18343.83815	,
+17604.11004	,
+17140.81427	,
+16995.20538	,
+17470.29982	,
+18198.1673	,
+19378.35457	,
+20625.4693	,
+21606.50048	,
+22261.38973	,
+22831.13737	,
+23401.35986	,
+23854.6195	,
+24319.11286	,
+24451	,
+24002.74	,
+22983.94075	,
+22198.51949	,
+23630.02793	,
+24402.87163	,
+24046.66385	,
+23283.74448	
+
+
+        
     ],
     "reserves": [
-      2042,
-      1965,
-      1920,
-      1889,
-      1861,
-      1837,
-      1840,
-      1864,
-      1919,
-      2012,
-      2079,
-      2130,
-      2170,
-      2185,
-      2202,
-      2225,
-      2214,
-      2196,
-      2146,
-      2103,
-      2203,
-      2262,
-      2253,
-      2198
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100
     ],
     "thermal_generators": {
-      "G1": {
-        "must_run": 0,
-        "name": "G1",
-        "power_output_minimum": 0,
-        "power_output_maximum": 0,
-        "ramp_up_limit": 10,
-        "ramp_down_limit": 10,
-        "ramp_startup_limit": 10,
-        "ramp_shutdown_limit": 10,
-        "time_up_minimum": 1,
-        "time_down_minimum": 1,
-        "power_output_t0": 0,
-        "unit_on_t0": 0,
-        "time_up_t0": 0,
-        "time_down_t0": 1,
-        "fixed_cost": 0,
-        "startup": [
-          {
-            "lag": 1,
-            "cost": 0
-          }
-        ],
-        "piecewise_production": [
-          {
-            "mw": 0,
-            "cost": 0
-          }
-        ]
-      },
-      "G2": {
-        "must_run": 0,
-        "name": "G2",
-        "power_output_minimum": 0,
-        "power_output_maximum": 0,
-        "ramp_up_limit": 10,
-        "ramp_down_limit": 10,
-        "ramp_startup_limit": 10,
-        "ramp_shutdown_limit": 10,
-        "time_up_minimum": 1,
-        "time_down_minimum": 1,
-        "power_output_t0": 0,
-        "unit_on_t0": 0,
-        "time_up_t0": 0,
-        "time_down_t0": 1,
-        "fixed_cost": 0,
-        "startup": [
-          {
-            "lag": 1,
-            "cost": 0
-          }
-        ],
-        "piecewise_production": [
-          {
-            "mw": 0,
-            "cost": 0
-          }
-        ]
-      },
-      "G3": {
-        "must_run": 0,
-        "name": "G3",
-        "power_output_minimum": 0,
-        "power_output_maximum": 0,
-        "ramp_up_limit": 10,
-        "ramp_down_limit": 10,
-        "ramp_startup_limit": 10,
-        "ramp_shutdown_limit": 10,
-        "time_up_minimum": 1,
-        "time_down_minimum": 1,
-        "power_output_t0": 0,
-        "unit_on_t0": 0,
-        "time_up_t0": 0,
-        "time_down_t0": 1,
-        "fixed_cost": 0,
-        "startup": [
-          {
-            "lag": 1,
-            "cost": 0
-          }
-        ],
-        "piecewise_production": [
-          {
-            "mw": 0,
-            "cost": 0
-          }
-        ]
-      },
       "G4": {
         "must_run": 0,
         "name": "G4",
@@ -160,34 +76,9 @@
           {
             "lag": 1,
             "cost": 0
-          }
-        ],
-        "piecewise_production": [
+          },
           {
-            "mw": 0,
-            "cost": 0
-          }
-        ]
-      },
-      "G5": {
-        "must_run": 0,
-        "name": "G5",
-        "power_output_minimum": 0,
-        "power_output_maximum": 0,
-        "ramp_up_limit": 10,
-        "ramp_down_limit": 10,
-        "ramp_startup_limit": 10,
-        "ramp_shutdown_limit": 10,
-        "time_up_minimum": 1,
-        "time_down_minimum": 1,
-        "power_output_t0": 0,
-        "unit_on_t0": 0,
-        "time_up_t0": 0,
-        "time_down_t0": 1,
-        "fixed_cost": 0,
-        "startup": [
-          {
-            "lag": 1,
+            "lag": 2,
             "cost": 0
           }
         ],
@@ -195,63 +86,9 @@
           {
             "mw": 0,
             "cost": 0
-          }
-        ]
-      },
-      "G6": {
-        "must_run": 0,
-        "name": "G6",
-        "power_output_minimum": 0,
-        "power_output_maximum": 0,
-        "ramp_up_limit": 10,
-        "ramp_down_limit": 10,
-        "ramp_startup_limit": 10,
-        "ramp_shutdown_limit": 10,
-        "time_up_minimum": 1,
-        "time_down_minimum": 1,
-        "power_output_t0": 0,
-        "unit_on_t0": 0,
-        "time_up_t0": 0,
-        "time_down_t0": 1,
-        "fixed_cost": 0,
-        "startup": [
+          },
           {
-            "lag": 1,
-            "cost": 0
-          }
-        ],
-        "piecewise_production": [
-          {
-            "mw": 0,
-            "cost": 0
-          }
-        ]
-      },
-      "G7": {
-        "must_run": 0,
-        "name": "G7",
-        "power_output_minimum": 0,
-        "power_output_maximum": 0,
-        "ramp_up_limit": 10,
-        "ramp_down_limit": 10,
-        "ramp_startup_limit": 10,
-        "ramp_shutdown_limit": 10,
-        "time_up_minimum": 1,
-        "time_down_minimum": 1,
-        "power_output_t0": 0,
-        "unit_on_t0": 0,
-        "time_up_t0": 0,
-        "time_down_t0": 1,
-        "fixed_cost": 0,
-        "startup": [
-          {
-            "lag": 1,
-            "cost": 0
-          }
-        ],
-        "piecewise_production": [
-          {
-            "mw": 0,
+            "mw": 30,
             "cost": 0
           }
         ]
@@ -276,34 +113,9 @@
           {
             "lag": 1,
             "cost": 0
-          }
-        ],
-        "piecewise_production": [
+          },
           {
-            "mw": 0,
-            "cost": 0
-          }
-        ]
-      },
-      "G9": {
-        "must_run": 0,
-        "name": "G9",
-        "power_output_minimum": 0,
-        "power_output_maximum": 0,
-        "ramp_up_limit": 10,
-        "ramp_down_limit": 10,
-        "ramp_startup_limit": 10,
-        "ramp_shutdown_limit": 10,
-        "time_up_minimum": 1,
-        "time_down_minimum": 1,
-        "power_output_t0": 0,
-        "unit_on_t0": 0,
-        "time_up_t0": 0,
-        "time_down_t0": 1,
-        "fixed_cost": 0,
-        "startup": [
-          {
-            "lag": 1,
+            "lag": 2,
             "cost": 0
           }
         ],
@@ -311,266 +123,9 @@
           {
             "mw": 0,
             "cost": 0
-          }
-        ]
-      },
-      "G10": {
-        "must_run": 0,
-        "name": "G10",
-        "power_output_minimum": 0,
-        "power_output_maximum": 0,
-        "ramp_up_limit": 10,
-        "ramp_down_limit": 10,
-        "ramp_startup_limit": 10,
-        "ramp_shutdown_limit": 10,
-        "time_up_minimum": 1,
-        "time_down_minimum": 1,
-        "power_output_t0": 0,
-        "unit_on_t0": 0,
-        "time_up_t0": 0,
-        "time_down_t0": 1,
-        "fixed_cost": 0,
-        "startup": [
+          },
           {
-            "lag": 1,
-            "cost": 0
-          }
-        ],
-        "piecewise_production": [
-          {
-            "mw": 0,
-            "cost": 0
-          }
-        ]
-      },
-      "G11": {
-        "must_run": 0,
-        "name": "G11",
-        "power_output_minimum": 0,
-        "power_output_maximum": 0,
-        "ramp_up_limit": 10,
-        "ramp_down_limit": 10,
-        "ramp_startup_limit": 10,
-        "ramp_shutdown_limit": 10,
-        "time_up_minimum": 1,
-        "time_down_minimum": 1,
-        "power_output_t0": 0,
-        "unit_on_t0": 0,
-        "time_up_t0": 0,
-        "time_down_t0": 1,
-        "fixed_cost": 0,
-        "startup": [
-          {
-            "lag": 1,
-            "cost": 0
-          }
-        ],
-        "piecewise_production": [
-          {
-            "mw": 0,
-            "cost": 0
-          }
-        ]
-      },
-      "G12": {
-        "must_run": 0,
-        "name": "G12",
-        "power_output_minimum": 0,
-        "power_output_maximum": 0,
-        "ramp_up_limit": 10,
-        "ramp_down_limit": 10,
-        "ramp_startup_limit": 10,
-        "ramp_shutdown_limit": 10,
-        "time_up_minimum": 1,
-        "time_down_minimum": 1,
-        "power_output_t0": 0,
-        "unit_on_t0": 0,
-        "time_up_t0": 0,
-        "time_down_t0": 1,
-        "fixed_cost": 0,
-        "startup": [
-          {
-            "lag": 1,
-            "cost": 0
-          }
-        ],
-        "piecewise_production": [
-          {
-            "mw": 0,
-            "cost": 0
-          }
-        ]
-      },
-      "G13": {
-        "must_run": 0,
-        "name": "G13",
-        "power_output_minimum": 0,
-        "power_output_maximum": 0,
-        "ramp_up_limit": 10,
-        "ramp_down_limit": 10,
-        "ramp_startup_limit": 10,
-        "ramp_shutdown_limit": 10,
-        "time_up_minimum": 1,
-        "time_down_minimum": 1,
-        "power_output_t0": 0,
-        "unit_on_t0": 0,
-        "time_up_t0": 0,
-        "time_down_t0": 1,
-        "fixed_cost": 0,
-        "startup": [
-          {
-            "lag": 1,
-            "cost": 0
-          }
-        ],
-        "piecewise_production": [
-          {
-            "mw": 0,
-            "cost": 0
-          }
-        ]
-      },
-      "G14": {
-        "must_run": 0,
-        "name": "G14",
-        "power_output_minimum": 0,
-        "power_output_maximum": 0,
-        "ramp_up_limit": 10,
-        "ramp_down_limit": 10,
-        "ramp_startup_limit": 10,
-        "ramp_shutdown_limit": 10,
-        "time_up_minimum": 1,
-        "time_down_minimum": 1,
-        "power_output_t0": 0,
-        "unit_on_t0": 0,
-        "time_up_t0": 0,
-        "time_down_t0": 1,
-        "fixed_cost": 0,
-        "startup": [
-          {
-            "lag": 1,
-            "cost": 0
-          }
-        ],
-        "piecewise_production": [
-          {
-            "mw": 0,
-            "cost": 0
-          }
-        ]
-      },
-      "G15": {
-        "must_run": 0,
-        "name": "G15",
-        "power_output_minimum": 0,
-        "power_output_maximum": 0,
-        "ramp_up_limit": 10,
-        "ramp_down_limit": 10,
-        "ramp_startup_limit": 10,
-        "ramp_shutdown_limit": 10,
-        "time_up_minimum": 1,
-        "time_down_minimum": 1,
-        "power_output_t0": 0,
-        "unit_on_t0": 0,
-        "time_up_t0": 0,
-        "time_down_t0": 1,
-        "fixed_cost": 0,
-        "startup": [
-          {
-            "lag": 1,
-            "cost": 0
-          }
-        ],
-        "piecewise_production": [
-          {
-            "mw": 0,
-            "cost": 0
-          }
-        ]
-      },
-      "G16": {
-        "must_run": 0,
-        "name": "G16",
-        "power_output_minimum": 0,
-        "power_output_maximum": 0,
-        "ramp_up_limit": 10,
-        "ramp_down_limit": 10,
-        "ramp_startup_limit": 10,
-        "ramp_shutdown_limit": 10,
-        "time_up_minimum": 1,
-        "time_down_minimum": 1,
-        "power_output_t0": 0,
-        "unit_on_t0": 0,
-        "time_up_t0": 0,
-        "time_down_t0": 1,
-        "fixed_cost": 0,
-        "startup": [
-          {
-            "lag": 1,
-            "cost": 0
-          }
-        ],
-        "piecewise_production": [
-          {
-            "mw": 0,
-            "cost": 0
-          }
-        ]
-      },
-      "G17": {
-        "must_run": 0,
-        "name": "G17",
-        "power_output_minimum": 0,
-        "power_output_maximum": 0,
-        "ramp_up_limit": 10,
-        "ramp_down_limit": 10,
-        "ramp_startup_limit": 10,
-        "ramp_shutdown_limit": 10,
-        "time_up_minimum": 1,
-        "time_down_minimum": 6,
-        "power_output_t0": 0,
-        "unit_on_t0": 0,
-        "time_up_t0": 0,
-        "time_down_t0": 1,
-        "fixed_cost": 0,
-        "startup": [
-          {
-            "lag": 1,
-            "cost": 0
-          }
-        ],
-        "piecewise_production": [
-          {
-            "mw": 0,
-            "cost": 0
-          }
-        ]
-      },
-      "G18": {
-        "must_run": 0,
-        "name": "G18",
-        "power_output_minimum": 0,
-        "power_output_maximum": 0,
-        "ramp_up_limit": 8,
-        "ramp_down_limit": 8,
-        "ramp_startup_limit": 6,
-        "ramp_shutdown_limit": 8,
-        "time_up_minimum": 16,
-        "time_down_minimum": 8,
-        "power_output_t0": 0,
-        "unit_on_t0": 0,
-        "time_up_t0": 0,
-        "time_down_t0": 1,
-        "fixed_cost": 0,
-        "startup": [
-          {
-            "lag": 1,
-            "cost": 0
-          }
-        ],
-        "piecewise_production": [
-          {
-            "mw": 0,
+            "mw": 50,
             "cost": 0
           }
         ]
@@ -643,7 +198,7 @@
             "cost": 15825.24
           },
           {
-            "mw": 73.296,
+            "mw": 77.44,
             "cost": 17899.53
           }
         ]
@@ -716,124 +271,8 @@
             "cost": 15498.039999999999
           },
           {
-            "mw": 73.08,
+            "mw": 77.2,
             "cost": 17578.67
-          }
-        ]
-      },
-      "G21": {
-        "must_run": 0,
-        "name": "G21",
-        "power_output_minimum": 0,
-        "power_output_maximum": 0,
-        "ramp_up_limit": 10,
-        "ramp_down_limit": 10,
-        "ramp_startup_limit": 10,
-        "ramp_shutdown_limit": 10,
-        "time_up_minimum": 1,
-        "time_down_minimum": 1,
-        "power_output_t0": 0,
-        "unit_on_t0": 0,
-        "time_up_t0": 0,
-        "time_down_t0": 1,
-        "fixed_cost": 0,
-        "startup": [
-          {
-            "lag": 1,
-            "cost": 0
-          }
-        ],
-        "piecewise_production": [
-          {
-            "mw": 0,
-            "cost": 0
-          }
-        ]
-      },
-      "G22": {
-        "must_run": 0,
-        "name": "G22",
-        "power_output_minimum": 0,
-        "power_output_maximum": 0,
-        "ramp_up_limit": 10,
-        "ramp_down_limit": 10,
-        "ramp_startup_limit": 10,
-        "ramp_shutdown_limit": 10,
-        "time_up_minimum": 1,
-        "time_down_minimum": 1,
-        "power_output_t0": 0,
-        "unit_on_t0": 0,
-        "time_up_t0": 0,
-        "time_down_t0": 1,
-        "fixed_cost": 0,
-        "startup": [
-          {
-            "lag": 1,
-            "cost": 0
-          }
-        ],
-        "piecewise_production": [
-          {
-            "mw": 0,
-            "cost": 0
-          }
-        ]
-      },
-      "G23": {
-        "must_run": 0,
-        "name": "G23",
-        "power_output_minimum": 0,
-        "power_output_maximum": 0,
-        "ramp_up_limit": 10,
-        "ramp_down_limit": 10,
-        "ramp_startup_limit": 10,
-        "ramp_shutdown_limit": 10,
-        "time_up_minimum": 1,
-        "time_down_minimum": 1,
-        "power_output_t0": 0,
-        "unit_on_t0": 0,
-        "time_up_t0": 0,
-        "time_down_t0": 1,
-        "fixed_cost": 0,
-        "startup": [
-          {
-            "lag": 1,
-            "cost": 0
-          }
-        ],
-        "piecewise_production": [
-          {
-            "mw": 0,
-            "cost": 0
-          }
-        ]
-      },
-      "G24": {
-        "must_run": 0,
-        "name": "G24",
-        "power_output_minimum": 0,
-        "power_output_maximum": 0,
-        "ramp_up_limit": 10,
-        "ramp_down_limit": 10,
-        "ramp_startup_limit": 10,
-        "ramp_shutdown_limit": 10,
-        "time_up_minimum": 1,
-        "time_down_minimum": 1,
-        "power_output_t0": 0,
-        "unit_on_t0": 0,
-        "time_up_t0": 0,
-        "time_down_t0": 1,
-        "fixed_cost": 0,
-        "startup": [
-          {
-            "lag": 1,
-            "cost": 0
-          }
-        ],
-        "piecewise_production": [
-          {
-            "mw": 0,
-            "cost": 0
           }
         ]
       },
@@ -857,11 +296,19 @@
           {
             "lag": 1,
             "cost": 0
+          },
+          {
+            "lag": 2,
+            "cost": 0
           }
         ],
         "piecewise_production": [
           {
             "mw": 0,
+            "cost": 0
+          },
+          {
+            "mw": 29,
             "cost": 0
           }
         ]
@@ -888,11 +335,11 @@
             "cost": 1292.05
           },
           {
-            "lag": 1,
+            "lag": 2,
             "cost": 1292.05
           },
           {
-            "lag": 1,
+            "lag": 3,
             "cost": 1292.05
           }
         ],
@@ -934,7 +381,7 @@
             "cost": 6252.68
           },
           {
-            "mw": 11.184000000000001,
+            "mw": 11.76,
             "cost": 7081.83
           }
         ]
@@ -961,11 +408,11 @@
             "cost": 1287.57
           },
           {
-            "lag": 1,
+            "lag": 2,
             "cost": 1287.57
           },
           {
-            "lag": 1,
+            "lag": 3,
             "cost": 1287.57
           }
         ],
@@ -1007,37 +454,8 @@
             "cost": 6836.629999999999
           },
           {
-            "mw": 11.184000000000001,
+            "mw": 11.76,
             "cost": 7815.829999999999
-          }
-        ]
-      },
-      "G28": {
-        "must_run": 0,
-        "name": "G28",
-        "power_output_minimum": 0,
-        "power_output_maximum": 0,
-        "ramp_up_limit": 2,
-        "ramp_down_limit": 2,
-        "ramp_startup_limit": 3,
-        "ramp_shutdown_limit": 2,
-        "time_up_minimum": 4,
-        "time_down_minimum": 6,
-        "power_output_t0": 0,
-        "unit_on_t0": 0,
-        "time_up_t0": 0,
-        "time_down_t0": 1,
-        "fixed_cost": 0,
-        "startup": [
-          {
-            "lag": 1,
-            "cost": 0
-          }
-        ],
-        "piecewise_production": [
-          {
-            "mw": 0,
-            "cost": 0
           }
         ]
       },
@@ -1063,11 +481,11 @@
             "cost": 1293.21
           },
           {
-            "lag": 1,
+            "lag": 2,
             "cost": 1293.21
           },
           {
-            "lag": 1,
+            "lag": 3,
             "cost": 1293.21
           }
         ],
@@ -1109,7 +527,7 @@
             "cost": 6687.11
           },
           {
-            "mw": 11.184000000000001,
+            "mw": 11.76,
             "cost": 7615.28
           }
         ]
@@ -1134,34 +552,9 @@
           {
             "lag": 1,
             "cost": 0
-          }
-        ],
-        "piecewise_production": [
+          },
           {
-            "mw": 0,
-            "cost": 0
-          }
-        ]
-      },
-      "G31": {
-        "must_run": 0,
-        "name": "G31",
-        "power_output_minimum": 0,
-        "power_output_maximum": 0,
-        "ramp_up_limit": 10,
-        "ramp_down_limit": 10,
-        "ramp_startup_limit": 10,
-        "ramp_shutdown_limit": 10,
-        "time_up_minimum": 1,
-        "time_down_minimum": 1,
-        "power_output_t0": 0,
-        "unit_on_t0": 0,
-        "time_up_t0": 0,
-        "time_down_t0": 1,
-        "fixed_cost": 0,
-        "startup": [
-          {
-            "lag": 1,
+            "lag": 2,
             "cost": 0
           }
         ],
@@ -1169,34 +562,9 @@
           {
             "mw": 0,
             "cost": 0
-          }
-        ]
-      },
-      "G32": {
-        "must_run": 0,
-        "name": "G32",
-        "power_output_minimum": 0,
-        "power_output_maximum": 0,
-        "ramp_up_limit": 10,
-        "ramp_down_limit": 10,
-        "ramp_startup_limit": 10,
-        "ramp_shutdown_limit": 10,
-        "time_up_minimum": 1,
-        "time_down_minimum": 1,
-        "power_output_t0": 0,
-        "unit_on_t0": 0,
-        "time_up_t0": 0,
-        "time_down_t0": 1,
-        "fixed_cost": 0,
-        "startup": [
+          },
           {
-            "lag": 1,
-            "cost": 0
-          }
-        ],
-        "piecewise_production": [
-          {
-            "mw": 0,
+            "mw": 32,
             "cost": 0
           }
         ]
@@ -1221,11 +589,19 @@
           {
             "lag": 1,
             "cost": 0
+          },
+          {
+            "lag": 2,
+            "cost": 0
           }
         ],
         "piecewise_production": [
           {
             "mw": 0,
+            "cost": 0
+          },
+          {
+            "mw": 15,
             "cost": 0
           }
         ]
@@ -1250,34 +626,9 @@
           {
             "lag": 1,
             "cost": 0
-          }
-        ],
-        "piecewise_production": [
+          },
           {
-            "mw": 0,
-            "cost": 0
-          }
-        ]
-      },
-      "G35": {
-        "must_run": 0,
-        "name": "G35",
-        "power_output_minimum": 0,
-        "power_output_maximum": 0,
-        "ramp_up_limit": 10,
-        "ramp_down_limit": 10,
-        "ramp_startup_limit": 10,
-        "ramp_shutdown_limit": 10,
-        "time_up_minimum": 1,
-        "time_down_minimum": 1,
-        "power_output_t0": 0,
-        "unit_on_t0": 0,
-        "time_up_t0": 0,
-        "time_down_t0": 1,
-        "fixed_cost": 0,
-        "startup": [
-          {
-            "lag": 1,
+            "lag": 2,
             "cost": 0
           }
         ],
@@ -1285,324 +636,9 @@
           {
             "mw": 0,
             "cost": 0
-          }
-        ]
-      },
-      "G36": {
-        "must_run": 0,
-        "name": "G36",
-        "power_output_minimum": 0,
-        "power_output_maximum": 0,
-        "ramp_up_limit": 10,
-        "ramp_down_limit": 10,
-        "ramp_startup_limit": 10,
-        "ramp_shutdown_limit": 10,
-        "time_up_minimum": 1,
-        "time_down_minimum": 1,
-        "power_output_t0": 0,
-        "unit_on_t0": 0,
-        "time_up_t0": 0,
-        "time_down_t0": 1,
-        "fixed_cost": 0,
-        "startup": [
+          },
           {
-            "lag": 1,
-            "cost": 0
-          }
-        ],
-        "piecewise_production": [
-          {
-            "mw": 0,
-            "cost": 0
-          }
-        ]
-      },
-      "G37": {
-        "must_run": 0,
-        "name": "G37",
-        "power_output_minimum": 0,
-        "power_output_maximum": 0,
-        "ramp_up_limit": 10,
-        "ramp_down_limit": 10,
-        "ramp_startup_limit": 10,
-        "ramp_shutdown_limit": 10,
-        "time_up_minimum": 1,
-        "time_down_minimum": 1,
-        "power_output_t0": 0,
-        "unit_on_t0": 0,
-        "time_up_t0": 0,
-        "time_down_t0": 1,
-        "fixed_cost": 0,
-        "startup": [
-          {
-            "lag": 1,
-            "cost": 0
-          }
-        ],
-        "piecewise_production": [
-          {
-            "mw": 0,
-            "cost": 0
-          }
-        ]
-      },
-      "G38": {
-        "must_run": 0,
-        "name": "G38",
-        "power_output_minimum": 0,
-        "power_output_maximum": 0,
-        "ramp_up_limit": 10,
-        "ramp_down_limit": 10,
-        "ramp_startup_limit": 10,
-        "ramp_shutdown_limit": 10,
-        "time_up_minimum": 1,
-        "time_down_minimum": 1,
-        "power_output_t0": 0,
-        "unit_on_t0": 0,
-        "time_up_t0": 0,
-        "time_down_t0": 1,
-        "fixed_cost": 0,
-        "startup": [
-          {
-            "lag": 1,
-            "cost": 0
-          }
-        ],
-        "piecewise_production": [
-          {
-            "mw": 0,
-            "cost": 0
-          }
-        ]
-      },
-      "G39": {
-        "must_run": 0,
-        "name": "G39",
-        "power_output_minimum": 0,
-        "power_output_maximum": 0,
-        "ramp_up_limit": 10,
-        "ramp_down_limit": 10,
-        "ramp_startup_limit": 10,
-        "ramp_shutdown_limit": 10,
-        "time_up_minimum": 1,
-        "time_down_minimum": 1,
-        "power_output_t0": 0,
-        "unit_on_t0": 0,
-        "time_up_t0": 0,
-        "time_down_t0": 1,
-        "fixed_cost": 0,
-        "startup": [
-          {
-            "lag": 1,
-            "cost": 0
-          }
-        ],
-        "piecewise_production": [
-          {
-            "mw": 0,
-            "cost": 0
-          }
-        ]
-      },
-      "G40": {
-        "must_run": 0,
-        "name": "G40",
-        "power_output_minimum": 0,
-        "power_output_maximum": 0,
-        "ramp_up_limit": 10,
-        "ramp_down_limit": 10,
-        "ramp_startup_limit": 10,
-        "ramp_shutdown_limit": 10,
-        "time_up_minimum": 1,
-        "time_down_minimum": 1,
-        "power_output_t0": 0,
-        "unit_on_t0": 0,
-        "time_up_t0": 0,
-        "time_down_t0": 1,
-        "fixed_cost": 0,
-        "startup": [
-          {
-            "lag": 1,
-            "cost": 0
-          }
-        ],
-        "piecewise_production": [
-          {
-            "mw": 0,
-            "cost": 0
-          }
-        ]
-      },
-      "G41": {
-        "must_run": 0,
-        "name": "G41",
-        "power_output_minimum": 0,
-        "power_output_maximum": 0,
-        "ramp_up_limit": 10,
-        "ramp_down_limit": 10,
-        "ramp_startup_limit": 10,
-        "ramp_shutdown_limit": 10,
-        "time_up_minimum": 1,
-        "time_down_minimum": 1,
-        "power_output_t0": 0,
-        "unit_on_t0": 0,
-        "time_up_t0": 0,
-        "time_down_t0": 1,
-        "fixed_cost": 0,
-        "startup": [
-          {
-            "lag": 1,
-            "cost": 0
-          }
-        ],
-        "piecewise_production": [
-          {
-            "mw": 0,
-            "cost": 0
-          }
-        ]
-      },
-      "G42": {
-        "must_run": 0,
-        "name": "G42",
-        "power_output_minimum": 0,
-        "power_output_maximum": 0,
-        "ramp_up_limit": 10,
-        "ramp_down_limit": 10,
-        "ramp_startup_limit": 10,
-        "ramp_shutdown_limit": 10,
-        "time_up_minimum": 1,
-        "time_down_minimum": 1,
-        "power_output_t0": 0,
-        "unit_on_t0": 0,
-        "time_up_t0": 0,
-        "time_down_t0": 1,
-        "fixed_cost": 0,
-        "startup": [
-          {
-            "lag": 1,
-            "cost": 0
-          }
-        ],
-        "piecewise_production": [
-          {
-            "mw": 0,
-            "cost": 0
-          }
-        ]
-      },
-      "G43": {
-        "must_run": 0,
-        "name": "G43",
-        "power_output_minimum": 0,
-        "power_output_maximum": 0,
-        "ramp_up_limit": 10,
-        "ramp_down_limit": 10,
-        "ramp_startup_limit": 10,
-        "ramp_shutdown_limit": 10,
-        "time_up_minimum": 1,
-        "time_down_minimum": 1,
-        "power_output_t0": 0,
-        "unit_on_t0": 0,
-        "time_up_t0": 0,
-        "time_down_t0": 1,
-        "fixed_cost": 0,
-        "startup": [
-          {
-            "lag": 1,
-            "cost": 0
-          }
-        ],
-        "piecewise_production": [
-          {
-            "mw": 0,
-            "cost": 0
-          }
-        ]
-      },
-      "G44": {
-        "must_run": 0,
-        "name": "G44",
-        "power_output_minimum": 0,
-        "power_output_maximum": 0,
-        "ramp_up_limit": 10,
-        "ramp_down_limit": 10,
-        "ramp_startup_limit": 10,
-        "ramp_shutdown_limit": 10,
-        "time_up_minimum": 1,
-        "time_down_minimum": 1,
-        "power_output_t0": 0,
-        "unit_on_t0": 0,
-        "time_up_t0": 0,
-        "time_down_t0": 1,
-        "fixed_cost": 0,
-        "startup": [
-          {
-            "lag": 1,
-            "cost": 0
-          }
-        ],
-        "piecewise_production": [
-          {
-            "mw": 0,
-            "cost": 0
-          }
-        ]
-      },
-      "G45": {
-        "must_run": 0,
-        "name": "G45",
-        "power_output_minimum": 0,
-        "power_output_maximum": 0,
-        "ramp_up_limit": 10,
-        "ramp_down_limit": 10,
-        "ramp_startup_limit": 10,
-        "ramp_shutdown_limit": 10,
-        "time_up_minimum": 1,
-        "time_down_minimum": 1,
-        "power_output_t0": 0,
-        "unit_on_t0": 0,
-        "time_up_t0": 0,
-        "time_down_t0": 1,
-        "fixed_cost": 0,
-        "startup": [
-          {
-            "lag": 1,
-            "cost": 0
-          }
-        ],
-        "piecewise_production": [
-          {
-            "mw": 0,
-            "cost": 0
-          }
-        ]
-      },
-      "G46": {
-        "must_run": 0,
-        "name": "G46",
-        "power_output_minimum": 0,
-        "power_output_maximum": 0,
-        "ramp_up_limit": 3,
-        "ramp_down_limit": 3,
-        "ramp_startup_limit": 4,
-        "ramp_shutdown_limit": 3,
-        "time_up_minimum": 20,
-        "time_down_minimum": 16,
-        "power_output_t0": 0,
-        "unit_on_t0": 0,
-        "time_up_t0": 0,
-        "time_down_t0": 1,
-        "fixed_cost": 0,
-        "startup": [
-          {
-            "lag": 1,
-            "cost": 0
-          }
-        ],
-        "piecewise_production": [
-          {
-            "mw": 0,
+            "mw": 5,
             "cost": 0
           }
         ]
@@ -1675,124 +711,8 @@
             "cost": 13050.229999999998
           },
           {
-            "mw": 142.60000000000005,
+            "mw": 150,
             "cost": 14801.099999999999
-          }
-        ]
-      },
-      "G48": {
-        "must_run": 0,
-        "name": "G48",
-        "power_output_minimum": 0,
-        "power_output_maximum": 0,
-        "ramp_up_limit": 10,
-        "ramp_down_limit": 10,
-        "ramp_startup_limit": 10,
-        "ramp_shutdown_limit": 10,
-        "time_up_minimum": 1,
-        "time_down_minimum": 1,
-        "power_output_t0": 0,
-        "unit_on_t0": 0,
-        "time_up_t0": 0,
-        "time_down_t0": 1,
-        "fixed_cost": 0,
-        "startup": [
-          {
-            "lag": 1,
-            "cost": 0
-          }
-        ],
-        "piecewise_production": [
-          {
-            "mw": 0,
-            "cost": 0
-          }
-        ]
-      },
-      "G49": {
-        "must_run": 0,
-        "name": "G49",
-        "power_output_minimum": 0,
-        "power_output_maximum": 0,
-        "ramp_up_limit": 10,
-        "ramp_down_limit": 10,
-        "ramp_startup_limit": 10,
-        "ramp_shutdown_limit": 10,
-        "time_up_minimum": 1,
-        "time_down_minimum": 1,
-        "power_output_t0": 0,
-        "unit_on_t0": 0,
-        "time_up_t0": 0,
-        "time_down_t0": 1,
-        "fixed_cost": 0,
-        "startup": [
-          {
-            "lag": 1,
-            "cost": 0
-          }
-        ],
-        "piecewise_production": [
-          {
-            "mw": 0,
-            "cost": 0
-          }
-        ]
-      },
-      "G50": {
-        "must_run": 0,
-        "name": "G50",
-        "power_output_minimum": 0,
-        "power_output_maximum": 0,
-        "ramp_up_limit": 10,
-        "ramp_down_limit": 10,
-        "ramp_startup_limit": 10,
-        "ramp_shutdown_limit": 10,
-        "time_up_minimum": 1,
-        "time_down_minimum": 1,
-        "power_output_t0": 0,
-        "unit_on_t0": 0,
-        "time_up_t0": 0,
-        "time_down_t0": 1,
-        "fixed_cost": 0,
-        "startup": [
-          {
-            "lag": 1,
-            "cost": 0
-          }
-        ],
-        "piecewise_production": [
-          {
-            "mw": 0,
-            "cost": 0
-          }
-        ]
-      },
-      "G51": {
-        "must_run": 0,
-        "name": "G51",
-        "power_output_minimum": 0,
-        "power_output_maximum": 0,
-        "ramp_up_limit": 10,
-        "ramp_down_limit": 10,
-        "ramp_startup_limit": 10,
-        "ramp_shutdown_limit": 10,
-        "time_up_minimum": 1,
-        "time_down_minimum": 1,
-        "power_output_t0": 0,
-        "unit_on_t0": 0,
-        "time_up_t0": 0,
-        "time_down_t0": 1,
-        "fixed_cost": 0,
-        "startup": [
-          {
-            "lag": 1,
-            "cost": 0
-          }
-        ],
-        "piecewise_production": [
-          {
-            "mw": 0,
-            "cost": 0
           }
         ]
       },
@@ -1816,6 +736,10 @@
           {
             "lag": 1,
             "cost": 0
+          },
+          {
+            "lag": 2,
+            "cost": 0
           }
         ],
         "piecewise_production": [
@@ -1828,7 +752,7 @@
             "cost": 1510.35
           },
           {
-            "mw": 59,
+            "mw": 89,
             "cost": 4679.91
           }
         ]
@@ -1853,6 +777,10 @@
           {
             "lag": 1,
             "cost": 0
+          },
+          {
+            "lag": 2,
+            "cost": 0
           }
         ],
         "piecewise_production": [
@@ -1865,37 +793,8 @@
             "cost": 1531.77
           },
           {
-            "mw": 90,
+            "mw": 120,
             "cost": 5225.23
-          }
-        ]
-      },
-      "G54": {
-        "must_run": 0,
-        "name": "G54",
-        "power_output_minimum": 0,
-        "power_output_maximum": 0,
-        "ramp_up_limit": 10,
-        "ramp_down_limit": 10,
-        "ramp_startup_limit": 10,
-        "ramp_shutdown_limit": 10,
-        "time_up_minimum": 1,
-        "time_down_minimum": 1,
-        "power_output_t0": 0,
-        "unit_on_t0": 0,
-        "time_up_t0": 0,
-        "time_down_t0": 1,
-        "fixed_cost": 0,
-        "startup": [
-          {
-            "lag": 1,
-            "cost": 0
-          }
-        ],
-        "piecewise_production": [
-          {
-            "mw": 0,
-            "cost": 0
           }
         ]
       },
@@ -1919,6 +818,10 @@
           {
             "lag": 1,
             "cost": 0
+          },
+          {
+            "lag": 2,
+            "cost": 0
           }
         ],
         "piecewise_production": [
@@ -1931,37 +834,8 @@
             "cost": 899
           },
           {
-            "mw": 10,
+            "mw": 20,
             "cost": 1898
-          }
-        ]
-      },
-      "G56": {
-        "must_run": 0,
-        "name": "G56",
-        "power_output_minimum": 0,
-        "power_output_maximum": 0,
-        "ramp_up_limit": 10,
-        "ramp_down_limit": 10,
-        "ramp_startup_limit": 10,
-        "ramp_shutdown_limit": 10,
-        "time_up_minimum": 1,
-        "time_down_minimum": 1,
-        "power_output_t0": 0,
-        "unit_on_t0": 0,
-        "time_up_t0": 0,
-        "time_down_t0": 1,
-        "fixed_cost": 0,
-        "startup": [
-          {
-            "lag": 1,
-            "cost": 0
-          }
-        ],
-        "piecewise_production": [
-          {
-            "mw": 0,
-            "cost": 0
           }
         ]
       },
@@ -2033,7 +907,7 @@
             "cost": 4181.05
           },
           {
-            "mw": 139.5,
+            "mw": 148.8,
             "cost": 4745.88
           }
         ]
@@ -2106,7 +980,7 @@
             "cost": 4246.88
           },
           {
-            "mw": 139.5,
+            "mw": 148.8,
             "cost": 4814.1
           }
         ]
@@ -2131,69 +1005,19 @@
           {
             "lag": 1,
             "cost": 5818.43
+          },
+          {
+            "lag": 2,
+            "cost": 5818.43
           }
         ],
         "piecewise_production": [
           {
             "mw": 55,
             "cost": 0
-          }
-        ]
-      },
-      "G60": {
-        "must_run": 0,
-        "name": "G60",
-        "power_output_minimum": 0,
-        "power_output_maximum": 0,
-        "ramp_up_limit": 10,
-        "ramp_down_limit": 10,
-        "ramp_startup_limit": 10,
-        "ramp_shutdown_limit": 10,
-        "time_up_minimum": 1,
-        "time_down_minimum": 1,
-        "power_output_t0": 0,
-        "unit_on_t0": 0,
-        "time_up_t0": 0,
-        "time_down_t0": 1,
-        "fixed_cost": 0,
-        "startup": [
+          },
           {
-            "lag": 1,
-            "cost": 0
-          }
-        ],
-        "piecewise_production": [
-          {
-            "mw": 0,
-            "cost": 0
-          }
-        ]
-      },
-      "G61": {
-        "must_run": 0,
-        "name": "G61",
-        "power_output_minimum": 0,
-        "power_output_maximum": 0,
-        "ramp_up_limit": 10,
-        "ramp_down_limit": 10,
-        "ramp_startup_limit": 10,
-        "ramp_shutdown_limit": 10,
-        "time_up_minimum": 1,
-        "time_down_minimum": 1,
-        "power_output_t0": 0,
-        "unit_on_t0": 0,
-        "time_up_t0": 0,
-        "time_down_t0": 1,
-        "fixed_cost": 0,
-        "startup": [
-          {
-            "lag": 1,
-            "cost": 0
-          }
-        ],
-        "piecewise_production": [
-          {
-            "mw": 0,
+            "mw": 110.48,
             "cost": 0
           }
         ]
@@ -2266,7 +1090,7 @@
             "cost": 5725.200000000001
           },
           {
-            "mw": 185.89999999999995,
+            "mw": 188,
             "cost": 6453.420000000001
           }
         ]
@@ -2339,7 +1163,7 @@
             "cost": 3628.9
           },
           {
-            "mw": 457.7999999999999,
+            "mw": 496,
             "cost": 4099.62
           }
         ]
@@ -2412,7 +1236,7 @@
             "cost": 3198.02
           },
           {
-            "mw": 461.1500000000001,
+            "mw": 502,
             "cost": 3601.22
           }
         ]
@@ -2485,7 +1309,7 @@
             "cost": 11904.85
           },
           {
-            "mw": 225.39999999999995,
+            "mw": 232,
             "cost": 13396.62
           }
         ]
@@ -2558,7 +1382,7 @@
             "cost": 11768.029999999999
           },
           {
-            "mw": 225.39999999999995,
+            "mw": 232,
             "cost": 13267.919999999998
           }
         ]
@@ -2631,7 +1455,7 @@
             "cost": 3823.36
           },
           {
-            "mw": 481.97999999999985,
+            "mw": 500,
             "cost": 4305.51
           }
         ]
@@ -2704,7 +1528,7 @@
             "cost": 2528.92
           },
           {
-            "mw": 234.395,
+            "mw": 246.55,
             "cost": 2884.95
           }
         ]
@@ -2777,7 +1601,7 @@
             "cost": 4028.41
           },
           {
-            "mw": 270.5,
+            "mw": 285,
             "cost": 4595.8099999999995
           }
         ]
@@ -2850,7 +1674,7 @@
             "cost": 3677.2700000000004
           },
           {
-            "mw": 473.0999999999998,
+            "mw": 498,
             "cost": 4194.4800000000005
           }
         ]
@@ -2923,7 +1747,7 @@
             "cost": 2286.73
           },
           {
-            "mw": 418.2000000000001,
+            "mw": 436,
             "cost": 2586.19
           }
         ]
@@ -2996,7 +1820,7 @@
             "cost": 3669.15
           },
           {
-            "mw": 475.2000000000001,
+            "mw": 502,
             "cost": 4137.33
           }
         ]
@@ -3069,7 +1893,7 @@
             "cost": 3497.88
           },
           {
-            "mw": 416.0999999999999,
+            "mw": 449,
             "cost": 3948.8500000000004
           }
         ]
@@ -3142,7 +1966,7 @@
             "cost": 3690.23
           },
           {
-            "mw": 458.7750000000001,
+            "mw": 499,
             "cost": 4152.89
           }
         ]
@@ -3215,7 +2039,7 @@
             "cost": 2975.82
           },
           {
-            "mw": 471.4000000000002,
+            "mw": 509,
             "cost": 3350.8
           }
         ]
@@ -3288,7 +2112,7 @@
             "cost": 3055.4400000000005
           },
           {
-            "mw": 470.25,
+            "mw": 506,
             "cost": 3439.0800000000004
           }
         ]
@@ -3315,11 +2139,11 @@
             "cost": 1293.21
           },
           {
-            "lag": 1,
+            "lag": 2,
             "cost": 1293.21
           },
           {
-            "lag": 1,
+            "lag": 3,
             "cost": 1293.21
           }
         ],
@@ -3361,7 +2185,7 @@
             "cost": 6882.91
           },
           {
-            "mw": 11.399999999999997,
+            "mw": 12,
             "cost": 7873.09
           }
         ]
@@ -3388,11 +2212,11 @@
             "cost": 27018.35
           },
           {
-            "lag": 1,
+            "lag": 2,
             "cost": 27018.35
           },
           {
-            "lag": 1,
+            "lag": 3,
             "cost": 27018.35
           }
         ],
@@ -3434,7 +2258,7 @@
             "cost": 30477.019999999997
           },
           {
-            "mw": 10.22,
+            "mw": 11,
             "cost": 34287
           }
         ]
@@ -3461,11 +2285,11 @@
             "cost": 31759.48
           },
           {
-            "lag": 1,
+            "lag": 2,
             "cost": 31759.48
           },
           {
-            "lag": 1,
+            "lag": 3,
             "cost": 31759.48
           }
         ],
@@ -3507,7 +2331,7 @@
             "cost": 37929.92
           },
           {
-            "mw": 11.100000000000001,
+            "mw": 12,
             "cost": 45012.42
           }
         ]
@@ -3534,11 +2358,11 @@
             "cost": 19038.59
           },
           {
-            "lag": 1,
+            "lag": 2,
             "cost": 19038.59
           },
           {
-            "lag": 1,
+            "lag": 3,
             "cost": 19038.59
           }
         ],
@@ -3580,7 +2404,7 @@
             "cost": 27361.789999999997
           },
           {
-            "mw": 20.75,
+            "mw": 22.5,
             "cost": 30803.619999999995
           }
         ]
@@ -3607,11 +2431,11 @@
             "cost": 30201.34
           },
           {
-            "lag": 1,
+            "lag": 2,
             "cost": 30201.34
           },
           {
-            "lag": 1,
+            "lag": 3,
             "cost": 30201.34
           }
         ],
@@ -3653,95 +2477,8 @@
             "cost": 29048.359999999997
           },
           {
-            "mw": 44.15000000000001,
+            "mw": 45.5,
             "cost": 32737.589999999997
-          }
-        ]
-      },
-      "G82": {
-        "must_run": 0,
-        "name": "G82",
-        "power_output_minimum": 0,
-        "power_output_maximum": 0,
-        "ramp_up_limit": 2,
-        "ramp_down_limit": 2,
-        "ramp_startup_limit": 3,
-        "ramp_shutdown_limit": 2,
-        "time_up_minimum": 1,
-        "time_down_minimum": 1,
-        "power_output_t0": 8,
-        "unit_on_t0": 1,
-        "time_up_t0": 1,
-        "time_down_t0": 0,
-        "fixed_cost": 0,
-        "startup": [
-          {
-            "lag": 1,
-            "cost": 0
-          }
-        ],
-        "piecewise_production": [
-          {
-            "mw": 0,
-            "cost": 0
-          }
-        ]
-      },
-      "G83": {
-        "must_run": 0,
-        "name": "G83",
-        "power_output_minimum": 0,
-        "power_output_maximum": 0,
-        "ramp_up_limit": 2,
-        "ramp_down_limit": 2,
-        "ramp_startup_limit": 3,
-        "ramp_shutdown_limit": 2,
-        "time_up_minimum": 1,
-        "time_down_minimum": 1,
-        "power_output_t0": 0,
-        "unit_on_t0": 0,
-        "time_up_t0": 0,
-        "time_down_t0": 1,
-        "fixed_cost": 0,
-        "startup": [
-          {
-            "lag": 1,
-            "cost": 0
-          }
-        ],
-        "piecewise_production": [
-          {
-            "mw": 0,
-            "cost": 0
-          }
-        ]
-      },
-      "G84": {
-        "must_run": 0,
-        "name": "G84",
-        "power_output_minimum": 0,
-        "power_output_maximum": 0,
-        "ramp_up_limit": 3,
-        "ramp_down_limit": 3,
-        "ramp_startup_limit": 3,
-        "ramp_shutdown_limit": 3,
-        "time_up_minimum": 12,
-        "time_down_minimum": 2,
-        "power_output_t0": 0,
-        "unit_on_t0": 0,
-        "time_up_t0": 0,
-        "time_down_t0": 1,
-        "fixed_cost": 0,
-        "startup": [
-          {
-            "lag": 1,
-            "cost": 0
-          }
-        ],
-        "piecewise_production": [
-          {
-            "mw": 0,
-            "cost": 0
           }
         ]
       },
@@ -3813,45 +2550,8 @@
             "cost": 17558.65
           },
           {
-            "mw": 19.59,
+            "mw": 20,
             "cost": 19804.7
-          }
-        ]
-      },
-      "G86": {
-        "must_run": 0,
-        "name": "G86",
-        "power_output_minimum": 100,
-        "power_output_maximum": 100,
-        "ramp_up_limit": 7,
-        "ramp_down_limit": 7,
-        "ramp_startup_limit": 5,
-        "ramp_shutdown_limit": 7,
-        "time_up_minimum": 12,
-        "time_down_minimum": 6,
-        "power_output_t0": 0,
-        "unit_on_t0": 0,
-        "time_up_t0": 0,
-        "time_down_t0": 1,
-        "fixed_cost": 540489.61,
-        "startup": [
-          {
-            "lag": 1,
-            "cost": 1026095.33
-          },
-          {
-            "lag": 10,
-            "cost": 2052190.65
-          },
-          {
-            "lag": 96,
-            "cost": 5007346.48
-          }
-        ],
-        "piecewise_production": [
-          {
-            "mw": 100,
-            "cost": 0
           }
         ]
       },
@@ -3877,11 +2577,11 @@
             "cost": 30110.9
           },
           {
-            "lag": 1,
+            "lag": 2,
             "cost": 30110.9
           },
           {
-            "lag": 1,
+            "lag": 3,
             "cost": 30110.9
           }
         ],
@@ -3923,7 +2623,7 @@
             "cost": 28959.73
           },
           {
-            "mw": 43.79000000000002,
+            "mw": 45.1,
             "cost": 32718.32
           }
         ]
@@ -3950,11 +2650,11 @@
             "cost": 30571.46
           },
           {
-            "lag": 1,
+            "lag": 2,
             "cost": 30571.46
           },
           {
-            "lag": 1,
+            "lag": 3,
             "cost": 30571.46
           }
         ],
@@ -3996,37 +2696,8 @@
             "cost": 29719
           },
           {
-            "mw": 44.15000000000001,
+            "mw": 45.5,
             "cost": 33600.88
-          }
-        ]
-      },
-      "G89": {
-        "must_run": 0,
-        "name": "G89",
-        "power_output_minimum": 0,
-        "power_output_maximum": 0,
-        "ramp_up_limit": 3,
-        "ramp_down_limit": 3,
-        "ramp_startup_limit": 3,
-        "ramp_shutdown_limit": 3,
-        "time_up_minimum": 8,
-        "time_down_minimum": 8,
-        "power_output_t0": 0,
-        "unit_on_t0": 0,
-        "time_up_t0": 0,
-        "time_down_t0": 1,
-        "fixed_cost": 0,
-        "startup": [
-          {
-            "lag": 1,
-            "cost": 0
-          }
-        ],
-        "piecewise_production": [
-          {
-            "mw": 0,
-            "cost": 0
           }
         ]
       },
@@ -4098,7 +2769,7 @@
             "cost": 3893.61
           },
           {
-            "mw": 463.125,
+            "mw": 500,
             "cost": 4402.78
           }
         ]
@@ -4171,7 +2842,7 @@
             "cost": 34851.79
           },
           {
-            "mw": 12.399999999999997,
+            "mw": 13,
             "cost": 39212.43
           }
         ]
@@ -4244,37 +2915,8 @@
             "cost": 32176.85
           },
           {
-            "mw": 22.919999999999995,
+            "mw": 23.8,
             "cost": 36952.58
-          }
-        ]
-      },
-      "G93": {
-        "must_run": 0,
-        "name": "G93",
-        "power_output_minimum": 0,
-        "power_output_maximum": 0,
-        "ramp_up_limit": 1.5,
-        "ramp_down_limit": 1.5,
-        "ramp_startup_limit": 3,
-        "ramp_shutdown_limit": 1.5,
-        "time_up_minimum": 1,
-        "time_down_minimum": 1,
-        "power_output_t0": 0,
-        "unit_on_t0": 0,
-        "time_up_t0": 0,
-        "time_down_t0": 1,
-        "fixed_cost": 0,
-        "startup": [
-          {
-            "lag": 1,
-            "cost": 0
-          }
-        ],
-        "piecewise_production": [
-          {
-            "mw": 0,
-            "cost": 0
           }
         ]
       },
@@ -4297,6 +2939,10 @@
         "startup": [
           {
             "lag": 1,
+            "cost": 0
+          },
+          {
+            "lag": 2,
             "cost": 0
           }
         ],
@@ -4338,37 +2984,8 @@
             "cost": 57446.05
           },
           {
-            "mw": 9.25,
+            "mw": 10,
             "cost": 64632.69
-          }
-        ]
-      },
-      "G95": {
-        "must_run": 0,
-        "name": "G95",
-        "power_output_minimum": 0,
-        "power_output_maximum": 0,
-        "ramp_up_limit": 3,
-        "ramp_down_limit": 3,
-        "ramp_startup_limit": 3,
-        "ramp_shutdown_limit": 3,
-        "time_up_minimum": 8,
-        "time_down_minimum": 8,
-        "power_output_t0": 0,
-        "unit_on_t0": 0,
-        "time_up_t0": 0,
-        "time_down_t0": 1,
-        "fixed_cost": 0,
-        "startup": [
-          {
-            "lag": 1,
-            "cost": 0
-          }
-        ],
-        "piecewise_production": [
-          {
-            "mw": 0,
-            "cost": 0
           }
         ]
       },
@@ -4440,7 +3057,7 @@
             "cost": 14150.470000000001
           },
           {
-            "mw": 19.59,
+            "mw": 20,
             "cost": 16018.480000000001
           }
         ]
@@ -4513,7 +3130,7 @@
             "cost": 26579.4
           },
           {
-            "mw": 183.08300000000003,
+            "mw": 188,
             "cost": 29904.160000000003
           }
         ]
@@ -4540,11 +3157,11 @@
             "cost": 2965.86
           },
           {
-            "lag": 1,
+            "lag": 2,
             "cost": 2965.86
           },
           {
-            "lag": 1,
+            "lag": 3,
             "cost": 2965.86
           }
         ],
@@ -4586,95 +3203,8 @@
             "cost": 28362.239999999998
           },
           {
-            "mw": 17.604000000000006,
+            "mw": 18.5,
             "cost": 32282.929999999997
-          }
-        ]
-      },
-      "G99": {
-        "must_run": 0,
-        "name": "G99",
-        "power_output_minimum": 0,
-        "power_output_maximum": 0,
-        "ramp_up_limit": 10,
-        "ramp_down_limit": 10,
-        "ramp_startup_limit": 10,
-        "ramp_shutdown_limit": 10,
-        "time_up_minimum": 1,
-        "time_down_minimum": 1,
-        "power_output_t0": 0,
-        "unit_on_t0": 0,
-        "time_up_t0": 0,
-        "time_down_t0": 1,
-        "fixed_cost": 0,
-        "startup": [
-          {
-            "lag": 1,
-            "cost": 0
-          }
-        ],
-        "piecewise_production": [
-          {
-            "mw": 0,
-            "cost": 0
-          }
-        ]
-      },
-      "G100": {
-        "must_run": 0,
-        "name": "G100",
-        "power_output_minimum": 0,
-        "power_output_maximum": 0,
-        "ramp_up_limit": 10,
-        "ramp_down_limit": 10,
-        "ramp_startup_limit": 10,
-        "ramp_shutdown_limit": 10,
-        "time_up_minimum": 1,
-        "time_down_minimum": 1,
-        "power_output_t0": 0,
-        "unit_on_t0": 0,
-        "time_up_t0": 0,
-        "time_down_t0": 1,
-        "fixed_cost": 0,
-        "startup": [
-          {
-            "lag": 1,
-            "cost": 0
-          }
-        ],
-        "piecewise_production": [
-          {
-            "mw": 0,
-            "cost": 0
-          }
-        ]
-      },
-      "G101": {
-        "must_run": 0,
-        "name": "G101",
-        "power_output_minimum": 0,
-        "power_output_maximum": 0,
-        "ramp_up_limit": 10,
-        "ramp_down_limit": 10,
-        "ramp_startup_limit": 10,
-        "ramp_shutdown_limit": 10,
-        "time_up_minimum": 1,
-        "time_down_minimum": 1,
-        "power_output_t0": 0,
-        "unit_on_t0": 0,
-        "time_up_t0": 0,
-        "time_down_t0": 1,
-        "fixed_cost": 0,
-        "startup": [
-          {
-            "lag": 1,
-            "cost": 0
-          }
-        ],
-        "piecewise_production": [
-          {
-            "mw": 0,
-            "cost": 0
           }
         ]
       },
@@ -4698,6 +3228,10 @@
           {
             "lag": 1,
             "cost": 0
+          },
+          {
+            "lag": 2,
+            "cost": 0
           }
         ],
         "piecewise_production": [
@@ -4706,7 +3240,7 @@
             "cost": 0
           },
           {
-            "mw": 5,
+            "mw": 20,
             "cost": 755.39
           }
         ]
@@ -4731,6 +3265,10 @@
           {
             "lag": 1,
             "cost": 0
+          },
+          {
+            "lag": 2,
+            "cost": 0
           }
         ],
         "piecewise_production": [
@@ -4739,66 +3277,8 @@
             "cost": 0
           },
           {
-            "mw": 5,
+            "mw": 20,
             "cost": 743.44
-          }
-        ]
-      },
-      "G104": {
-        "must_run": 0,
-        "name": "G104",
-        "power_output_minimum": 0,
-        "power_output_maximum": 0,
-        "ramp_up_limit": 10,
-        "ramp_down_limit": 10,
-        "ramp_startup_limit": 10,
-        "ramp_shutdown_limit": 10,
-        "time_up_minimum": 1,
-        "time_down_minimum": 1,
-        "power_output_t0": 0,
-        "unit_on_t0": 0,
-        "time_up_t0": 0,
-        "time_down_t0": 1,
-        "fixed_cost": 0,
-        "startup": [
-          {
-            "lag": 1,
-            "cost": 0
-          }
-        ],
-        "piecewise_production": [
-          {
-            "mw": 0,
-            "cost": 0
-          }
-        ]
-      },
-      "G105": {
-        "must_run": 0,
-        "name": "G105",
-        "power_output_minimum": 0,
-        "power_output_maximum": 0,
-        "ramp_up_limit": 10,
-        "ramp_down_limit": 10,
-        "ramp_startup_limit": 10,
-        "ramp_shutdown_limit": 10,
-        "time_up_minimum": 1,
-        "time_down_minimum": 1,
-        "power_output_t0": 0,
-        "unit_on_t0": 0,
-        "time_up_t0": 0,
-        "time_down_t0": 1,
-        "fixed_cost": 0,
-        "startup": [
-          {
-            "lag": 1,
-            "cost": 0
-          }
-        ],
-        "piecewise_production": [
-          {
-            "mw": 0,
-            "cost": 0
           }
         ]
       },
@@ -4836,385 +3316,9 @@
           {
             "mw": 7,
             "cost": 0
-          }
-        ]
-      },
-      "G107": {
-        "must_run": 0,
-        "name": "G107",
-        "power_output_minimum": 0,
-        "power_output_maximum": 0,
-        "ramp_up_limit": 10,
-        "ramp_down_limit": 10,
-        "ramp_startup_limit": 10,
-        "ramp_shutdown_limit": 10,
-        "time_up_minimum": 1,
-        "time_down_minimum": 1,
-        "power_output_t0": 0,
-        "unit_on_t0": 0,
-        "time_up_t0": 0,
-        "time_down_t0": 1,
-        "fixed_cost": 0,
-        "startup": [
-          {
-            "lag": 1,
-            "cost": 0
-          }
-        ],
-        "piecewise_production": [
-          {
-            "mw": 0,
-            "cost": 0
-          }
-        ]
-      },
-      "G108": {
-        "must_run": 0,
-        "name": "G108",
-        "power_output_minimum": 0,
-        "power_output_maximum": 0,
-        "ramp_up_limit": 5,
-        "ramp_down_limit": 5,
-        "ramp_startup_limit": 5,
-        "ramp_shutdown_limit": 5,
-        "time_up_minimum": 4,
-        "time_down_minimum": 1,
-        "power_output_t0": 0,
-        "unit_on_t0": 0,
-        "time_up_t0": 0,
-        "time_down_t0": 1,
-        "fixed_cost": 0,
-        "startup": [
-          {
-            "lag": 1,
-            "cost": 0
-          }
-        ],
-        "piecewise_production": [
-          {
-            "mw": 0,
-            "cost": 0
-          }
-        ]
-      },
-      "G109": {
-        "must_run": 0,
-        "name": "G109",
-        "power_output_minimum": 24,
-        "power_output_maximum": 24,
-        "ramp_up_limit": 5,
-        "ramp_down_limit": 5,
-        "ramp_startup_limit": 5,
-        "ramp_shutdown_limit": 5,
-        "time_up_minimum": 4,
-        "time_down_minimum": 1,
-        "power_output_t0": 27,
-        "unit_on_t0": 1,
-        "time_up_t0": 1,
-        "time_down_t0": 0,
-        "fixed_cost": 22723.65,
-        "startup": [
-          {
-            "lag": 1,
-            "cost": 6919.81
           },
           {
-            "lag": 1,
-            "cost": 6919.81
-          },
-          {
-            "lag": 1,
-            "cost": 11238.58
-          }
-        ],
-        "piecewise_production": [
-          {
-            "mw": 24,
-            "cost": 0
-          }
-        ]
-      },
-      "G110": {
-        "must_run": 0,
-        "name": "G110",
-        "power_output_minimum": 25.5,
-        "power_output_maximum": 25.5,
-        "ramp_up_limit": 5,
-        "ramp_down_limit": 5,
-        "ramp_startup_limit": 5,
-        "ramp_shutdown_limit": 5,
-        "time_up_minimum": 4,
-        "time_down_minimum": 1,
-        "power_output_t0": 27,
-        "unit_on_t0": 1,
-        "time_up_t0": 1,
-        "time_down_t0": 0,
-        "fixed_cost": 24026.56,
-        "startup": [
-          {
-            "lag": 1,
-            "cost": 6919.81
-          },
-          {
-            "lag": 1,
-            "cost": 6919.81
-          },
-          {
-            "lag": 1,
-            "cost": 11238.58
-          }
-        ],
-        "piecewise_production": [
-          {
-            "mw": 25.5,
-            "cost": 0
-          }
-        ]
-      },
-      "G111": {
-        "must_run": 0,
-        "name": "G111",
-        "power_output_minimum": 0,
-        "power_output_maximum": 0,
-        "ramp_up_limit": 5,
-        "ramp_down_limit": 5,
-        "ramp_startup_limit": 5,
-        "ramp_shutdown_limit": 5,
-        "time_up_minimum": 4,
-        "time_down_minimum": 1,
-        "power_output_t0": 0,
-        "unit_on_t0": 0,
-        "time_up_t0": 0,
-        "time_down_t0": 1,
-        "fixed_cost": 0,
-        "startup": [
-          {
-            "lag": 1,
-            "cost": 0
-          }
-        ],
-        "piecewise_production": [
-          {
-            "mw": 0,
-            "cost": 0
-          }
-        ]
-      },
-      "G112": {
-        "must_run": 0,
-        "name": "G112",
-        "power_output_minimum": 0,
-        "power_output_maximum": 0,
-        "ramp_up_limit": 5,
-        "ramp_down_limit": 5,
-        "ramp_startup_limit": 5,
-        "ramp_shutdown_limit": 5,
-        "time_up_minimum": 4,
-        "time_down_minimum": 1,
-        "power_output_t0": 0,
-        "unit_on_t0": 0,
-        "time_up_t0": 0,
-        "time_down_t0": 1,
-        "fixed_cost": 0,
-        "startup": [
-          {
-            "lag": 1,
-            "cost": 0
-          }
-        ],
-        "piecewise_production": [
-          {
-            "mw": 0,
-            "cost": 0
-          }
-        ]
-      },
-      "G113": {
-        "must_run": 0,
-        "name": "G113",
-        "power_output_minimum": 0,
-        "power_output_maximum": 0,
-        "ramp_up_limit": 5,
-        "ramp_down_limit": 5,
-        "ramp_startup_limit": 5,
-        "ramp_shutdown_limit": 5,
-        "time_up_minimum": 4,
-        "time_down_minimum": 1,
-        "power_output_t0": 0,
-        "unit_on_t0": 0,
-        "time_up_t0": 0,
-        "time_down_t0": 1,
-        "fixed_cost": 0,
-        "startup": [
-          {
-            "lag": 1,
-            "cost": 0
-          }
-        ],
-        "piecewise_production": [
-          {
-            "mw": 0,
-            "cost": 0
-          }
-        ]
-      },
-      "G114": {
-        "must_run": 0,
-        "name": "G114",
-        "power_output_minimum": 0,
-        "power_output_maximum": 0,
-        "ramp_up_limit": 4,
-        "ramp_down_limit": 4,
-        "ramp_startup_limit": 3,
-        "ramp_shutdown_limit": 4,
-        "time_up_minimum": 4,
-        "time_down_minimum": 1,
-        "power_output_t0": 0,
-        "unit_on_t0": 0,
-        "time_up_t0": 0,
-        "time_down_t0": 1,
-        "fixed_cost": 0,
-        "startup": [
-          {
-            "lag": 1,
-            "cost": 0
-          }
-        ],
-        "piecewise_production": [
-          {
-            "mw": 0,
-            "cost": 0
-          }
-        ]
-      },
-      "G115": {
-        "must_run": 0,
-        "name": "G115",
-        "power_output_minimum": 0,
-        "power_output_maximum": 0,
-        "ramp_up_limit": 4,
-        "ramp_down_limit": 4,
-        "ramp_startup_limit": 3,
-        "ramp_shutdown_limit": 4,
-        "time_up_minimum": 4,
-        "time_down_minimum": 1,
-        "power_output_t0": 0,
-        "unit_on_t0": 0,
-        "time_up_t0": 0,
-        "time_down_t0": 1,
-        "fixed_cost": 0,
-        "startup": [
-          {
-            "lag": 1,
-            "cost": 0
-          }
-        ],
-        "piecewise_production": [
-          {
-            "mw": 0,
-            "cost": 0
-          }
-        ]
-      },
-      "G116": {
-        "must_run": 0,
-        "name": "G116",
-        "power_output_minimum": 0,
-        "power_output_maximum": 0,
-        "ramp_up_limit": 5,
-        "ramp_down_limit": 5,
-        "ramp_startup_limit": 5,
-        "ramp_shutdown_limit": 5,
-        "time_up_minimum": 4,
-        "time_down_minimum": 1,
-        "power_output_t0": 0,
-        "unit_on_t0": 0,
-        "time_up_t0": 0,
-        "time_down_t0": 1,
-        "fixed_cost": 0,
-        "startup": [
-          {
-            "lag": 1,
-            "cost": 0
-          }
-        ],
-        "piecewise_production": [
-          {
-            "mw": 0,
-            "cost": 0
-          }
-        ]
-      },
-      "G117": {
-        "must_run": 0,
-        "name": "G117",
-        "power_output_minimum": 25,
-        "power_output_maximum": 25,
-        "ramp_up_limit": 5,
-        "ramp_down_limit": 5,
-        "ramp_startup_limit": 5,
-        "ramp_shutdown_limit": 5,
-        "time_up_minimum": 4,
-        "time_down_minimum": 1,
-        "power_output_t0": 0,
-        "unit_on_t0": 0,
-        "time_up_t0": 0,
-        "time_down_t0": 1,
-        "fixed_cost": 25128.77,
-        "startup": [
-          {
-            "lag": 1,
-            "cost": 6919.81
-          },
-          {
-            "lag": 1,
-            "cost": 6919.81
-          },
-          {
-            "lag": 1,
-            "cost": 11238.58
-          }
-        ],
-        "piecewise_production": [
-          {
-            "mw": 25,
-            "cost": 0
-          }
-        ]
-      },
-      "G118": {
-        "must_run": 0,
-        "name": "G118",
-        "power_output_minimum": 23,
-        "power_output_maximum": 23,
-        "ramp_up_limit": 5,
-        "ramp_down_limit": 5,
-        "ramp_startup_limit": 5,
-        "ramp_shutdown_limit": 5,
-        "time_up_minimum": 4,
-        "time_down_minimum": 1,
-        "power_output_t0": 0,
-        "unit_on_t0": 0,
-        "time_up_t0": 0,
-        "time_down_t0": 1,
-        "fixed_cost": 21857.26,
-        "startup": [
-          {
-            "lag": 1,
-            "cost": 6919.81
-          },
-          {
-            "lag": 1,
-            "cost": 6919.81
-          },
-          {
-            "lag": 1,
-            "cost": 11238.58
-          }
-        ],
-        "piecewise_production": [
-          {
-            "mw": 23,
+            "mw": 100,
             "cost": 0
           }
         ]
@@ -5287,37 +3391,8 @@
             "cost": 4139.33
           },
           {
-            "mw": 140.39999999999995,
+            "mw": 145,
             "cost": 4711.41
-          }
-        ]
-      },
-      "G120": {
-        "must_run": 0,
-        "name": "G120",
-        "power_output_minimum": 0,
-        "power_output_maximum": 0,
-        "ramp_up_limit": 10,
-        "ramp_down_limit": 10,
-        "ramp_startup_limit": 10,
-        "ramp_shutdown_limit": 10,
-        "time_up_minimum": 1,
-        "time_down_minimum": 1,
-        "power_output_t0": 0,
-        "unit_on_t0": 0,
-        "time_up_t0": 0,
-        "time_down_t0": 1,
-        "fixed_cost": 0,
-        "startup": [
-          {
-            "lag": 1,
-            "cost": 0
-          }
-        ],
-        "piecewise_production": [
-          {
-            "mw": 0,
-            "cost": 0
           }
         ]
       },
@@ -5341,11 +3416,19 @@
           {
             "lag": 1,
             "cost": 0
+          },
+          {
+            "lag": 2,
+            "cost": 0
           }
         ],
         "piecewise_production": [
           {
             "mw": 166,
+            "cost": 0
+          },
+          {
+            "mw": 302,
             "cost": 0
           }
         ]
@@ -5372,11 +3455,11 @@
             "cost": 51803.3
           },
           {
-            "lag": 1,
+            "lag": 2,
             "cost": 51803.3
           },
           {
-            "lag": 1,
+            "lag": 3,
             "cost": 51803.3
           }
         ],
@@ -5418,7 +3501,7 @@
             "cost": 50337.1
           },
           {
-            "mw": 27.549999999999994,
+            "mw": 29,
             "cost": 58412.909999999996
           }
         ]
@@ -5491,7 +3574,7 @@
             "cost": 3334.88
           },
           {
-            "mw": 792.891,
+            "mw": 857.18,
             "cost": 3845.76
           }
         ]
@@ -5564,7 +3647,7 @@
             "cost": 7405.769999999999
           },
           {
-            "mw": 31.619000000000003,
+            "mw": 32,
             "cost": 8336.55
           }
         ]
@@ -5637,7 +3720,7 @@
             "cost": 2627.52
           },
           {
-            "mw": 273.79399999999987,
+            "mw": 289.54,
             "cost": 2980.98
           }
         ]
@@ -5710,7 +3793,7 @@
             "cost": 3800.0999999999995
           },
           {
-            "mw": 130.89999999999995,
+            "mw": 137,
             "cost": 4306.799999999999
           }
         ]
@@ -5783,7 +3866,7 @@
             "cost": 3695.04
           },
           {
-            "mw": 141.7,
+            "mw": 149,
             "cost": 4176.02
           }
         ]
@@ -5860,7 +3943,7 @@
             "cost": 3371.7700000000004
           },
           {
-            "mw": 818.6300000000003,
+            "mw": 857,
             "cost": 3783.6200000000003
           }
         ]
@@ -5933,37 +4016,8 @@
             "cost": 2107.69
           },
           {
-            "mw": 820.8359999999998,
+            "mw": 887.39,
             "cost": 2426.57
-          }
-        ]
-      },
-      "G130": {
-        "must_run": 0,
-        "name": "G130",
-        "power_output_minimum": 0,
-        "power_output_maximum": 0,
-        "ramp_up_limit": 3,
-        "ramp_down_limit": 3,
-        "ramp_startup_limit": 4,
-        "ramp_shutdown_limit": 3,
-        "time_up_minimum": 16,
-        "time_down_minimum": 8,
-        "power_output_t0": 0,
-        "unit_on_t0": 0,
-        "time_up_t0": 0,
-        "time_down_t0": 1,
-        "fixed_cost": 0,
-        "startup": [
-          {
-            "lag": 1,
-            "cost": 0
-          }
-        ],
-        "piecewise_production": [
-          {
-            "mw": 0,
-            "cost": 0
           }
         ]
       },
@@ -6035,7 +4089,7 @@
             "cost": 3880.5299999999997
           },
           {
-            "mw": 1036.9250000000002,
+            "mw": 1121,
             "cost": 4389.61
           }
         ]
@@ -6108,7 +4162,7 @@
             "cost": 3937.6800000000003
           },
           {
-            "mw": 958.3000000000002,
+            "mw": 1036,
             "cost": 4453.47
           }
         ]
@@ -6181,7 +4235,7 @@
             "cost": 3652.86
           },
           {
-            "mw": 1049.875,
+            "mw": 1135,
             "cost": 4131.67
           }
         ]
@@ -6254,37 +4308,8 @@
             "cost": 20179.61
           },
           {
-            "mw": 181.29000000000002,
+            "mw": 190.9,
             "cost": 22847.370000000003
-          }
-        ]
-      },
-      "G135": {
-        "must_run": 0,
-        "name": "G135",
-        "power_output_minimum": 0,
-        "power_output_maximum": 0,
-        "ramp_up_limit": 3,
-        "ramp_down_limit": 3,
-        "ramp_startup_limit": 3,
-        "ramp_shutdown_limit": 3,
-        "time_up_minimum": 16,
-        "time_down_minimum": 8,
-        "power_output_t0": 0,
-        "unit_on_t0": 0,
-        "time_up_t0": 0,
-        "time_down_t0": 1,
-        "fixed_cost": 0,
-        "startup": [
-          {
-            "lag": 1,
-            "cost": 0
-          }
-        ],
-        "piecewise_production": [
-          {
-            "mw": 0,
-            "cost": 0
           }
         ]
       },
@@ -6308,11 +4333,19 @@
           {
             "lag": 1,
             "cost": 0
+          },
+          {
+            "lag": 2,
+            "cost": 0
           }
         ],
         "piecewise_production": [
           {
             "mw": 130,
+            "cost": 0
+          },
+          {
+            "mw": 133,
             "cost": 0
           }
         ]
@@ -6337,11 +4370,19 @@
           {
             "lag": 1,
             "cost": 0
+          },
+          {
+            "lag": 2,
+            "cost": 0
           }
         ],
         "piecewise_production": [
           {
             "mw": 130,
+            "cost": 0
+          },
+          {
+            "mw": 133,
             "cost": 0
           }
         ]
@@ -6366,11 +4407,19 @@
           {
             "lag": 1,
             "cost": 0
+          },
+          {
+            "lag": 2,
+            "cost": 0
           }
         ],
         "piecewise_production": [
           {
             "mw": 130,
+            "cost": 0
+          },
+          {
+            "mw": 133,
             "cost": 0
           }
         ]
@@ -6443,7 +4492,7 @@
             "cost": 6847.64
           },
           {
-            "mw": 286.057,
+            "mw": 300,
             "cost": 7711.1
           }
         ]
@@ -6516,66 +4565,8 @@
             "cost": 7165.2
           },
           {
-            "mw": 308.97300000000007,
+            "mw": 325.77,
             "cost": 8186.12
-          }
-        ]
-      },
-      "G141": {
-        "must_run": 0,
-        "name": "G141",
-        "power_output_minimum": 0,
-        "power_output_maximum": 0,
-        "ramp_up_limit": 4.97,
-        "ramp_down_limit": 4.94,
-        "ramp_startup_limit": 7,
-        "ramp_shutdown_limit": 4.94,
-        "time_up_minimum": 16,
-        "time_down_minimum": 8,
-        "power_output_t0": 0,
-        "unit_on_t0": 0,
-        "time_up_t0": 0,
-        "time_down_t0": 1,
-        "fixed_cost": 0,
-        "startup": [
-          {
-            "lag": 1,
-            "cost": 0
-          }
-        ],
-        "piecewise_production": [
-          {
-            "mw": 0,
-            "cost": 0
-          }
-        ]
-      },
-      "G142": {
-        "must_run": 0,
-        "name": "G142",
-        "power_output_minimum": 0,
-        "power_output_maximum": 0,
-        "ramp_up_limit": 4.8,
-        "ramp_down_limit": 4.8,
-        "ramp_startup_limit": 5,
-        "ramp_shutdown_limit": 4.8,
-        "time_up_minimum": 16,
-        "time_down_minimum": 8,
-        "power_output_t0": 0,
-        "unit_on_t0": 0,
-        "time_up_t0": 0,
-        "time_down_t0": 1,
-        "fixed_cost": 0,
-        "startup": [
-          {
-            "lag": 1,
-            "cost": 0
-          }
-        ],
-        "piecewise_production": [
-          {
-            "mw": 0,
-            "cost": 0
           }
         ]
       },
@@ -6647,103 +4638,8 @@
             "cost": 6890.359999999999
           },
           {
-            "mw": 296.62000000000006,
+            "mw": 312.2,
             "cost": 7780.949999999999
-          }
-        ]
-      },
-      "G144": {
-        "must_run": 0,
-        "name": "G144",
-        "power_output_minimum": 280,
-        "power_output_maximum": 280,
-        "ramp_up_limit": 12.9,
-        "ramp_down_limit": 13.3,
-        "ramp_startup_limit": 13,
-        "ramp_shutdown_limit": 13.3,
-        "time_up_minimum": 16,
-        "time_down_minimum": 8,
-        "power_output_t0": 280,
-        "unit_on_t0": 1,
-        "time_up_t0": 1,
-        "time_down_t0": 0,
-        "fixed_cost": 257994.14,
-        "startup": [
-          {
-            "lag": 1,
-            "cost": 3175756.97
-          },
-          {
-            "lag": 12,
-            "cost": 3310112.54
-          },
-          {
-            "lag": 96,
-            "cost": 6994621.72
-          }
-        ],
-        "piecewise_production": [
-          {
-            "mw": 280,
-            "cost": 0
-          }
-        ]
-      },
-      "G145": {
-        "must_run": 0,
-        "name": "G145",
-        "power_output_minimum": 0,
-        "power_output_maximum": 0,
-        "ramp_up_limit": 2,
-        "ramp_down_limit": 2,
-        "ramp_startup_limit": 3,
-        "ramp_shutdown_limit": 2,
-        "time_up_minimum": 2,
-        "time_down_minimum": 1,
-        "power_output_t0": 0,
-        "unit_on_t0": 0,
-        "time_up_t0": 0,
-        "time_down_t0": 1,
-        "fixed_cost": 0,
-        "startup": [
-          {
-            "lag": 1,
-            "cost": 0
-          }
-        ],
-        "piecewise_production": [
-          {
-            "mw": 0,
-            "cost": 0
-          }
-        ]
-      },
-      "G146": {
-        "must_run": 0,
-        "name": "G146",
-        "power_output_minimum": 0,
-        "power_output_maximum": 0,
-        "ramp_up_limit": 23.1,
-        "ramp_down_limit": 23.1,
-        "ramp_startup_limit": 13,
-        "ramp_shutdown_limit": 23.1,
-        "time_up_minimum": 18,
-        "time_down_minimum": 8,
-        "power_output_t0": 0,
-        "unit_on_t0": 0,
-        "time_up_t0": 0,
-        "time_down_t0": 1,
-        "fixed_cost": 0,
-        "startup": [
-          {
-            "lag": 1,
-            "cost": 0
-          }
-        ],
-        "piecewise_production": [
-          {
-            "mw": 0,
-            "cost": 0
           }
         ]
       },
@@ -6767,214 +4663,19 @@
           {
             "lag": 1,
             "cost": 0
+          },
+          {
+            "lag": 2,
+            "cost": 0
           }
         ],
         "piecewise_production": [
           {
             "mw": 19,
             "cost": 0
-          }
-        ]
-      },
-      "G148": {
-        "must_run": 0,
-        "name": "G148",
-        "power_output_minimum": 0,
-        "power_output_maximum": 0,
-        "ramp_up_limit": 3,
-        "ramp_down_limit": 3,
-        "ramp_startup_limit": 3,
-        "ramp_shutdown_limit": 3,
-        "time_up_minimum": 16,
-        "time_down_minimum": 8,
-        "power_output_t0": 0,
-        "unit_on_t0": 0,
-        "time_up_t0": 0,
-        "time_down_t0": 1,
-        "fixed_cost": 0,
-        "startup": [
+          },
           {
-            "lag": 1,
-            "cost": 0
-          }
-        ],
-        "piecewise_production": [
-          {
-            "mw": 0,
-            "cost": 0
-          }
-        ]
-      },
-      "G149": {
-        "must_run": 0,
-        "name": "G149",
-        "power_output_minimum": 0,
-        "power_output_maximum": 0,
-        "ramp_up_limit": 3,
-        "ramp_down_limit": 3,
-        "ramp_startup_limit": 3,
-        "ramp_shutdown_limit": 3,
-        "time_up_minimum": 16,
-        "time_down_minimum": 8,
-        "power_output_t0": 0,
-        "unit_on_t0": 0,
-        "time_up_t0": 0,
-        "time_down_t0": 1,
-        "fixed_cost": 0,
-        "startup": [
-          {
-            "lag": 1,
-            "cost": 0
-          }
-        ],
-        "piecewise_production": [
-          {
-            "mw": 0,
-            "cost": 0
-          }
-        ]
-      },
-      "G150": {
-        "must_run": 0,
-        "name": "G150",
-        "power_output_minimum": 0,
-        "power_output_maximum": 0,
-        "ramp_up_limit": 5,
-        "ramp_down_limit": 5,
-        "ramp_startup_limit": 5,
-        "ramp_shutdown_limit": 5,
-        "time_up_minimum": 16,
-        "time_down_minimum": 8,
-        "power_output_t0": 0,
-        "unit_on_t0": 0,
-        "time_up_t0": 0,
-        "time_down_t0": 1,
-        "fixed_cost": 0,
-        "startup": [
-          {
-            "lag": 1,
-            "cost": 0
-          }
-        ],
-        "piecewise_production": [
-          {
-            "mw": 0,
-            "cost": 0
-          }
-        ]
-      },
-      "G151": {
-        "must_run": 0,
-        "name": "G151",
-        "power_output_minimum": 0,
-        "power_output_maximum": 0,
-        "ramp_up_limit": 5,
-        "ramp_down_limit": 5,
-        "ramp_startup_limit": 5,
-        "ramp_shutdown_limit": 5,
-        "time_up_minimum": 16,
-        "time_down_minimum": 8,
-        "power_output_t0": 0,
-        "unit_on_t0": 0,
-        "time_up_t0": 0,
-        "time_down_t0": 1,
-        "fixed_cost": 0,
-        "startup": [
-          {
-            "lag": 1,
-            "cost": 0
-          }
-        ],
-        "piecewise_production": [
-          {
-            "mw": 0,
-            "cost": 0
-          }
-        ]
-      },
-      "G152": {
-        "must_run": 0,
-        "name": "G152",
-        "power_output_minimum": 0,
-        "power_output_maximum": 0,
-        "ramp_up_limit": 3,
-        "ramp_down_limit": 3,
-        "ramp_startup_limit": 1,
-        "ramp_shutdown_limit": 3,
-        "time_up_minimum": 12,
-        "time_down_minimum": 12,
-        "power_output_t0": 0,
-        "unit_on_t0": 0,
-        "time_up_t0": 0,
-        "time_down_t0": 1,
-        "fixed_cost": 0,
-        "startup": [
-          {
-            "lag": 1,
-            "cost": 0
-          }
-        ],
-        "piecewise_production": [
-          {
-            "mw": 0,
-            "cost": 0
-          }
-        ]
-      },
-      "G153": {
-        "must_run": 0,
-        "name": "G153",
-        "power_output_minimum": 0,
-        "power_output_maximum": 0,
-        "ramp_up_limit": 3,
-        "ramp_down_limit": 3,
-        "ramp_startup_limit": 3,
-        "ramp_shutdown_limit": 3,
-        "time_up_minimum": 16,
-        "time_down_minimum": 2,
-        "power_output_t0": 0,
-        "unit_on_t0": 0,
-        "time_up_t0": 0,
-        "time_down_t0": 1,
-        "fixed_cost": 0,
-        "startup": [
-          {
-            "lag": 1,
-            "cost": 0
-          }
-        ],
-        "piecewise_production": [
-          {
-            "mw": 0,
-            "cost": 0
-          }
-        ]
-      },
-      "G154": {
-        "must_run": 0,
-        "name": "G154",
-        "power_output_minimum": 0,
-        "power_output_maximum": 0,
-        "ramp_up_limit": 3,
-        "ramp_down_limit": 3,
-        "ramp_startup_limit": 3,
-        "ramp_shutdown_limit": 3,
-        "time_up_minimum": 16,
-        "time_down_minimum": 2,
-        "power_output_t0": 0,
-        "unit_on_t0": 0,
-        "time_up_t0": 0,
-        "time_down_t0": 1,
-        "fixed_cost": 0,
-        "startup": [
-          {
-            "lag": 1,
-            "cost": 0
-          }
-        ],
-        "piecewise_production": [
-          {
-            "mw": 0,
+            "mw": 307,
             "cost": 0
           }
         ]
@@ -7047,7 +4748,7 @@
             "cost": 7012.960000000001
           },
           {
-            "mw": 308,
+            "mw": 320,
             "cost": 7955.910000000001
           }
         ]
@@ -7120,7 +4821,7 @@
             "cost": 6515.280000000001
           },
           {
-            "mw": 308,
+            "mw": 320,
             "cost": 7391.070000000001
           }
         ]
@@ -7193,7 +4894,7 @@
             "cost": 7124.2
           },
           {
-            "mw": 281,
+            "mw": 290,
             "cost": 8050.38
           }
         ]
@@ -7266,7 +4967,7 @@
             "cost": 2665.6600000000003
           },
           {
-            "mw": 146.20000000000002,
+            "mw": 155,
             "cost": 3054.4700000000003
           }
         ]
@@ -7339,7 +5040,7 @@
             "cost": 3846.13
           },
           {
-            "mw": 196.2999999999999,
+            "mw": 209,
             "cost": 4376.05
           }
         ]
@@ -7412,7 +5113,7 @@
             "cost": 3886.4999999999995
           },
           {
-            "mw": 200.2999999999999,
+            "mw": 213,
             "cost": 4429.25
           }
         ]
@@ -7485,7 +5186,7 @@
             "cost": 8149.91
           },
           {
-            "mw": 279.5,
+            "mw": 290,
             "cost": 9269.08
           }
         ]
@@ -7558,7 +5259,7 @@
             "cost": 7060.1
           },
           {
-            "mw": 279.5,
+            "mw": 290,
             "cost": 7997.570000000001
           }
         ]
@@ -7631,7 +5332,7 @@
             "cost": 7485.24
           },
           {
-            "mw": 279.5,
+            "mw": 290,
             "cost": 8460.77
           }
         ]
@@ -7704,7 +5405,7 @@
             "cost": 7371.76
           },
           {
-            "mw": 279.5,
+            "mw": 290,
             "cost": 8341.82
           }
         ]
@@ -7777,7 +5478,7 @@
             "cost": 6372.91
           },
           {
-            "mw": 209.20000000000007,
+            "mw": 220,
             "cost": 7183.57
           }
         ]
@@ -7850,7 +5551,7 @@
             "cost": 3868.82
           },
           {
-            "mw": 897.1389999999999,
+            "mw": 996.87,
             "cost": 4421.43
           }
         ]
@@ -7875,11 +5576,19 @@
           {
             "lag": 1,
             "cost": 0
+          },
+          {
+            "lag": 2,
+            "cost": 0
           }
         ],
         "piecewise_production": [
           {
             "mw": 0,
+            "cost": 0
+          },
+          {
+            "mw": 5,
             "cost": 0
           }
         ]
@@ -7904,40 +5613,19 @@
           {
             "lag": 1,
             "cost": 0
-          }
-        ],
-        "piecewise_production": [
+          },
           {
-            "mw": 0,
-            "cost": 0
-          }
-        ]
-      },
-      "G169": {
-        "must_run": 0,
-        "name": "G169",
-        "power_output_minimum": 0,
-        "power_output_maximum": 0,
-        "ramp_up_limit": 6,
-        "ramp_down_limit": 7,
-        "ramp_startup_limit": 10,
-        "ramp_shutdown_limit": 7,
-        "time_up_minimum": 16,
-        "time_down_minimum": 8,
-        "power_output_t0": 0,
-        "unit_on_t0": 0,
-        "time_up_t0": 0,
-        "time_down_t0": 1,
-        "fixed_cost": 0,
-        "startup": [
-          {
-            "lag": 1,
+            "lag": 2,
             "cost": 0
           }
         ],
         "piecewise_production": [
           {
             "mw": 0,
+            "cost": 0
+          },
+          {
+            "mw": 3,
             "cost": 0
           }
         ]
@@ -8010,240 +5698,8 @@
             "cost": 11898.279999999999
           },
           {
-            "mw": 315.40000000000003,
+            "mw": 332,
             "cost": 13546.23
-          }
-        ]
-      },
-      "G171": {
-        "must_run": 0,
-        "name": "G171",
-        "power_output_minimum": 0,
-        "power_output_maximum": 0,
-        "ramp_up_limit": 10,
-        "ramp_down_limit": 10,
-        "ramp_startup_limit": 10,
-        "ramp_shutdown_limit": 10,
-        "time_up_minimum": 1,
-        "time_down_minimum": 1,
-        "power_output_t0": 0,
-        "unit_on_t0": 0,
-        "time_up_t0": 0,
-        "time_down_t0": 1,
-        "fixed_cost": 0,
-        "startup": [
-          {
-            "lag": 1,
-            "cost": 0
-          }
-        ],
-        "piecewise_production": [
-          {
-            "mw": 0,
-            "cost": 0
-          }
-        ]
-      },
-      "G172": {
-        "must_run": 0,
-        "name": "G172",
-        "power_output_minimum": 0,
-        "power_output_maximum": 0,
-        "ramp_up_limit": 10,
-        "ramp_down_limit": 10,
-        "ramp_startup_limit": 10,
-        "ramp_shutdown_limit": 10,
-        "time_up_minimum": 1,
-        "time_down_minimum": 1,
-        "power_output_t0": 0,
-        "unit_on_t0": 0,
-        "time_up_t0": 0,
-        "time_down_t0": 1,
-        "fixed_cost": 0,
-        "startup": [
-          {
-            "lag": 1,
-            "cost": 0
-          }
-        ],
-        "piecewise_production": [
-          {
-            "mw": 0,
-            "cost": 0
-          }
-        ]
-      },
-      "G173": {
-        "must_run": 0,
-        "name": "G173",
-        "power_output_minimum": 0,
-        "power_output_maximum": 0,
-        "ramp_up_limit": 10,
-        "ramp_down_limit": 10,
-        "ramp_startup_limit": 10,
-        "ramp_shutdown_limit": 10,
-        "time_up_minimum": 1,
-        "time_down_minimum": 1,
-        "power_output_t0": 0,
-        "unit_on_t0": 0,
-        "time_up_t0": 0,
-        "time_down_t0": 1,
-        "fixed_cost": 0,
-        "startup": [
-          {
-            "lag": 1,
-            "cost": 0
-          }
-        ],
-        "piecewise_production": [
-          {
-            "mw": 0,
-            "cost": 0
-          }
-        ]
-      },
-      "G174": {
-        "must_run": 0,
-        "name": "G174",
-        "power_output_minimum": 0,
-        "power_output_maximum": 0,
-        "ramp_up_limit": 10,
-        "ramp_down_limit": 10,
-        "ramp_startup_limit": 10,
-        "ramp_shutdown_limit": 10,
-        "time_up_minimum": 1,
-        "time_down_minimum": 1,
-        "power_output_t0": 0,
-        "unit_on_t0": 0,
-        "time_up_t0": 0,
-        "time_down_t0": 1,
-        "fixed_cost": 0,
-        "startup": [
-          {
-            "lag": 1,
-            "cost": 0
-          }
-        ],
-        "piecewise_production": [
-          {
-            "mw": 0,
-            "cost": 0
-          }
-        ]
-      },
-      "G175": {
-        "must_run": 0,
-        "name": "G175",
-        "power_output_minimum": 0,
-        "power_output_maximum": 0,
-        "ramp_up_limit": 10,
-        "ramp_down_limit": 10,
-        "ramp_startup_limit": 10,
-        "ramp_shutdown_limit": 10,
-        "time_up_minimum": 1,
-        "time_down_minimum": 1,
-        "power_output_t0": 0,
-        "unit_on_t0": 0,
-        "time_up_t0": 0,
-        "time_down_t0": 1,
-        "fixed_cost": 0,
-        "startup": [
-          {
-            "lag": 1,
-            "cost": 0
-          }
-        ],
-        "piecewise_production": [
-          {
-            "mw": 0,
-            "cost": 0
-          }
-        ]
-      },
-      "G176": {
-        "must_run": 0,
-        "name": "G176",
-        "power_output_minimum": 0,
-        "power_output_maximum": 0,
-        "ramp_up_limit": 10,
-        "ramp_down_limit": 10,
-        "ramp_startup_limit": 10,
-        "ramp_shutdown_limit": 10,
-        "time_up_minimum": 1,
-        "time_down_minimum": 1,
-        "power_output_t0": 0,
-        "unit_on_t0": 0,
-        "time_up_t0": 0,
-        "time_down_t0": 1,
-        "fixed_cost": 0,
-        "startup": [
-          {
-            "lag": 1,
-            "cost": 0
-          }
-        ],
-        "piecewise_production": [
-          {
-            "mw": 0,
-            "cost": 0
-          }
-        ]
-      },
-      "G177": {
-        "must_run": 0,
-        "name": "G177",
-        "power_output_minimum": 0,
-        "power_output_maximum": 0,
-        "ramp_up_limit": 10,
-        "ramp_down_limit": 10,
-        "ramp_startup_limit": 10,
-        "ramp_shutdown_limit": 10,
-        "time_up_minimum": 1,
-        "time_down_minimum": 1,
-        "power_output_t0": 0,
-        "unit_on_t0": 0,
-        "time_up_t0": 0,
-        "time_down_t0": 1,
-        "fixed_cost": 0,
-        "startup": [
-          {
-            "lag": 1,
-            "cost": 0
-          }
-        ],
-        "piecewise_production": [
-          {
-            "mw": 0,
-            "cost": 0
-          }
-        ]
-      },
-      "G178": {
-        "must_run": 0,
-        "name": "G178",
-        "power_output_minimum": 0,
-        "power_output_maximum": 0,
-        "ramp_up_limit": 10,
-        "ramp_down_limit": 10,
-        "ramp_startup_limit": 10,
-        "ramp_shutdown_limit": 10,
-        "time_up_minimum": 1,
-        "time_down_minimum": 1,
-        "power_output_t0": 0,
-        "unit_on_t0": 0,
-        "time_up_t0": 0,
-        "time_down_t0": 1,
-        "fixed_cost": 0,
-        "startup": [
-          {
-            "lag": 1,
-            "cost": 0
-          }
-        ],
-        "piecewise_production": [
-          {
-            "mw": 0,
-            "cost": 0
           }
         ]
       },
@@ -8267,6 +5723,10 @@
           {
             "lag": 1,
             "cost": 0
+          },
+          {
+            "lag": 2,
+            "cost": 0
           }
         ],
         "piecewise_production": [
@@ -8275,7 +5735,7 @@
             "cost": 0
           },
           {
-            "mw": 5,
+            "mw": 20,
             "cost": 750.15
           }
         ]
@@ -8300,6 +5760,10 @@
           {
             "lag": 1,
             "cost": 0
+          },
+          {
+            "lag": 2,
+            "cost": 0
           }
         ],
         "piecewise_production": [
@@ -8308,66 +5772,8 @@
             "cost": 0
           },
           {
-            "mw": 5,
+            "mw": 20,
             "cost": 738.19
-          }
-        ]
-      },
-      "G181": {
-        "must_run": 0,
-        "name": "G181",
-        "power_output_minimum": 0,
-        "power_output_maximum": 0,
-        "ramp_up_limit": 10,
-        "ramp_down_limit": 10,
-        "ramp_startup_limit": 10,
-        "ramp_shutdown_limit": 10,
-        "time_up_minimum": 1,
-        "time_down_minimum": 1,
-        "power_output_t0": 0,
-        "unit_on_t0": 0,
-        "time_up_t0": 0,
-        "time_down_t0": 1,
-        "fixed_cost": 0,
-        "startup": [
-          {
-            "lag": 1,
-            "cost": 0
-          }
-        ],
-        "piecewise_production": [
-          {
-            "mw": 0,
-            "cost": 0
-          }
-        ]
-      },
-      "G182": {
-        "must_run": 0,
-        "name": "G182",
-        "power_output_minimum": 0,
-        "power_output_maximum": 0,
-        "ramp_up_limit": 10,
-        "ramp_down_limit": 10,
-        "ramp_startup_limit": 10,
-        "ramp_shutdown_limit": 10,
-        "time_up_minimum": 1,
-        "time_down_minimum": 1,
-        "power_output_t0": 0,
-        "unit_on_t0": 0,
-        "time_up_t0": 0,
-        "time_down_t0": 1,
-        "fixed_cost": 0,
-        "startup": [
-          {
-            "lag": 1,
-            "cost": 0
-          }
-        ],
-        "piecewise_production": [
-          {
-            "mw": 0,
-            "cost": 0
           }
         ]
       },
@@ -8391,11 +5797,19 @@
           {
             "lag": 1,
             "cost": 0
+          },
+          {
+            "lag": 2,
+            "cost": 0
           }
         ],
         "piecewise_production": [
           {
             "mw": 0,
+            "cost": 0
+          },
+          {
+            "mw": 18,
             "cost": 0
           }
         ]
@@ -8468,124 +5882,8 @@
             "cost": 2588.7599999999998
           },
           {
-            "mw": 405,
+            "mw": 451.76,
             "cost": 2929.1099999999997
-          }
-        ]
-      },
-      "G185": {
-        "must_run": 0,
-        "name": "G185",
-        "power_output_minimum": 0,
-        "power_output_maximum": 0,
-        "ramp_up_limit": 10,
-        "ramp_down_limit": 10,
-        "ramp_startup_limit": 10,
-        "ramp_shutdown_limit": 10,
-        "time_up_minimum": 1,
-        "time_down_minimum": 1,
-        "power_output_t0": 0,
-        "unit_on_t0": 0,
-        "time_up_t0": 0,
-        "time_down_t0": 1,
-        "fixed_cost": 0,
-        "startup": [
-          {
-            "lag": 1,
-            "cost": 0
-          }
-        ],
-        "piecewise_production": [
-          {
-            "mw": 0,
-            "cost": 0
-          }
-        ]
-      },
-      "G186": {
-        "must_run": 0,
-        "name": "G186",
-        "power_output_minimum": 0,
-        "power_output_maximum": 0,
-        "ramp_up_limit": 10,
-        "ramp_down_limit": 10,
-        "ramp_startup_limit": 10,
-        "ramp_shutdown_limit": 10,
-        "time_up_minimum": 1,
-        "time_down_minimum": 1,
-        "power_output_t0": 0,
-        "unit_on_t0": 0,
-        "time_up_t0": 0,
-        "time_down_t0": 1,
-        "fixed_cost": 0,
-        "startup": [
-          {
-            "lag": 1,
-            "cost": 0
-          }
-        ],
-        "piecewise_production": [
-          {
-            "mw": 0,
-            "cost": 0
-          }
-        ]
-      },
-      "G187": {
-        "must_run": 0,
-        "name": "G187",
-        "power_output_minimum": 0,
-        "power_output_maximum": 0,
-        "ramp_up_limit": 10,
-        "ramp_down_limit": 10,
-        "ramp_startup_limit": 10,
-        "ramp_shutdown_limit": 10,
-        "time_up_minimum": 1,
-        "time_down_minimum": 1,
-        "power_output_t0": 0,
-        "unit_on_t0": 0,
-        "time_up_t0": 0,
-        "time_down_t0": 1,
-        "fixed_cost": 0,
-        "startup": [
-          {
-            "lag": 1,
-            "cost": 0
-          }
-        ],
-        "piecewise_production": [
-          {
-            "mw": 0,
-            "cost": 0
-          }
-        ]
-      },
-      "G188": {
-        "must_run": 0,
-        "name": "G188",
-        "power_output_minimum": 0,
-        "power_output_maximum": 0,
-        "ramp_up_limit": 10,
-        "ramp_down_limit": 10,
-        "ramp_startup_limit": 10,
-        "ramp_shutdown_limit": 10,
-        "time_up_minimum": 1,
-        "time_down_minimum": 1,
-        "power_output_t0": 0,
-        "unit_on_t0": 0,
-        "time_up_t0": 0,
-        "time_down_t0": 1,
-        "fixed_cost": 0,
-        "startup": [
-          {
-            "lag": 1,
-            "cost": 0
-          }
-        ],
-        "piecewise_production": [
-          {
-            "mw": 0,
-            "cost": 0
           }
         ]
       },
@@ -8622,6 +5920,10 @@
         "piecewise_production": [
           {
             "mw": 350,
+            "cost": 0
+          },
+          {
+            "mw": 500,
             "cost": 0
           }
         ]
@@ -8694,37 +5996,8 @@
             "cost": 3429.43
           },
           {
-            "mw": 144,
+            "mw": 252,
             "cost": 3862.83
-          }
-        ]
-      },
-      "G191": {
-        "must_run": 0,
-        "name": "G191",
-        "power_output_minimum": 268,
-        "power_output_maximum": 268,
-        "ramp_up_limit": 5,
-        "ramp_down_limit": 5,
-        "ramp_startup_limit": 5,
-        "ramp_shutdown_limit": 5,
-        "time_up_minimum": 1,
-        "time_down_minimum": 6,
-        "power_output_t0": 268,
-        "unit_on_t0": 1,
-        "time_up_t0": 1,
-        "time_down_t0": 0,
-        "fixed_cost": 0,
-        "startup": [
-          {
-            "lag": 1,
-            "cost": 0
-          }
-        ],
-        "piecewise_production": [
-          {
-            "mw": 268,
-            "cost": 0
           }
         ]
       },
@@ -8796,7 +6069,7 @@
             "cost": 4019.9199999999996
           },
           {
-            "mw": 256.1,
+            "mw": 269,
             "cost": 4598.459999999999
           }
         ]
@@ -8869,7 +6142,7 @@
             "cost": 6111.28
           },
           {
-            "mw": 281,
+            "mw": 300,
             "cost": 6912.44
           }
         ]
@@ -8942,177 +6215,8 @@
             "cost": 3884.08
           },
           {
-            "mw": 141.7,
+            "mw": 149,
             "cost": 4387.03
-          }
-        ]
-      },
-      "G195": {
-        "must_run": 0,
-        "name": "G195",
-        "power_output_minimum": 25.5,
-        "power_output_maximum": 25.5,
-        "ramp_up_limit": 5,
-        "ramp_down_limit": 5,
-        "ramp_startup_limit": 5,
-        "ramp_shutdown_limit": 5,
-        "time_up_minimum": 4,
-        "time_down_minimum": 1,
-        "power_output_t0": 0,
-        "unit_on_t0": 0,
-        "time_up_t0": 0,
-        "time_down_t0": 1,
-        "fixed_cost": 26955.65,
-        "startup": [
-          {
-            "lag": 1,
-            "cost": 7066.85
-          },
-          {
-            "lag": 1,
-            "cost": 7066.85
-          },
-          {
-            "lag": 1,
-            "cost": 12200.64
-          }
-        ],
-        "piecewise_production": [
-          {
-            "mw": 25.5,
-            "cost": 0
-          }
-        ]
-      },
-      "G196": {
-        "must_run": 0,
-        "name": "G196",
-        "power_output_minimum": 26,
-        "power_output_maximum": 26,
-        "ramp_up_limit": 5,
-        "ramp_down_limit": 5,
-        "ramp_startup_limit": 5,
-        "ramp_shutdown_limit": 5,
-        "time_up_minimum": 4,
-        "time_down_minimum": 1,
-        "power_output_t0": 0,
-        "unit_on_t0": 0,
-        "time_up_t0": 0,
-        "time_down_t0": 1,
-        "fixed_cost": 26564.37,
-        "startup": [
-          {
-            "lag": 1,
-            "cost": 6919.81
-          },
-          {
-            "lag": 1,
-            "cost": 6919.81
-          },
-          {
-            "lag": 1,
-            "cost": 11299.99
-          }
-        ],
-        "piecewise_production": [
-          {
-            "mw": 26,
-            "cost": 0
-          }
-        ]
-      },
-      "G197": {
-        "must_run": 0,
-        "name": "G197",
-        "power_output_minimum": 23,
-        "power_output_maximum": 23,
-        "ramp_up_limit": 5,
-        "ramp_down_limit": 5,
-        "ramp_startup_limit": 5,
-        "ramp_shutdown_limit": 5,
-        "time_up_minimum": 4,
-        "time_down_minimum": 1,
-        "power_output_t0": 0,
-        "unit_on_t0": 0,
-        "time_up_t0": 0,
-        "time_down_t0": 1,
-        "fixed_cost": 25382.77,
-        "startup": [
-          {
-            "lag": 1,
-            "cost": 7106.56
-          },
-          {
-            "lag": 1,
-            "cost": 7106.56
-          },
-          {
-            "lag": 1,
-            "cost": 11320.18
-          }
-        ],
-        "piecewise_production": [
-          {
-            "mw": 23,
-            "cost": 0
-          }
-        ]
-      },
-      "G198": {
-        "must_run": 0,
-        "name": "G198",
-        "power_output_minimum": 0,
-        "power_output_maximum": 0,
-        "ramp_up_limit": 5,
-        "ramp_down_limit": 5,
-        "ramp_startup_limit": 5,
-        "ramp_shutdown_limit": 5,
-        "time_up_minimum": 4,
-        "time_down_minimum": 1,
-        "power_output_t0": 0,
-        "unit_on_t0": 0,
-        "time_up_t0": 0,
-        "time_down_t0": 1,
-        "fixed_cost": 0,
-        "startup": [
-          {
-            "lag": 1,
-            "cost": 0
-          }
-        ],
-        "piecewise_production": [
-          {
-            "mw": 0,
-            "cost": 0
-          }
-        ]
-      },
-      "G199": {
-        "must_run": 0,
-        "name": "G199",
-        "power_output_minimum": 0,
-        "power_output_maximum": 0,
-        "ramp_up_limit": 5,
-        "ramp_down_limit": 5,
-        "ramp_startup_limit": 3,
-        "ramp_shutdown_limit": 5,
-        "time_up_minimum": 48,
-        "time_down_minimum": 24,
-        "power_output_t0": 0,
-        "unit_on_t0": 0,
-        "time_up_t0": 0,
-        "time_down_t0": 1,
-        "fixed_cost": 0,
-        "startup": [
-          {
-            "lag": 1,
-            "cost": 0
-          }
-        ],
-        "piecewise_production": [
-          {
-            "mw": 0,
-            "cost": 0
           }
         ]
       },
@@ -9184,7 +6288,7 @@
             "cost": 3312.4900000000002
           },
           {
-            "mw": 289.93499999999995,
+            "mw": 306.9,
             "cost": 3740.7000000000003
           }
         ]
@@ -9257,7 +6361,7 @@
             "cost": 4217.209999999999
           },
           {
-            "mw": 264.8250000000001,
+            "mw": 279,
             "cost": 4765.249999999999
           }
         ]
@@ -9330,7 +6434,7 @@
             "cost": 4090.8599999999997
           },
           {
-            "mw": 283.90500000000014,
+            "mw": 300.2,
             "cost": 4634.969999999999
           }
         ]
@@ -9403,7 +6507,7 @@
             "cost": 4862.5
           },
           {
-            "mw": 275.90000000000015,
+            "mw": 279,
             "cost": 5477.45
           }
         ]
@@ -9476,7 +6580,7 @@
             "cost": 5673.519999999999
           },
           {
-            "mw": 395,
+            "mw": 400,
             "cost": 6414.149999999999
           }
         ]
@@ -9549,7 +6653,7 @@
             "cost": 7117.04
           },
           {
-            "mw": 113.39999999999995,
+            "mw": 118,
             "cost": 8027.01
           }
         ]
@@ -9622,45 +6726,8 @@
             "cost": 6913.24
           },
           {
-            "mw": 121.5,
+            "mw": 127,
             "cost": 7790.67
-          }
-        ]
-      },
-      "G207": {
-        "must_run": 0,
-        "name": "G207",
-        "power_output_minimum": 26,
-        "power_output_maximum": 26,
-        "ramp_up_limit": 5,
-        "ramp_down_limit": 5,
-        "ramp_startup_limit": 5,
-        "ramp_shutdown_limit": 5,
-        "time_up_minimum": 4,
-        "time_down_minimum": 1,
-        "power_output_t0": 0,
-        "unit_on_t0": 0,
-        "time_up_t0": 0,
-        "time_down_t0": 1,
-        "fixed_cost": 25602.75,
-        "startup": [
-          {
-            "lag": 1,
-            "cost": 6919.81
-          },
-          {
-            "lag": 1,
-            "cost": 6919.81
-          },
-          {
-            "lag": 1,
-            "cost": 11238.58
-          }
-        ],
-        "piecewise_production": [
-          {
-            "mw": 26,
-            "cost": 0
           }
         ]
       },
@@ -9732,7 +6799,7 @@
             "cost": 5091.17
           },
           {
-            "mw": 360.4000000000002,
+            "mw": 378,
             "cost": 5780.63
           }
         ]
@@ -9805,37 +6872,8 @@
             "cost": 4610.63
           },
           {
-            "mw": 379.7999999999999,
+            "mw": 392,
             "cost": 5232.49
-          }
-        ]
-      },
-      "G210": {
-        "must_run": 0,
-        "name": "G210",
-        "power_output_minimum": 0,
-        "power_output_maximum": 0,
-        "ramp_up_limit": 15,
-        "ramp_down_limit": 15,
-        "ramp_startup_limit": 15,
-        "ramp_shutdown_limit": 15,
-        "time_up_minimum": 1,
-        "time_down_minimum": 6,
-        "power_output_t0": 0,
-        "unit_on_t0": 0,
-        "time_up_t0": 0,
-        "time_down_t0": 1,
-        "fixed_cost": 0,
-        "startup": [
-          {
-            "lag": 1,
-            "cost": 0
-          }
-        ],
-        "piecewise_production": [
-          {
-            "mw": 0,
-            "cost": 0
           }
         ]
       },
@@ -9907,37 +6945,8 @@
             "cost": 4860.360000000001
           },
           {
-            "mw": 149.39999999999995,
+            "mw": 155,
             "cost": 5531.56
-          }
-        ]
-      },
-      "G212": {
-        "must_run": 0,
-        "name": "G212",
-        "power_output_minimum": 0,
-        "power_output_maximum": 0,
-        "ramp_up_limit": 1,
-        "ramp_down_limit": 1,
-        "ramp_startup_limit": 3,
-        "ramp_shutdown_limit": 1,
-        "time_up_minimum": 2,
-        "time_down_minimum": 2,
-        "power_output_t0": 0,
-        "unit_on_t0": 0,
-        "time_up_t0": 0,
-        "time_down_t0": 1,
-        "fixed_cost": 0,
-        "startup": [
-          {
-            "lag": 1,
-            "cost": 0
-          }
-        ],
-        "piecewise_production": [
-          {
-            "mw": 0,
-            "cost": 0
           }
         ]
       },
@@ -9963,11 +6972,11 @@
             "cost": 720.41
           },
           {
-            "lag": 1,
+            "lag": 2,
             "cost": 720.41
           },
           {
-            "lag": 1,
+            "lag": 3,
             "cost": 720.41
           }
         ],
@@ -10009,7 +7018,7 @@
             "cost": 6393.15
           },
           {
-            "mw": 7.399999999999999,
+            "mw": 8,
             "cost": 7255.32
           }
         ]
@@ -10082,37 +7091,8 @@
             "cost": 2746.79
           },
           {
-            "mw": 190.4500000000001,
+            "mw": 195.5,
             "cost": 3107.95
-          }
-        ]
-      },
-      "G215": {
-        "must_run": 0,
-        "name": "G215",
-        "power_output_minimum": 0,
-        "power_output_maximum": 0,
-        "ramp_up_limit": 3,
-        "ramp_down_limit": 3,
-        "ramp_startup_limit": 3,
-        "ramp_shutdown_limit": 3,
-        "time_up_minimum": 72,
-        "time_down_minimum": 48,
-        "power_output_t0": 0,
-        "unit_on_t0": 0,
-        "time_up_t0": 0,
-        "time_down_t0": 1,
-        "fixed_cost": 0,
-        "startup": [
-          {
-            "lag": 1,
-            "cost": 0
-          }
-        ],
-        "piecewise_production": [
-          {
-            "mw": 0,
-            "cost": 0
           }
         ]
       },
@@ -10184,7 +7164,7 @@
             "cost": 13504.909999999996
           },
           {
-            "mw": 133.2,
+            "mw": 140,
             "cost": 15424.789999999997
           }
         ]
@@ -10211,11 +7191,11 @@
             "cost": 31192.57
           },
           {
-            "lag": 1,
+            "lag": 2,
             "cost": 31192.57
           },
           {
-            "lag": 1,
+            "lag": 3,
             "cost": 31192.57
           }
         ],
@@ -10257,66 +7237,8 @@
             "cost": 42550.96
           },
           {
-            "mw": 14.420000000000007,
+            "mw": 14.8,
             "cost": 48545.55
-          }
-        ]
-      },
-      "G218": {
-        "must_run": 0,
-        "name": "G218",
-        "power_output_minimum": 0,
-        "power_output_maximum": 0,
-        "ramp_up_limit": 1,
-        "ramp_down_limit": 1,
-        "ramp_startup_limit": 3,
-        "ramp_shutdown_limit": 1,
-        "time_up_minimum": 2,
-        "time_down_minimum": 2,
-        "power_output_t0": 0,
-        "unit_on_t0": 0,
-        "time_up_t0": 0,
-        "time_down_t0": 1,
-        "fixed_cost": 0,
-        "startup": [
-          {
-            "lag": 1,
-            "cost": 0
-          }
-        ],
-        "piecewise_production": [
-          {
-            "mw": 0,
-            "cost": 0
-          }
-        ]
-      },
-      "G219": {
-        "must_run": 0,
-        "name": "G219",
-        "power_output_minimum": 0,
-        "power_output_maximum": 0,
-        "ramp_up_limit": 1,
-        "ramp_down_limit": 1,
-        "ramp_startup_limit": 3,
-        "ramp_shutdown_limit": 1,
-        "time_up_minimum": 2,
-        "time_down_minimum": 2,
-        "power_output_t0": 0,
-        "unit_on_t0": 0,
-        "time_up_t0": 0,
-        "time_down_t0": 1,
-        "fixed_cost": 0,
-        "startup": [
-          {
-            "lag": 1,
-            "cost": 0
-          }
-        ],
-        "piecewise_production": [
-          {
-            "mw": 0,
-            "cost": 0
           }
         ]
       },
@@ -10342,11 +7264,11 @@
             "cost": 470.52
           },
           {
-            "lag": 1,
+            "lag": 2,
             "cost": 470.52
           },
           {
-            "lag": 1,
+            "lag": 3,
             "cost": 470.52
           }
         ],
@@ -10388,37 +7310,8 @@
             "cost": 6057.07
           },
           {
-            "mw": 8.3,
+            "mw": 9,
             "cost": 6900.91
-          }
-        ]
-      },
-      "G221": {
-        "must_run": 0,
-        "name": "G221",
-        "power_output_minimum": 0,
-        "power_output_maximum": 0,
-        "ramp_up_limit": 1,
-        "ramp_down_limit": 1,
-        "ramp_startup_limit": 3,
-        "ramp_shutdown_limit": 1,
-        "time_up_minimum": 2,
-        "time_down_minimum": 2,
-        "power_output_t0": 0,
-        "unit_on_t0": 0,
-        "time_up_t0": 0,
-        "time_down_t0": 1,
-        "fixed_cost": 0,
-        "startup": [
-          {
-            "lag": 1,
-            "cost": 0
-          }
-        ],
-        "piecewise_production": [
-          {
-            "mw": 0,
-            "cost": 0
           }
         ]
       },
@@ -10444,11 +7337,11 @@
             "cost": 28697.83
           },
           {
-            "lag": 1,
+            "lag": 2,
             "cost": 28697.83
           },
           {
-            "lag": 1,
+            "lag": 3,
             "cost": 28697.83
           }
         ],
@@ -10490,7 +7383,7 @@
             "cost": 49948.84
           },
           {
-            "mw": 13.700000000000006,
+            "mw": 14,
             "cost": 56819.78999999999
           }
         ]
@@ -10517,11 +7410,11 @@
             "cost": 33992.84
           },
           {
-            "lag": 1,
+            "lag": 2,
             "cost": 33992.84
           },
           {
-            "lag": 1,
+            "lag": 3,
             "cost": 33992.84
           }
         ],
@@ -10563,7 +7456,7 @@
             "cost": 64531.02
           },
           {
-            "mw": 8.619999999999997,
+            "mw": 8.8,
             "cost": 73359.09
           }
         ]
@@ -10590,11 +7483,11 @@
             "cost": 30162.05
           },
           {
-            "lag": 1,
+            "lag": 2,
             "cost": 30162.05
           },
           {
-            "lag": 1,
+            "lag": 3,
             "cost": 30162.05
           }
         ],
@@ -10636,103 +7529,8 @@
             "cost": 51073.270000000004
           },
           {
-            "mw": 20.599999999999987,
+            "mw": 21,
             "cost": 57933.340000000004
-          }
-        ]
-      },
-      "G225": {
-        "must_run": 0,
-        "name": "G225",
-        "power_output_minimum": 0,
-        "power_output_maximum": 0,
-        "ramp_up_limit": 1.59,
-        "ramp_down_limit": 1.86,
-        "ramp_startup_limit": 3,
-        "ramp_shutdown_limit": 1.86,
-        "time_up_minimum": 36,
-        "time_down_minimum": 24,
-        "power_output_t0": 0,
-        "unit_on_t0": 0,
-        "time_up_t0": 0,
-        "time_down_t0": 1,
-        "fixed_cost": 0,
-        "startup": [
-          {
-            "lag": 1,
-            "cost": 0
-          }
-        ],
-        "piecewise_production": [
-          {
-            "mw": 0,
-            "cost": 0
-          }
-        ]
-      },
-      "G226": {
-        "must_run": 0,
-        "name": "G226",
-        "power_output_minimum": 60,
-        "power_output_maximum": 60,
-        "ramp_up_limit": 1.9,
-        "ramp_down_limit": 1.9,
-        "ramp_startup_limit": 3,
-        "ramp_shutdown_limit": 1.9,
-        "time_up_minimum": 36,
-        "time_down_minimum": 24,
-        "power_output_t0": 0,
-        "unit_on_t0": 0,
-        "time_up_t0": 0,
-        "time_down_t0": 1,
-        "fixed_cost": 43691.23,
-        "startup": [
-          {
-            "lag": 1,
-            "cost": 78866.05
-          },
-          {
-            "lag": 12,
-            "cost": 113003.05
-          },
-          {
-            "lag": 24,
-            "cost": 153507.49
-          }
-        ],
-        "piecewise_production": [
-          {
-            "mw": 60,
-            "cost": 0
-          }
-        ]
-      },
-      "G227": {
-        "must_run": 0,
-        "name": "G227",
-        "power_output_minimum": 0,
-        "power_output_maximum": 0,
-        "ramp_up_limit": 4.29,
-        "ramp_down_limit": 3.41,
-        "ramp_startup_limit": 3,
-        "ramp_shutdown_limit": 3.41,
-        "time_up_minimum": 24,
-        "time_down_minimum": 24,
-        "power_output_t0": 0,
-        "unit_on_t0": 0,
-        "time_up_t0": 0,
-        "time_down_t0": 1,
-        "fixed_cost": 0,
-        "startup": [
-          {
-            "lag": 1,
-            "cost": 0
-          }
-        ],
-        "piecewise_production": [
-          {
-            "mw": 0,
-            "cost": 0
           }
         ]
       },
@@ -10804,7 +7602,7 @@
             "cost": 3182.19
           },
           {
-            "mw": 177.89999999999995,
+            "mw": 183,
             "cost": 3603.15
           }
         ]
@@ -10877,7 +7675,7 @@
             "cost": 2996.44
           },
           {
-            "mw": 173.39999999999995,
+            "mw": 174,
             "cost": 3374.55
           }
         ]
@@ -10950,37 +7748,8 @@
             "cost": 5972.84
           },
           {
-            "mw": 218.75,
+            "mw": 232.5,
             "cost": 6786.66
-          }
-        ]
-      },
-      "G231": {
-        "must_run": 0,
-        "name": "G231",
-        "power_output_minimum": 0,
-        "power_output_maximum": 0,
-        "ramp_up_limit": 3,
-        "ramp_down_limit": 3,
-        "ramp_startup_limit": 3,
-        "ramp_shutdown_limit": 3,
-        "time_up_minimum": 16,
-        "time_down_minimum": 8,
-        "power_output_t0": 0,
-        "unit_on_t0": 0,
-        "time_up_t0": 0,
-        "time_down_t0": 1,
-        "fixed_cost": 0,
-        "startup": [
-          {
-            "lag": 1,
-            "cost": 0
-          }
-        ],
-        "piecewise_production": [
-          {
-            "mw": 0,
-            "cost": 0
           }
         ]
       },
@@ -11006,11 +7775,11 @@
             "cost": 1305.28
           },
           {
-            "lag": 1,
+            "lag": 2,
             "cost": 1305.28
           },
           {
-            "lag": 1,
+            "lag": 3,
             "cost": 1305.28
           }
         ],
@@ -11052,7 +7821,7 @@
             "cost": 10574.550000000001
           },
           {
-            "mw": 11.184000000000001,
+            "mw": 11.76,
             "cost": 12183.330000000002
           }
         ]
@@ -11079,11 +7848,11 @@
             "cost": 55547.91
           },
           {
-            "lag": 1,
+            "lag": 2,
             "cost": 55547.91
           },
           {
-            "lag": 1,
+            "lag": 3,
             "cost": 55547.91
           }
         ],
@@ -11125,7 +7894,7 @@
             "cost": 6845.4400000000005
           },
           {
-            "mw": 144.20000000000005,
+            "mw": 152,
             "cost": 7788.240000000001
           }
         ]
@@ -11152,11 +7921,11 @@
             "cost": 1263.99
           },
           {
-            "lag": 1,
+            "lag": 2,
             "cost": 1263.99
           },
           {
-            "lag": 1,
+            "lag": 3,
             "cost": 1263.99
           }
         ],
@@ -11198,7 +7967,7 @@
             "cost": 9256.439999999999
           },
           {
-            "mw": 28.849999999999987,
+            "mw": 29.5,
             "cost": 10483.329999999998
           }
         ]
@@ -11222,6 +7991,10 @@
         "startup": [
           {
             "lag": 1,
+            "cost": 0
+          },
+          {
+            "lag": 2,
             "cost": 0
           }
         ],
@@ -11263,7 +8036,7 @@
             "cost": 3764.64
           },
           {
-            "mw": 129.3,
+            "mw": 132,
             "cost": 4257.54
           }
         ]
@@ -11290,11 +8063,11 @@
             "cost": 23290.21
           },
           {
-            "lag": 1,
+            "lag": 2,
             "cost": 23290.21
           },
           {
-            "lag": 1,
+            "lag": 3,
             "cost": 23290.21
           }
         ],
@@ -11336,7 +8109,7 @@
             "cost": 32149.17
           },
           {
-            "mw": 25.400000000000013,
+            "mw": 26,
             "cost": 36616.45
           }
         ]
@@ -11409,7 +8182,7 @@
             "cost": 2635.31
           },
           {
-            "mw": 853.1700000000001,
+            "mw": 924,
             "cost": 3024.81
           }
         ]
@@ -11482,7 +8255,7 @@
             "cost": 4011.93
           },
           {
-            "mw": 659.8000000000003,
+            "mw": 682,
             "cost": 4538.29
           }
         ]
@@ -11555,7 +8328,7 @@
             "cost": 3998.3599999999997
           },
           {
-            "mw": 668.8000000000003,
+            "mw": 692,
             "cost": 4529.0199999999995
           }
         ]
@@ -11628,7 +8401,7 @@
             "cost": 11374.02
           },
           {
-            "mw": 211,
+            "mw": 220,
             "cost": 12852.84
           }
         ]
@@ -11701,7 +8474,7 @@
             "cost": 5730.8099999999995
           },
           {
-            "mw": 224.5,
+            "mw": 235,
             "cost": 6452.2699999999995
           }
         ]
@@ -11774,7 +8547,7 @@
             "cost": 5077.53
           },
           {
-            "mw": 190.20000000000007,
+            "mw": 198,
             "cost": 5721.889999999999
           }
         ]
@@ -11847,37 +8620,8 @@
             "cost": 2666.52
           },
           {
-            "mw": 412.40000000000015,
+            "mw": 436,
             "cost": 3063.26
-          }
-        ]
-      },
-      "G244": {
-        "must_run": 0,
-        "name": "G244",
-        "power_output_minimum": 0,
-        "power_output_maximum": 0,
-        "ramp_up_limit": 2.8,
-        "ramp_down_limit": 2.32,
-        "ramp_startup_limit": 1,
-        "ramp_shutdown_limit": 2.32,
-        "time_up_minimum": 2,
-        "time_down_minimum": 2,
-        "power_output_t0": 0,
-        "unit_on_t0": 0,
-        "time_up_t0": 0,
-        "time_down_t0": 1,
-        "fixed_cost": 0,
-        "startup": [
-          {
-            "lag": 1,
-            "cost": 0
-          }
-        ],
-        "piecewise_production": [
-          {
-            "mw": 0,
-            "cost": 0
           }
         ]
       },
@@ -11949,7 +8693,7 @@
             "cost": 3157.51
           },
           {
-            "mw": 201.2999999999999,
+            "mw": 211,
             "cost": 3552.6200000000003
           }
         ]
@@ -11976,11 +8720,11 @@
             "cost": 31534.44
           },
           {
-            "lag": 1,
+            "lag": 2,
             "cost": 31534.44
           },
           {
-            "lag": 1,
+            "lag": 3,
             "cost": 31534.44
           }
         ],
@@ -12022,7 +8766,7 @@
             "cost": 44119.97000000001
           },
           {
-            "mw": 19.468,
+            "mw": 20,
             "cost": 49652.850000000006
           }
         ]
@@ -12095,7 +8839,7 @@
             "cost": 4356.599999999999
           },
           {
-            "mw": 182.7999999999999,
+            "mw": 189,
             "cost": 4970.7
           }
         ]
@@ -12168,7 +8912,7 @@
             "cost": 7342.01
           },
           {
-            "mw": 285.68899999999996,
+            "mw": 300,
             "cost": 8304.04
           }
         ]
@@ -12241,7 +8985,7 @@
             "cost": 2667.46
           },
           {
-            "mw": 380,
+            "mw": 400,
             "cost": 3041.6
           }
         ]
@@ -12314,66 +9058,8 @@
             "cost": 2660.6500000000005
           },
           {
-            "mw": 241.70000000000007,
+            "mw": 257,
             "cost": 2995.0100000000007
-          }
-        ]
-      },
-      "G251": {
-        "must_run": 0,
-        "name": "G251",
-        "power_output_minimum": 0,
-        "power_output_maximum": 0,
-        "ramp_up_limit": 1.5,
-        "ramp_down_limit": 2,
-        "ramp_startup_limit": 2,
-        "ramp_shutdown_limit": 2,
-        "time_up_minimum": 2,
-        "time_down_minimum": 3,
-        "power_output_t0": 0,
-        "unit_on_t0": 0,
-        "time_up_t0": 0,
-        "time_down_t0": 1,
-        "fixed_cost": 0,
-        "startup": [
-          {
-            "lag": 1,
-            "cost": 0
-          }
-        ],
-        "piecewise_production": [
-          {
-            "mw": 0,
-            "cost": 0
-          }
-        ]
-      },
-      "G252": {
-        "must_run": 0,
-        "name": "G252",
-        "power_output_minimum": 0,
-        "power_output_maximum": 0,
-        "ramp_up_limit": 7,
-        "ramp_down_limit": 7,
-        "ramp_startup_limit": 7,
-        "ramp_shutdown_limit": 7,
-        "time_up_minimum": 16,
-        "time_down_minimum": 8,
-        "power_output_t0": 0,
-        "unit_on_t0": 0,
-        "time_up_t0": 0,
-        "time_down_t0": 1,
-        "fixed_cost": 0,
-        "startup": [
-          {
-            "lag": 1,
-            "cost": 0
-          }
-        ],
-        "piecewise_production": [
-          {
-            "mw": 0,
-            "cost": 0
           }
         ]
       },
@@ -12445,7 +9131,7 @@
             "cost": 3650.6
           },
           {
-            "mw": 305.09999999999997,
+            "mw": 319,
             "cost": 4115.7
           }
         ]
@@ -12518,7 +9204,7 @@
             "cost": 4419.620000000001
           },
           {
-            "mw": 141,
+            "mw": 150,
             "cost": 4994.920000000001
           }
         ]
@@ -12591,7 +9277,7 @@
             "cost": 4419.76
           },
           {
-            "mw": 141,
+            "mw": 150,
             "cost": 5013.89
           }
         ]
@@ -12641,34 +9327,6 @@
         "unit_on_t0": 1,
         "unit_up_t0": 1,
         "time_down_t0": 0,
-        "startup": [
-          {
-            "lag": 1,
-            "cost": 0
-          }
-        ],
-        "piecewise_production": [
-          {
-            "mw": 0,
-            "cost": 0
-          }
-        ]
-      },
-      "H3": {
-        "must_run": 0,
-        "name": "H3",
-        "power_output_minimum": 0,
-        "power_output_maximum": 0,
-        "ramp_up_limit": 8,
-        "ramp_down_limit": 2,
-        "ramp_startup_limit": 0,
-        "ramp_shutdown_limit": 0,
-        "time_up_minimum": 0,
-        "time_down_minimum": 0,
-        "power_output_t0": 0,
-        "unit_on_t0": 0,
-        "unit_up_t0": 0,
-        "time_down_t0": 1,
         "startup": [
           {
             "lag": 1,
@@ -12934,174 +9592,6 @@
           }
         ]
       },
-      "H13": {
-        "must_run": 0,
-        "name": "H13",
-        "power_output_minimum": 30,
-        "power_output_maximum": 30,
-        "ramp_up_limit": 15,
-        "ramp_down_limit": 15,
-        "ramp_startup_limit": 0,
-        "ramp_shutdown_limit": 0,
-        "time_up_minimum": 0,
-        "time_down_minimum": 0,
-        "power_output_t0": 0,
-        "unit_on_t0": 1,
-        "unit_up_t0": 1,
-        "time_down_t0": 0,
-        "startup": [
-          {
-            "lag": 1,
-            "cost": 0
-          }
-        ],
-        "piecewise_production": [
-          {
-            "mw": 0,
-            "cost": 0
-          }
-        ]
-      },
-      "H14": {
-        "must_run": 0,
-        "name": "H14",
-        "power_output_minimum": 30,
-        "power_output_maximum": 30,
-        "ramp_up_limit": 15,
-        "ramp_down_limit": 15,
-        "ramp_startup_limit": 0,
-        "ramp_shutdown_limit": 0,
-        "time_up_minimum": 0,
-        "time_down_minimum": 0,
-        "power_output_t0": 0,
-        "unit_on_t0": 1,
-        "unit_up_t0": 1,
-        "time_down_t0": 0,
-        "startup": [
-          {
-            "lag": 1,
-            "cost": 0
-          }
-        ],
-        "piecewise_production": [
-          {
-            "mw": 0,
-            "cost": 0
-          }
-        ]
-      },
-      "H15": {
-        "must_run": 0,
-        "name": "H15",
-        "power_output_minimum": 30,
-        "power_output_maximum": 30,
-        "ramp_up_limit": 15,
-        "ramp_down_limit": 15,
-        "ramp_startup_limit": 0,
-        "ramp_shutdown_limit": 0,
-        "time_up_minimum": 0,
-        "time_down_minimum": 0,
-        "power_output_t0": 0,
-        "unit_on_t0": 1,
-        "unit_up_t0": 1,
-        "time_down_t0": 0,
-        "startup": [
-          {
-            "lag": 1,
-            "cost": 0
-          }
-        ],
-        "piecewise_production": [
-          {
-            "mw": 0,
-            "cost": 0
-          }
-        ]
-      },
-      "H16": {
-        "must_run": 0,
-        "name": "H16",
-        "power_output_minimum": 30,
-        "power_output_maximum": 30,
-        "ramp_up_limit": 15,
-        "ramp_down_limit": 15,
-        "ramp_startup_limit": 0,
-        "ramp_shutdown_limit": 0,
-        "time_up_minimum": 0,
-        "time_down_minimum": 0,
-        "power_output_t0": 0,
-        "unit_on_t0": 1,
-        "unit_up_t0": 1,
-        "time_down_t0": 0,
-        "startup": [
-          {
-            "lag": 1,
-            "cost": 0
-          }
-        ],
-        "piecewise_production": [
-          {
-            "mw": 0,
-            "cost": 0
-          }
-        ]
-      },
-      "H17": {
-        "must_run": 0,
-        "name": "H17",
-        "power_output_minimum": 90,
-        "power_output_maximum": 90,
-        "ramp_up_limit": 20,
-        "ramp_down_limit": 50,
-        "ramp_startup_limit": 0,
-        "ramp_shutdown_limit": 0,
-        "time_up_minimum": 0,
-        "time_down_minimum": 0,
-        "power_output_t0": 0,
-        "unit_on_t0": 1,
-        "unit_up_t0": 1,
-        "time_down_t0": 0,
-        "startup": [
-          {
-            "lag": 1,
-            "cost": 0
-          }
-        ],
-        "piecewise_production": [
-          {
-            "mw": 0,
-            "cost": 0
-          }
-        ]
-      },
-      "H18": {
-        "must_run": 0,
-        "name": "H18",
-        "power_output_minimum": 90,
-        "power_output_maximum": 90,
-        "ramp_up_limit": 20,
-        "ramp_down_limit": 50,
-        "ramp_startup_limit": 0,
-        "ramp_shutdown_limit": 0,
-        "time_up_minimum": 0,
-        "time_down_minimum": 0,
-        "power_output_t0": 0,
-        "unit_on_t0": 1,
-        "unit_up_t0": 1,
-        "time_down_t0": 0,
-        "startup": [
-          {
-            "lag": 1,
-            "cost": 0
-          }
-        ],
-        "piecewise_production": [
-          {
-            "mw": 0,
-            "cost": 0
-          }
-        ]
-      },
       "H19": {
         "must_run": 0,
         "name": "H19",
@@ -13285,34 +9775,6 @@
         "unit_on_t0": 1,
         "unit_up_t0": 1,
         "time_down_t0": 0,
-        "startup": [
-          {
-            "lag": 1,
-            "cost": 0
-          }
-        ],
-        "piecewise_production": [
-          {
-            "mw": 0,
-            "cost": 0
-          }
-        ]
-      },
-      "H26": {
-        "must_run": 0,
-        "name": "H26",
-        "power_output_minimum": 0,
-        "power_output_maximum": 0,
-        "ramp_up_limit": 15,
-        "ramp_down_limit": 15,
-        "ramp_startup_limit": 0,
-        "ramp_shutdown_limit": 0,
-        "time_up_minimum": 0,
-        "time_down_minimum": 0,
-        "power_output_t0": 0,
-        "unit_on_t0": 0,
-        "unit_up_t0": 0,
-        "time_down_t0": 1,
         "startup": [
           {
             "lag": 1,
@@ -13998,34 +10460,6 @@
           }
         ]
       },
-      "H51": {
-        "must_run": 0,
-        "name": "H51",
-        "power_output_minimum": 0,
-        "power_output_maximum": 0,
-        "ramp_up_limit": 15,
-        "ramp_down_limit": 15,
-        "ramp_startup_limit": 0,
-        "ramp_shutdown_limit": 0,
-        "time_up_minimum": 0,
-        "time_down_minimum": 0,
-        "power_output_t0": 0,
-        "unit_on_t0": 0,
-        "unit_up_t0": 0,
-        "time_down_t0": 1,
-        "startup": [
-          {
-            "lag": 1,
-            "cost": 0
-          }
-        ],
-        "piecewise_production": [
-          {
-            "mw": 0,
-            "cost": 0
-          }
-        ]
-      },
       "H52": {
         "must_run": 0,
         "name": "H52",
@@ -14059,34 +10493,6 @@
         "name": "H53",
         "power_output_minimum": 77,
         "power_output_maximum": 102,
-        "ramp_up_limit": 15,
-        "ramp_down_limit": 15,
-        "ramp_startup_limit": 0,
-        "ramp_shutdown_limit": 0,
-        "time_up_minimum": 0,
-        "time_down_minimum": 0,
-        "power_output_t0": 0,
-        "unit_on_t0": 1,
-        "unit_up_t0": 1,
-        "time_down_t0": 0,
-        "startup": [
-          {
-            "lag": 1,
-            "cost": 0
-          }
-        ],
-        "piecewise_production": [
-          {
-            "mw": 0,
-            "cost": 0
-          }
-        ]
-      },
-      "H54": {
-        "must_run": 0,
-        "name": "H54",
-        "power_output_minimum": 0,
-        "power_output_maximum": 0,
         "ramp_up_limit": 15,
         "ramp_down_limit": 15,
         "ramp_startup_limit": 0,

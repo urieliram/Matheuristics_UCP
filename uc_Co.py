@@ -110,31 +110,26 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,mpc,Pb,Cb,C,Cs,
     ## print(model.mut2[1].expr)  ## For only one index of Constraint List
     ## print(model.mdt2[3].expr)  ## For only one index of Constraint List
     ## model.u.set_values(dict)
-    ## model.u.set_values({(1,3): 1}) ## OJO este no fija !!!
+    ## model.u.set_values({(1,3): 1}) ## OJO este no sirve , no fija !!!
     ## https://pyomo.readthedocs.io/en/stable/working_models.html
     ## model.u[3,1].fix(0)
     ## model.u.fix(0)
     
     def obj_rule(m): 
-    #   return sum(m.cp[g,t] + m.cSU[g,t] * m.v[g,t] + m.mpc[g] * m.u[g,t] for g in m.G for t in m.T) \ #Costo sin piecewise
-        #return sum(m.cp[g,t] + m.cSU[g,t] * 1        + m.mpc[g] * m.u[g,t] for g in m.G for t in m.T) \
-        #return m.total_cSD + m.total_cSU + sum( m.cp[g,t] + m.mpc[g] * m.u[g,t] for g in m.G for t in m.T) \
         return 0 + m.total_cSU + sum( m.cp[g,t] + m.mpc[g] * m.u[g,t] for g in m.G for t in m.T) \
-            #  + 0 
             #  + sum(m.sR[t]   * CLP                                         for t in m.T) \
             #  + sum(m.sn[t]   * CRP                                         for t in m.T) 
-    #        + sum(m.cU[g] * m.v[g,t] + m.c[g] * m.p[g,t] for g in m.G for t in m.T) 
     model.obj = pyo.Objective(rule = obj_rule)
     
 
     ## -----------------------------TOTAL COSTOS APAGADO------------------------------------------  
     def total_cSD_rule(m):  ## to account for stoppages
         return m.total_cSD == sum( m.cSD[g,t] * 1 for g in m.G for t in m.T)
-    model.total_cSD_ = pyo.Constraint(rule = total_cSD_rule)    
+    model.total_cSD_ = pyo.Constraint(rule = total_cSD_rule)
 
 
     ## -----------------------------TOTAL COSTOS ARRANQUE------------------------------------------  
-    def total_cSU_rule(m):  ## to count starts
+    def total_cSU_rule(m):  ## to account starts
         return m.total_cSU == sum( m.cSU[g,t] * 1 for g in m.G for t in m.T)
     model.total_cSU_ = pyo.Constraint(rule = total_cSU_rule)    
      
@@ -155,15 +150,15 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,mpc,Pb,Cb,C,Cs,
         return m.p[g,t] == m.pc[g,t] + m.Pmin[g] * m.u[g,t]
     model.pow_igual = pyo.Constraint(model.G,model.T, rule = pow_igual_rule)    
 
-    def pow_igual_rule2(m,g,t): ## iguala pb a pcb eq.(13)
+    def pow_igual_rule2(m,g,t): ## iguala pb a pbc eq.(13)
         return m.pb[g,t] == m.pbc[g,t] + m.Pmin[g] * m.u[g,t]
     model.pow_igual2 = pyo.Constraint(model.G,model.T, rule = pow_igual_rule2)    
 
-    def pow_igual_rule3(m,g,t): ## iguala pb a pbc eq.(14)
+    def pow_igual_rule3(m,g,t): ## iguala pbc a pc eq.(14)
         return m.pbc[g,t] == m.pc[g,t] + m.r[g,t]
     model.pow_igual3 = pyo.Constraint(model.G,model.T, rule = pow_igual_rule3)
 
-    def pow_igual_rule4(m,g,t): ## iguala pb a pbc eq.(15)
+    def pow_igual_rule4(m,g,t): ## iguala pb a p eq.(15)
         return m.pb[g,t] == m.p[g,t] + m.r[g,t]
     model.pow_igual4 = pyo.Constraint(model.G,model.T, rule = pow_igual_rule4)    
 
@@ -171,12 +166,12 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,mpc,Pb,Cb,C,Cs,
         return m.p[g,t] <= m.pb[g,t] 
     model.pow_igual5 = pyo.Constraint(model.G,model.T, rule = pow_igual_rule5)    
 
-    def pow_igual_rule6(m,g,t): ## pow_pow eq.(17)
+    def pow_igual_rule6(m,g,t): ## pow_pow2 eq.(17)
         return m.pc[g,t] <= m.pbc[g,t]
     model.pow_igual6 = pyo.Constraint(model.G,model.T, rule = pow_igual_rule6)    
     
     def Piecewise_offer44b(m,g,t):  ## piecewise offer eq.(44b)
-        return m.pc[g,t] <= ( m.Pmax[g] -m.Pmin[g] ) * m.u[g,t]                                       
+        return m.pc[g,t] <= ( m.Pmax[g] - m.Pmin[g] ) * m.u[g,t]                                       
     model.Piecewise_offer44b = pyo.Constraint(model.G,model.T, rule = Piecewise_offer44b)
 
 
@@ -486,26 +481,22 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,mpc,Pb,Cb,C,Cs,
         model.Start_up_cost58 = pyo.Constraint(model.G,model.T, rule = Start_up_cost58)   
         
     
-    ## Initial Startup Type
+    ## Initial Startup Type required by MLR and Knueven
     ## Tight and Compact MILP Formulation for the Thermal Unit Commitment Problem
     ## Germán Morales-España, Jesus M. Latorre, and Andrés Ramos.  
        
     for g in range(1,len(G)+1): 
         for t in range(1,len(T)+1): 
             for s in range(1,len(S[g])): 
-                # if len(S[g])!=1:
-                if True:
-                    if TD_0[g]>=2:
-                        if t < model.Tunder[g,s+1]:
-                            if t > max(model.Tunder[g,s+1]-TD_0[g],1):
-                                model.delta[g,t,s].fix(0)
-                                # print('fix delta:',g,t,s)
-                else:
-                    print('>>> generator',g,'only has one start segment' )
-                    
-        
+                if TD_0[g]>=2:
+                    if t < model.Tunder[g,s+1]:
+                        if t > max(model.Tunder[g,s+1]-TD_0[g],1):
+                            model.delta[g,t,s].fix(0)
+                            # print('fix delta:',g,t,s)
+
+
     ## ---------------------------- Inequality related with 'delta' and 'v' ------------------------------------------
-    
+
     if option == 'Milp2':    
         def Start_up_cost_desigualdad_Uriel(m,g):  ##  start-up cost eq.(54)(s < value(len(m.S[g])) and t >= m.Tunder[g,s+1]):
             return sum(m.v[g,t] for t in m.T) == sum(m.delta[g,t,s] for s in range(1,value(len(m.S[g]))+1) for t in m.T)  
