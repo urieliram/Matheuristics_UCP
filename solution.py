@@ -120,10 +120,10 @@ class Solution:
             print ("!!! Something else is wrong",str(result.solver)) 
             self.fail = True
             
-        # if self.fail == True:
-        #     file = open(self.nameins +'_infeasible_model_' +'.dat', 'w')
-        #     self.model.pprint(file)
-        #     file.close()
+        if self.fail == True:
+            file = open(self.nameins +'_infeasible_model_' +'.dat', 'w')
+            self.model.pprint(file)
+            file.close()
             
         if self.fail == False:
             

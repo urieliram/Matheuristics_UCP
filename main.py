@@ -34,15 +34,15 @@ instancia = 'uc_48.json'       ## ejemplo sencillo
 #instancia = 'uc_56.json'       ## ejemplo sencillo 
 #instancia = 'uc_46.json'       ## ejemplo sencillo       [49 abajo,MILP infactible]
 
+instancia = 'uc_49.json'       ## ejemplo sencillo        [1 abajo,milp factible]  De_0=3317.97
+instancia = 'uc_42.json'       ## ejemplo sencillo        [infactible MILP]
+instancia = 'anjos.json'       ## ejemplo de juguete
+instancia = 'uc_52.json'       ## analizar infactibilidad 
 #instancia = 'dirdat_18.json'   ## analizar infactibilidad 
 #instancia = 'dirdat_21.json'   ## analizar infactibilidad 
 #instancia = 'dirdat_26.json'   ## analizar infactibilidad 
-#instancia = 'dirdat_2.json'    ## analizar infactibilidad 
-#instancia = 'output.json'      ## analizar infactibilidad 
-instancia = 'uc_49.json'       ## ejemplo sencillo        [1 abajo,milp factible]  De_0=3317.97
-instancia = 'uc_52.json'       ## analizar infactibilidad 
-instancia = 'uc_42.json'       ## ejemplo sencillo        [infactible MILP]
-instancia = 'anjos.json'       ## ejemplo de juguete
+instancia = 'dirdat_2.json'    ## analizar infactibilidad
+instancia = 'output.json'    ## analizar infactibilidad 
 
 ## Cargamos parámetros de configuración desde archivo <config>
 ambiente, ruta, executable, timeheu, timemilp, gap = util.config_env()
