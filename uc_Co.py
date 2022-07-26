@@ -22,8 +22,8 @@ import numpy as np
 import pyomo.environ as pyo
 from   pyomo.environ import *
 
-def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,mpc,Pb,Cb,C,Cs,Tunder,names,option='None',SB_Uu=[],No_SB_Uu=[],lower_Pmin_Uu=[],percent_lbc=90,k=10,nameins='model'):
-               
+def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,CR,Pb,Cb,C,Cs,Tunder,names,option='None',SB_Uu=[],No_SB_Uu=[],lower_Pmin_Uu=[],percent_lbc=90,k=10,nameins='model',mode="Compact"):
+                      
     n_subset   = 0 ## Número de variables que podrían moverse en el Sub-milp (Binary support)
 
     model      = pyo.ConcreteModel(nameins)    
@@ -45,11 +45,12 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,mpc,Pb,Cb,C,Cs,
     model.SD   = pyo.Param(model.G , initialize = SD   , within = Any)
     model.RU   = pyo.Param(model.G , initialize = RU   , within = Any)
     model.RD   = pyo.Param(model.G , initialize = RD   , within = Any)
-    model.p_0  = pyo.Param(model.G , initialize = p_0 , within = Any) 
-    model.mpc  = pyo.Param(model.G , initialize = mpc  , within = Any)
-    # model.c    = pyo.Param(model.G , initialize = {1:5,2:15,3:30}    ,within = Any)
+    model.p_0  = pyo.Param(model.G , initialize = p_0  , within = Any) 
+    model.CR   = pyo.Param(model.G , initialize = CR  , within = Any) #cost of generator g running and operating at minimum production
+    # model.c    = pyo.Param(model.G , initialize = {1:5,2:15,3:30}    ,within =Any)
     # model.cU   = pyo.Param(model.G , initialize = {1:800,2:500,3:250},within = Any)
        
+    
     CLP = 999999999999.0 #penalty cost for failing to meet or exceeding load ($/megawatt-hour (MWh)).
     CRP = 999999999999.0 #penalty cost for failing to meet reserve requirement
     
@@ -92,6 +93,7 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,mpc,Pb,Cb,C,Cs,
     model.cp        = pyo.Var( model.G , model.T , bounds = (0.0,9999999.0))
     model.cSU       = pyo.Var( model.G , model.T , bounds = (0.0,9999999.0))
     model.cSD       = pyo.Var( model.G , model.T , bounds = (0.0,9999999.0))
+    model.mpc       = pyo.Var( model.G , model.T , bounds = (0.0,9999999.0))
     model.snplus    = pyo.Var( model.T ,           bounds = (0.0,9999999.0)) ##surplus demand
     model.snminus   = pyo.Var( model.T ,           bounds = (0.0,9999999.0)) ##surplus demand
     model.sn        = pyo.Var( model.T ,           bounds = (0.0,9999999.0)) ##surplus demand
@@ -99,6 +101,9 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,mpc,Pb,Cb,C,Cs,
     model.pl        = pyo.Var(model.indexGTLg,     bounds = (0.0,99999.0))   ## within=UnitInterval UnitInterval == [0,1]   
     model.total_cSU = pyo.Var( bounds = (0.0,999999999999.0))                ## Acumula total prendidos
     model.total_cSD = pyo.Var( bounds = (0.0,999999999999.0))                ## Acumula total apagados
+    model.total_cEN = pyo.Var( bounds = (0.0,999999999999.0))                ## Acumula total energia
+    model.total_cMP = pyo.Var( bounds = (0.0,999999999999.0))               ## Acumula total CR
+    model.total_MPC = pyo.Var( bounds = (0.0,999999999999.0))               ## Acumula total MPC
 
     model.Pb     = pyo.Param(model.indexGLg, initialize = Pb,     within = Any)
     model.Cb     = pyo.Param(model.indexGLg, initialize = Cb,     within = Any)
@@ -110,28 +115,47 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,mpc,Pb,Cb,C,Cs,
     ## print(model.mut2[1].expr)  ## For only one index of Constraint List
     ## print(model.mdt2[3].expr)  ## For only one index of Constraint List
     ## model.u.set_values(dict)
-    ## model.u.set_values({(1,3): 1}) ## OJO este no sirve , no fija !!!
+    ## model.u.set_values({(1,3): 1}) ## OJO este no sirve , no fi
+    # ja !!!
     ## https://pyomo.readthedocs.io/en/stable/working_models.html
     ## model.u[3,1].fix(0)
     ## model.u.fix(0)
     
     def obj_rule(m): 
-        return 0 + m.total_cSU + sum( m.cp[g,t] + m.mpc[g] * m.u[g,t] for g in m.G for t in m.T) \
-            #  + sum(m.sR[t]   * CLP                                         for t in m.T) \
-            #  + sum(m.sn[t]   * CRP                                         for t in m.T) 
+        return  + m.total_cSU \
+                + m.total_cEN \
+                + m.total_cMP \
+                + m.total_MPC \
+            #  + sum(m.sR[t]   * CLP                    for t in m.T) \
+            #  + sum(m.sn[t]   * CRP                    for t in m.T) 
+            #  + m.total_cSD\
     model.obj = pyo.Objective(rule = obj_rule)
+
+    ## -----------------------------TOTAL COSTOS VACIO------------------------------------------  
+    def total_cMP_rule(m):  ## to account CR cost
+        return m.total_cMP == sum( m.CR[g] * m.u[g,t] for g in m.G for t in m.T)
+    model.total_cMP_ = pyo.Constraint(rule = total_cMP_rule)    
     
-
-    ## -----------------------------TOTAL COSTOS APAGADO------------------------------------------  
-    def total_cSD_rule(m):  ## to account for stoppages
-        return m.total_cSD == sum( m.cSD[g,t] * 1 for g in m.G for t in m.T)
-    model.total_cSD_ = pyo.Constraint(rule = total_cSD_rule)
-
-
+    ## -----------------------------TOTAL COSTOS ENERGIA------------------------------------------  
+    def total_cEN_rule(m):  ## to account energy cost
+        return m.total_cEN == sum( m.cp[g,t] for g in m.G for t in m.T)
+    model.total_cEN_ = pyo.Constraint(rule = total_cEN_rule)    
+        
     ## -----------------------------TOTAL COSTOS ARRANQUE------------------------------------------  
-    def total_cSU_rule(m):  ## to account starts
+    def total_cSU_rule(m):  ## to account starts cost
         return m.total_cSU == sum( m.cSU[g,t] * 1 for g in m.G for t in m.T)
-    model.total_cSU_ = pyo.Constraint(rule = total_cSU_rule)    
+    model.total_cSU_ = pyo.Constraint(rule = total_cSU_rule)   
+    
+    ## -----------------------------TOTAL MINIMUM PRODUCTION COST------------------------------------------  
+    def total_MPC_rule(m):  ## to account minumum production cost
+        return m.total_MPC == sum( m.mpc[g,t] * 1 for g in m.G for t in m.T)
+    model.total_MPC_ = pyo.Constraint(rule = total_MPC_rule)   
+    
+    ## -----------------------------TOTAL COSTOS APAGADO------------------------------------------  
+    # def total_cSD_rule(m):  ## to account for stoppages cost
+    #     return m.total_cSD == sum( m.cSD[g,t] * 1 for g in m.G for t in m.T)
+    # model.total_cSD_ = pyo.Constraint(rule = total_cSD_rule)
+ 
      
     
     ## -----------------------------GARVER------------------------------------------  
@@ -199,12 +223,50 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,mpc,Pb,Cb,C,Cs,
             return pyo.Constraint.Skip    
     model.sd_ramp_rule21b = pyo.Constraint(model.G,model.T, rule = sd_ramp_rule21b)
     
+    ## -------------------------------GENERATION LIMITS (Tight)------------------------------------------ 
+
+    if mode == "Tight":
+        TRU = []; TRD = []; TRU.append(-1); TRD.append(-1)
+        for g in G:
+            TRU.append(math.floor((model.Pmax[g]-model.SU[g])/model.RU[g]))
+            TRD.append(math.floor((model.Pmax[g]-model.SU[g])/model.RD[g]))                
+
+        def su_sd_rule23a(m,g,t):                      ## eq.(23a)
+            if m.UT[g] == 1 and m.SU[g] != m.SD[g] and t<len(m.T):    ## :g ∈ G1
+                return m.pc[g,t] + m.r[g,t] <= (m.Pmax[g]-m.Pmin[g])*m.u[g,t] - (m.Pmax[g]-m.SU[g])*m.v[g,t] \
+                    -max(0,m.SU[g]-m.SD[g])*m.w[g,t+1] 
+            else:
+                return pyo.Constraint.Skip    
+        model.su_sd_rule23a = pyo.Constraint(model.G,model.T, rule = su_sd_rule23a)   
+         
+        def su_sd_rule23b(m,g,t):                      ## eq.(23b)
+            if m.UT[g] == 1 and m.SU[g] != m.SD[g] and t<len(m.T):    ## :g ∈ G1
+                return m.pc[g,t] + m.r[g,t] <= (m.Pmax[g]-m.Pmin[g])*m.u[g,t] - (m.Pmax[g]-m.SD[g])*m.w[g,t+1] \
+                    -max(0,m.SD[g]-m.SU[g])*m.v[g,t] 
+            else:
+                return pyo.Constraint.Skip    
+        model.su_sd_rule23b = pyo.Constraint(model.G,model.T, rule = su_sd_rule23b) 
+        
+        def up_ramp_rule38(m,g,t):  ## eq.(38) upper bounds based on the ramp-up and shutdown trajectory of the generator: Pan and Guan (2016)
+            if t < len(m.T):
+                expr = 0
+                for i in range(0,min(m.UT[g]-2+1,TRU[g]+1)):
+                    if t-i > 0:
+                        expr += (m.Pmax[g]-m.SU[g]-i*m.RU[g])*m.v[g,t-i]                    
+                ## expr=sum((m.Pmax[g]-m.SU[g]-i*m.RU[g])*m.v[g,t-i] for i in range(0,min(m.UT[g]-2+1,TRU[g]+1)))                
+                return m.pb[g,t] <= m.Pmax[g]*m.u[g,t] - (m.Pmax[g]-m.SD[g])*m.w[g,t+1] - expr
+            else:
+                return pyo.Constraint.Skip
+        model.up_ramp_rule38 = pyo.Constraint(model.G,model.T, rule = up_ramp_rule38)   
+        
+        ##40
+        ##41
     
     ## -------------------------------LIMITS & RAMPS------------------------------------------   
         
     def up_ramp_rule35(m,g,t):          ## ramp-up eq.(35)
         if t == 1:
-            return m.pbc[g,t] - max(0,m.p_0[g]-Pmin[g]) <= (m.SU[g]-m.Pmin[g]-m.RU[g])*m.v[g,t] + m.RU[g]*m.u[g,t]
+            return m.pbc[g,t] - max(0,m.p_0[g]-m.Pmin[g]) <= (m.SU[g]-m.Pmin[g]-m.RU[g])*m.v[g,t] + m.RU[g]*m.u[g,t]
         else:
             return m.pbc[g,t] - m.pc[g,t-1]  <= (m.SU[g]-m.Pmin[g]-m.RU[g])*m.v[g,t] + m.RU[g]*m.u[g,t]
     model.up_ramp_rule35 = pyo.Constraint(model.G,model.T, rule = up_ramp_rule35)   
@@ -233,23 +295,23 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,mpc,Pb,Cb,C,Cs,
         return sum( m.pb[g,t] for g in m.G ) + 0 >= m.De[t] + m.R[t] 
     model.demand_rule67 = pyo.Constraint(model.T, rule = demand_rule67)
 
-    def demand_reserve(m,t):                      ## reserve
+    def reserve_rule68(m,t):                      ## reserve eq.(68)
         # return sum( m.r[g,t] for g in m.G) + m.sR[t] >= m.R[t] 
         return sum( m.r[g,t] for g in m.G) + 0 >= m.R[t] 
-    model.demand_reserve = pyo.Constraint(model.T, rule = demand_reserve)
+    model.reserve_rule68 = pyo.Constraint(model.T, rule = reserve_rule68)
 
 
     ## --------------------------------MINIMUM UP/DOWN TIME---------------------------------------
 
     def mut_rule(m,g,t):  ## minimum-up time eq.(4)
-        if t >= value(m.UT[g]):
+        if t >= m.UT[g]:
             return sum( m.v[g,i] for i in range(t-value(m.UT[g])+1,t+1)) <= m.u[g,t]        
         else:
             return pyo.Constraint.Skip
     model.mut = pyo.Constraint(model.G, model.T, rule = mut_rule)    
 
     def mdt_rule(m,g,t): ## minimum-down time eq.(5)
-        if t >= value(m.DT[g]):
+        if t >= m.DT[g]:
             return sum( m.w[g,i] for i in range(t-value(m.DT[g])+1,t+1)) <= 1 - m.u[g,t] 
         else:
             return pyo.Constraint.Skip
@@ -271,7 +333,7 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,mpc,Pb,Cb,C,Cs,
             return pyo.Constraint.Skip
     model.mut2 = pyo.Constraint(model.G, rule = mut_rule2)
     
-    ## Enforce the initial Minimum Up/Down Times fixing the initial periods U[g] and D[g] 
+    ## (Enforce) the initial Minimum Up/Down Times fixing the initial periods U[g] and D[g] 
     ## Tight and Compact MILP Formulation for the Thermal Unit Commitment Problem
     ## Germán Morales-España, Jesus M. Latorre, and Andrés Ramos
     for g in model.G: 
@@ -282,7 +344,7 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,mpc,Pb,Cb,C,Cs,
     
     ## ----------------------------PIECEWISE OFFER-------------------------------------------   
     
-    if  False: 
+    if mode == "Compact" and False:
         def Piecewise_offer51(m,g,t,l):  ## piecewise offer eq.(51)
             if l == 1:                
                 #return pyo.Constraint.Skip   
@@ -291,7 +353,7 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,mpc,Pb,Cb,C,Cs,
                 return m.cp[g,t] >= m.Cb[g,l]*m.p[g,t] + (m.Cb[g,l-1] - m.Cb[g,l]*m.Pb[g,l-1])*m.u[g,t]
         model.Piecewise_offer51 = pyo.Constraint(model.indexGTLg, rule = Piecewise_offer51)
     
-    if  False: 
+    if  mode == "Compact" and False: 
         def Piecewise_offer51(m,g,t,l):  ## piecewise offer eq.(51)
             if l == 1:   
                 x0 = 0  # m.Pmin[g]     ## PowerGenerationPiecewisePoints
@@ -319,12 +381,12 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,mpc,Pb,Cb,C,Cs,
             return m.TimePeriodLengthHours * m.PowerGenerationPiecewiseCostValues[g,t][i]
        
     
-    if  True:  ##  Garver 1962
+    if mode == "Tight" and True:  ##  Garver 1962
         def Piecewise_offer42(m,g,t,l):  ## piecewise offer eq.(42)
             if l == 1:
-                return m.pl[g,t,l] <= (m.Pb[g,l]-m.Pmin[g]  ) * m.u[g,t]
+                return m.pl[g,t,l] <= (m.Pb[g,l]-m.Pmin[g] ) * m.u[g,t]
             if l > 1:
-                return m.pl[g,t,l] <= (m.Pb[g,l]-m.Pb[g,l-1]) * m.u[g,t]
+                return m.pl[g,t,l] <= (m.Pb[g,l]-m.Pb[g,l-1] ) * m.u[g,t]
         model.Piecewise_offer42 = pyo.Constraint(model.indexGTLg, rule = Piecewise_offer42)
         
         def Piecewise_offer43(m,g,t):   ## piecewise offer eq.(43)
@@ -335,9 +397,14 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,mpc,Pb,Cb,C,Cs,
             return sum(m.C[g,l] * m.pl[g,t,l] for l in range(1,value(len(m.L[g]))+1)) == m.cp[g,t]                                       
         model.Piecewise_offer44 = pyo.Constraint(model.G,model.T, rule = Piecewise_offer44)
         
+        def Piecewise_mpc(m,g,t):   ## minimum production cost
+            return m.C[g,1] * m.Pmin[g] * m.u[g,t] == m.mpc[g,t]                                       
+        model.Piecewise_mpc = pyo.Constraint(model.G,model.T, rule = Piecewise_mpc)
         
-    if  True:  ##  Knueven et al. (2018b)          
-        ## Tightened the bounds on pl(t)->(43),(44) with the start-up and shutdown variables using the start-up and shutdown ramp:
+        
+    if mode == "Tight" and True:  ##  Knueven et al. (2018b)          
+        ## Tightened the bounds on pl(t)->(43),(44) with the start-up 
+        ## and shutdown variables using the start-up and shutdown ramp:
         Cv = []
         Cw = []
         for g in G:
@@ -347,7 +414,7 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,mpc,Pb,Cb,C,Cs,
                 a=0       
                 if Pb[g,l] <= SU[g]:
                    a=0     
-                if l==1 : ## Case Pb[g,0] = Pmin[g]
+                if l==1 : ## Case Pb[g,l=0] = Pmin[g]
                     if Pmin[g] < SU[g] and SU[g] < Pb[g,l]:
                         a=Pb[g,l]-SU[g]   
                     if Pmin[g] >= SU[g]:
@@ -378,11 +445,11 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,mpc,Pb,Cb,C,Cs,
             
         def Piecewise_offer46(m,g,t,l):  ## piecewise offer eq.(46)  Knueven et al. (2018b)      
             if m.UT[g] > 1:
-                if l == 1:  ## Case Pb[g,0] = Pmin[g]
+                if l == 1:  ## Case Pb[g,l=0] = Pmin[g]
                     if t < len(m.T):
-                        return m.pl[g,t,l] <= (m.Pb[g,l]-m.Pmin[g]  )*m.u[g,t] - Cv[g-1][l-1]*m.v[g,t] - Cw[g-1][l-1]*m.w[g,t+1]
+                        return m.pl[g,t,l] <= (m.Pb[g,l]- m.Pmin[g] )*m.u[g,t] - Cv[g-1][l-1]*m.v[g,t] - Cw[g-1][l-1]*m.w[g,t+1]
                     if t == len(m.T):
-                        return m.pl[g,t,l] <= (m.Pb[g,l]-m.Pmin[g]  )*m.u[g,t] - Cv[g-1][l-1]*m.v[g,t] - 0
+                        return m.pl[g,t,l] <= (m.Pb[g,l]- m.Pmin[g] )*m.u[g,t] - Cv[g-1][l-1]*m.v[g,t] - 0
                 if l > 1:
                     if t < len(m.T):
                         return m.pl[g,t,l] <= (m.Pb[g,l]-m.Pb[g,l-1])*m.u[g,t] - Cv[g-1][l-1]*m.v[g,t] - Cw[g-1][l-1]*m.w[g,t+1]
@@ -421,13 +488,13 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,mpc,Pb,Cb,C,Cs,
         def Piecewise_offer48a(m,g,t,l):  ## piecewise offer eq.(48a)  Knueven et al. (2018b)     
             if m.UT[g]==1 and SU[g]!=SD[g]:
                 posit = max(0,Cv[g-1][l-1] - Cw[g-1][l-1])      
-                if l == 1:  ## Case Pb[g,0] = Pmin[g]
+                if l == 1:  ## Case Pb[g,l=0] = Pmin[g]
                     if t < len(m.T):         
-                        return m.pl[g,t,l] <= (m.Pb[g,l]-m.Pmin[g]  )*m.u[g,t] - Cv[g-1][l-1]*m.v[g,t] - posit*m.w[g,t+1]
+                        return m.pl[g,t,l] <= (m.Pb[g,l]- m.Pmin[g] )*m.u[g,t] - Cv[g-1][l-1]*m.v[g,t] - posit*m.w[g,t+1]
                     if t == len(m.T):  
                         return pyo.Constraint.Skip                   
-                if l > 1:
-                    if t < len(m.T):  
+                if l > 1:  ## Caso general 
+                    if t < len(m.T):   
                         return m.pl[g,t,l] <= (m.Pb[g,l]-m.Pb[g,l-1])*m.u[g,t] - Cv[g-1][l-1]*m.v[g,t] - posit*m.w[g,t+1]
                     if t == len(m.T):    
                         return pyo.Constraint.Skip  
@@ -435,28 +502,35 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,mpc,Pb,Cb,C,Cs,
                 return pyo.Constraint.Skip                 
         model.Piecewise_offer48a = pyo.Constraint(model.indexGTLg, rule = Piecewise_offer48a)       
                         
-        # (NO FUNCIONA)
-        # def Piecewise_offer48b(m,g,t,l):  ## piecewise offer eq.(48b)  Knueven et al. (2018b)     
-        #     if m.UT[g]==1 and SU[g]!=SD[g]:
-        #         posit = max(0,Cw[g-1][l-1] - Cv[g-1][l-1]) 
-        #         if l == 1:  ## Case Pb[g,0] = Pmin[g]
-        #             if t < len(m.T):              
-        #                 return m.pl[g,t,l] <= (m.Pb[g,l]-m.Pmin[g]  )*m.u[g,t] - Cw[g-1][l-1]*m.w[g,t+1] - posit*m.v[g,t]
-        #             if t == len(m.T):
-        #                 return pyo.Constraint.Skip                     
-        #         if l > 1:
-        #             if t < len(m.T):             
-        #                 return m.pl[g,t,l] <= (m.Pb[g,l]-m.Pb[g,l-1])*m.u[g,t] - Cw[g-1][l-1]*m.w[g,t+1] - posit*m.v[g,t]
-        #             if t == len(m.T):   
-        #                 return pyo.Constraint.Skip                                 
-        #     else:
-        #         return pyo.Constraint.Skip                 
-        # model.Piecewise_offer48b = pyo.Constraint(model.indexGTLg, rule = Piecewise_offer48b)               
+        # VALIDAR EXPERIMENTALMENTE
+        def Piecewise_offer48b(m,g,t,l):  ## piecewise offer eq.(48b)  Knueven et al. (2018b)     
+            if m.UT[g]==1 and SU[g]!=SD[g]:
+                posit = max(0,Cw[g-1][l-1] - Cv[g-1][l-1]) 
+                if l == 1:  ## Case Pb[g,l=0] = Pmin[g]
+                    if t < len(m.T):              
+                        return m.pl[g,t,l] <= (m.Pb[g,l]-m.Pmin[g]  )*m.u[g,t] - Cw[g-1][l-1]*m.w[g,t+1] - posit*m.v[g,t]
+                    if t == len(m.T):
+                        return pyo.Constraint.Skip                     
+                if l > 1: ## Caso general 
+                    if t < len(m.T):             
+                        return m.pl[g,t,l] <= (m.Pb[g,l]-m.Pb[g,l-1])*m.u[g,t] - Cw[g-1][l-1]*m.w[g,t+1] - posit*m.v[g,t]
+                    if t == len(m.T):   
+                        return pyo.Constraint.Skip                                 
+            else:
+                return pyo.Constraint.Skip                 
+        model.Piecewise_offer48b = pyo.Constraint(model.indexGTLg, rule = Piecewise_offer48b)               
     
+    
+    ## ----------------------------SIMPLE COST PRODUCTION-------------------------------------------   
+    if False:
+        def simple_cost(m,g,t):   
+            return m.C[g,1] * m.p[g,t] == m.cp[g,t]                                            
+        model.simple_cost = pyo.Constraint(model.G,model.T, rule = simple_cost)
+        
     
     ## ----------------------------VARIABLE START-UP COST-------------------------------------------     
     
-    def Start_up_cost54(m,g,t,s):  ##  start-up cost eq.(54)    
+    def Start_up_cost54(m,g,t,s):  ##  start-up cost eq.(54)   Checar and t >= m.Tunder[g,s+1]:------------------- 
         if s != len(m.S[g]) and t >= m.Tunder[g,s+1]:  
             return m.delta[g,t,s] <= sum(m.w[g,t-i] for i in range(m.Tunder[g,s],m.Tunder[g,s+1])) 
         else:
@@ -471,6 +545,7 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,mpc,Pb,Cb,C,Cs,
         def Start_up_cost56(m,g,t):  ##  start-up cost eq.(56)
             return m.cSU[g,t] == sum((m.Cs[g,s]*m.delta[g,t,s]) for s in range(1,len(m.S[g])+1))  
         model.Start_up_cost56 = pyo.Constraint(model.G,model.T, rule = Start_up_cost56)   
+        
     else:  ## delta projection suggested by Knueven 2020       
         def Start_up_cost57(m,g,t):  ##  start-up cost eq.(57)
             return m.v[g,t] >= sum(m.delta[g,t,s] for s in range(1,len(m.S[g]) )) 
@@ -481,8 +556,8 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,mpc,Pb,Cb,C,Cs,
         model.Start_up_cost58 = pyo.Constraint(model.G,model.T, rule = Start_up_cost58)   
         
     
-    ## Initial Startup Type required by MLR and Knueven
-    ## Tight and Compact MILP Formulation for the Thermal Unit Commitment Problem
+    ## Initial Startup (t=0)Type required by MLR and Knueven from
+    ## "Tight and Compact MILP Formulation for the Thermal Unit Commitment Problem",
     ## Germán Morales-España, Jesus M. Latorre, and Andrés Ramos.  
        
     for g in range(1,len(G)+1): 
@@ -507,26 +582,13 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,mpc,Pb,Cb,C,Cs,
     
     ## Si se desea fijar LR->SB y resolver un sub-MILP.
     if option == 'Hard':    
-        for f in No_SB_Uu: 
-            model.u[f[0]+1,f[1]+1].fix(0) ## Hard fixing
-        #for f in SB_Uu: 
-        #    model.u[f[0]+1,f[1]+1].fix(1) ## Hard fixing
+        # for f in No_SB_Uu: 
+        #     model.u[f[0]+1,f[1]+1].fix(0) ## Hard fixing
+        for f in SB_Uu: 
+           model.u[f[0]+1,f[1]+1].fix(1) ## Hard fixing
         for f in lower_Pmin_Uu:
             model.u[f[0]+1,f[1]+1] = 1
             
-
-    ## --------------------------- HARD VARIABLE FIXING 2 ----------------------------------------
-
-    ## Si se desea fijar LR->SB y resolver un sub-MILP.
-    if option == 'Hard2':    
-        for f in No_SB_Uu: 
-            model.u[f[0]+1,f[1]+1].fix(0) ## Hard fixing
-        for f in SB_Uu:  
-            model.u[f[0]+1,f[1]+1].unfix() 
-            model.u[f[0]+1,f[1]+1] = 1
-        for f in lower_Pmin_Uu:
-            model.u[f[0]+1,f[1]+1].unfix() ## Unfixing 
-
 
     ## ---------------------------- SOFT0 FIXING ------------------------------------------
     
@@ -657,6 +719,41 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,mpc,Pb,Cb,C,Cs,
         for f in lower_Pmin_Uu:                 ## Cuenta los cambios de 0 --> 1
             expr +=     model.u[f[0]+1,f[1]+1]            
         model.cuts.add(expr <= k)               ## Adding a new restrictions (lbc0). 
+        
+        
+    ## ---------------------------- LOCAL BRANCHING CONSTRAINT LBC 8------------------------------------------
+    
+    ## Define a neighbourhood with LBC8.
+    if(option == 'lbc8'):   
+        for f in No_SB_Uu:
+            model.u[f[0]+1,f[1]+1].fix(0)          ## Hard fixing to '0' those elements outside of Sopport Binary      
+        for f in SB_Uu:  
+            model.u[f[0]+1,f[1]+1].domain = Binary 
+            model.u[f[0]+1,f[1]+1].unfix() 
+        for f in lower_Pmin_Uu:
+            model.u[f[0]+1,f[1]+1].domain = Binary 
+            model.u[f[0]+1,f[1]+1].unfix()         ## Unfixing
+        ## Adding a new restriction.  
+        ## https://pyomo.readthedocs.io/en/stable/working_models.html
+        ## Soft-fixing II
+        model.cuts = pyo.ConstraintList()
+        n_subset   = math.ceil((percent_lbc/100) * (len(SB_Uu))) #-len(lower_Pmin_Uu)
+        expr       = 0        
+        ## Se hace n_subset=90% solo a el - Soporte Binario -  
+        for f in SB_Uu:      
+            expr += model.u[f[0]+1,f[1]+1]
+        model.cuts.add(expr >= n_subset)                                         
+        #print('LBC: number of variables Uu that may be into the n_subset (',percent_lbc,'%): ', n_subset)
+        outside90 = len(SB_Uu)-n_subset
+        print(option+' number of variables Uu that may be outside the n_subset (',100-percent_lbc,'%): ',outside90 )
+        
+        ## Local branching constraint
+        expr = 0        
+        for f in SB_Uu:                         ## Cuenta los cambios de 1 --> 0  
+            expr += 1 - model.u[f[0]+1,f[1]+1] 
+        for f in lower_Pmin_Uu:                 ## Cuenta los cambios de 0 --> 1
+            expr +=     model.u[f[0]+1,f[1]+1]            
+        model.cuts.add(expr <= k)               ## Adding a new restrictions (lbc8). 
         
 
     ## ---------------------------- LOCAL BRANCHING CONSTRAINT LBC 1------------------------------------------
