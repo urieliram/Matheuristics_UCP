@@ -75,6 +75,7 @@ def reading(file):
     TD0list              = []
     p_0_list             = []
     u_0_list             = []
+    fixed_cost           = []
     abajo_min =0
     
     ## To get the data from the generators
@@ -93,6 +94,7 @@ def reading(file):
         unit_on_t0.append(md['thermal_generators'][gen]["unit_on_t0"])#1
         time_up_t0.append(md['thermal_generators'][gen]["time_up_t0"])#1
         time_down_t0.append(md['thermal_generators'][gen]["time_down_t0"])#0        
+        fixed_cost.append(md['thermal_generators'][gen]["fixed_cost"] )        
         startup = (md['thermal_generators'][gen]["startup"]) # variable start-up cost
         piecewise_production = md['thermal_generators'][gen]["piecewise_production"] #piecewise cost
         
@@ -124,22 +126,6 @@ def reading(file):
         Startup.append(lista_aux2)
         S[i] = lista2
         
-                
-        ## Validaciones
-        if power_output_t0[i-1] !=0 and unit_on_t0[i-1] == 0:
-            print('Error: The generator ',str(i),' cannot be off and its output greater than zero')
-            quit()
-        if time_down_t0[i-1] !=0 and unit_on_t0[i-1] != 0:
-            print('Error: The generator  ',str(i),' cannot be off and on at the same time')
-            quit()
-                    
-        ## Caso prendido
-        if unit_on_t0[i-1] == 1:
-            u_0_list.append(1)
-            aux=max(0,time_up_minimum[i-1]-time_up_t0[i-1])
-            Ulist.append(aux)
-            Dlist.append(0)
-            TD0list.append(0)
         ## Caso apagado
         if unit_on_t0[i-1] == 0: 
             u_0_list.append(0)   
@@ -147,18 +133,22 @@ def reading(file):
             Ulist.append(0)
             Dlist.append(aux)
             TD0list.append(time_down_t0[i-1])    
-        
-        ######################################################################
-        ## Con este código corren todas las instancias a factibilidad (menos 52)
-        ## Se incrementaba la potencia de t_o de los generadores prendidos 
-        ## y los que están abajo del mínimo los pone a cero.    
-        ## Es decir, no considera la potencia de arranque.
-        if False: ## (Original que está mal)
-            aux = power_output_t0[i-1] - power_output_minimum[i-1]
-            if aux<0:
-                aux=0
-            p_0_list.append(aux)
-        ######################################################################
+        else:  
+        ## Caso prendido
+            u_0_list.append(1)
+            aux=max(0,time_up_minimum[i-1] - time_up_t0[i-1])
+            Ulist.append(aux)
+            Dlist.append(0)
+            TD0list.append(0)
+
+                
+        ## Validaciones de prendido y apagado
+        if power_output_t0[i-1] !=0 and unit_on_t0[i-1] == 0:
+            print('Error: The generator ',str(i),' cannot be off and its output greater than zero')
+            quit()
+        if time_down_t0[i-1] !=0 and unit_on_t0[i-1] != 0:
+            print('Error: The generator  ',str(i),' cannot be off and on at the same time')
+            quit()
         
         ########################################################################
         ## Este código considera las potencias de arranque de los generadores
@@ -170,7 +160,9 @@ def reading(file):
         p_0_list.append(power_output_t0[i-1])
         ########################################################################
                                  
-        i+=1 ## Se incrementa un generador                  
+        i+=1  ## Se incrementa un generador  
+                            
+       
        
     ## Se extraen los diccionarios Pb y C de la lista de listas Piecewise    
     k=0; n=0
@@ -180,10 +172,11 @@ def reading(file):
         for j in i:
             n=n+1
             C[k,n] = j[1]
-            ## Se calcula el costo mínimo de operación mpc
-            if n==1:
-                mpc[k] = j[0]*j[1] 
-        del C[(k,n)]           
+            # ## Se calcula el costo mínimo de operación mpc
+            # if n==1:
+            #     mpc[k] = j[0]*j[1] 
+        del C[(k,n)]      
+         
         
     k=0; n=0
     for i in Piecewise:
@@ -222,7 +215,7 @@ def reading(file):
     RD   = dict(zip(G, ramp_down_limit))
     p_0  = dict(zip(G, p_0_list))  
     names= dict(zip(G, names_list))  
-    
+    mpc  = dict(zip(G, fixed_cost))  
     
     ## -----------------  Caso de ejemplo de anjos.json  --------------------------
     #G        = [1, 2, 3]
@@ -256,7 +249,7 @@ def reading(file):
     
     #to_dirdat(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,SU,SD,RU,RD,p_0,Pb,C,mpc,Cs,Tunder,names)
     
-    validation(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,Pb,Cb,C,mpc,Cs,Tunder,names,abajo_min)
+    # validation(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,Pb,Cb,C,mpc,Cs,Tunder,names,abajo_min)
        
     return G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,Pb,Cb,C,mpc,Cs,Tunder,names
           

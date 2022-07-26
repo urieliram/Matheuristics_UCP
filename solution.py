@@ -67,6 +67,9 @@ class Solution:
         solver.options['mip tolerances mipgap'         ] = self.gap  
         solver.options['timelimit'                     ] = self.timelimit 
         solver.options['emphasis mip'                  ] = self.emphasize
+        # solver.options['mip cuts all'                ] = -1
+        # solver.options['mip strategy presolvenode'   ] = 1        
+        # solver.options['preprocessing numpass'       ] = 0
         
         ## para mostrar la solución en un formato propio
         ## https://developers.google.com/optimization/routing/cvrp
@@ -198,8 +201,8 @@ class Solution:
                 
         return 0
     
-    ## En esta función seleccionamos el conjunto de variables Uu que quedarán en uno para ser fijadas posteriormente.
     def select_binary_support_Uu(self,optional=''):
+    ## En esta función seleccionamos el conjunto de variables Uu que quedarán en uno para ser fijadas posteriormente.
         SB_Uu         = []  
         No_SB_Uu      = []
         lower_Pmin_Uu = []
@@ -221,7 +224,7 @@ class Solution:
                     else:
                         ## Vamos a guardar las variables que quedaron abajo del minimo pero diferentes de cero,
                         ## podriamos decir que este grupo de variables son <intentos de asignación>.
-                        ## >>> Éste valor puede ser usado para definir el parámetro k en el LBC. <<<                   
+                        ## >>> Éste valor podría ser usado para definir el parámetro k en el LBC o en un KS.<<<             
                         if (UuxP[g][t] != 0):
                             lower_Pmin_Uu.append([g,t])
                         No_SB_Uu.append([g,t])  
@@ -233,7 +236,6 @@ class Solution:
                         SB_Uu.append([g,t])
                     if self.Uu[g][t] == 0:
                         No_SB_Uu.append([g,t])
-                        
                     
         suma = len(SB_Uu) + len(No_SB_Uu)
         print('|Uu       |SB_Uu      |No_SB_Uu  |lower_Pmin_Uu|')   
@@ -251,10 +253,9 @@ class Solution:
                 if self.Uu[i[0]][i[1]] == 0:
                     ceros=ceros+1
                     lower_Pmin_Uu.append(i)
-            print(tag,'update lower_Pmin_Uu (#0) ->',ceros)  
-            
+            print(tag,'update lower_Pmin_Uu (#0) ->',ceros)            
         except Exception as e:
-            xx = 1 
+            temp = 1 
             print('>>> Hubo un error en <update_lower_Pmin_Uu>')            
         return lower_Pmin_Uu
     
@@ -284,7 +285,7 @@ class Solution:
         except Exception as e:
             xx = 1 
             #print('>>> Hubo un error en <cuenta_ceros_a_unos>')
-        return 0
+        return uno_a_cero + cero_a_uno
     
     
     def count_U_no_int(self):   
@@ -312,4 +313,6 @@ class Solution:
         print('Uu equal_arrays  =',equal_arrays)        
         out_num = np.subtract(npArray1, npArray2) 
         print ("Uu Difference of two input number : ",type(out_num), out_num) 
+        
+        
         

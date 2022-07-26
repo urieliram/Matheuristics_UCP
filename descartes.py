@@ -191,6 +191,33 @@
 #     t_harduvwdel = time.time() - t_o + t_lp
 #     print("t_hardUVWdel = ",round(t_harduvwdel,1),"z_hardUVWdel = ",round(z_harduvwdel,1))
 
+## ----------------------------------- HARD-FIXING 2 (only Uu) ---------------------------------------------
+## HARD-FIXING (only Uu) solution and solve the sub-MILP. (Require run the LP and HF1)
+## FIX-->No_SB_Uu2, UNFIX-->[No_SB_Uu2,lower_Pmin_Uu2]
+# if False: 
+#     t_o = time.time() 
+#     timehard2 = timeheu
+#     model,xx = uc_Co.uc(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,mpc,Pb,Cb,C,Cs,Tunder,names,option='Hard2',SB_Uu=SB_Uu2,No_SB_Uu=No_SB_Uu2,lower_Pmin_Uu=lower_Pmin_Uu2,nameins=instancia[0:5],mode="Tight")
+#     sol_hard2 = Solution(model=model,env=ambiente,executable=executable,nameins=instancia[0:5],gap=gap,timelimit=timehard2,
+#                         tee=False,emphasize=emph,tofiles=False,option='Hard2')
+#     z_hard2,g_hard2 = sol_hard2.solve_problem()
+#     t_hard2         = time.time() - t_o + t_lp
+#     print("t_hard2= ",round(t_hard2,1),"z_hard2= ",round(z_hard2,1),"g_hard2= ",round(g_hard2,5) )
+
+
+    ## --------------------------- HARD VARIABLE FIXING 2 ----------------------------------------
+
+    # ## Si se desea fijar LR->SB y resolver un sub-MILP.
+    # if option == 'Hard2':    
+    #     for f in No_SB_Uu: 
+    #         model.u[f[0]+1,f[1]+1].fix(0) ## Hard fixing
+    #     for f in SB_Uu:  
+    #         model.u[f[0]+1,f[1]+1].unfix() 
+    #         model.u[f[0]+1,f[1]+1] = 1
+    #     for f in lower_Pmin_Uu:
+    #         model.u[f[0]+1,f[1]+1].unfix() ## Unfixing 
+
+
 
     ## ---------------------------- HARD VARIABLE FIXING (deprecared) ------------------------------------------    
     # ## Si se desea usar la solución fix y calcular un sub-MILP.
@@ -206,3 +233,15 @@
     #          model.w[f[0]+1,f[1]+1].fix(1) ## Hard fixing   
     #     for f in fixed_delta: 
     #          model.delta[f[0],f[1],f[2]].fix(0) ## Hard fixing   
+    
+        ######################################################################
+        ## Con este código corren todas las instancias a factibilidad (menos 52)
+        ## Se incrementaba la potencia de t_o de los generadores prendidos 
+        ## y los que están abajo del mínimo los pone a cero.    
+        ## Es decir, no considera la potencia de arranque.
+        # if False: ## (Original que está mal)
+        #     aux = power_output_t0[i-1] - power_output_minimum[i-1]
+        #     if aux<0:
+        #         aux=0
+        #     p_0_list.append(aux)
+        ######################################################################
