@@ -45,7 +45,9 @@ instancia = 'uc_49.json'       ## ejemplo sencillo        [1 abajo,milp factible
 instancia = 'uc_47.json'       ## ejemplo sencillo      
 
 instancia = 'uc_02.json'       ## ejemplos dificiles 2,3,4   
-instancia = 'morales_ejemplo_III_D.json'       ## 
+
+instancia = 'morales_ejemplo_III_D.json'  ## 
+instancia = 'uc_57.json'                 ## 
 
 ## Cargamos parámetros de configuración desde archivo <config>
 ambiente, ruta, executable, timeheu, timemilp, gap = util.config_env()
@@ -212,7 +214,7 @@ if True:
     t_o = time.time() 
     model,xx = uc_Co.uc(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,mpc,Pb,Cb,C,Cs,Tunder,names,option=None,nameins=instancia[0:5],mode="Tight")
     sol_milp = Solution(model=model,nameins=instancia[0:5],env=ambiente,executable=executable,gap=gap,timelimit=timemilp,
-                          tee=False,tofiles=True,emphasize=emph,exportLP=True,option='Milp')
+                          tee=False,tofiles=False,emphasize=emph,exportLP=False,option='Milp')
     z_milp,g_milp = sol_milp.solve_problem()
     t_milp        = time.time() - t_o
     print("t_milp= ",round(t_milp,1),"z_milp= ",round(z_milp,1),"g_milp= ",round(g_milp,5))#,"total_costo_arr=",model.total_cSU.value  
