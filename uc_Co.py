@@ -51,7 +51,7 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,CR,Pb,Cb,C,Cs,T
     # model.cU   = pyo.Param(model.G , initialize = {1:800,2:500,3:250},within = Any)
        
     
-    CLP = 999999999999.0 #penalty cost for failing to meet or exceeding load ($/megawatt-hour (MWh)).
+    CLP = 1000.0 #penalty cost for failing to meet or exceeding load ($/megawatt-hour (MWh)).
     CRP = 999999999999.0 #penalty cost for failing to meet reserve requirement
     
     ##  Defined index to compute the per-generator, per-time, and segment period production costs.
@@ -126,9 +126,9 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,CR,Pb,Cb,C,Cs,T
                 + m.total_cEN \
                 + m.total_cMP \
                 + m.total_MPC \
-            #  + sum(m.sR[t]   * CLP                    for t in m.T) \
-            #  + sum(m.sn[t]   * CRP                    for t in m.T) 
-            #  + m.total_cSD\
+                + sum(m.sn[t]   * CLP                    for t in m.T) 
+            #   + sum(m.sR[t]   * CRP                    for t in m.T) \
+            #   + m.total_cSD\
     model.obj = pyo.Objective(rule = obj_rule)
 
     ## -----------------------------TOTAL COSTOS VACIO------------------------------------------  
@@ -282,21 +282,21 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,CR,Pb,Cb,C,Cs,T
     ## -------------------------------DEMAND & RESERVE----------------------------------------   
  
     def demand_rule65(m,t):                      ## demand eq.(65)
-        # return sum( m.p[g,t] for g in m.G ) + m.sn[t]  == m.De[t] 
-        return sum( m.p[g,t] for g in m.G ) + 0  == m.De[t] 
+        return sum( m.p[g,t] for g in m.G ) +  m.sn[t]  == m.De[t] 
+        #return sum( m.p[g,t] for g in m.G )  + 0  == m.De[t] 
     model.demand_rule65 = pyo.Constraint(model.T, rule = demand_rule65)
     
-    # def demand_rule66a(m,t):                      ## holguras o excesos en la demanda eq.(66a)
-    #      return m.sn[t] == m.snplus[t] - m.snminus[t]  
-    # model.demand_rule66a = pyo.Constraint(model.T, rule = demand_rule66a)
+    def demand_rule66a(m,t):                      ## holguras o excesos en la demanda eq.(66a)
+        return m.sn[t] == m.snplus[t] - m.snminus[t]  
+    model.demand_rule66a = pyo.Constraint(model.T, rule = demand_rule66a)
 
     def demand_rule67(m,t):                      ## demand + reserve eq.(67)
-        # return sum( m.pb[g,t] for g in m.G ) + m.sR[t] >= m.De[t] + m.R[t] 
-        return sum( m.pb[g,t] for g in m.G ) + 0 >= m.De[t] + m.R[t] 
+        return sum( m.pb[g,t] for g in m.G ) +  m.sn[t] >= m.De[t] + m.R[t] 
+        #return sum( m.pb[g,t] for g in m.G )  +  0       >= m.De[t] + m.R[t] 
     model.demand_rule67 = pyo.Constraint(model.T, rule = demand_rule67)
 
     def reserve_rule68(m,t):                      ## reserve eq.(68)
-        # return sum( m.r[g,t] for g in m.G) + m.sR[t] >= m.R[t] 
+        ## return sum( m.r[g,t] for g in m.G) + m.sR[t] >= m.R[t] 
         return sum( m.r[g,t] for g in m.G) + 0 >= m.R[t] 
     model.reserve_rule68 = pyo.Constraint(model.T, rule = reserve_rule68)
 
@@ -712,63 +712,28 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,CR,Pb,Cb,C,Cs,T
         outside90 = len(SB_Uu)-n_subset
         print(option+' number of variables Uu that may be outside the n_subset (',100-percent_lbc,'%): ',outside90 )
         
-        ## Local branching constraint
+        ## Local Branching Cut
         expr = 0        
         for f in SB_Uu:                         ## Cuenta los cambios de 1 --> 0  
             expr += 1 - model.u[f[0]+1,f[1]+1] 
         for f in lower_Pmin_Uu:                 ## Cuenta los cambios de 0 --> 1
             expr +=     model.u[f[0]+1,f[1]+1]            
         model.cuts.add(expr <= k)               ## Adding a new restrictions (lbc0). 
-        
-        
-    ## ---------------------------- LOCAL BRANCHING CONSTRAINT LBC 8------------------------------------------
-    
-    ## Define a neighbourhood with LBC8.
-    if(option == 'lbc8'):   
-        for f in No_SB_Uu:
-            model.u[f[0]+1,f[1]+1].fix(0)          ## Hard fixing to '0' those elements outside of Sopport Binary      
-        for f in SB_Uu:  
-            model.u[f[0]+1,f[1]+1].domain = Binary 
-            model.u[f[0]+1,f[1]+1].unfix() 
-        for f in lower_Pmin_Uu:
-            model.u[f[0]+1,f[1]+1].domain = Binary 
-            model.u[f[0]+1,f[1]+1].unfix()         ## Unfixing
-        ## Adding a new restriction.  
-        ## https://pyomo.readthedocs.io/en/stable/working_models.html
-        ## Soft-fixing II
-        model.cuts = pyo.ConstraintList()
-        n_subset   = math.ceil((percent_lbc/100) * (len(SB_Uu))) #-len(lower_Pmin_Uu)
-        expr       = 0        
-        ## Se hace n_subset=90% solo a el - Soporte Binario -  
-        for f in SB_Uu:      
-            expr += model.u[f[0]+1,f[1]+1]
-        model.cuts.add(expr >= n_subset)                                         
-        #print('LBC: number of variables Uu that may be into the n_subset (',percent_lbc,'%): ', n_subset)
-        outside90 = len(SB_Uu)-n_subset
-        print(option+' number of variables Uu that may be outside the n_subset (',100-percent_lbc,'%): ',outside90 )
-        
-        ## Local branching constraint
-        expr = 0        
-        for f in SB_Uu:                         ## Cuenta los cambios de 1 --> 0  
-            expr += 1 - model.u[f[0]+1,f[1]+1] 
-        for f in lower_Pmin_Uu:                 ## Cuenta los cambios de 0 --> 1
-            expr +=     model.u[f[0]+1,f[1]+1]            
-        model.cuts.add(expr <= k)               ## Adding a new restrictions (lbc8). 
-        
+
 
     ## ---------------------------- LOCAL BRANCHING CONSTRAINT LBC 1------------------------------------------
     
     ## Define a neighbourhood with LBC1.
     if(option == 'lbc1'):
-        for f in No_SB_Uu:
-            model.u[f[0]+1,f[1]+1].fix(0)       ## Hard fixing to '0' those elements outside of Binary Sopport  
+        # for f in No_SB_Uu:
+            #model.u[f[0]+1,f[1]+1].fix(0)                ## Hard fixing to '0' those elements outside of Binary Sopport  
         for f in SB_Uu:  
             model.u[f[0]+1,f[1]+1].domain = UnitInterval ## We remove the integrality constraint of the Binary Support 
             model.u[f[0]+1,f[1]+1].unfix() 
             model.u[f[0]+1,f[1]+1] = 1 
         for f in lower_Pmin_Uu:
             model.u[f[0]+1,f[1]+1].domain = UnitInterval ## Soft-fixing I        
-            model.u[f[0]+1,f[1]+1].unfix()      ## Unfixing
+            model.u[f[0]+1,f[1]+1].unfix()               ## Unfixing
             model.u[f[0]+1,f[1]+1] = 0    
         ## Adding a new restriction.  
         ## https://pyomo.readthedocs.io/en/stable/working_models.html
@@ -828,6 +793,43 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,CR,Pb,Cb,C,Cs,T
         for f in lower_Pmin_Uu:                 ## Cuenta los cambios de 0 --> 1
             expr +=     model.u[f[0]+1,f[1]+1]            
         model.cuts.add(expr <= k)               ## Adding a new restrictions (lbc0).
+        
+                
+        
+    ## ---------------------------- LOCAL BRANCHING CONSTRAINT LBC 8------------------------------------------
+    
+    ## Define a neighbourhood with LBC8.
+    if(option == 'lbc8'):   
+        for f in No_SB_Uu:
+            model.u[f[0]+1,f[1]+1].fix(0)          ## Hard fixing to '0' those elements outside of Sopport Binary      
+        for f in SB_Uu:  
+            model.u[f[0]+1,f[1]+1].domain = Binary 
+            model.u[f[0]+1,f[1]+1].unfix() 
+        for f in lower_Pmin_Uu:
+            model.u[f[0]+1,f[1]+1].domain = Binary 
+            model.u[f[0]+1,f[1]+1].unfix()         ## Unfixing
+        ## Adding a new restriction.  
+        ## https://pyomo.readthedocs.io/en/stable/working_models.html
+        ## Soft-fixing II
+        model.cuts = pyo.ConstraintList()
+        n_subset   = math.ceil((percent_lbc/100) * (len(SB_Uu))) #-len(lower_Pmin_Uu)
+        expr       = 0        
+        ## Se hace n_subset=90% solo a el - Soporte Binario -  
+        for f in SB_Uu:      
+            expr += model.u[f[0]+1,f[1]+1]
+        model.cuts.add(expr >= n_subset)                                         
+        #print('LBC: number of variables Uu that may be into the n_subset (',percent_lbc,'%): ', n_subset)
+        outside90 = len(SB_Uu)-n_subset
+        print(option+' number of variables Uu that may be outside the n_subset (',100-percent_lbc,'%): ',outside90 )
+        
+        ## Local Branching Cut
+        expr = 0        
+        for f in SB_Uu:                         ## Cuenta los cambios de 1 --> 0  
+            expr += 1 - model.u[f[0]+1,f[1]+1] 
+        for f in lower_Pmin_Uu:                 ## Cuenta los cambios de 0 --> 1
+            expr +=     model.u[f[0]+1,f[1]+1]            
+        model.cuts.add(expr <= k)               ## Adding a new restrictions (lbc8). 
+        
         
         
         
