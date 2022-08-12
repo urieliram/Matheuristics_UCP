@@ -72,13 +72,14 @@ def config_env():
         timemilp     = df['timemilp'  ].values[0]
         gap          = df['gap'       ].values[0]
         k            = df['k'         ].values[0]
+        iterpar      = df['iter'      ].values[0]
     else:
         print('!!! Problema al cargar la configuración. Verifique el ')
         print('formato y rutas del archivo <config>, algo como esto:')
         print('ambiente,ruta,executable,timeheu,timemilp,gap')
         print('localPC,instances/,/home/uriel/cplex1210/cplex/bin/x86-64_linux/cplex,4000,40000,0.001')
                 
-    return ambiente, ruta, executable, timeheu, timemilp, gap, k
+    return ambiente, ruta, executable, timeheu, timemilp, gap, k, iterpar
 
 
 def trunc(values, decs=1):

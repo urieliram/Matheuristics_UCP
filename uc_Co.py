@@ -22,7 +22,7 @@ import numpy as np
 import pyomo.environ as pyo
 from   pyomo.environ import *
 
-def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,CR,Pb,Cb,C,Cs,Tunder,names,option='None',SB_Uu=[],No_SB_Uu=[],lower_Pmin_Uu=[],percent_lbc=90,k=10,nameins='model',mode="Compact"):
+def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,CR,Pb,Cb,C,Cs,Tunder,names,option='None',SB_Uu=[],No_SB_Uu=[],lower_Pmin_Uu=[],percent_lbc=90,k=10,nameins='model',mode="Compact",flag=1):
                       
     n_subset   = 0 ## Número de variables que podrían moverse en el Sub-milp (Binary support)
 
@@ -587,7 +587,7 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,CR,Pb,Cb,C,Cs,T
         for f in SB_Uu: 
            model.u[f[0]+1,f[1]+1].fix(1) ## Hard fixing
         for f in lower_Pmin_Uu:
-            model.u[f[0]+1,f[1]+1] = 1
+            model.u[f[0]+1,f[1]+1] = 0
             
 
     ## ---------------------------- SOFT0 FIXING ------------------------------------------
@@ -710,7 +710,7 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,CR,Pb,Cb,C,Cs,T
         model.cuts.add(expr >= n_subset)                                         
         #print('LBC: number of variables Uu that may be into the n_subset (',percent_lbc,'%): ', n_subset)
         outside90 = len(SB_Uu)-n_subset
-        print(option+' number of variables Uu that may be outside the n_subset (',100-percent_lbc,'%): ',outside90 )
+        print(option+' number of variables Uu that may be outside of Binary Support (',100-percent_lbc,'%): ',outside90 )
         
         ## Local Branching Cut
         expr = 0        
@@ -734,7 +734,7 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,CR,Pb,Cb,C,Cs,T
         for f in lower_Pmin_Uu:
             model.u[f[0]+1,f[1]+1].domain = UnitInterval ## Soft-fixing I        
             model.u[f[0]+1,f[1]+1].unfix()               ## Unfixing
-            model.u[f[0]+1,f[1]+1] = 0    
+            model.u[f[0]+1,f[1]+1] = 1   
         ## Adding a new restriction.  
         ## https://pyomo.readthedocs.io/en/stable/working_models.html
         ## Soft-fixing II
@@ -747,15 +747,19 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,CR,Pb,Cb,C,Cs,T
         model.cuts.add(expr >= n_subset)                                         
         #print('LBC: number of variables Uu that may be into the n_subset (',percent_lbc,'%): ', n_subset)
         outside90 = len(SB_Uu)-n_subset
-        print(option+' number of variables Uu that may be outside the n_subset (',100-percent_lbc,'%): ',outside90 )
-        
+        print(option+' number of variables Uu that may be outside of Binary Support (',100-percent_lbc,'%): ',outside90 )
         ## Local branching constraint
-        expr = 0        
+        expr = 0      
         for f in SB_Uu:                         ## Cuenta los cambios de 1 --> 0  
             expr += 1 - model.u[f[0]+1,f[1]+1] 
         for f in lower_Pmin_Uu:                 ## Cuenta los cambios de 0 --> 1
-            expr +=     model.u[f[0]+1,f[1]+1]            
-        model.cuts.add(expr <= k)               ## Adding a new restrictions (lbc0). 
+            expr +=     model.u[f[0]+1,f[1]+1]              
+        if flag !=0:
+            model.cuts.add(expr <= k)               ## Adding a new restrictions (lbc0). 
+        else:
+            print('Escapando de un óptimo local')
+            model.cuts.add(expr >= k+1)               ## Adding a new restrictions (lbc0). 
+            
         
         
     ## ---------------------------- LOCAL BRANCHING CONSTRAINT LBC 2------------------------------------------
@@ -784,7 +788,7 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,CR,Pb,Cb,C,Cs,T
         model.cuts.add(expr >= n_subset)                                         
         #print('LBC: number of variables Uu that may be into the n_subset (',percent_lbc,'%): ', n_subset)
         outside90 = len(SB_Uu)-n_subset
-        print(option+' number of variables Uu that may be outside the n_subset (',100-percent_lbc,'%): ',outside90 )
+        print(option+' number of variables Uu that may be outside of Binary Support (',100-percent_lbc,'%): ',outside90 )
         
         ## Local branching constraint
         expr = 0        
@@ -820,7 +824,7 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,CR,Pb,Cb,C,Cs,T
         model.cuts.add(expr >= n_subset)                                         
         #print('LBC: number of variables Uu that may be into the n_subset (',percent_lbc,'%): ', n_subset)
         outside90 = len(SB_Uu)-n_subset
-        print(option+' number of variables Uu that may be outside the n_subset (',100-percent_lbc,'%): ',outside90 )
+        print(option+' number of variables Uu that may be outside of Binary Support (',100-percent_lbc,'%): ',outside90 )
         
         ## Local Branching Cut
         expr = 0        
