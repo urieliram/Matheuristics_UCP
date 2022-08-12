@@ -41,21 +41,22 @@ instancia = 'morales_ejemplo_III_D.json'  ##
 #instancia = 'dirdat_26.json'   ## analizar infactibilidad 
 #instancia = 'dirdat_2.json'    ## analizar infactibilidad
 #instancia = 'output.json'      ## 
+instancia = 'uc_47.json'        ## ejemplo sencillo      
 
-instancia = 'uc_49.json'       ## ejemplo sencillo        [1 abajo,milp factible]  De_0=3317.97
-instancia = 'uc_47.json'       ## ejemplo sencillo      
+instancia = 'mem_01.json'       ## MEM (PENDIENTE)
 
-instancia = 'uc_02.json'       ## ejemplos dificiles 2,3,4   
+instancia = 'uc_02.json'        ## ejemplos dificiles 2,3,4   
 
-instancia = 'uc_81.json'       ## MEM (PENDIENTE)
-instancia = 'uc_70.json'       ## 
+instancia = 'uc_49.json'        ## ejemplo sencillo        [1 abajo,milp factible]  De_0=3317.97
+
+instancia = 'uc_60.json'       ## 
 
 ## Cargamos parámetros de configuración desde archivo <config>
-ambiente, ruta, executable, timeheu, timemilp, gap , k = util.config_env()
+ambiente, ruta, executable, timeheu, timemilp, gap, k, iterpar = util.config_env()
 
-z_lp=0; z_milp=0; z_hard=0; z_hard2=0; z_=0; z_lbc8=0; z_lbc1=0; z_lbc2=0; z_lbc0=0;
-t_lp=0; t_milp=0; t_hard=0; t_hard2=0; t_=0; t_lbc8=0; t_lbc1=0; t_lbc2=0; t_lbc0=0;
-g_lp=0; g_milp=0; g_hard=0; g_hard2=0; g_=0; g_lbc8=0; g_lbc1=0; g_lbc2=0; g_lbc0=0; 
+z_lp=0; z_milp=0; z_hard=0; z_hard2=0; z_ks=0; z_lbc8=0; z_lbc1=0; z_=0; z_lbc0=0;
+t_lp=0; t_milp=0; t_hard=0; t_hard2=0; t_ks=0; t_lbc8=0; t_lbc1=0; t_=0; t_lbc0=0;
+g_lp=0; g_milp=0; g_hard=0; g_hard2=0; g_ks=0; g_lbc8=0; g_lbc1=0; g_=0; g_lbc0=0; 
 ns=0; nU_no_int=0; n_Uu_no_int=0; n_Uu_1_0=0;
 SB_Uu=[]
 
@@ -87,7 +88,7 @@ G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,Pb,Cb,C,mpc,Cs,Tunder,
 
 ## --------------------------------------- LINEAR RELAXATION ---------------------------------------------
 ## Relax as LP and solve it
-if True:
+if False:
     t_o = time.time() 
     model,xy = uc_Co.uc(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,mpc,Pb,Cb,C,Cs,Tunder,names,option='relax',nameins=instancia[0:5],mode="Tight")
     sol_lp   = Solution(model=model,env=ambiente,executable=executable,nameins=instancia[0:5],gap=gap,timelimit=timeheu,
@@ -108,11 +109,10 @@ if True:
 
 ## ----------------------------------- HARD-FIXING (only Uu) ---------------------------------------------
 ## HARD-FIXING (only Uu) solution and solve the sub-MILP. (Require run the LP)
-if True: 
+if False: 
     t_o = time.time()
     model,xx = uc_Co.uc(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,mpc,Pb,Cb,C,Cs,Tunder,names,option='Hard',SB_Uu=SB_Uu,lower_Pmin_Uu=lower_Pmin_Uu,nameins=instancia[0:5],mode="Tight")
-    maximum_gap=100
-    sol_hard = Solution(model=model,env=ambiente,executable=executable,nameins=instancia[0:5],gap=maximum_gap,timelimit=timeheu,
+    sol_hard = Solution(model=model,env=ambiente,executable=executable,nameins=instancia[0:5],gap=gap,timelimit=timeheu,
                         tee=False,emphasize=emph,tofiles=False,option='Hard')
     z_hard,g_hard  = sol_hard.solve_problem()
     t_hard         = time.time() - t_o + t_lp
@@ -149,29 +149,37 @@ if False:
 ## --------------------------------------- LOCAL BRANCHING 1 ------------------------------------------
 ## LBC COUNTINOUS VERSION without soft-fixing
 ## Include the LOCAL BRANCHING CUT to the solution and solve the sub-MILP (it is using cutoff=z_hard).
-if True:
+if False:
     SB_Uu3 = SB_Uu2.copy()
     No_SB_Uu3 = No_SB_Uu2.copy()
     lower_Pmin_Uu3 = lower_Pmin_Uu2.copy()
     t_o = time.time() 
-    iter = 0
-    flag = 1
-    while flag!=0:
-        model,xx = uc_Co.uc(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,mpc,Pb,Cb,C,Cs,Tunder,names,option='lbc1',SB_Uu=SB_Uu3,No_SB_Uu=No_SB_Uu3,lower_Pmin_Uu=lower_Pmin_Uu3,k=k,nameins=instancia[0:5],mode="Tight")
-        sol_lbc1 = Solution(model=model,env=ambiente,executable=executable,nameins=instancia[0:5],gap=gap,cutoff=z_hard,timelimit=timeheu,
+    t_max = timemilp
+    iter  = 0
+    flag  = 1
+    result_iter = []
+    cutoff=z_hard
+    while 1==1:
+        if flag == 0:
+            cutoff=1e+75
+        model,xx = uc_Co.uc(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,mpc,Pb,Cb,C,Cs,Tunder,names,option='lbc1',SB_Uu=SB_Uu3,No_SB_Uu=No_SB_Uu3,lower_Pmin_Uu=lower_Pmin_Uu3,k=k,nameins=instancia[0:5],mode="Tight",flag=flag)
+        sol_lbc1 = Solution(model=model,env=ambiente,executable=executable,nameins=instancia[0:5],gap=gap,cutoff=cutoff,timelimit=timeheu,
                             tee=False,emphasize=emph,tofiles=False,option='lbc1')
         z_lbc1,g_lbc1 = sol_lbc1.solve_problem()
-        print("iter:"+str(iter)+" t_lbc1= ",round(time.time()-t_o,1),"z_lbc1= ",round(z_lbc1,1),"g_lbc1= ",round(g_lbc1,5) )
-        
+        cutoff = z_lbc1        
         flag = sol_lbc1.cuenta_ceros_a_unos(SB_Uu3, No_SB_Uu3, lower_Pmin_Uu3,'lbc1')
+        
         SB_Uu3, No_SB_Uu3, xx = sol_lbc1.select_binary_support_Uu('')    
         lower_Pmin_Uu3 = sol_lbc1.update_lower_Pmin_Uu(lower_Pmin_Uu3,'lbc1')
         iter = iter + 1
-        if iter==10:
+        result_iter.append((round(time.time()-t_o+ t_hard,1),z_lbc1)) 
+        print("iter:"+str(iter)+" t_lbc1= ",round(time.time()-t_o+t_hard,1),"z_lbc1= ",round(z_lbc1,1),"g_lbc1= ",round(g_lbc1,5) )
+        if (iter==iterpar) or (time.time()-t_o+t_hard>=t_max):
             break
-    t_lbc1 = time.time() - t_o + t_hard ## t_hard ya incluye el tiempo de lp
-    print(" t_lbc1= ",round(t_lbc1,1),"z_lbc1= ",round(z_lbc1,1),"g_lbc1= ",round(g_lbc1,5))
-    
+        
+    t_lbc1 = time.time() - t_o + t_hard ## t_hard ya incluye el tiempo de LP
+    for item in result_iter:
+        print(item[0],',',item[1])
       
 ## --------------------------------------- LOCAL BRANCHING 2 ------------------------------------------
 ## LBC INTEGER VERSION OF Uu without soft-fixing
@@ -214,11 +222,11 @@ if False:
 
 ## ---------------------------------------------- MILP ----------------------------------------------------------
 ## Solve as a MILP
-if False: 
+if True: 
     t_o = time.time() 
     model,xx = uc_Co.uc(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,mpc,Pb,Cb,C,Cs,Tunder,names,option=None,nameins=instancia[0:5],mode="Tight")
     sol_milp = Solution(model=model,nameins=instancia[0:5],env=ambiente,executable=executable,gap=gap,timelimit=timemilp,
-                          tee=False,tofiles=False,emphasize=emph,exportLP=True,option='Milp')
+                          tee=False,tofiles=False,emphasize=emph,exportLP=False,option='Milp')
     z_milp,g_milp = sol_milp.solve_problem()
     t_milp        = time.time() - t_o
     print("t_milp= ",round(t_milp,1),"z_milp= ",round(z_milp,1),"g_milp= ",round(g_milp,5))#,"total_costo_arr=",model.total_cSU.value
@@ -231,6 +239,7 @@ if False:
 # PENDIENTE... DESPUES ORDENAREMOS POR COSTO MARGINAL DE U PARA ELEGIR CANDIDATOS DE LOS BUCKETS
 if False: 
     t_o = time.time() 
+    t_max = timemilp
     model,xx = uc_Co.uc(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,mpc,Pb,Cb,C,Cs,Tunder,names,option=None,nameins=instancia[0:5],mode="Tight")
     sol_milp = Solution(model=model,nameins=instancia[0:5],env=ambiente,executable=executable,gap=gap,timelimit=timemilp,
                           tee=False,tofiles=False,emphasize=emph,exportLP=False,option='AllFixed')
@@ -277,7 +286,7 @@ if False:
     # \todo{Fijar la solución entera y probar factibilidad} 
     
 ## --------------------------------- KERNEL SEARCH WITH + HARD-CUT-OFF -------------------
-# \todo{Hacer un mix de KS de Guastarobacon LB de A.Lodi}
+# \todo{Hacer un mix de KS de Guastaroba con LB de A.Lodi}
 ## La versión básica de KS consiste en relajar la formulacion y a partir de ello sacar 
 ## las variables del kernel y de los buckets, después de manera iterativa se resulven los 
 ## SUB-MILP´S "restringidos" mas pequeños.
@@ -285,14 +294,29 @@ if False:
 ## Use 'Soft+pmin' (lower subset of Uu-Pmin)  as the first and unique bucket to consider
 ## Use relax the integrality variable Uu.
 
- # PENDIENTE... 
+ # KS (EN DESARROLLO)
 if False:
-    t_o = time.time() 
-    model,xx    = uc_Co.uc(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,mpc,Pb,Cb,C,Cs,Tunder,names,option='KS',SB_Uu=SB_Uu,nameins=instancia[0:5],mode="Tight")
-    sol_ks = Solution(model=model,env=ambiente,executable=executable,nameins=instancia[0:5],gap=gap,cutoff=z_hard,timelimit=timeheu,
-                        tee=False,emphasize=emph,tofiles=False)
-    z_ks = sol_ks.solve_problem() 
-    t_ks = time.time() - t_o + t_hard ## t_hard (ya incluye el tiempo de lp)
+    SB_Uu3 = SB_Uu2.copy()                 # ESTE SERÁ EL KERNEL
+    No_SB_Uu3 = No_SB_Uu2.copy()
+    lower_Pmin_Uu3 = lower_Pmin_Uu2.copy() # ESTE LO DIVIDIREMOS EN BUCKETS
+    t_o = time.time()    
+    iter  = 0
+    flag  = 1
+    result_iter = []
+    cutoff=z_hard
+    while 1==1:
+        model,xx    = uc_Co.uc(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,mpc,Pb,Cb,C,Cs,Tunder,names,option='KS',SB_Uu=SB_Uu,nameins=instancia[0:5],mode="Tight")
+        sol_ks = Solution(model=model,env=ambiente,executable=executable,nameins=instancia[0:5],gap=gap,cutoff=cutoff,timelimit=timeheu,
+                            tee=False,emphasize=emph,tofiles=False)
+        z_ks,g_ks= sol_ks.solve_problem()    
+        cutoff = z_ks
+        result_iter.append((round(time.time()-t_o,1),z_ks)) 
+        print("iter:"+str(iter)+" t_ks= ",round(time.time()-t_o+t_hard,1),"z_ks= ",round(z_ks,1),"g_ks= ",round(g_ks,5) )
+        
+        flag = sol_ks.cuenta_ceros_a_unos(SB_Uu3, No_SB_Uu3, lower_Pmin_Uu3,'ks')
+        SB_Uu3, No_SB_Uu3, xx = sol_lbc1.select_binary_support_Uu('')    
+        
+    t_ks = time.time() - t_o + t_hard ## t_hard (ya incluye el tiempo de LP)
     print("t_ks= ", round(t_ks,4), "z_ks= ", round(z_ks,1), "n_SB_Uu= ", len(SB_Uu))
 
 
@@ -303,9 +327,9 @@ if False:
 #                                                       n_fixU,nU_no_int,n_Uu_no_int,n_Uu_1_0,k,bin_sup,comment'
 comment = '(Incluimos costo de apagado) Validacion de lbc1[0,1] y lbc2[Binary], buscando el óptimo entre SB y B.'
 row = [ambiente,localtime,instancia,len(T),len(G),gap,emph,timeheu,timemilp,
-    round(z_lp,1),round(z_milp,1),round(z_hard,1),round(z_,1),round(z_,1),round(z_lbc8,1),round(z_lbc1,1),round(z_lbc2,1),round(z_lbc0,1),
-    round(t_lp,1),round(t_milp,1),round(t_hard,1),round(t_,1),round(t_,1),round(t_lbc8,1),round(t_lbc1,1),round(t_lbc2,1),round(t_lbc0,1),
-                  round(g_milp,8),round(g_hard,8),round(g_,8),round(g_,8),round(g_lbc8,8),round(g_lbc1,8),round(g_lbc2,8),round(g_lbc0,8),
+    round(z_lp,1),round(z_milp,1),round(z_hard,1),round(z_,1),round(z_,1),round(z_lbc8,1),round(z_lbc1,1),round(z_,1),round(z_lbc0,1),
+    round(t_lp,1),round(t_milp,1),round(t_hard,1),round(t_,1),round(t_,1),round(t_lbc8,1),round(t_lbc1,1),round(t_,1),round(t_lbc0,1),
+                  round(g_milp,8),round(g_hard,8),round(g_,8),round(g_,8),round(g_lbc8,8),round(g_lbc1,8),round(g_,8),round(g_lbc0,8),
                   k,ns,comment] #round(((z_milp-z_milp2)/z_milp)*100,6)
 util.append_list_as_row('stat.csv',row)
 
