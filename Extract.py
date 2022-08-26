@@ -1,8 +1,10 @@
+from xmlrpc.client import MININT
 import numpy as np
 import pandas as pd
 import re
 import matplotlib.pyplot as plt
 
+## Online version
 ## https://colab.research.google.com/drive/15mttuecwMf7bfe6hvb8uK2sAhqsQ2Gkw#scrollTo=kiJzGJszxwGu
 
 class Extract:
@@ -164,12 +166,13 @@ class Extract:
     sum_column = df["ticks"] + df["eps"]
     df["ticks"] = sum_column  
     return df,variables
-
+    
+     
 
   def plot_four_in_one(self,df1,df2,df3,name1='MILP',name2='Hard-fix',name3='Soft-fix',nameins='',id=''):        
     ## https://pandas.pydata.org/pandas-docs/version/0.20.1/visualization.html
     #try:
-    if 1==1:
+    if True:
         ## https://pandas.pydata.org/pandas-docs/version/0.20.1/visualization.html
         ## https://matplotlib.org/3.5.0/tutorials/colors/colors.html
         fig, axa = plt.subplots(2, 2, figsize=(9,7))
@@ -202,6 +205,18 @@ class Extract:
         df3.plot.line(    x='seconds',y='gap',style='o-',color='blue',label=name3,ax=ax8)
         ax8.set(ylabel='gap') 
         ax5.set(ylabel='cost')
+        
+        # mini=197871658.6
+        # maxi=199871658.6
+        # ax1.axis([0,  6000, mini, maxi])
+        # ax2.axis([0,  6000, mini, maxi])
+        # ax3.axis([0,  6000, mini, maxi])
+        # ax4.axis([0,  6000, mini, maxi])
+        # ax5.axis([0,  6000, mini, maxi])
+        # ax6.axis([0,  6000, mini, maxi])
+        # ax7.axis([0,  6000, mini, maxi])
+        # ax8.axis([0,  6000, mini, maxi])
+        
 
         plt.suptitle('instance: '+nameins, fontsize=14)
         plt.style.use('seaborn-pastel') ## ggplot seaborn-pastel Solarize_Light2 https://matplotlib.org/stable/gallery/style_sheets/style_sheets_reference.html
@@ -214,3 +229,60 @@ class Extract:
     return 0
 
 
+
+  def plot_all_in_one(self,df1,df2,df3,name1='MILP',name2='Hard',name3='LBC',nameins='',id=''):     
+
+    ## https://pandas.pydata.org/pandas-docs/version/0.20.1/visualization.html
+    #try:
+    if True:
+        ## https://pandas.pydata.org/pandas-docs/version/0.20.1/visualization.html
+        ## https://matplotlib.org/3.5.0/tutorials/colors/colors.html
+        fig, axa = plt.subplots(1, 1, figsize=(9,7))
+        ## Imprime costo
+        ax1=df1.plot.line( x='seconds',y='bestInteger',color='magenta',style='o-',label='',ax=axa)
+        #ax2=df.plot.line( x='seconds',y='BestBound'  ,color= ax1.lines[-1].get_color(),style='o-',label=name1,ax=ax1)
+        ax2=df1.plot.line( x='seconds',y='BestBound'  ,color='magenta',style='o-',label=name1,ax=ax1)
+
+        ax3=df3.plot.line(x='seconds',y='bestInteger',color='blue',style='o-',label='',ax=ax2)
+        df3.plot.line(    x='seconds',y='BestBound'  ,color='blue',style='o-',label=name3 ,ax=ax3)
+        ## Legend except 1st lines/labels
+        lines, labels = ax2.get_legend_handles_labels()
+        ax2.legend(lines[0:], labels[0:])
+        ## Imprime gap
+        # ax4=df1.plot.line( x='seconds',y='gap',color='magenta',style='o-',label=name1,ax=axa)
+        # df3.plot.line(    x='seconds',y='gap',color='blue' ,style='o-',label=name3,ax=ax4)  
+        # ax4.set(ylabel='gap') 
+        # ax2.set(ylabel='cost')
+
+        ## Imprime costo
+        ax5=df2.plot.line(x='seconds',y='bestInteger',color='orangered',style='o-',label='',ax=axa)
+        ax6=df2.plot.line(x='seconds',y='BestBound'  ,color='orangered',style='o-',label=name2,ax=ax5)
+        #ax7=df3.plot.line(x='seconds',y='bestInteger',color='blue'     ,style='o-',label='',ax=ax6)
+        #df3.plot.line(    x='seconds',y='BestBound'  ,color='blue'     ,style='o-',label=name3,ax=ax7)
+        ## Legend except 1st lines/labels
+        lines, labels = ax6.get_legend_handles_labels()
+        ax6.legend(lines[0:], labels[0:])
+        ## Imprime gap
+        # ax8=df2.plot.line(x='seconds',y='gap',style='o-',color='orangered',label=name2,ax=axa)
+        # df3.plot.line(    x='seconds',y='gap',style='o-',color='blue',label=name3,ax=ax8)
+        # ax8.set(ylabel='gap') 
+        # ax5.set(ylabel='cost')
+                    
+        mini=198650000
+        maxi=199000000
+        minitime=0
+        maxitime=3500
+        ax1.axis([minitime, maxitime, mini, maxi])
+        ax2.axis([minitime, maxitime, mini, maxi])
+        ax3.axis([minitime, maxitime, mini, maxi])
+        ax5.axis([minitime, maxitime, mini, maxi])
+        ax6.axis([minitime, maxitime, mini, maxi])
+        plt.axis([minitime, maxitime, mini, maxi])   
+        
+        plt.suptitle('instance: '+nameins, fontsize=14)
+        plt.style.use('seaborn-pastel') ## ggplot seaborn-pastel Solarize_Light2 https://matplotlib.org/stable/gallery/style_sheets/style_sheets_reference.html
+        plt.savefig('four_in_one_'+nameins+'_'+id+'.png', transparent=True)  
+        plt.show()
+        
+    #except:
+        #print('Error en <plot_four_in_one>')

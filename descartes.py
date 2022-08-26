@@ -245,3 +245,266 @@
         #         aux=0
         #     p_0_list.append(aux)
         ######################################################################
+        
+        
+        
+    ## ---------------------------- SOFT0 FIXING ------------------------------------------
+    
+    ## Relajamos la restricción de integralidad de las variables 'Uu' candidatas a '1' en la relajación lineal
+    ## y fijamos la solución a cero de las variables fuera del Soporte Binario
+    ## Liberamos las variables candidatas por LP 'lower_Pmin_Uu'
+    ## Sin ninguna restricción de n_subset=90%   
+    # if(option == 'Soft0'):    
+    #     for f in No_SB_Uu:
+    #         model.u[f[0]+1,f[1]+1].fix(0)                ## Hard fixing to '0' those elements outside of Sopport Binary      
+    #     for f in SB_Uu:  
+    #         model.u[f[0]+1,f[1]+1].domain = UnitInterval ## We remove the integrality constraint of the Binary Support 
+    #         model.u[f[0]+1,f[1]+1].unfix() 
+    #     for f in lower_Pmin_Uu:
+    #         model.u[f[0]+1,f[1]+1].domain = UnitInterval ## Soft-fixing I
+    #         model.u[f[0]+1,f[1]+1].unfix()               ## Unfixing
+
+
+    ## ---------------------------- SOFT4 & SOFT7 FIXING ------------------------------------------
+    
+    # ## Relajamos la restricción de integralidad de las variables 'Uu' candidatas a '1' en la relajación lineal.
+    # ## Hacemos que el 90% de las variables del soporte SB_Uu sigan en el.
+    # ## Liberamos las variables candidatas por LP 'lower_Pmin_Uu'
+    # if(option == 'Soft4' or option == 'Soft7'):    
+    #     for f in No_SB_Uu:
+    #         model.u[f[0]+1,f[1]+1].fix(0)                ## Hard fixing to '0' those elements outside of Sopport Binary      
+    #     for f in SB_Uu:  
+    #         model.u[f[0]+1,f[1]+1].domain = UnitInterval ## We remove the integrality constraint of the Binary Support 
+    #         model.u[f[0]+1,f[1]+1].unfix() 
+    #     for f in lower_Pmin_Uu:
+    #         model.u[f[0]+1,f[1]+1].domain = UnitInterval ## Soft-fixing I
+    #         model.u[f[0]+1,f[1]+1].unfix()               ## Unfixing
+    #     ## Adding a new restriction.  
+    #     ## https://pyomo.readthedocs.io/en/stable/working_models.html
+    #     ## Soft-fixing II
+    #     model.cuts = pyo.ConstraintList()
+    #     n_subset   = math.ceil((percent_lbc/100) * (len(SB_Uu))) #-len(lower_Pmin_Uu)
+    #     expr       = 0        
+    #     ## Se hace n_subset = 90% solo a el Soporte Binario
+    #     for f in SB_Uu:      
+    #         expr += model.u[f[0]+1,f[1]+1]
+    #     model.cuts.add(expr >= n_subset)      
+
+
+    # ## ---------------------------- SOFT5 FIXING ------------------------------------------
+    
+    # ## Relajamos la restricción de integralidad de las variables 'Uu' candidatas a '1' en la relajación lineal.
+    # ## Hacemos que el 90% de las variables del Soporte  Binario 'SB_Uu' sigan en el.Además de los candidatos 'lower_Pmin_Uu' identificados en la LR
+    # ## Por último liberamos las variables candidatas por LP 'lower_Pmin_Uu'
+    # if(option == 'Soft5'):    
+    #     for f in No_SB_Uu:
+    #         model.u[f[0]+1,f[1]+1].fix(0)                ## Hard fixing to '0' those elements outside of Sopport Binary      
+    #     for f in SB_Uu:           ## SB
+    #         model.u[f[0]+1,f[1]+1].domain = UnitInterval ## We remove the integrality constraint of the Binary Support 
+    #         model.u[f[0]+1,f[1]+1].unfix() 
+    #     for f in lower_Pmin_Uu:   ## B
+    #         model.u[f[0]+1,f[1]+1].domain = UnitInterval ## Soft-fixing I
+    #         model.u[f[0]+1,f[1]+1].unfix()               ## Unfixing
+    #     ## Adding a new restriction.  
+    #     ## https://pyomo.readthedocs.io/en/stable/working_models.html
+    #     ## Soft-fixing II
+    #     model.cuts = pyo.ConstraintList()
+    #     n_subset   = math.ceil((percent_lbc/100) * len(SB_Uu))
+    #     expr       = 0        
+    #     ## Se hace n_subset=90% al Soporte Binario 'SB_Uu' y a Candidatos 'lower_Pmin_Uu' identificados en LR
+    #     for f in SB_Uu:           ##SB
+    #         expr += model.u[f[0]+1,f[1]+1]
+    #     for f in lower_Pmin_Uu:   ##B
+    #         expr += model.u[f[0]+1,f[1]+1]      
+    #     model.cuts.add(expr >= n_subset)        
+                        
+    # ## ---------------------------- PURE-SOFT FIXING ------------------------------------------
+    
+    # ## Relajamos la restricción de integralidad de las variables 'Uu' candidatas a '1' en la relajación lineal
+    # ## y fijamos la solución a cero de las variables fuera del Soporte Binario
+    # ## Liberamos las variables candidatas por LP 'lower_Pmin_Uu'
+    # if(option == 'Softp'):    
+    #     for f in No_SB_Uu:
+    #         model.u[f[0]+1,f[1]+1].fix(0)                ## Hard fixing to '0' those elements outside of Sopport Binary      
+    #     for f in SB_Uu:  
+    #         model.u[f[0]+1,f[1]+1].domain = UnitInterval ## We remove the integrality constraint of the Binary Support 
+    #         model.u[f[0]+1,f[1]+1].unfix() 
+    #     for f in lower_Pmin_Uu:
+    #         model.u[f[0]+1,f[1]+1].domain = UnitInterval ## Soft-fixing I
+    #         model.u[f[0]+1,f[1]+1].unfix()               ## Unfixing
+    #     ## Adding a new restriction.  
+    #     ## https://pyomo.readthedocs.io/en/stable/working_models.html
+    #     ## Soft-fixing II
+    #     model.cuts = pyo.ConstraintList()
+    #     n_subset   = math.ceil((percent_lbc/100) * (len(SB_Uu))) #-len(lower_Pmin_Uu)
+    #     expr       = 0        
+    #     ## Se hace n_subset=90% solo a el - Soporte Binario -  
+    #     for f in SB_Uu:      
+    #         expr += model.u[f[0]+1,f[1]+1]
+    #     model.cuts.add(expr >= n_subset)      
+
+    ## ---------------------------- LOCAL BRANCHING CONSTRAINT LBC 0------------------------------------------
+    
+    # ## Define a neighbourhood with LBC0.
+    # if(option == 'lbc0'):   
+    #     for f in No_SB_Uu:
+    #         model.u[f[0]+1,f[1]+1].fix(0)                ## Hard fixing to '0' those elements outside of Sopport Binary      
+    #     for f in SB_Uu:  
+    #         model.u[f[0]+1,f[1]+1].domain = UnitInterval ## We remove the integrality constraint of the Binary Support 
+    #         model.u[f[0]+1,f[1]+1].unfix() 
+    #     for f in lower_Pmin_Uu:
+    #         model.u[f[0]+1,f[1]+1].domain = UnitInterval ## Soft-fixing I
+    #         model.u[f[0]+1,f[1]+1].unfix()               ## Unfixing
+    #     ## Adding a new restriction.  
+    #     ## https://pyomo.readthedocs.io/en/stable/working_models.html
+    #     ## Soft-fixing II
+    #     model.cuts = pyo.ConstraintList()
+    #     n_subset   = math.ceil((percent_lbc/100) * (len(SB_Uu))) #-len(lower_Pmin_Uu)
+    #     expr       = 0        
+    #     ## Se hace n_subset=90% solo a el - Soporte Binario -  
+    #     for f in SB_Uu:      
+    #         expr += model.u[f[0]+1,f[1]+1]
+    #     model.cuts.add(expr >= n_subset)                                         
+    #     #print('LBC: number of variables Uu that may be into the n_subset (',percent_lbc,'%): ', n_subset)
+    #     outside90 = len(SB_Uu)-n_subset
+    #     print(option+' number of variables Uu that may be outside of Binary Support (',100-percent_lbc,'%): ',outside90 )
+        
+    #     ## Local Branching Cut
+    #     expr = 0        
+    #     for f in SB_Uu:                         ## Cuenta los cambios de 1 --> 0  
+    #         expr += 1 - model.u[f[0]+1,f[1]+1] 
+    #     for f in lower_Pmin_Uu:                 ## Cuenta los cambios de 0 --> 1
+    #         expr +=     model.u[f[0]+1,f[1]+1]            
+    #     model.cuts.add(expr <= k)               ## Adding a new restrictions (lbc0). 
+    
+    
+
+    ## ---------------------------- LOCAL BRANCHING CONSTRAINT LBC 2------------------------------------------
+    
+    ## Define a neighbourhood with LBC2.
+    # if(option == 'lbc2'):     
+    #     for f in No_SB_Uu:
+    #         model.u[f[0]+1,f[1]+1].fix(0)       ## Hard fixing to '0' those elements outside of Binary Sopport  
+    #     for f in SB_Uu:  
+    #         model.u[f[0]+1,f[1]+1].domain = Binary
+    #         model.u[f[0]+1,f[1]+1].unfix() 
+    #         model.u[f[0]+1,f[1]+1] = 1 
+    #     for f in lower_Pmin_Uu:
+    #         model.u[f[0]+1,f[1]+1].domain = Binary 
+    #         model.u[f[0]+1,f[1]+1].unfix()      ## Unfixing
+    #         model.u[f[0]+1,f[1]+1] = 0            
+    #     ## Adding a new restriction.  
+    #     ## https://pyomo.readthedocs.io/en/stable/working_models.html
+    #     ## Soft-fixing II
+    #     model.cuts = pyo.ConstraintList()
+    #     n_subset   = math.ceil((percent_lbc/100) * (len(SB_Uu))) #-len(lower_Pmin_Uu)
+    #     expr       = 0        
+    #     ## Se hace n_subset=90% solo a el - Soporte Binario -  
+    #     for f in SB_Uu:      
+    #         expr += model.u[f[0]+1,f[1]+1]
+    #     model.cuts.add(expr >= n_subset)                                         
+    #     #print('LBC: number of variables Uu that may be into the n_subset (',percent_lbc,'%): ', n_subset)
+    #     outside90 = len(SB_Uu)-n_subset
+    #     print(option+' number of variables Uu that may be outside of Binary Support (',100-percent_lbc,'%): ',outside90 )
+        
+    #     ## Local branching constraint
+    #     expr = 0        
+    #     for f in SB_Uu:                         ## Cuenta los cambios de 1 --> 0  
+    #         expr += 1 - model.u[f[0]+1,f[1]+1] 
+    #     for f in lower_Pmin_Uu:                 ## Cuenta los cambios de 0 --> 1
+    #         expr +=     model.u[f[0]+1,f[1]+1]            
+    #     model.cuts.add(expr <= k)               ## Adding a new restrictions (lbc0).
+        
+                
+        
+    ## ---------------------------- LOCAL BRANCHING CONSTRAINT LBC 8------------------------------------------
+    
+    ## Define a neighbourhood with LBC8.
+    # if(option == 'lbc8'):   
+    #     for f in No_SB_Uu:
+    #         model.u[f[0]+1,f[1]+1].fix(0)          ## Hard fixing to '0' those elements outside of Sopport Binary      
+    #     for f in SB_Uu:  
+    #         model.u[f[0]+1,f[1]+1].domain = Binary 
+    #         model.u[f[0]+1,f[1]+1].unfix() 
+    #     for f in lower_Pmin_Uu:
+    #         model.u[f[0]+1,f[1]+1].domain = Binary 
+    #         model.u[f[0]+1,f[1]+1].unfix()         ## Unfixing
+    #     ## Adding a new restriction.  
+    #     ## https://pyomo.readthedocs.io/en/stable/working_models.html
+    #     ## Soft-fixing II
+    #     model.cuts = pyo.ConstraintList()
+    #     n_subset   = math.ceil((percent_lbc/100) * (len(SB_Uu))) #-len(lower_Pmin_Uu)
+    #     expr       = 0        
+    #     ## Se hace n_subset=90% solo a el - Soporte Binario -  
+    #     for f in SB_Uu:      
+    #         expr += model.u[f[0]+1,f[1]+1]
+    #     model.cuts.add(expr >= n_subset)                                         
+    #     #print('LBC: number of variables Uu that may be into the n_subset (',percent_lbc,'%): ', n_subset)
+    #     outside90 = len(SB_Uu)-n_subset
+    #     print(option+' number of variables Uu that may be outside of Binary Support (',100-percent_lbc,'%): ',outside90 )
+        
+    #     ## Local Branching Cut
+    #     expr = 0        
+    #     for f in SB_Uu:                         ## Cuenta los cambios de 1 --> 0  
+    #         expr += 1 - model.u[f[0]+1,f[1]+1] 
+    #     for f in lower_Pmin_Uu:                 ## Cuenta los cambios de 0 --> 1
+    #         expr +=     model.u[f[0]+1,f[1]+1]            
+    #     model.cuts.add(expr <= k)               ## Adding a new restrictions (lbc8). 
+    
+    ## --------------------------------------- LOCAL BRANCHING 2 ------------------------------------------
+## LBC INTEGER VERSION OF Uu without soft-fixing
+## Include the LOCAL BRANCHING CUT to the solution and solve the sub-MILP (it is using cutoff=z_hard).
+# if False:
+#     SB_Uu3 = SB_Uu2.copy()
+#     No_SB_Uu3 = No_SB_Uu2.copy()
+#     lower_Pmin_Uu3 = lower_Pmin_Uu2.copy()
+#     for iter in range(10):
+#         t_o = time.time() 
+#         model,xx = uc_Co.uc(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,mpc,Pb,Cb,C,Cs,Tunder,names,option='lbc2',SB_Uu=SB_Uu3,No_SB_Uu=No_SB_Uu3,lower_Pmin_Uu=lower_Pmin_Uu3,nameins=instancia[0:5],mode="Tight")
+#         sol_lbc2 = Solution(model=model,env=ambiente,executable=executable,nameins=instancia[0:5],gap=gap,cutoff=z_hard,timelimit=timeheu,
+#                             tee=False,emphasize=emph,tofiles=False,option='lbc2')
+#         z_lbc2,g_lbc2 = sol_lbc2.solve_problem()
+#         t_lbc2         = time.time() - t_o + t_hard ## t_hard ya incluye el tiempo de lp
+#         print("iter:"+str(iter)+" t_lbc2= ",round(t_lbc2,1),"z_lbc2= ",round(z_lbc2,1),"g_lbc2= ",round(g_lbc2,5) )
+        
+#         sol_lbc2.cuenta_ceros_a_unos(SB_Uu3, No_SB_Uu3, lower_Pmin_Uu3,'lbc2')
+#         SB_Uu3, No_SB_Uu3, xx = sol_hard.select_binary_support_Uu('')    
+#         lower_Pmin_Uu3 = sol_lbc2.update_lower_Pmin_Uu(lower_Pmin_Uu3,'lbc2')
+        
+                    
+# ## --------------------------------------- LOCAL BRANCHING 8 ------------------------------------------
+# ## Include the LOCAL BRANCHING CUT to the solution and solve the sub-MILP (it is using cutoff=z_hard).
+# ## Binary 'Uu'
+# if False:
+#     SB_Uu3 = SB_Uu2.copy()
+#     No_SB_Uu3 = No_SB_Uu2.copy()
+#     lower_Pmin_Uu3 = lower_Pmin_Uu2.copy()   
+#     t_o = time.time() 
+#     model,xx = uc_Co.uc(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,mpc,Pb,Cb,C,Cs,Tunder,names,option='lbc8',SB_Uu=SB_Uu3,No_SB_Uu=No_SB_Uu3,lower_Pmin_Uu=lower_Pmin_Uu3,nameins=instancia[0:5],mode="Tight")
+#     sol_lbc8 = Solution(model=model,env=ambiente,executable=executable,nameins=instancia[0:5],gap=gap,cutoff=z_hard,timelimit=timeheu,
+#                         tee=False,emphasize=emph,tofiles=False,option='lbc8')
+#     z_lbc8,g_lbc8 = sol_lbc8.solve_problem()
+#     t_lbc8         = time.time() - t_o + t_hard ## t_hard ya incluye el tiempo de lp
+#     print("t_lbc8= ",round(t_lbc8,1),"z_lbc8= ",round(z_lbc8,1),"g_lbc8= ",round(g_lbc8,5) )
+    
+#     sol_lbc8.update_lower_Pmin_Uu(lower_Pmin_Uu2,'lbc8')
+#     sol_lbc8.cuenta_ceros_a_unos(SB_Uu2, No_SB_Uu2, lower_Pmin_Uu2,'lbc8')
+
+## --------------------------------------- LOCAL BRANCHING 0 ------------------------------------------
+## Include the LOCAL BRANCHING CUT to the solution and solve the sub-MILP (it is using cutoff=z_hard).
+## UnitInterval 'Uu'
+## The first iteration of LB 
+# if False:
+#     SB_Uu3 = SB_Uu2.copy()
+#     No_SB_Uu3 = No_SB_Uu2.copy()
+#     lower_Pmin_Uu3 = lower_Pmin_Uu2.copy()   
+#     t_o = time.time() 
+#     model,xx = uc_Co.uc(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,mpc,Pb,Cb,C,Cs,Tunder,names,option='lbc0',SB_Uu=SB_Uu3,No_SB_Uu=No_SB_Uu3,lower_Pmin_Uu=lower_Pmin_Uu3,nameins=instancia[0:5],mode="Tight")
+#     sol_lbc0 = Solution(model=model,env=ambiente,executable=executable,nameins=instancia[0:5],gap=gap,cutoff=z_hard,timelimit=timeheu,
+#                         tee=False,emphasize=emph,tofiles=False,option='lbc0')
+#     z_lbc0,g_lbc0 = sol_lbc0.solve_problem()
+#     t_lbc0         = time.time() - t_o + t_hard ## t_hard ya incluye el tiempo de lp
+#     print("t_lbc0= ",round(t_lbc0,1),"z_lbc0= ",round(z_lbc0,1),"g_lbc0= ",round(g_lbc0,5) )
+    
+#     sol_lbc0.update_lower_Pmin_Uu(lower_Pmin_Uu2,'lbc0')
+#     sol_lbc0.cuenta_ceros_a_unos(SB_Uu2, No_SB_Uu2, lower_Pmin_Uu2,'lbc0')

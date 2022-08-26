@@ -94,7 +94,12 @@ def reading(file):
         unit_on_t0.append(md['thermal_generators'][gen]["unit_on_t0"])#1
         time_up_t0.append(md['thermal_generators'][gen]["time_up_t0"])#1
         time_down_t0.append(md['thermal_generators'][gen]["time_down_t0"])#0        
-        fixed_cost.append(md['thermal_generators'][gen]["fixed_cost"] )        
+        try:
+            fixed_cost.append(md['thermal_generators'][gen]["fixed_cost"] )        
+            #print(md['thermal_generators'][gen]["fixed_cost"] )       
+        except:
+            fixed_cost.append(0)   
+            
         startup = (md['thermal_generators'][gen]["startup"]) # variable start-up cost
         piecewise_production = md['thermal_generators'][gen]["piecewise_production"] #piecewise cost
         
