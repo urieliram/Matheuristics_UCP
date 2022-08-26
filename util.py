@@ -33,6 +33,8 @@ def sendtofileTUTD(TU,TD,name):
         file.write(str(TU[g])+","+str(TD[g])+ "\n")
     file.close()
     
+    
+    
 def imprime_sol(model,sol):
     Uu = dict(zip(model.T, sol.getUu()))
     V  = dict(zip(model.T, sol.getV()))
