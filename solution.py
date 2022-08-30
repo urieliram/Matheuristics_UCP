@@ -12,7 +12,7 @@ from   pyomo.opt import SolverStatus, TerminationCondition
 
 class Solution:
     def __init__(self,model,env,executable,nameins='model',gap=0.0001,timelimit=300,tee=False,tofiles=False,lpmethod=0,
-                 cutoff=1e+75,emphasize=1,lbheur='no',exportLP=False,option=''):
+                 cutoff=1e+75,emphasize=1,lbheur='no',symmetry=-1,exportLP=False,option=''):
         self.model      = model
         self.nameins    = nameins     ## name of instance 
         self.env        = env         ## enviroment  
@@ -25,6 +25,7 @@ class Solution:
         self.cutoff     = cutoff      ## Agrega una cota superior factible, apara yudar a descartar nodos del árbol del B&B
         self.emphasize  = emphasize   ## Emphasize optimality=1(default);  feasibility=2.
         self.lbheur     = lbheur      ## Local branching heuristic is off; default
+        self.symmetry   = symmetry    ## symmetry breaking: Automatic =-1 Turn off=0 ; moderade=1 ; extremely aggressive=5
         self.exportLP   = exportLP    ## True si se exporta el modelo a formato LP y MPS
         self.gg         = len(model.G)
         self.tt         = len(model.T)
@@ -69,6 +70,9 @@ class Solution:
         solver.options['timelimit'                     ] = self.timelimit 
         solver.options['emphasis mip'                  ] = self.emphasize
         solver.options['mip strategy lbheur'           ] = self.lbheur
+        solver.options['preprocessing symmetry'        ] = self.symmetry
+        
+        #https://www.ibm.com/docs/en/cofz/12.8.0?topic=parameters-symmetry-breaking
         
         # solver.options['mip cuts all'                ] = -1
         # solver.options['mip strategy presolvenode'   ] =  1        
