@@ -53,10 +53,10 @@ if ambiente == 'yalma':
 # Extract().plot_four_in_one(bb1,bb2,bb3,'Milp','Hard','Soft7',instancia[0:5],id='a')
 
 bb1,vari = Extract().extract('logfile'+'Milp' +instancia[0:5]+'.log') 
-bb2,vari = Extract().extract('logfile'+'Hard3' +instancia[0:5]+'.log') 
-bb3,vari = Extract().extract('logfile'+'Check'+instancia[0:5]+'.log')    
+bb2,vari = Extract().extract('logfile'+'Milplb' +instancia[0:5]+'.log') 
+bb3,vari = Extract().extract('logfile'+'Milplbsym'+instancia[0:5]+'.log')    
 #Extract().plot_four_in_one(bb1,bb2,bb3,'Milp','Hard3','Milp',instancia[0:5],id='a')
-Extract().plot_all_in_one(bb1,bb2,bb3,'Milp','Hard3','Check',instancia[0:5],id='')
+Extract().plot_all_in_one(bb1,bb2,bb3,'Milp','Milp+lbheur','Milp+lbheur+sys',instancia[0:5],id='')
 
 
 

@@ -584,34 +584,28 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,CR,Pb,Cb,C,Cs,T
         model.Start_up_cost_desigualdad_Uriel = pyo.Constraint(model.G,rule = Start_up_cost_desigualdad_Uriel)
         
 
-    ## ---------------------------- LOCAL BRANCHING CONSTRAINT LBC 1------------------------------------------
-    
+    ## ---------------------------- LOCAL BRANCHING CONSTRAINT LBC 1------------------------------------------    
     ## Define a neighbourhood with LBC1.
+    
     if(option == 'lbc1'):
-          
-        cuentaSB_Uu    =0
-        cuentaNo_SB_Uu =0
-        cuentaWV       =0     
-        
+                  
         for f in No_SB_Uu:   
             model.u[f[0]+1,f[1]+1].domain = UnitInterval     ## We remove the integrality constraint of the Binary Support 
-            model.u[f[0]+1,f[1]+1].unfix()                   ## Unfixing            
-            model.u[f[0]+1,f[1]+1] =  0                      ## Hints
-            cuentaNo_SB_Uu=cuentaNo_SB_Uu+1    
+            if flag != 0:          
+                model.u[f[0]+1,f[1]+1] =  0                  ## Hints
         for f in SB_Uu:  
             model.u[f[0]+1,f[1]+1].domain = UnitInterval     ## We remove the integrality constraint of the Binary Support 
-            model.u[f[0]+1,f[1]+1].unfix() 
-            model.u[f[0]+1,f[1]+1] =  1                      ## Hints
-            cuentaSB_Uu=cuentaSB_Uu+1
+            if flag != 0:          
+                model.u[f[0]+1,f[1]+1] =  1                  ## Hints
             
-        ## Hints para iniciar desde la última solución válida
-        for g in range(len(G)):
-            for t in range(len(T)):
-                model.v[g+1,t+1] = V[g][t]                  ## Hints
-                model.w[g+1,t+1] = W[g][t]                  ## Hints
-                if delta[g][t] != 0:
-                   model.delta[g+1,t+1,delta[g][t]] = 1     ## Hints
-                cuentaWV=cuentaWV+1
+        if True : #flag != 0
+            ## Hints para iniciar desde la última solución válida
+            for g in range(len(G)):
+                for t in range(len(T)):
+                    model.v[g+1,t+1] = V[g][t]                ## Hints
+                    model.w[g+1,t+1] = W[g][t]                ## Hints
+                    if delta[g][t] != 0:
+                        model.delta[g+1,t+1,delta[g][t]] = 1  ## Hints
             
             
         #print('lbc1',cuentaSB_Uu,cuentaNo_SB_Uu,cuentaWV)
@@ -627,27 +621,28 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,CR,Pb,Cb,C,Cs,T
             expr += model.u[f[0]+1,f[1]+1]
         model.cuts.add(expr >= n_subset)                                         
         #print('LBC: number of variables Uu that may be into the n_subset (',percent_lbc,'%): ', n_subset)
-        outside90 = len(SB_Uu)-n_subset
+        #outside90 = len(SB_Uu)-n_subset
         #print(option+' number of variables Uu that may be outside of Binary Support (',100-percent_lbc,'%): ', outside90)
                 
         ## Local branching constraint (LBC)
         ## Adding a new restrictions. LEFT-BRANCH
         if flag != 0: 
             expr = 0      
-            for f in SB_Uu:                           ## Cuenta los cambios de 1 --> 0  
+            for f in SB_Uu:                            ## Cuenta los cambios de 1 --> 0  
                 expr += 1 - model.u[f[0]+1,f[1]+1] 
-            for f in No_SB_Uu: #    lower_Pmin_Uu     ## Cuenta los cambios de 0 --> 1 
+            for f in lower_Pmin_Uu:  #      No_SB_Uu   ## Cuenta los cambios de 0 --> 1 
                 expr +=     model.u[f[0]+1,f[1]+1]              
             model.cuts.add(expr <= k)      
         
         ## Adding a new restrictions. RIGHT-BRANCH
         if True: #flag == 0
+            print('++len(rightbranches)',len(rightbranches))
             for cut in rightbranches:
                 expr = 0      
                 ## cut[0]=SB_Uu   cut[1]=No_SB_Uu   cut[2]=lower_Pmin_Uu
                 for f in cut[0]:                        ## Cuenta los cambios de 1 --> 0  
                     expr += 1 - model.u[f[0]+1,f[1]+1] 
-                for f in cut[1]: # cut[2]                ## Cuenta los cambios de 0 --> 1 
+                for f in cut[2]: # cut[1]               ## Cuenta los cambios de 0 --> 1 
                     expr +=     model.u[f[0]+1,f[1]+1] 
                 model.cuts.add(expr >= k + 1)
 
@@ -663,7 +658,6 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,CR,Pb,Cb,C,Cs,T
 
         for f in lower_Pmin_Uu:
             model.u[f[0]+1,f[1]+1] = 0         ## Hints
-            #model.u[f[0]+1,f[1]+1] = 1        ## Hints
             
             
     ## ---------------------------- HARD VARIABLE FIXING III------------------------------------------
@@ -678,7 +672,6 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,CR,Pb,Cb,C,Cs,T
         for f in lower_Pmin_Uu:
             model.u[f[0]+1,f[1]+1].unfix()    
             model.u[f[0]+1,f[1]+1] = 0         ## Hints
-            #model.u[f[0]+1,f[1]+1] = 1        ## Hints
             
 
     ## ---------------------------- KERNEL SEARCH ------------------------------------------
@@ -699,13 +692,13 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,CR,Pb,Cb,C,Cs,T
 
     if option == 'Check':  
         for f in SB_Uu: 
-            model.u[f[0]+1,f[1]+1].fix(1) ## Hard fixing
+            model.u[f[0]+1,f[1]+1].fix(1)                   ## Hard fixing
         for f in No_SB_Uu: 
-            model.u[f[0]+1,f[1]+1].fix(0) ## Hard fixing
+            model.u[f[0]+1,f[1]+1].fix(0)                   ## Hard fixing
         for g in range(0,len(model.G)):
             for t in range(0,len(model.T)):
-                model.v[g+1,t+1].fix( V[g][t] ) ## Hard fixing
-                model.w[g+1,t+1].fix( W[g][t] ) ## Hard fixing
+                model.v[g+1,t+1].fix( V[g][t] )             ## Hard fixing
+                model.w[g+1,t+1].fix( W[g][t] )             ## Hard fixing
                 if delta[g][t] != 0:
                     model.delta[g+1,t+1,delta[g][t]].fix(1) ## Hard fixing
             
