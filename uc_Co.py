@@ -24,7 +24,7 @@ from   pyomo.environ import *
 
 def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,CR,Pb,Cb,C,Cs,Tunder,names,option='None',
        SB_Uu=[],No_SB_Uu=[],lower_Pmin_Uu=[],V=[],W=[],delta=[],
-       percent_lbc=90,k=10,nameins='model',mode="Compact",flag=1,rightbranches=[]):
+       percent_lbc=90,k=10,nameins='model',mode="Compact",flag=1,rightbranches=[],):
                       
     n_subset   = 0 ## Número de variables que podrían moverse en el Sub-milp (Binary support)
 
@@ -584,125 +584,170 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,CR,Pb,Cb,C,Cs,T
         model.Start_up_cost_desigualdad_Uriel = pyo.Constraint(model.G,rule = Start_up_cost_desigualdad_Uriel)
         
 
-    ## ---------------------------- LOCAL BRANCHING CONSTRAINT LBC 1------------------------------------------    
+    ## ---------------------------- LOCAL BRANCHING CONSTRAINT LBC 1 (SOFT-FIXING)------------------------------------------    
     ## Define a neighbourhood with LBC1.
     
     if(option == 'lbc1'):
                   
         for f in No_SB_Uu:   
-            model.u[f[0]+1,f[1]+1].domain = UnitInterval     ## We remove the integrality constraint of the Binary Support 
+            model.u[f[0]+1,f[1]+1].domain = UnitInterval    ## We remove the integrality constraint of the Binary Support 
             if flag != 0:          
-                model.u[f[0]+1,f[1]+1] =  0                  ## Hints
+                model.u[f[0]+1,f[1]+1] = 0                      ## Hints
         for f in SB_Uu:  
-            model.u[f[0]+1,f[1]+1].domain = UnitInterval     ## We remove the integrality constraint of the Binary Support 
+            model.u[f[0]+1,f[1]+1].domain = UnitInterval    ## We remove the integrality constraint of the Binary Support 
             if flag != 0:          
-                model.u[f[0]+1,f[1]+1] =  1                  ## Hints
+                model.u[f[0]+1,f[1]+1] = 1                      ## Hints
             
-        if True : #flag != 0
-            ## Hints para iniciar desde la última solución válida
-            for g in range(len(G)):
-                for t in range(len(T)):
-                    model.v[g+1,t+1] = V[g][t]                ## Hints
-                    model.w[g+1,t+1] = W[g][t]                ## Hints
-                    if delta[g][t] != 0:
-                        model.delta[g+1,t+1,delta[g][t]] = 1  ## Hints
-            
-            
-        #print('lbc1',cuentaSB_Uu,cuentaNo_SB_Uu,cuentaWV)
-        
-        ## Adding a new restriction.  
-        ## https://pyomo.readthedocs.io/en/stable/working_models.html
-        ## Soft-fixing
+        ## Hints para iniciar desde la última solución válida
+        #if flag != 0:
+        for g in range(len(G)):
+            for t in range(len(T)):
+                model.v[g+1,t+1] = V[g][t]                  ## Hints
+                model.w[g+1,t+1] = W[g][t]                  ## Hints
+                if delta[g][t]  != 0:
+                    model.delta[g+1,t+1,delta[g][t]] = 1    ## Hints
+                    
+        ## Soft-fixing: adding a new restriction 
         model.cuts = pyo.ConstraintList()
-        n_subset   = math.ceil((percent_lbc/100) * (len(SB_Uu))) #-len(lower_Pmin_Uu)
-        expr       = 0        
-        ## Se hace n_subset=90% solo a el - Soporte Binario -  
-        for f in SB_Uu:      
-            expr += model.u[f[0]+1,f[1]+1]
-        model.cuts.add(expr >= n_subset)                                         
-        #print('LBC: number of variables Uu that may be into the n_subset (',percent_lbc,'%): ', n_subset)
-        #outside90 = len(SB_Uu)-n_subset
-        #print(option+' number of variables Uu that may be outside of Binary Support (',100-percent_lbc,'%): ', outside90)
-                
-        ## Local branching constraint (LBC)
-        ## Adding a new restrictions. LEFT-BRANCH
-        if flag != 0: 
-            expr = 0      
-            for f in SB_Uu:                            ## Cuenta los cambios de 1 --> 0  
-                expr += 1 - model.u[f[0]+1,f[1]+1] 
-            for f in lower_Pmin_Uu:  #      No_SB_Uu   ## Cuenta los cambios de 0 --> 1 
-                expr +=     model.u[f[0]+1,f[1]+1]              
-            model.cuts.add(expr <= k)      
+        if True:
+            ## https://pyomo.readthedocs.io/en/stable/working_models.html
+            n_subset   = math.ceil((percent_lbc/100) * (len(SB_Uu))) #-len(lower_Pmin_Uu)
+            expr       = 0        
+            ## Se hace n_subset=90% solo a el - Soporte Binario -  
+            for f in SB_Uu:      
+                expr += model.u[f[0]+1,f[1]+1]
+            model.cuts.add(expr >= n_subset) 
+            #outside90 = len(SB_Uu)-n_subset                                        
+            #print('LBC: number of variables Uu that may be into the n_subset (',percent_lbc,'%): ', n_subset)
+            #print(option+' number of variables Uu that may be outside of Binary Support (',100-percent_lbc,'%): ', outside90)
         
-        ## Adding a new restrictions. RIGHT-BRANCH
-        if True: #flag == 0
-            print('++len(rightbranches)',len(rightbranches))
+        ## Local Branching Constraint (LBC)     
+        if True:            
+            ## Adding a new restrictions LEFT-BRANCH  <°|((><
+            if flag != 0: 
+                expr = 0      
+                for f in SB_Uu:                             ## Cuenta los cambios de 1 --> 0  
+                    expr += 1 - model.u[f[0]+1,f[1]+1] 
+                for f in lower_Pmin_Uu :  # No_SB_Uu        ## Cuenta los cambios de 0 --> 1 
+                    expr +=     model.u[f[0]+1,f[1]+1]              
+                model.cuts.add(expr <= k)      
+        
+            ## Adding a new restrictions RIGHT-BRANCH  >>++++++++|°> . o O
+            print('Adding ',len(rightbranches),' right-branches')
             for cut in rightbranches:
                 expr = 0      
-                ## cut[0]=SB_Uu   cut[1]=No_SB_Uu   cut[2]=lower_Pmin_Uu
-                for f in cut[0]:                        ## Cuenta los cambios de 1 --> 0  
+                ## cut[1]=No_SB_Uu   cut[2]=lower_Pmin_Uu  cut[0]=SB_Uu   
+                for f in cut[0]:                            ## Cuenta los cambios de 1 --> 0  
                     expr += 1 - model.u[f[0]+1,f[1]+1] 
-                for f in cut[2]: # cut[1]               ## Cuenta los cambios de 0 --> 1 
+                for f in cut[2]:  # cut[1]                  ## Cuenta los cambios de 0 --> 1 
                     expr +=     model.u[f[0]+1,f[1]+1] 
                 model.cuts.add(expr >= k + 1)
-
+                
+                
+    ## ---------------------------- LOCAL BRANCHING CONSTRAINT LBC2 (INTEGER VERSION)------------------------------------------    
+    ## Define a neighbourhood with LBC2.
+    
+    if(option == 'lbc2'):
+                  
+        for f in No_SB_Uu:   
+            model.u[f[0]+1,f[1]+1].domain = Binary          ## No Binary Support
+            #if flag != 0:
+            model.u[f[0]+1,f[1]+1] = 0                      ## Hints
+        for f in SB_Uu:  
+            model.u[f[0]+1,f[1]+1].domain = Binary          ## Binary Support 
+            #if flag != 0:          
+            model.u[f[0]+1,f[1]+1] = 1                      ## Hints
+            
+        ## Hints para iniciar desde la última solución válida
+        #if flag != 0:
+        for g in range(len(G)):
+            for t in range(len(T)):
+                model.v[g+1,t+1] = V[g][t]                  ## Hints
+                model.w[g+1,t+1] = W[g][t]                  ## Hints
+                if delta[g][t]  != 0:
+                    model.delta[g+1,t+1,delta[g][t]] = 1    ## Hints
+                    
+        ## Local Branching Constraint (LBC)     
+        model.cuts = pyo.ConstraintList()
+        
+        if True:            
+            ## Adding a new restrictions LEFT-BRANCH  <°|((><
+            if flag != 0: 
+                expr = 0      
+                for f in SB_Uu:                             ## Cuenta los cambios de 1 --> 0  
+                    expr += 1 - model.u[f[0]+1,f[1]+1] 
+                for f in lower_Pmin_Uu :  # No_SB_Uu        ## Cuenta los cambios de 0 --> 1 
+                    expr +=     model.u[f[0]+1,f[1]+1]              
+                model.cuts.add(expr <= k)      
+        
+            ## Adding a new restrictions RIGHT-BRANCH >>++++++++|°> . o O
+            print('Adding ',len(rightbranches),' right-branches')
+            for cut in rightbranches:
+                expr = 0      
+                ## cut[1]=No_SB_Uu   cut[2]=lower_Pmin_Uu  cut[0]=SB_Uu   
+                for f in cut[0]:                            ## Cuenta los cambios de 1 --> 0  
+                    expr += 1 - model.u[f[0]+1,f[1]+1] 
+                for f in cut[2]:  # cut[1]                  ## Cuenta los cambios de 0 --> 1 
+                    expr +=     model.u[f[0]+1,f[1]+1] 
+                model.cuts.add(expr >= k + 1)
+                
 
     ## ---------------------------- HARD VARIABLE FIXING   ------------------------------------------
     ## 
     if option == 'Hard':    
         for f in SB_Uu:  
-            model.u[f[0]+1,f[1]+1].fix(1)      ## Hard fixing
-        
+            model.u[f[0]+1,f[1]+1].fix(1)                   ## Hard fixing
         for f in No_SB_Uu: 
-            model.u[f[0]+1,f[1]+1] = 0         ## Hints
-
+            model.u[f[0]+1,f[1]+1] = 0                      ## Hints
         for f in lower_Pmin_Uu:
-            model.u[f[0]+1,f[1]+1] = 0         ## Hints
+            model.u[f[0]+1,f[1]+1] = 0                      ## Hints
             
             
     ## ---------------------------- HARD VARIABLE FIXING III------------------------------------------
     ##     
     if option == 'Hard3':    
         for f in SB_Uu:            
-            model.u[f[0]+1,f[1]+1] = 1         ## Hints     
-        
+            model.u[f[0]+1,f[1]+1] = 1                      ## Hints   
         for f in No_SB_Uu: 
-            model.u[f[0]+1,f[1]+1].fix(0)      ## Hard fixing
-
+            model.u[f[0]+1,f[1]+1].fix(0)                   ## Hard fixing
         for f in lower_Pmin_Uu:
             model.u[f[0]+1,f[1]+1].unfix()    
-            model.u[f[0]+1,f[1]+1] = 0         ## Hints
+            model.u[f[0]+1,f[1]+1] = 0                      ## Hints
             
 
     ## ---------------------------- KERNEL SEARCH ------------------------------------------
-    
+    ##
     if option == 'KS' and False:    
         for f in SB_Uu: 
             model.u[f[0]+1,f[1]+1].unfix()  
-            model.u[f[0]+1,f[1]+1] = 1      ## Hints
+            model.u[f[0]+1,f[1]+1] = 1                      ## Hints
         for f in No_SB_Uu: 
-            model.u[f[0]+1,f[1]+1].fix(0)   ## Hard fixing
+            model.u[f[0]+1,f[1]+1].fix(0)                   ## Hard fixing
         for f in lower_Pmin_Uu:
             model.u[f[0]+1,f[1]+1].unfix()  
-            model.u[f[0]+1,f[1]+1] = 0      ## Hints 
+            model.u[f[0]+1,f[1]+1] = 0                      ## Hints 
             
             
     ## ---------------------------- CHECK FEASIABILITY ------------------------------------------
-    
+    ## 
 
     if option == 'Check':  
         for f in SB_Uu: 
+            model.u[f[0]+1,f[1]+1].domain = Binary 
             model.u[f[0]+1,f[1]+1].fix(1)                   ## Hard fixing
         for f in No_SB_Uu: 
+            model.u[f[0]+1,f[1]+1].domain = Binary 
             model.u[f[0]+1,f[1]+1].fix(0)                   ## Hard fixing
         for g in range(0,len(model.G)):
             for t in range(0,len(model.T)):
+                model.v[g+1,t+1].domain   = Binary 
                 model.v[g+1,t+1].fix( V[g][t] )             ## Hard fixing
+                model.w[g+1,t+1].domain   = Binary 
                 model.w[g+1,t+1].fix( W[g][t] )             ## Hard fixing
                 if delta[g][t] != 0:
+                    model.delta[g+1,t+1,delta[g][t]].domain = Binary 
                     model.delta[g+1,t+1,delta[g][t]].fix(1) ## Hard fixing
-            
-            
+                    
         
     ## ---------------------------- Termina y regresa el modelo MILP ------------------------------------------
     return model , n_subset
