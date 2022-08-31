@@ -31,9 +31,13 @@ class Solution:
         self.tt         = len(model.T)
         self.S          = model.S
         self.gap_       = 1e+75       ## relative gap calculated with #|bestbound-bestinteger|/(1e-10+|bestinteger|)
-        self.fail       = False
         self.z_exact    = 1e+75
         self.option     = option
+        self.fail       = False
+        self.timeover   = False
+        self.infeasib   = False
+        self.nosoluti   = False
+        self.optimal    = False
                
     def getModel(self):
         return self.model
@@ -112,34 +116,31 @@ class Solution:
         # model.display()        # Print the optimal solution
 
         if (result.solver.status == SolverStatus.ok) and (result.solver.termination_condition == TerminationCondition.optimal):
-            self.fail = False
+            self.optimal  = True
             
         elif result.solver.termination_condition == TerminationCondition.infeasible:
             ##https://stackoverflow.com/questions/51044262/finding-out-reason-of-pyomo-model-infeasibility
-            self.fail = True
-            print("!!!  Infeasible solution  (╯︵╰,)")
+            print(">>> Infeasible solution  (╯︵╰,)")
+            self.infeasib = True
             # print(log_infeasible_constraints(self.model, log_expression=True, log_variables=True))
             # logging.basicConfig(filename='example.log', encoding='utf-8', level=logging.INFO)
             #logging.basicConfig(filename='unfeasible.log', encoding='utf-8', level=logging.INFO)
             #sys.exit("!!! Unfortunately, the program has stopped.") 
         elif (result.solver.termination_condition == TerminationCondition.maxTimeLimit):
-            print ("Zzz... (-.-) The maximum time limit has been reached")
-            self.fail = False
+            print ("Zzz... The maximum time limit has been reached")
+            self.timeover = True
                     
         elif (result.solver.termination_condition == TerminationCondition.unknown):
-            print ("(✖╭╮✖) Time limit exceeded, no integer solution.")
-            self.fail = True
+            print ("(✖╭╮✖) Time limit exceeded, no solution found")
+            self.nosoluti = True
             
         else:
-            print ("!!! Something else is wrong ",str(result.solver)) 
-            self.fail = True
+            print ("!!! Something else is wrong, the program end.",str(result.solver)) 
+            self.fail     = True  
+            exit()
             
-        # if self.fail == True:
-        #     file = open(self.nameins +'_infeasible_model_' +'.dat', 'w')
-        #     self.model.pprint(file)
-        #     file.close()
             
-        if self.fail == False:
+        if self.fail == False and self.infeasib == False and self.nosoluti == False:
             
             ## |bestbound-bestinteger|/(1e-10+|bestinteger|)
             __data = result.Problem._list
@@ -183,6 +184,11 @@ class Solution:
                             
             self.z_exact = self.model.obj.expr()   
             
+        # if self.fail == True:
+        #     file = open(self.nameins +'_infeasible_model_' +'.dat', 'w')
+        #     self.model.pprint(file)
+        #     file.close()
+        
         return self.z_exact, self.gap_
     
           
@@ -241,7 +247,7 @@ class Solution:
                             lower_Pmin_Uu.append([g,t])
                         No_SB_Uu.append([g,t])  
                         
-        if optional != 'LR':
+        if optional == '':
             for t in range(self.tt):
                 for g in range(self.gg):
                     if self.Uu[g][t] == 1:
@@ -250,11 +256,17 @@ class Solution:
                         No_SB_Uu.append([g,t])
                     else:
                         print('>>> (select_binary_support_Uu) Valor diferente de uno o cero en Uu',g,t,self.Uu[g][t])
-                    
-        suma = len(SB_Uu) + len(No_SB_Uu)
-        print('|Uu        |SB_Uu        |No_SB_Uu     |lower_Pmin_Uu|')   
-        print('|',suma,'   |   ',len(SB_Uu),'   |   ',len(No_SB_Uu),'   |   ',len(lower_Pmin_Uu),' |',)   
+                        
+        if optional == 'LR':            
+            suma = len(SB_Uu) + len(No_SB_Uu)
+            print('|Uu        |SB_Uu        |No_SB_Uu     |lower_Pmin_Uu|')   
+            print('|',suma,'   |   ',len(SB_Uu),'   |   ',len(No_SB_Uu),'   |   ',len(lower_Pmin_Uu),'    |',)   
         
+        if optional == '':
+            suma = len(SB_Uu) + len(No_SB_Uu)
+            print('|Uu        |SB_Uu        |No_SB_Uu     |')   
+            print('|',suma,'   |   ',len(SB_Uu),'   |   ',len(No_SB_Uu),'   |   ')  
+            
         # for t in range(self.tt):
         #     for g in range(self.gg):
         #         self.Uu[g][t] = round(self.model.u[(g+1, t+1)].value,5)
@@ -265,48 +277,44 @@ class Solution:
     
     
     def update_lower_Pmin_Uu(self,lower_Pmin_Uu_o,tag):
-    ## Esta función actualiza las variables en cero que siguen quedando en el conjunto B.
+    ## Esta función actualiza las variables en cero que siguen quedando en el conjunto B = {intentos de asignación}.
+    ## Actualizamos aquellos <intentos de asignación> originales que siguen en cero por lo tanto no se han incorporado al soporte binario.
         lower_Pmin_Uu = []
         ceros=0
         try:
             for i in lower_Pmin_Uu_o:
                 if self.Uu[i[0]][i[1]] == 0:
-                    ceros=ceros+1
                     lower_Pmin_Uu.append(i)
-            print(tag,'update lower_Pmin_Uu (#0) ->',ceros)            
+                    ceros=ceros+1
+            print(tag,'Number of lower_Pmin_Uu that are zero ->',ceros)            
         except Exception as e:
-            temp = 0 
-            print('>>> Hubo un error en <update_lower_Pmin_Uu>')            
+            print('>>> Error in <update_lower_Pmin_Uu>')            
         return lower_Pmin_Uu
     
     
     def cuenta_ceros_a_unos(self,SB_Uu_o,No_SB_Uu_o,lower_Pmin_Uu_o,tag):
-    ## Esta función cuenta aquellos elementos que han cambiado de estado de cero a uno
+    ## Esta función cuenta aquellos elementos que han cambiado de estado de cero a uno ENTRE DOS SOLUCIONES
         uno_a_cero = 0
         cero_a_uno = 0
         try:
             uno_a_cero=0
             for i in SB_Uu_o:
                 if self.Uu[i[0]][i[1]] == 0:
-                    #print(i)
                     uno_a_cero=uno_a_cero+1
-            print(tag,'SB_Uu    1->0',uno_a_cero)
+            print(tag,'SB_Uu          1->0',uno_a_cero)
             cero_a_uno=0
             for i in No_SB_Uu_o:
                 if self.Uu[i[0]][i[1]] == 1:
-                    #print(i)
                     cero_a_uno=cero_a_uno+1
-            print(tag,'No_SB_Uu 0->1',cero_a_uno)
-            cero_a_uno=0
+            print(tag,'No_SB_Uu       0->1',cero_a_uno)
+            cero_a_uno2=0
             for i in lower_Pmin_Uu_o:
                 if self.Uu[i[0]][i[1]] == 1:
-                    #print(i)
-                    cero_a_uno=cero_a_uno+1
-            print(tag,'lower_Pmin_Uu  0->1',cero_a_uno)  
+                    cero_a_uno2=cero_a_uno2+1
+            print(tag,'lower_Pmin_Uu  0->1',cero_a_uno2)  
             
         except Exception as e:
-            xx = 1 
-            print('>>> Hubo un error en <cuenta_ceros_a_unos>')
+            print('>>> Error in <cuenta_ceros_a_unos>')
         return uno_a_cero + cero_a_uno
     
     
