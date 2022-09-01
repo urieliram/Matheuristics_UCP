@@ -7,7 +7,7 @@
 ## Para correr el programa usar el comando "python3 main.py anjos.json yalma"
 ## Desde script en linux test.sh "sh test.sh"
 ## ------------------------ ><((|°> . o O ------------------------
-from math import ceil
+from math import floor
 from pickle import TRUE
 import pandas as pd
 import time
@@ -172,54 +172,74 @@ if True:
     t_max          = timemilp
     cutoff         = z_hard3
     incumbent      = z_hard3
-    iter           = 0
-    escape         = 0
+    improve        = False    
+    timeover       = False
+    iter           = 1
     result_iter    = []
     saved          = []
     rightbranches  = []
     char           = ''
-    fish           = ")"    
+    fish           = ")"
+    letter=['','_a','_b','_c','_d','_e','_f','_g','_h','_i','_j','_k','_l','_m','_n','_o','_p','_q','_r','_s','_t','_u','_v','_w','_x','_y','_z']
     result_iter.append((t_hard3,z_hard3))
     rightbranches.append([SB_Uu3,No_SB_Uu3,lower_Pmin_Uu3])
+    print("<°|"+fish+">< iter:"+str('0')+" t_lbc1= ",round(time.time()-t_o+t_hard3,1),"z_lbc1= ",round(z_hard3,1),char )
     
     while True:
         lbheur   = 'no'
         symmetry = 1 
         char     = ''
-        if escape == 0:
-            cutoff=1e+75            
         
+        if improve == False: #  and timeover == False ???
+            cutoff=1e+75            
+        print('iniciando modelo <uc_Co>...',time.time() )
         model, xx = uc_Co.uc(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,mpc,Pb,Cb,C,Cs,Tunder,names,option='lbc1',
                             SB_Uu=SB_Uu3,No_SB_Uu=No_SB_Uu3,lower_Pmin_Uu=lower_Pmin_Uu3,V=Vv,W=Ww,delta=delta,
-                            k=k,nameins=instancia[0:5],mode="Tight",flag=escape,rightbranches=rightbranches)
-        sol_lbc1  = Solution(model=model,env=ambiente,executable=executable,nameins=instancia[0:5],gap=gap,cutoff=cutoff,timelimit=timeheu,
+                            k=k,nameins=instancia[0:5],mode="Tight",improve=improve,timeover=timeover,rightbranches=rightbranches)
+        print('regresando modelo <uc_Co>...',time.time() )
+        sol_lbc1  = Solution(model=model,env=ambiente,executable=executable,nameins=instancia[0:5],letter=letter[iter],gap=gap,cutoff=cutoff,timelimit=timeheu,
                             tee=False,emphasize=emph,lbheur=lbheur,symmetry=symmetry,tofiles=False,option='lbc1')
         z_lbc1,g_lbc1 = sol_lbc1.solve_problem()
-        escape = sol_lbc1.cuenta_ceros_a_unos(SB_Uu3, No_SB_Uu3, lower_Pmin_Uu3,'lbc1') ## Compara contra la última solución
-        SB_Uu3, No_SB_Uu3, xx, Vv, Ww, delta = sol_lbc1.select_binary_support_Uu('')  
-        lower_Pmin_Uu3 = sol_lbc1.update_lower_Pmin_Uu(lower_Pmin_Uu3,'lbc1')
-        result_iter.append((round(time.time()-t_o+t_hard3,1),z_lbc1)) 
+        sol_lbc1.cuenta_ceros_a_unos(SB_Uu3, No_SB_Uu3, lower_Pmin_Uu3,'lbc1') ## Compara contra la última solución
         
-        if z_lbc1 <= incumbent: ## Actualiza la última solución
-            incumbent = z_lbc1
-            cutoff    = z_lbc1
-            saved     = [SB_Uu3,No_SB_Uu3,Vv,Ww,delta]
-            char = '**'
-        if escape == 0 or sol_lbc1.optimal==True:
-            print('Escaping from a local optimum ...      >>+++++++++|°>')
-            rightbranches.append([SB_Uu3,No_SB_Uu3,lower_Pmin_Uu3])
-            escape = 0
-        if sol_lbc1.nosoluti == True or sol_lbc1.infeasib == True:            
-            print('k=⌊k/2⌋ shrinking the neighborhood ...     >(°> . o O')
-            k = ceil(k/2)
+        improve = False
+        if z_lbc1 < incumbent: ## Actualiza la última solución
+            incumbent  = z_lbc1
+            cutoff     = z_lbc1
+            saved      = [SB_Uu3,No_SB_Uu3,Vv,Ww,delta]
+            char       = '***'
+            improve    = True
             
-        iter = iter + 1 
-        print("<°|"+fish+">< iter:"+str(iter)+" t_lbc1= ",round(time.time()-t_o+t_hard3,1),"z_lbc1= ",round(z_lbc1,1),char,"g_lbc1= ",round(g_lbc1,5) )
-        fish = fish +")"   
+        result_iter.append((round(time.time()-t_o+t_hard3,1),z_lbc1))
         if (iter==iterstop) or (time.time()-t_o+t_hard3>=t_max):
             break
         
-    t_lbc1 = time.time() - t_o + t_hard3  ## t_hard3 ya incluye el tiempo de LP
+        ## Aqui se prepara la nueva iteracion    
+        print("<°|"+fish+">< iter:"+str(iter)+" t_lbc1= ",round(time.time()-t_o+t_hard3,1),"z_lbc1= ",round(z_lbc1,1),char ) #,"g_lbc1= ",round(g_lbc1,5)
+        fish = fish +")"  
+         
+        timeover == False       
+        if improve == False:   
+            if sol_lbc1.timeover == True or sol_lbc1.nosoluti == True or sol_lbc1.infeasib == True:                     
+                if sol_lbc1.timeover == True:   
+                    print('k=[k/2] Time limit reach: shrinking the neighborhood  ...  >(°> . o O')
+                else:
+                    print('k=[k/2] No solution/infeasible: shrinking the neighborhood  ...  >(°> . o O')
+                k = floor(k/2)  
+                timeover == True         
+            else:              
+                print('Going out from a local optimum    ...    >>+*+*+*+*+*+|°>')
+                SB_Uu3, No_SB_Uu3, xx, Vv, Ww, delta = sol_lbc1.select_binary_support_Uu('')  
+                lower_Pmin_Uu3 = sol_lbc1.update_lower_Pmin_Uu(lower_Pmin_Uu3,'lbc1') 
+                rightbranches.append([SB_Uu3,No_SB_Uu3,lower_Pmin_Uu3])
+        else: ## Mejora la solución
+            SB_Uu3, No_SB_Uu3, xx, Vv, Ww, delta = sol_lbc1.select_binary_support_Uu('')  
+            lower_Pmin_Uu3 = sol_lbc1.update_lower_Pmin_Uu(lower_Pmin_Uu3,'lbc1') 
+                    
+        iter = iter + 1
+
+         
+    t_lbc1 = time.time()-t_o+t_hard3  ## t_hard3 ya incluye el tiempo de LP
     z_lbc1 = incumbent    
     for item in result_iter:
         print(item[0],',',item[1])    
