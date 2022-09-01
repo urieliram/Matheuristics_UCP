@@ -11,10 +11,11 @@ from   pyomo.util.infeasible import log_infeasible_constraints
 from   pyomo.opt import SolverStatus, TerminationCondition
 
 class Solution:
-    def __init__(self,model,env,executable,nameins='model',gap=0.0001,timelimit=300,tee=False,tofiles=False,lpmethod=0,
+    def __init__(self,model,env,executable,nameins='model',letter='',gap=0.0001,timelimit=300,tee=False,tofiles=False,lpmethod=0,
                  cutoff=1e+75,emphasize=1,lbheur='no',symmetry=-1,exportLP=False,option=''):
         self.model      = model
         self.nameins    = nameins     ## name of instance 
+        self.letter     = letter      ## letter that enlisted the LBC iteration
         self.env        = env         ## enviroment  
         self.executable = executable  ## ruta donde encontramos el ejecutable CPLEX 
         self.tee        = tee         ## True = activate log of CPLEX
@@ -96,13 +97,13 @@ class Solution:
             #self.model.write(filename = self.model.name+'.mps', io_options = {"symbolic_solver_labels":True})
         
         t_o = time.time() 
-        
-        ## Envía el problema de optimización al solver
-        if self.option=='Hard' or self.option=='Hard3' or self.option=='lbc1' or self.option=='Check' or self.option=='KS' :
-            result = solver.solve(self.model,tee=self.tee,logfile='logfile'+self.option+self.nameins+'.log',warmstart=True)
-        else:
-            result = solver.solve(self.model,tee=self.tee,logfile='logfile'+self.option+self.nameins+'.log')
-        #result.write()  
+        result = solver.solve(self.model,tee=self.tee,logfile='logfile'+self.option+self.nameins+self.letter+'.log',warmstart=True)
+        # ## Envía el problema de optimización al solver
+        # if self.option=='Hard' or self.option=='Hard3' or self.option=='lbc1' or self.option=='Check' or self.option=='KS' :
+        #    result = solver.solve(self.model,tee=self.tee,logfile='logfile'+self.option+self.nameins+self.letter+'.log',warmstart=True)
+        # else:
+        #     result = solver.solve(self.model,tee=self.tee,logfile='logfile'+self.option+self.nameins+self.letter+'.log',warmstart=True)
+        # #result.write()  
         self.solvertime = time.time() - t_o
                 
         try:
@@ -136,7 +137,6 @@ class Solution:
             
         else:
             print ("!!! Something else is wrong, the program end.",str(result.solver)) 
-            self.fail     = True  
             exit()
             
             
@@ -315,7 +315,11 @@ class Solution:
             
         except Exception as e:
             print('>>> Error in <cuenta_ceros_a_unos>')
-        return uno_a_cero + cero_a_uno
+            
+        if uno_a_cero + cero_a_uno == 0:
+            return True
+        else: 
+            return False
     
     
     def count_U_no_int(self):   
