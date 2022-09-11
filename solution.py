@@ -24,7 +24,7 @@ class Solution:
         self.tofiles    = tofiles     ## True = send to csv file the solution value of U,V,W,P,R exporta la solución a un formato .dat
         self.lpmethod   = lpmethod    ## 0=Automatic; 1,2= Primal and dual simplex; 3=Sifting; 4=Barrier, 5=Concurrent (Dual,Barrier, and Primal in opportunistic parallel mode; Dual and Barrier in deterministic parallel mode)
         self.cutoff     = cutoff      ## Agrega una cota superior factible, apara yudar a descartar nodos del árbol del B&B
-        self.emphasize  = emphasize   ## Emphasize optimality=1(default);  feasibility=2.
+        self.emphasize  = emphasize   ## Emphasize feasibility=1;  Optimality=2 https://www.ibm.com/docs/en/icos/20.1.0?topic=parameters-mip-emphasis-switch
         self.lbheur     = lbheur      ## Local branching heuristic is off; default
         self.symmetry   = symmetry    ## symmetry breaking: Automatic =-1 Turn off=0 ; moderade=1 ; extremely aggressive=5
         self.exportLP   = exportLP    ## True si se exporta el modelo a formato LP y MPS
@@ -52,6 +52,12 @@ class Solution:
         return self.P
     def getR(self):
         return self.R
+    
+    def getSnminus(self):
+        return self.snminus
+    def getSnplus(self):
+        return self.snplus
+    
     def getSolverTime(self):
         return self.solvertime
    
@@ -149,12 +155,14 @@ class Solution:
             self.gap_ = abs(LB - UB) /(1e-10 + abs(UB)) 
             
             ## Inizialize variables making a empty-solution with all generators in cero
-            self.Uu     = [[0 for i in range(self.tt)] for j in range(self.gg)]
-            self.V      = [[0 for i in range(self.tt)] for j in range(self.gg)]
-            self.W      = [[0 for i in range(self.tt)] for j in range(self.gg)]
-            self.P      = [[0 for i in range(self.tt)] for j in range(self.gg)]
-            self.R      = [[0 for i in range(self.tt)] for j in range(self.gg)]            
-            self.delta  = [[0 for i in range(self.tt)] for j in range(self.gg)]
+            self.Uu       = [[0 for i in range(self.tt)] for j in range(self.gg)]
+            self.V        = [[0 for i in range(self.tt)] for j in range(self.gg)]
+            self.W        = [[0 for i in range(self.tt)] for j in range(self.gg)]
+            self.P        = [[0 for i in range(self.tt)] for j in range(self.gg)]
+            self.R        = [[0 for i in range(self.tt)] for j in range(self.gg)]            
+            self.delta    = [[0 for i in range(self.tt)] for j in range(self.gg)]       
+            self.snplus   = [0 for i in range(self.tt)]     
+            self.snminus  = [0 for i in range(self.tt)]
             
             ## Tranformación especial para variable delta de (g,t,s) a (g,t)[s] 
             for g in range(0, self.gg):
@@ -175,6 +183,14 @@ class Solution:
                     self.W [g][t] = round(self.model.w[(g+1, t+1)].value,5)
                     self.P [g][t] = round(self.model.p[(g+1, t+1)].value,5)
                     self.R [g][t] = round(self.model.r[(g+1, t+1)].value,5)
+                    
+            for t in range(self.tt):
+                self.snplus[t] = round(self.model.snplus[t+1].value,5)
+                self.snminus[t] = round(self.model.snminus[t+1].value,5)
+                if self.snplus[t] !=0 :
+                    print('>>> WARNING: surplus in', self.snplus[t],'in period t=',t)
+                if self.snminus[t] !=0:
+                    print('>>> WARNING: cut in',     self.snminus[t],'in period t=',t)
                         
             if self.tofiles == True:
                 self.send_to_File()            
@@ -184,10 +200,12 @@ class Solution:
                             
             self.z_exact = self.model.obj.expr()   
             
+            
         # if self.fail == True:
         #     file = open(self.nameins +'_infeasible_model_' +'.dat', 'w')
         #     self.model.pprint(file)
         #     file.close()
+        
         
         return self.z_exact, self.gap_
     
@@ -245,7 +263,7 @@ class Solution:
                         ## >>> Éste valor podría ser usado para definir el parámetro k en el LBC o en un KS.<<<             
                         if (UuxP[g][t] != 0):
                             lower_Pmin_Uu.append([g,t])
-                        No_SB_Uu.append([g,t])  
+                        No_SB_Uu.append([g,t])
                         
         if optional == '':
             for t in range(self.tt):
@@ -259,19 +277,14 @@ class Solution:
                         
         if optional == 'LR':            
             suma = len(SB_Uu) + len(No_SB_Uu)
-            print('|Uu        |SB_Uu        |No_SB_Uu     |lower_Pmin_Uu|')   
+            print('|   Uu     |   SB_Uu     |   No_SB_Uu  |lower_Pmin_Uu|')   
             print('|',suma,'   |   ',len(SB_Uu),'   |   ',len(No_SB_Uu),'   |   ',len(lower_Pmin_Uu),'    |',)   
         
         if optional == '':
             suma = len(SB_Uu) + len(No_SB_Uu)
-            print('|Uu        |SB_Uu        |No_SB_Uu     |')   
-            print('|',suma,'   |   ',len(SB_Uu),'   |   ',len(No_SB_Uu),'   |   ')  
-            
-        # for t in range(self.tt):
-        #     for g in range(self.gg):
-        #         self.Uu[g][t] = round(self.model.u[(g+1, t+1)].value,5)
-        #         self.V [g][t] = round(self.model.v[(g+1, t+1)].value,5)
-        #         self.W [g][t] = round(self.model.w[(g+1, t+1)].value,5)
+            print('|   Uu     |   SB_Uu     |   No_SB_Uu  | Summary Binary Support ')   
+            print('|',suma,'   |   ',len(SB_Uu),'   |   ',len(No_SB_Uu),'   |   ')
+
                        
         return SB_Uu, No_SB_Uu, lower_Pmin_Uu, self.V, self.W, self.delta
     
@@ -314,7 +327,8 @@ class Solution:
             print(tag,'lower_Pmin_Uu  0->1',cero_a_uno2)  
             
         except Exception as e:
-            print('>>> Error in <cuenta_ceros_a_unos>')
+            x=0
+            #print('>>> Sin solución')
             
         if uno_a_cero + cero_a_uno == 0:
             return True
@@ -332,7 +346,7 @@ class Solution:
             if self.option=='relax':
                 print(self.option+" Numero de No binarios en la solución ---> solution.Uu_no_int=",len(Uu_no_int))   
             else:
-                print(self.option+" >>> WARNING se han encontrado No binarios en la solución ---> solution.Uu_no_int=",len(Uu_no_int),Uu_no_int)   
+                print(self.option+" >>> WARNING: se han encontrado No binarios en la solución ---> solution.Uu_no_int=",len(Uu_no_int),Uu_no_int)   
         return 0
     
     

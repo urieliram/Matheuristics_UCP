@@ -72,6 +72,8 @@ def config_env():
         executable   = df['executable'].values[0]
         timeheu      = df['timeheu'   ].values[0]
         timemilp     = df['timemilp'  ].values[0]
+        emph         = df['emphasys'  ].values[0]
+        symmetry     = df['symmetry'  ].values[0]
         gap          = df['gap'       ].values[0]
         k            = df['k'         ].values[0]
         iterpar      = df['iter'      ].values[0]
@@ -81,7 +83,7 @@ def config_env():
         print('ambiente,ruta,executable,timeheu,timemilp,gap')
         print('localPC,instances/,/home/uriel/cplex1210/cplex/bin/x86-64_linux/cplex,4000,40000,0.001')
                 
-    return ambiente, ruta, executable, timeheu, timemilp, gap, k, iterpar
+    return ambiente, ruta, executable, timeheu, timemilp, emph, symmetry, gap, k, iterpar
 
 
 def trunc(values, decs=1):

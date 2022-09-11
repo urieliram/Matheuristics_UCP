@@ -24,9 +24,9 @@ from   pyomo.environ import *
 
 def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,CR,Pb,Cb,C,Cs,Tunder,names,option='None',
        SB_Uu=[],No_SB_Uu=[],lower_Pmin_Uu=[],V=[],W=[],delta=[],
-       percent_lbc=90,k=10,nameins='model',mode="Compact",improve=True,timeover=False,rightbranches=[],):
+       percent_soft=90,k=20,nameins='model',mode="Compact",improve=True,timeover=False,rightbranches=[],):
                       
-    n_subset   = 0 ## Número de variables que podrían moverse en el Sub-milp (Binary support)
+    inside90   = 0 ## Número de variables que podrían moverse en el Sub-milp (Binary support)
 
     model      = pyo.ConcreteModel(nameins)    
     model.G    = pyo.Set(initialize = G)
@@ -283,8 +283,8 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,CR,Pb,Cb,C,Cs,T
     ## -------------------------------DEMAND & RESERVE----------------------------------------   
  
     def demand_rule65(m,t):                      ## demand eq.(65)
-        return sum( m.p[g,t] for g in m.G ) +  m.sn[t]  == m.De[t] 
-        #return sum( m.p[g,t] for g in m.G )  + 0  == m.De[t] 
+        ##return sum( m.p[g,t] for g in m.G ) +  m.sn[t]  == m.De[t] 
+        return sum( m.p[g,t] for g in m.G )  + 0  == m.De[t] 
     model.demand_rule65 = pyo.Constraint(model.T, rule = demand_rule65)
     
     def demand_rule66a(m,t):                      ## holguras o excesos en la demanda eq.(66a)
@@ -292,13 +292,13 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,CR,Pb,Cb,C,Cs,T
     model.demand_rule66a = pyo.Constraint(model.T, rule = demand_rule66a)
 
     def demand_rule67(m,t):                      ## demand + reserve eq.(67)
-        return sum( m.pb[g,t] for g in m.G ) +  m.sn[t] >= m.De[t] + m.R[t] 
-        #return sum( m.pb[g,t] for g in m.G )  +  0       >= m.De[t] + m.R[t] 
+        ##return sum( m.pb[g,t] for g in m.G ) +  m.sn[t] >= m.De[t] + m.R[t] 
+        return sum( m.pb[g,t] for g in m.G )   +  0       >= m.De[t] + m.R[t] 
     model.demand_rule67 = pyo.Constraint(model.T, rule = demand_rule67)
 
     def reserve_rule68(m,t):                      ## reserve eq.(68)
         ## return sum( m.r[g,t] for g in m.G) + m.sR[t] >= m.R[t] 
-        return sum( m.r[g,t] for g in m.G) + 0 >= m.R[t] 
+        return sum( m.r[g,t] for g in m.G)    + 0       >= m.R[t] 
     model.reserve_rule68 = pyo.Constraint(model.T, rule = reserve_rule68)
 
 
@@ -578,7 +578,7 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,CR,Pb,Cb,C,Cs,T
 
     ## ---------------------------- Inequality related with 'delta' and 'v' ------------------------------------------
 
-    if option == 'Milp2':    
+    if option == 'Milp2':
         def Start_up_cost_desigualdad_Uriel(m,g):  ##  start-up cost eq.(54)(s < value(len(m.S[g])) and t >= m.Tunder[g,s+1]):
             return sum(m.v[g,t] for t in m.T) == sum(m.delta[g,t,s] for s in range(1,value(len(m.S[g]))+1) for t in m.T)  
         model.Start_up_cost_desigualdad_Uriel = pyo.Constraint(model.G,rule = Start_up_cost_desigualdad_Uriel)
@@ -607,19 +607,21 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,CR,Pb,Cb,C,Cs,T
                 if delta[g][t]  != 0:
                     model.delta[g+1,t+1,delta[g][t]] = 1    ## Hints
                     
-        ## Soft-fixing: adding a new restriction 
         model.cuts = pyo.ConstraintList()
+        
+        # Soft-fixing: adding a new restriction 
         if True:
             ## https://pyomo.readthedocs.io/en/stable/working_models.html
-            n_subset   = math.ceil((percent_lbc/100) * (len(SB_Uu))) #-len(lower_Pmin_Uu)
+            inside90   = math.ceil((percent_soft/100) * (len(SB_Uu))) #-len(lower_Pmin_Uu)
             expr       = 0        
-            ## Se hace n_subset=90% solo a el - Soporte Binario -  
-            for f in SB_Uu:      
+            ## Se hace inside90 = 90% solo a el - Soporte Binario -  
+            for f in SB_Uu:
                 expr += model.u[f[0]+1,f[1]+1]
-            model.cuts.add(expr >= n_subset) 
-            #outside90 = len(SB_Uu)-n_subset                                        
-            #print('LBC: number of variables Uu that may be into the n_subset (',percent_lbc,'%): ', n_subset)
-            #print(option+' number of variables Uu that may be outside of Binary Support (',100-percent_lbc,'%): ', outside90)
+            model.cuts.add(expr >= inside90)
+            outside90 = len(SB_Uu)-inside90
+            print(option,'variables Uu that SB_Uu=1 <= inside90  =', inside90)
+            # print(option,'variables Uu that SB_Uu=0 <= outside90 =', outside90)
+            
         
         ## Local Branching Constraint (LBC)     
         if True:            
@@ -644,20 +646,22 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,CR,Pb,Cb,C,Cs,T
                     expr +=     model.u[f[0]+1,f[1]+1] 
                 model.cuts.add(expr >= k + 1)
                 
+            
+                
                 
     ## ---------------------------- LOCAL BRANCHING CONSTRAINT LBC2 (INTEGER VERSION)------------------------------------------    
     ## Define a neighbourhood with LBC2.
-    
+       
     if(option == 'lbc2'):
                   
         for f in No_SB_Uu:   
-            model.u[f[0]+1,f[1]+1].domain = Binary          ## No Binary Support
-            #if improve == True:
-            model.u[f[0]+1,f[1]+1] = 0                      ## Hints
+            model.u[f[0]+1,f[1]+1].domain = Binary    ## We remove the integrality constraint of the Binary Support 
+            if improve == True:          
+                model.u[f[0]+1,f[1]+1] = 0            ## Hints
         for f in SB_Uu:  
-            model.u[f[0]+1,f[1]+1].domain = Binary          ## Binary Support 
-            #if improve == True:          
-            model.u[f[0]+1,f[1]+1] = 1                      ## Hints
+            model.u[f[0]+1,f[1]+1].domain = Binary    ## We remove the integrality constraint of the Binary Support 
+            if improve == True:          
+                model.u[f[0]+1,f[1]+1] = 1            ## Hints
             
         ## Hints para iniciar desde la última solución válida
         #if improve == True:
@@ -667,13 +671,14 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,CR,Pb,Cb,C,Cs,T
                 model.w[g+1,t+1] = W[g][t]                  ## Hints
                 if delta[g][t]  != 0:
                     model.delta[g+1,t+1,delta[g][t]] = 1    ## Hints
-                    
-        ## Local Branching Constraint (LBC)     
+        
         model.cuts = pyo.ConstraintList()
         
+        ## Local Branching Constraint (LBC) 
         if True:            
             ## Adding a new restrictions LEFT-BRANCH  <°|((><
-            if improve == True: 
+            if improve == True or (timeover==True and improve == False) : 
+                print('Adding  1  left-branch: lower_Pmin_Uu ≤',k)                
                 expr = 0      
                 for f in SB_Uu:                             ## Cuenta los cambios de 1 --> 0  
                     expr += 1 - model.u[f[0]+1,f[1]+1] 
@@ -681,8 +686,8 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,CR,Pb,Cb,C,Cs,T
                     expr +=     model.u[f[0]+1,f[1]+1]              
                 model.cuts.add(expr <= k)      
         
-            ## Adding a new restrictions RIGHT-BRANCH >>++++++++|°> . o O
-            print('Adding ',len(rightbranches),' right-branches')
+            ## Adding a new restrictions RIGHT-BRANCH  >>++++++++|°> . o O
+            print('Adding ',len(rightbranches),' right-branches:  lower_Pmin_Uu ≥',k,'+ 1')
             for cut in rightbranches:
                 expr = 0      
                 ## cut[1]=No_SB_Uu   cut[2]=lower_Pmin_Uu  cut[0]=SB_Uu   
@@ -695,8 +700,8 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,CR,Pb,Cb,C,Cs,T
 
     ## ---------------------------- HARD VARIABLE FIXING   ------------------------------------------
     ## 
-    if option == 'Hard':    
-        for f in SB_Uu:  
+    if option == 'Hard':
+        for f in SB_Uu:
             model.u[f[0]+1,f[1]+1].fix(1)                   ## Hard fixing
         for f in No_SB_Uu: 
             model.u[f[0]+1,f[1]+1] = 0                      ## Hints
@@ -706,8 +711,8 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,CR,Pb,Cb,C,Cs,T
             
     ## ---------------------------- HARD VARIABLE FIXING III------------------------------------------
     ##     
-    if option == 'Hard3':    
-        for f in SB_Uu:            
+    if option == 'Hard3':
+        for f in SB_Uu:       
             model.u[f[0]+1,f[1]+1] = 1                      ## Hints   
         for f in No_SB_Uu: 
             model.u[f[0]+1,f[1]+1].fix(0)                   ## Hard fixing
@@ -715,12 +720,27 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,CR,Pb,Cb,C,Cs,T
             model.u[f[0]+1,f[1]+1].unfix()    
             model.u[f[0]+1,f[1]+1] = 0                      ## Hints
             
+            
+        # # 90% del soporte binario
+        # if True:
+        #     model.cuts = pyo.ConstraintList()
+        #     ## https://pyomo.readthedocs.io/en/stable/working_models.html
+        #     inside90   = math.ceil((percent_soft/100) * (len(SB_Uu))) #-len(lower_Pmin_Uu)
+        #     expr       = 0        
+        #     ## Se hace inside90 = 90% solo a el - Soporte Binario -  
+        #     for f in SB_Uu:
+        #         expr += model.u[f[0]+1,f[1]+1]
+        #     model.cuts.add(expr >= inside90)
+        #     outside90 = len(SB_Uu)-inside90
+        #     print(option,'variables Uu that SB_Uu=1 <= inside90  =', inside90)
+        #     print(option,'variables Uu that SB_Uu=0 <= outside90 =', outside90)
+            
+
 
     ## ---------------------------- KERNEL SEARCH ------------------------------------------
     ##
     if option == 'KS' and False:    
         for f in SB_Uu: 
-            model.u[f[0]+1,f[1]+1].unfix()  
             model.u[f[0]+1,f[1]+1] = 1                      ## Hints
         for f in No_SB_Uu: 
             model.u[f[0]+1,f[1]+1].fix(0)                   ## Hard fixing
@@ -752,5 +772,5 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,CR,Pb,Cb,C,Cs,T
         
     ## ---------------------------- Termina y regresa el modelo MILP ------------------------------------------
 
-    return model , n_subset
+    return model, inside90
 
