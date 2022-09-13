@@ -50,11 +50,10 @@ instancia = 'uc_02.json'        ## ejemplos dificiles 2,3,4
 instancia = 'uc_71.json'        ## ejemplo nivel dificultad media
 
 instancia = 'uc_02.json'       ##
-instancia = 'uc_61.json'       ##
 instancia = 'uc_71.json'       ##
 instancia = 'uc_97.json'       ## al parecer usa las holguras en violaciones
-instancia = 'uc_96.json'       ##
-instancia = 'uc_58.json'       ## prueba demostrativa excelente en mipc
+instancia = 'uc_58.json'       ## prueba demostrativa excelente en mi PC
+instancia = 'uc_69.json'       ##
 
 ## Cargamos parámetros de configuración desde archivo <config>
 ## Emphasize balanced=0 (default); feasibility=1; optimality=2;
@@ -213,7 +212,6 @@ if True:
     while True:
         lbheur   = 'no'
         char     = ''
-        
         if improve == False: #  and timeover == False ???
             cutoff=1e+75            
         model, xx = uc_Co.uc(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,mpc,Pb,Cb,C,Cs,Tunder,names,option='lbc1',
@@ -276,7 +274,7 @@ if True:
         
 k=copy.copy(k_original)
     
-## ---------------------------------------------- CHECK FEASIBILITY (a)----------------------------------------------------------
+## ---------------------------------------------- CHECK FEASIBILITY (LBC1)----------------------------------------------------------
 if  True: 
     print('Revisando factibilidad de la solucion con z=', z_lbc1 )
     t_o      = time.time() 
@@ -387,17 +385,18 @@ if True:
 k=copy.copy(k_original)
 
 
-## ---------------------------------------------- CHECK FEASIBILITY (b)----------------------------------------------------------
+## ---------------------------------------------- CHECK FEASIBILITY (LBC2)----------------------------------------------------------
 if  True: 
     print('Revisando factibilidad de la solucion con z=', z_lbc2 )
     t_o      = time.time() 
     model,xx = uc_Co.uc(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,mpc,Pb,Cb,C,Cs,Tunder,names,option='Check',
                         SB_Uu=saved[0],No_SB_Uu=saved[1],V=saved[2],W=saved[3],delta=saved[4],nameins=instancia[0:5],mode="Tight")
-    sol_check = Solution(model=model,nameins=instancia[0:5],env=ambiente,executable=executable,gap=gap,cutoff=cutoff,timelimit=timemilp,
+    sol_check = Solution(model=model,nameins=instancia[0:5],env=ambiente,executable=executable,gap=gap,timelimit=timemilp,
                          tee=False,tofiles=False,emphasize=emph,symmetry=symmetry,exportLP=False,option='Check')
     z_check,g_check = sol_check.solve_problem()
     t_check         = time.time() - t_o
     print("t_check= ",round(t_check,1),"z_check= ",round(z_check,4),"g_check= ",round(g_check,4))
+
 
 
 ## --------------------------------------- CALCULATE MARGINAL COST Uu ------------------------------------
@@ -515,6 +514,10 @@ row = [ambiente,localtime,instancia,len(T),len(G),gap,emph,timeheu,timemilp,
                   round(g_milp,8),round(g_hard,8),round(g_hard3,8),round(g_lbc1,8),round(g_lbc2,8),round(g_,8),round(g_,8),round(g_,8),
                   k,ns,comment] #round(((z_milp-z_milp2)/z_milp)*100,6)
 util.append_list_as_row('stat.csv',row)
+
+print(localtime,'terminé instancia ..·´¯`·.´¯`·...·´¯`·..><(((º> ',instancia)
+
+exit()
 
 
 
