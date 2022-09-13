@@ -627,7 +627,7 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,CR,Pb,Cb,C,Cs,T
         if True:            
             ## Adding a new restrictions LEFT-BRANCH  <°|((><
             if improve == True or (timeover==True and improve == False) : 
-                print('Adding  1  left-branch: lower_Pmin_Uu ≤',k)                
+                print('Adding  1  left-branch: ∑lower_Pmin_Uu + ∑SB_Uu ≤',k)                
                 expr = 0      
                 for f in SB_Uu:                             ## Cuenta los cambios de 1 --> 0  
                     expr += 1 - model.u[f[0]+1,f[1]+1] 
@@ -636,17 +636,16 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,CR,Pb,Cb,C,Cs,T
                 model.cuts.add(expr <= k)      
         
             ## Adding a new restrictions RIGHT-BRANCH  >>++++++++|°> . o O
-            print('Adding ',len(rightbranches),' right-branches:  lower_Pmin_Uu ≥',k,'+ 1')
+            print('Adding ',len(rightbranches),' right-branches:  ∑lower_Pmin_Uu + ∑SB_Uu ≥',k,'+ 1')
             for cut in rightbranches:
                 expr = 0      
                 ## cut[1]=No_SB_Uu   cut[2]=lower_Pmin_Uu  cut[0]=SB_Uu   
-                for f in cut[0]:                            ## Cuenta los cambios de 1 --> 0  
+                for f in cut[0]:  ## NUNCA SE MUEVE         ## Cuenta los cambios de 1 --> 0  
                     expr += 1 - model.u[f[0]+1,f[1]+1] 
                 for f in cut[2]:  # cut[1]                  ## Cuenta los cambios de 0 --> 1 
                     expr +=     model.u[f[0]+1,f[1]+1] 
                 model.cuts.add(expr >= k + 1)
                 
-            
                 
                 
     ## ---------------------------- LOCAL BRANCHING CONSTRAINT LBC2 (INTEGER VERSION)------------------------------------------    
@@ -678,7 +677,7 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,CR,Pb,Cb,C,Cs,T
         if True:            
             ## Adding a new restrictions LEFT-BRANCH  <°|((><
             if improve == True or (timeover==True and improve == False) : 
-                print('Adding  1  left-branch: lower_Pmin_Uu ≤',k)                
+                print('Adding  1  left-branch: ∑lower_Pmin_Uu  + ∑SB_Uu ≤',k)                
                 expr = 0      
                 for f in SB_Uu:                             ## Cuenta los cambios de 1 --> 0  
                     expr += 1 - model.u[f[0]+1,f[1]+1] 
@@ -687,11 +686,11 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,CR,Pb,Cb,C,Cs,T
                 model.cuts.add(expr <= k)      
         
             ## Adding a new restrictions RIGHT-BRANCH  >>++++++++|°> . o O
-            print('Adding ',len(rightbranches),' right-branches:  lower_Pmin_Uu ≥',k,'+ 1')
+            print('Adding ',len(rightbranches),' right-branches:  ∑lower_Pmin_Uu  + ∑SB_Uu ≥',k,'+ 1')
             for cut in rightbranches:
                 expr = 0      
                 ## cut[1]=No_SB_Uu   cut[2]=lower_Pmin_Uu  cut[0]=SB_Uu   
-                for f in cut[0]:                            ## Cuenta los cambios de 1 --> 0  
+                for f in cut[0]:  ## NUNCA SE MUEVE         ## Cuenta los cambios de 1 --> 0  
                     expr += 1 - model.u[f[0]+1,f[1]+1] 
                 for f in cut[2]:  # cut[1]                  ## Cuenta los cambios de 0 --> 1 
                     expr +=     model.u[f[0]+1,f[1]+1] 
