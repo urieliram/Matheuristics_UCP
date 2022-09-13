@@ -40,9 +40,10 @@ Estas instancias tienen una alta simetría, por lo que tardan en resolverse un p
 |   x10gen_small | 10             |  280 to 540    | 24            | (81-90)        |
 |   x10gen_large | 10             |  1320 to 1870  | 24            | (91-100)       |
 
-uc_57 morales_espania2013,Section_III_D,example of one_day. TABLE IX morales-españa2013
-uc_58 morales_espania2013,Section_III_D,example of five days. TABLE VII morales-españa2013
-uc_59 morales_espania2013,Template of eight generators. TABLE VII morales-españa2013
+Otras instancias de ejemplo
+-uc_57 morales_espania2013,Section_III_D,example of one_day. TABLE IX morales-españa2013
+-uc_58 morales_espania2013,Section_III_D,example of five days. TABLE VII morales-españa2013
+-uc_59 morales_espania2013,Template of eight generators. TABLE VII morales-españa2013
 
 
 ## Ligas
