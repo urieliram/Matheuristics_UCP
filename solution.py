@@ -1,12 +1,10 @@
 # from ctypes import util
 from math import ceil
 import os
-import sys
-import logging
 import time
-import pyomo.environ as pyo
 import util
 import numpy as np
+import pyomo.environ as pyo
 from   pyomo.util.infeasible import log_infeasible_constraints
 from   pyomo.opt import SolverStatus, TerminationCondition
 
@@ -53,10 +51,10 @@ class Solution:
     def getR(self):
         return self.R
     
-    def getSnminus(self):
-        return self.snminus
-    def getSnplus(self):
-        return self.snplus
+    # def getSnminus(self):
+    #     return self.snminus
+    # def getSnplus(self):
+    #     return self.snplus
     
     def getSolverTime(self):
         return self.solvertime
@@ -82,7 +80,6 @@ class Solution:
         solver.options['emphasis mip'                  ] = self.emphasize
         solver.options['mip strategy lbheur'           ] = self.lbheur
         solver.options['preprocessing symmetry'        ] = self.symmetry
-        
         #https://www.ibm.com/docs/en/cofz/12.8.0?topic=parameters-symmetry-breaking
         
         # solver.options['mip cuts all'                ] = -1
@@ -102,8 +99,13 @@ class Solution:
             #self.model.write(filename, io_options={'symbolic_solver_labels': True})
             #self.model.write(filename = self.model.name+'.mps', io_options = {"symbolic_solver_labels":True})
         
+        
+        # Create a 'rc' suffix component on the instance so the solver plugin will know which suffixes to collect
+        if self.option == 'RC':
+            self.model.rc = pyo.Suffix(direction=pyo.Suffix.IMPORT,datatype=pyo.Suffix.FLOAT)
+
         t_o = time.time() 
-        result = solver.solve(self.model,tee=self.tee,logfile='logfile'+self.option+self.nameins+self.letter+'.log',warmstart=True)
+        result = solver.solve(self.model,tee=self.tee,logfile='logfile'+self.option+self.nameins+self.letter+'.log',warmstart=True)#,suffixes='rc'
         # ## Envía el problema de optimización al solver
         # if self.option=='Hard' or self.option=='Hard3' or self.option=='lbc1' or self.option=='Check' or self.option=='KS' :
         #    result = solver.solve(self.model,tee=self.tee,logfile='logfile'+self.option+self.nameins+self.letter+'.log',warmstart=True)
@@ -112,15 +114,25 @@ class Solution:
         # #result.write()  
         self.solvertime = time.time() - t_o
                 
-        try:
-            pyo.assert_optimal_termination(result)
-        except Exception as e:
-            print(e)
+        # try:
+        #     pyo.assert_optimal_termination(result)
+        # except Exception as e:
+        #     print(e)
                             
         # model.obj.pprint()     # Print the objetive function
         # model.demand.pprint()  # Print constraint
         # model.reserve.pprint() # Print constraint
         # model.display()        # Print the optimal solution
+        
+        # np_rc = np.array((1,2,3,4,5)) 
+        # if self.option == 'RC':
+        #     print ("RC")
+        #     # print(self.model.rc[self.model.u[1,1]]) ##FUNCIONA!
+        #     for c in self.model.u:
+        #         self.model.rc[self.model.u[c[0],c[1]]]
+        #         print(self.model.rc[self.model.u[c[0],c[1]]])
+        #     # self.model.rc.pprint()
+        
 
         if (result.solver.status == SolverStatus.ok) and (result.solver.termination_condition == TerminationCondition.optimal):
             self.optimal  = True
@@ -161,12 +173,12 @@ class Solution:
             self.P        = [[0 for i in range(self.tt)] for j in range(self.gg)]
             self.R        = [[0 for i in range(self.tt)] for j in range(self.gg)]            
             self.delta    = [[0 for i in range(self.tt)] for j in range(self.gg)]       
-            self.snplus   = [0 for i in range(self.tt)]     
-            self.snminus  = [0 for i in range(self.tt)]
+            # self.snplus   = [0 for i in range(self.tt)]     
+            # self.snminus  = [0 for i in range(self.tt)]
             
             ## Tranformación especial para variable delta de (g,t,s) a (g,t)[s] 
-            for g in range(0, self.gg):
-                for t in range(0, self.tt):
+            for t in range(0, self.tt):
+                for g in range(0, self.gg):
                     position = 0
                     for s in range(0, len(self.model.S[g+1])):
                         position = position + 1
@@ -174,29 +186,29 @@ class Solution:
                             self.delta[g][t] = position 
                             #self.delta[g][t] = self.delta[g][t] + self.model.delta[(g+1,t+1,s+1)].value
                 
-                
             ##  ALMACENA la solución entera del problema 
-            for t in range(self.tt):
-                for g in range(self.gg):
+            # for t in range(0,self.tt):
+            #     for g in range(0,self.gg):
                     self.Uu[g][t] = round(self.model.u[(g+1, t+1)].value,5)
                     self.V [g][t] = round(self.model.v[(g+1, t+1)].value,5)
                     self.W [g][t] = round(self.model.w[(g+1, t+1)].value,5)
                     self.P [g][t] = round(self.model.p[(g+1, t+1)].value,5)
                     self.R [g][t] = round(self.model.r[(g+1, t+1)].value,5)
                     
-            for t in range(self.tt):
-                self.snplus[t] = round(self.model.snplus[t+1].value,5)
-                self.snminus[t] = round(self.model.snminus[t+1].value,5)
-                if self.snplus[t] !=0 :
-                    print('>>> WARNING: surplus in', self.snplus[t],'in period t=',t)
-                if self.snminus[t] !=0:
-                    print('>>> WARNING: cut in',     self.snminus[t],'in period t=',t)
+            # # for t in range(self.tt):
+            #     self.snplus[t] = round(self.model.snplus[t+1].value,5)
+            #     self.snminus[t] = round(self.model.snminus[t+1].value,5)
+            #     if self.snplus[t] !=0 :
+            #         print('>>> WARNING: surplus in', self.snplus[t],'in period t=',t)
+            #     if self.snminus[t] !=0:
+            #         print('>>> WARNING: cut in',     self.snminus[t],'in period t=',t)
+                    
                         
             if self.tofiles == True:
                 self.send_to_File()            
                 
             ## Imprimimos las posibles variables 'u' que podrían no sean enteras.
-            self.count_U_no_int()    
+            # self.count_U_no_int()    
                             
             self.z_exact = self.model.obj.expr()   
             

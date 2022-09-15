@@ -33,10 +33,10 @@ instancia = 'uc_43.json'    ## ejemplo medio
 #instancia = 'uc_02.json'   ## ejemplo de batalla 
 #instancia = 'uc_01.json'   ## ejemplo de batalla 
 #instancia = 'uc_24.json'   ## ejemplo de batalla 
-instancia  = 'uc_99.json'    ## ejemplo patológico
+instancia  = 'uc_80.json'   
 
 ## Cargamos parámetros de configuración desde archivo <config>
-ambiente, ruta, executable, timeheu, timemilp, gap, k, iterpar = util.config_env()
+ambiente, ruta, executable, timeheu, timemilp, emph, symmetry, gap, k, iterstop = util.config_env()
 if ambiente == 'yalma':
     if len(sys.argv) != 2:
         print("!!! Something went wrong, try write something like: $python3 ploting.py uc_02")
@@ -53,10 +53,19 @@ if ambiente == 'yalma':
 # Extract().plot_four_in_one(bb1,bb2,bb3,'Milp','Hard','Soft7',instancia[0:5],id='a')
 
 bb1,vari = Extract().extract('logfile'+'Milp' +instancia[0:5]+'.log') 
-bb2,vari = Extract().extract('logfile'+'Milplb' +instancia[0:5]+'.log') 
-bb3,vari = Extract().extract('logfile'+'Milplbsym'+instancia[0:5]+'.log')    
+bb2      = Extract().read_LBC('iterLBC1'+instancia[0:5]+'.csv')
+bb3      = Extract().read_LBC('iterLBC2'+instancia[0:5]+'.csv')
+
+print(bb2)
+print(bb3)
+
+# bb2,vari = Extract().extract('logfile'+'Milplb' +instancia[0:5]+'.log') 
+# bb3,vari = Extract().extract('logfile'+'Milplbsym'+instancia[0:5]+'.log')    
 #Extract().plot_four_in_one(bb1,bb2,bb3,'Milp','Hard3','Milp',instancia[0:5],id='a')
-Extract().plot_all_in_one(bb1,bb2,bb3,'Milp','Milp+lbheur','Milp+lbheur+sys',instancia[0:5],id='')
+
+#Extract().plot_four_in_one(bb1,bb2,bb1,'Milp','LBC1','Milp',instancia[0:5],id='a')
+
+Extract().plot_all_in_one(bb1,bb2,bb3,'CPLEX','LBC1','LBC2',instancia[0:5],id='')
 
 
 

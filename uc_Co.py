@@ -22,6 +22,7 @@ import numpy as np
 import pyomo.environ as pyo
 from   pyomo.environ import *
 
+
 def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,CR,Pb,Cb,C,Cs,Tunder,names,option='None',
        SB_Uu=[],No_SB_Uu=[],lower_Pmin_Uu=[],V=[],W=[],delta=[],
        percent_soft=90,k=20,nameins='model',mode="Compact",improve=True,timeover=False,rightbranches=[],):
@@ -76,7 +77,7 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,CR,Pb,Cb,C,Cs,T
         return ((g,s) for g in m.G for s in range(1,len(m.S[g])+1)) ##CHECAR SI REQUIERE +1
     model.indexGSg = Set(initialize=index_G_Sg, dimen=2)
     
-    if(option == 'relax'): #Si se desea relajar las variables enteras como continuas
+    if(option == 'relax' or option == 'RC'): #Si se desea relajar las variables enteras como continuas
         model.u     = pyo.Var( model.G , model.T , within = UnitInterval)   ## UnitInterval: floating point values in the interval [0,1]
         model.v     = pyo.Var( model.G , model.T , within = UnitInterval)   
         model.w     = pyo.Var( model.G , model.T , within = UnitInterval)   
@@ -96,8 +97,8 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,CR,Pb,Cb,C,Cs,T
     model.cSU       = pyo.Var( model.G , model.T , bounds = (0.0,9999999.0))
     model.cSD       = pyo.Var( model.G , model.T , bounds = (0.0,9999999.0))
     model.mpc       = pyo.Var( model.G , model.T , bounds = (0.0,9999999.0))
-    model.snplus    = pyo.Var( model.T ,           bounds = (0.0,9999999.0)) ##surplus demand
-    model.snminus   = pyo.Var( model.T ,           bounds = (0.0,9999999.0)) ##surplus demand
+    # model.snplus    = pyo.Var( model.T ,           bounds = (0.0,9999999.0)) ##surplus demand
+    # model.snminus   = pyo.Var( model.T ,           bounds = (0.0,9999999.0)) ##surplus demand
     model.sn        = pyo.Var( model.T ,           bounds = (0.0,9999999.0)) ##surplus demand
     model.sR        = pyo.Var( model.T ,           bounds = (0.0,9999999.0)) ##surplus reserve         
     model.pl        = pyo.Var(model.indexGTLg,     bounds = (0.0,99999.0))   ## within=UnitInterval UnitInterval == [0,1]   
@@ -117,8 +118,7 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,CR,Pb,Cb,C,Cs,T
     ## print(model.mut2[1].expr)  ## For only one index of Constraint List
     ## print(model.mdt2[3].expr)  ## For only one index of Constraint List
     ## model.u.set_values(dict)
-    ## model.u.set_values({(1,3): 1}) ## OJO este no sirve , no fi
-    # ja !!!
+    ## model.u.set_values({(1,3): 1}) ## OJO este no sirve , no fija !!!
     ## https://pyomo.readthedocs.io/en/stable/working_models.html
     ## model.u[3,1].fix(0)
     ## model.u.fix(0)
@@ -287,9 +287,9 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,CR,Pb,Cb,C,Cs,T
         return sum( m.p[g,t] for g in m.G )  + 0  == m.De[t] 
     model.demand_rule65 = pyo.Constraint(model.T, rule = demand_rule65)
     
-    def demand_rule66a(m,t):                      ## holguras o excesos en la demanda eq.(66a)
-        return m.sn[t] == m.snplus[t] - m.snminus[t]  
-    model.demand_rule66a = pyo.Constraint(model.T, rule = demand_rule66a)
+    # def demand_rule66a(m,t):                      ## holguras o excesos en la demanda eq.(66a)
+    #     return m.sn[t] == m.snplus[t] - m.snminus[t]  
+    # model.demand_rule66a = pyo.Constraint(model.T, rule = demand_rule66a)
 
     def demand_rule67(m,t):                      ## demand + reserve eq.(67)
         ##return sum( m.pb[g,t] for g in m.G ) +  m.sn[t] >= m.De[t] + m.R[t] 
@@ -402,7 +402,8 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,CR,Pb,Cb,C,Cs,T
             try:
                 return m.C[g,1] * m.Pmin[g] * m.u[g,t] == m.mpc[g,t]          
             except:
-                print('name...',names[g-1])      
+                if t==1:
+                    print('<Piecewise_mpc> name...',names[g]) 
                 return pyo.Constraint.Skip
                                        
         model.Piecewise_mpc = pyo.Constraint(model.G,model.T, rule = Piecewise_mpc)
@@ -752,22 +753,34 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,CR,Pb,Cb,C,Cs,T
     ## 
 
     if option == 'Check':  
+        
+        model.u.fix(0)
+        model.delta.fix(0)
         for f in SB_Uu: 
-            model.u[f[0]+1,f[1]+1].domain = Binary 
+            # model.u[f[0]+1,f[1]+1].domain = Binary 
             model.u[f[0]+1,f[1]+1].fix(1)                   ## Hard fixing
-        for f in No_SB_Uu: 
-            model.u[f[0]+1,f[1]+1].domain = Binary 
-            model.u[f[0]+1,f[1]+1].fix(0)                   ## Hard fixing
+        # for f in No_SB_Uu: 
+        #     # model.u[f[0]+1,f[1]+1].domain = Binary 
+        #     model.u[f[0]+1,f[1]+1].fix(0)                   ## Hard fixing
         for g in range(0,len(model.G)):
             for t in range(0,len(model.T)):
-                model.v[g+1,t+1].domain   = Binary 
+                # model.v[g+1,t+1].domain   = Binary 
                 model.v[g+1,t+1].fix( V[g][t] )             ## Hard fixing
-                model.w[g+1,t+1].domain   = Binary 
+                # model.w[g+1,t+1].domain   = Binary 
                 model.w[g+1,t+1].fix( W[g][t] )             ## Hard fixing
                 if delta[g][t] != 0:
-                    model.delta[g+1,t+1,delta[g][t]].domain = Binary 
+                    # model.delta[g+1,t+1,delta[g][t]].domain = Binary 
                     model.delta[g+1,t+1,delta[g][t]].fix(1) ## Hard fixing
                     
+                    
+                                
+    ## ---------------------------- REDUCED COST ------------------------------------------
+    ## 
+
+    if option == 'RC':                               
+        for f in SB_Uu: 
+            model.u[f[0]+1,f[1]+1].fix(1)                   ## Hard fixing
+            
         
     ## ---------------------------- Termina y regresa el modelo MILP ------------------------------------------
 
