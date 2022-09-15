@@ -167,6 +167,15 @@ class Extract:
     df["ticks"] = sum_column  
     return df,variables
     
+    
+    
+  def read_LBC(self,file):
+    df = pd.read_csv(file)
+    df.columns = ['seconds', 'bestInteger']
+    df['BestBound'] = df['bestInteger']
+    df['gap'] = 0
+    return df
+    
      
 
   def plot_four_in_one(self,df1,df2,df3,name1='MILP',name2='Hard-fix',name3='Soft-fix',nameins='',id=''):        
@@ -268,16 +277,16 @@ class Extract:
         # ax8.set(ylabel='gap') 
         # ax5.set(ylabel='cost')
                     
-        mini=198650000
-        maxi=199000000
-        minitime=0
-        maxitime=3500
-        ax1.axis([minitime, maxitime, mini, maxi])
-        ax2.axis([minitime, maxitime, mini, maxi])
-        ax3.axis([minitime, maxitime, mini, maxi])
-        ax5.axis([minitime, maxitime, mini, maxi])
-        ax6.axis([minitime, maxitime, mini, maxi])
-        plt.axis([minitime, maxitime, mini, maxi])   
+        # mini=198650000
+        # maxi=199000000
+        # minitime=0
+        # maxitime=3500
+        # ax1.axis([minitime, maxitime, mini, maxi])
+        # ax2.axis([minitime, maxitime, mini, maxi])
+        # ax3.axis([minitime, maxitime, mini, maxi])
+        # ax5.axis([minitime, maxitime, mini, maxi])
+        # ax6.axis([minitime, maxitime, mini, maxi])
+        # plt.axis([minitime, maxitime, mini, maxi])   
         
         plt.suptitle('instance: '+nameins, fontsize=14)
         plt.style.use('seaborn-pastel') ## ggplot seaborn-pastel Solarize_Light2 https://matplotlib.org/stable/gallery/style_sheets/style_sheets_reference.html
