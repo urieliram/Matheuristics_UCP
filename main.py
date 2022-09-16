@@ -14,10 +14,9 @@ import util
 import reading
 import time
 import numpy as np
-import copy
 from math     import floor
 from solution import Solution
-
+from copy import deepcopy 
 
 #util.ETL_Coplex_Log('logfileMilp.log')
 
@@ -52,8 +51,7 @@ instancia = 'uc_01.json'       ##
 instancia = 'uc_47.json'       ## ejemplo sencillo  
 instancia = 'uc_70.json'       ## 
 
-instancia = 'uc_58.json'       ## prueba demostrativa excelente en mi PC
-
+instancia = 'uc_58.json'       ## prueba demostrativa excelente en mi PC 
 
 ## Cargamos parámetros de configuración desde archivo <config>
 ## Emphasize balanced=0 (default); feasibility=1; optimality=2;
@@ -78,7 +76,6 @@ if ambiente == 'yalma':
 
 localtime = time.asctime(time.localtime(time.time()))
 
-
 print(localtime,'Solving ---> ---> ---> ---> --->',instancia)
 
 ## Lee instancia de archivo .json con formato de [Knueven2020]
@@ -89,7 +86,7 @@ G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,Pb,Cb,C,mpc,Cs,Tunder,
 ## Relax as LP and solve it
 
 if True:
-    t_o = time.time() 
+    t_o      = time.time() 
     model,xy = uc_Co.uc(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,mpc,Pb,Cb,C,Cs,Tunder,names,option='relax',nameins=instancia[0:5],mode='Tight')
     sol_lp   = Solution(model=model,env=ambiente,executable=executable,nameins=instancia[0:5],gap=gap,timelimit=timeheu,
                         tee=False,tofiles=False,emphasize=emph,exportLP=False,option='relax')
@@ -99,43 +96,22 @@ if True:
     
     
 ## ------------------------------------ SELECTION VARIABLES TO FIX ---------------------------------------
+
     ## Seleccionamos las variables que serán fijadas, se requiere correr antes <linear relaxation>
     ## SB_Uu         variables que SI serán fijadas a 1. (Soporte binario)
     ## No_SB_Uu      variables que NO serán fijadas.
     ## lower_Pmin_Uu variables en las que el producto de Pmin*Uu de [Harjunkoski2021] fue menor a la potencia mínima del generador Pmin y NO serán fijadas.
     ## lower_Pmin_Uu  >>> Éste valor podría ser usado para definir el parámetro k en el LBC o en un KS <<<  
     SB_Uu, No_SB_Uu, lower_Pmin_Uu, Vv, Ww, delta = sol_lp.select_binary_support_Uu('LR')
-
-
-## ----------------------------------- HARD-FIXING (only Uu) ---------------------------------------------
-## HARD-FIXING (only Uu) solution and solve the sub-MILP. (Require run the LP)
-
-if False: 
-    t_o = time.time()
-    lbheur   = 'yes'
-    model,xx = uc_Co.uc(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,mpc,Pb,Cb,C,Cs,Tunder,names,option='Hard',
-                        SB_Uu=SB_Uu,No_SB_Uu=No_SB_Uu,lower_Pmin_Uu=lower_Pmin_Uu,nameins=instancia[0:5],mode='Tight')
-    sol_hard = Solution(model=model,env=ambiente,executable=executable,nameins=instancia[0:5],gap=gap,timelimit=timeheu,
-                        tee=False,emphasize=emph,lbheur=lbheur,symmetry=symmetry,tofiles=False,option='Hard')
-    z_hard,g_hard = sol_hard.solve_problem()
-    t_hard                 = time.time() - t_o + t_lp
-    print('t_hard= ',round(t_hard,1),'z_hard= ',round(z_hard,1),'g_hard= ',round(g_hard,5) )
     
-    ## ES MUY IMPORTANTE GUARDAR LAS VARIABLES 'Uu=1'(SB_Uu3) DE LA PRIMERA SOLUCIÓN FACTIBLE 'Hard'.
-    ## ASI COMO LAS VARIABLES 'Uu=0' (No_SB_Uu3) 
-    ## Este es el primer - Soporte Binario Entero Factible-
-    SB_Uu3, No_SB_Uu3, xx, Vv, Ww, delta = sol_hard.select_binary_support_Uu('')    
-    lower_Pmin_Uu3 = sol_hard.update_lower_Pmin_Uu(lower_Pmin_Uu,'Hard')
-    sol_hard.cuenta_ceros_a_unos( SB_Uu, No_SB_Uu, lower_Pmin_Uu,'Hard')
-
 
 ## ----------------------------------- HARD-FIXING 3 (only Uu) ---------------------------------------------
 ## HARD-FIXING 3 (only Uu) solution and solve the sub-MILP. (Require run the LP)
 
 if True: 
-    t_o      = time.time()
-    lbheur   = 'yes'
-    model,xx = uc_Co.uc(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,mpc,Pb,Cb,C,Cs,Tunder,names,option='Hard3',
+    t_o       = time.time()
+    lbheur    = 'yes'
+    model,xx  = uc_Co.uc(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,mpc,Pb,Cb,C,Cs,Tunder,names,option='Hard3',
                         SB_Uu=SB_Uu,No_SB_Uu=No_SB_Uu,lower_Pmin_Uu=lower_Pmin_Uu,nameins=instancia[0:5],mode='Tight')
     sol_hard3 = Solution(model=model,env=ambiente,executable=executable,nameins=instancia[0:5],gap=gap,timelimit=timeheu,
                         tee=False,emphasize=emph,lbheur=lbheur,symmetry=symmetry,tofiles=False,option='Hard3')
@@ -148,13 +124,13 @@ if True:
     ## Este es el primer - Soporte Binario Entero Factible-
     SB_Uu3, No_SB_Uu3, xx, Vv3, Ww3, delta3 = sol_hard3.select_binary_support_Uu('')    
     lower_Pmin_Uu3 = sol_hard3.update_lower_Pmin_Uu(lower_Pmin_Uu,'Hard3')
-    sol_hard3.cuenta_ceros_a_unos( SB_Uu, No_SB_Uu, lower_Pmin_Uu,'Hard3')    
+    #sol_hard3.cuenta_ceros_a_unos( SB_Uu, No_SB_Uu, lower_Pmin_Uu,'Hard3')    
 
 
     ## NO OLVIDES COMENTAR TUS PRUEBAS ¸.·´¯`·.´¯`·.¸¸.·´¯`·.¸><(((º>
-comment = 'Pruebas preliminares'
+comment    = 'Pruebas preliminares'
 
-k_original=copy.copy(k)
+k_original = k
 
 
 ## --------------------------------------- LOCAL BRANCHING 1 ------------------------------------------
@@ -162,31 +138,28 @@ k_original=copy.copy(k)
 ## Include the LOCAL BRANCHING CUT to the solution and solve the sub-MILP (it is using cutoff=z_hard).
 
 if True:    
-    SB_Uu          = SB_Uu3.copy()
-    No_SB_Uu       = No_SB_Uu3.copy()
-    lower_Pmin_Uu  = lower_Pmin_Uu3.copy()
-    Vv             = Vv3.copy()
-    Ww             = Ww3.copy()
-    delta          = delta3.copy()
+    Vv             = deepcopy(Vv3)
+    Ww             = deepcopy(Ww3)
+    delta          = deepcopy(delta3)
+    SB_Uu          = deepcopy(SB_Uu3)
+    No_SB_Uu       = deepcopy(No_SB_Uu3)
+    lower_Pmin_Uu  = deepcopy(lower_Pmin_Uu3)
     t_o            = time.time() 
-    t_max          = timemilp
-    t_res          = timemilp
+    t_max          = timemilp - t_hard3
+    t_res          = timemilp - t_hard3
     cutoff         = z_hard3
     incumbent      = z_hard3
     z_old          = z_hard3
     improve        = True    
     timeover       = False
     iter           = 1
-    result_iter    = []
     saved          = [SB_Uu,No_SB_Uu,Vv,Ww,delta]
     rightbranches  = []
     char           = ''
     fish           = ')'
     letter=['','_a','_b','_c','_d','_e','_f','_g','_h','_i','_j','_k','_l','_m','_n','_o','_p','_q','_r','_s','_t','_u','_v','_w','_x','_y','_z']
+    result_iter    = []
     result_iter.append((t_hard3,z_hard3))
-    #rightbranches.append([SB_Uu,No_SB_Uu,lower_Pmin_Uu])
-    # if sol_hard3.timeover == True:
-    #     improve = True
     print('')
         
     while True:
@@ -194,9 +167,11 @@ if True:
             break
         lbheur   = 'no'
         char     = ''
-        if improve == False: #  and timeover == False ???
-            cutoff=1e+75            
-        timeheu1=min(t_res,timeheu)
+        
+        if improve == False:
+            cutoff=1e+75
+                 
+        timeheu1  = min(t_res,timeheu)
         model, xx = uc_Co.uc(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,mpc,Pb,Cb,C,Cs,Tunder,names,option='lbc1',
                             SB_Uu=SB_Uu,No_SB_Uu=No_SB_Uu,lower_Pmin_Uu=lower_Pmin_Uu,V=Vv,W=Ww,delta=delta,
                             percent_soft=90,k=k,nameins=instancia[0:5],mode='Tight',improve=improve,timeover=timeover,rightbranches=rightbranches)
@@ -204,7 +179,7 @@ if True:
                             tee=False,emphasize=emph,lbheur=lbheur,symmetry=symmetry,tofiles=False,option='lbc1')
         z_lbc1,g_lbc1 = sol_lbc1.solve_problem()
         
-        sol_lbc1.cuenta_ceros_a_unos(SB_Uu, No_SB_Uu, lower_Pmin_Uu,'lbc1') ## Compara contra la última solución
+        #sol_lbc1.cuenta_ceros_a_unos(SB_Uu, No_SB_Uu, lower_Pmin_Uu,'lbc1') ## Compara contra la última solución
         
         gap_iter = abs((z_lbc1 - z_old) / z_old) * 100 ## Percentage
         improve = False
@@ -236,7 +211,7 @@ if True:
                 k = floor(k/2)  
                 timeover == True         
             else:              
-                print('Going out from a local optimum    ...    >>+*+*+*+*+*+|°>')
+                print('Going out from a local optimum  ...  >>+*+*+*+*+*+|°>')
                 SB_Uu, No_SB_Uu, xx, Vv, Ww, delta = sol_lbc1.select_binary_support_Uu('')  
                 lower_Pmin_Uu = sol_lbc1.update_lower_Pmin_Uu(lower_Pmin_Uu,'lbc1') 
                 rightbranches.append([SB_Uu,No_SB_Uu,lower_Pmin_Uu])
@@ -245,8 +220,7 @@ if True:
             SB_Uu, No_SB_Uu, xx, Vv, Ww, delta = sol_lbc1.select_binary_support_Uu('')  
             lower_Pmin_Uu = sol_lbc1.update_lower_Pmin_Uu(lower_Pmin_Uu,'lbc1') 
                     
-        t_res = - time.time() + t_o + timemilp
-        # print('t_res=',t_res)    
+        t_res = t_o + timemilp - time.time()
         iter  = iter + 1
 
          
@@ -257,14 +231,14 @@ if True:
     result_iter = np.array(result_iter)
     np.savetxt('iterLBC1'+instancia[0:5]+'.csv', result_iter, delimiter=',')
         
-k=copy.copy(k_original)
+k = k_original
     
 ## ---------------------------------------------- CHECK FEASIBILITY (LBC1)----------------------------------------------------------
 
 if  True: 
     print('Revisando factibilidad de la solucion con z_lbc1=', z_lbc1 )
-    t_o      = time.time() 
-    model,xx = uc_Co.uc(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,mpc,Pb,Cb,C,Cs,Tunder,names,option='Check',
+    t_o       = time.time() 
+    model,xx  = uc_Co.uc(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,mpc,Pb,Cb,C,Cs,Tunder,names,option='Check',
                         SB_Uu=saved[0],No_SB_Uu=saved[1],V=saved[2],W=saved[3],delta=saved[4],nameins=instancia[0:5],mode='Tight')
     sol_check = Solution(model=model,nameins=instancia[0:5],env=ambiente,executable=executable,gap=gap,timelimit=timemilp,
                          tee=False,tofiles=False,emphasize=emph,symmetry=symmetry,exportLP=False,option='Check')
@@ -277,23 +251,22 @@ if  True:
 ## LBC COUNTINOUS VERSION without soft-fixing
 ## Include the LOCAL BRANCHING CUT to the solution and solve the sub-MILP (it is using cutoff=z_hard).
 
-if True:    
-    SB_Uu         = SB_Uu3.copy()
-    No_SB_Uu      = No_SB_Uu3.copy()
-    lower_Pmin_Uu = lower_Pmin_Uu3.copy()
-    Vv             = Vv3.copy()
-    Ww             = Ww3.copy()
-    delta          = delta3.copy()
+if  True:    
+    Vv             = deepcopy(Vv3)
+    Ww             = deepcopy(Ww3)
+    delta          = deepcopy(delta3)
+    SB_Uu          = deepcopy(SB_Uu3)
+    No_SB_Uu       = deepcopy(No_SB_Uu3)
+    lower_Pmin_Uu  = deepcopy(lower_Pmin_Uu3)
     t_o            = time.time() 
-    t_max          = timemilp
-    t_res          = timemilp
+    t_max          = timemilp - t_hard3
+    t_res          = timemilp - t_hard3
     cutoff         = z_hard3
     incumbent      = z_hard3
     z_old          = z_hard3
     improve        = True    
     timeover       = False
     iter           = 1
-    saved          = []
     saved          = [SB_Uu,No_SB_Uu,Vv,Ww,delta]
     rightbranches  = []
     char           = ''
@@ -301,9 +274,6 @@ if True:
     letter=['','_a','_b','_c','_d','_e','_f','_g','_h','_i','_j','_k','_l','_m','_n','_o','_p','_q','_r','_s','_t','_u','_v','_w','_x','_y','_z']
     result_iter    = []
     result_iter.append((t_hard3,z_hard3))
-    #rightbranches.append([SB_Uu,No_SB_Uu,lower_Pmin_Uu])
-    # if sol_hard3.timeover == True:
-    #     improve = True
     print('')
         
     while True:
@@ -312,16 +282,18 @@ if True:
         lbheur   = 'no'
         char     = ''
         
-        if improve == False: #  and timeover == False ???
-            cutoff=1e+75            
+        if improve == False:
+            cutoff=1e+75
+        
+        timeheu1  = min(t_res,timeheu)      
         model, xx = uc_Co.uc(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,mpc,Pb,Cb,C,Cs,Tunder,names,option='lbc2',
                             SB_Uu=SB_Uu,No_SB_Uu=No_SB_Uu,lower_Pmin_Uu=lower_Pmin_Uu,V=Vv,W=Ww,delta=delta,
                             percent_soft=90,k=k,nameins=instancia[0:5],mode='Tight',improve=improve,timeover=timeover,rightbranches=rightbranches)
-        sol_lbc2  = Solution(model=model,env=ambiente,executable=executable,nameins=instancia[0:5],letter=letter[iter],gap=gap,cutoff=cutoff,timelimit=timeheu,
+        sol_lbc2  = Solution(model=model,env=ambiente,executable=executable,nameins=instancia[0:5],letter=letter[iter],gap=gap,cutoff=cutoff,timelimit=timeheu1,
                             tee=False,emphasize=emph,lbheur=lbheur,symmetry=symmetry,tofiles=False,option='lbc2')
         z_lbc2,g_lbc2 = sol_lbc2.solve_problem()
         
-        sol_lbc2.cuenta_ceros_a_unos(SB_Uu, No_SB_Uu, lower_Pmin_Uu,'lbc2') ## Compara contra la última solución
+        #sol_lbc2.cuenta_ceros_a_unos(SB_Uu, No_SB_Uu, lower_Pmin_Uu,'lbc2') ## Compara contra la última solución
         
         gap_iter = abs((z_lbc2 - z_old)/z_old) * 100 ## Percentage
         improve = False
@@ -363,7 +335,6 @@ if True:
             lower_Pmin_Uu = sol_lbc2.update_lower_Pmin_Uu(lower_Pmin_Uu,'lbc2') 
                     
         t_res = - time.time() + t_o + timemilp
-        # print('t_res=',t_res) 
         iter = iter + 1
 
     t_lbc2 = time.time()-t_o+t_hard3  ## t_hard3 ya incluye el tiempo de LP
@@ -375,10 +346,11 @@ if True:
     
 
 ## ---------------------------------------------- CHECK FEASIBILITY (LBC2)----------------------------------------------------------
+
 if  True: 
     print('Revisando factibilidad de la solucion con z_lbc2=', z_lbc2 )
-    t_o      = time.time() 
-    model,xx = uc_Co.uc(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,mpc,Pb,Cb,C,Cs,Tunder,names,option='Check',
+    t_o       = time.time() 
+    model,xx  = uc_Co.uc(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,mpc,Pb,Cb,C,Cs,Tunder,names,option='Check',
                         SB_Uu=saved[0],No_SB_Uu=saved[1],V=saved[2],W=saved[3],delta=saved[4],nameins=instancia[0:5],mode='Tight')
     sol_check = Solution(model=model,nameins=instancia[0:5],env=ambiente,executable=executable,gap=gap,timelimit=timemilp,
                          tee=False,tofiles=False,emphasize=emph,symmetry=symmetry,exportLP=False,option='Check')
@@ -386,118 +358,16 @@ if  True:
     t_check         = time.time() - t_o
     print('t_check= ',round(t_check,1),'z_check= ',round(z_check,4),'g_check= ',round(g_check,4))
     
-
-## --------------------------------------- LOCAL BRANCHING 3 ------------------------------------------
-## ---------------------------------( VERSION WITH TIME PARAMETERS )------------------------------------
-## LBC COUNTINUOUS VERSION without soft-fixing
-## Include the LOCAL BRANCHING CUT to the solution and solve the sub-MILP (it is using cutoff=z_hard).
-## VERSION WITH TIME PARAMETERS
-if False:    
-    SB_Uu          = SB_Uu3.copy()
-    No_SB_Uu       = No_SB_Uu3.copy()
-    lower_Pmin_Uu  = lower_Pmin_Uu3.copy()
-    Vv             = Vv3.copy()
-    Ww             = Ww3.copy()
-    delta          = delta3.copy()
-    t_o            = time.time() 
-    t_max          = timemilp
-    cutoff         = z_hard3
-    incumbent      = z_hard3
-    z_old          = z_hard3
-    improve        = True    
-    timeover       = False
-    iter           = 1
-    result_iter    = []
-    saved          = [SB_Uu,No_SB_Uu,Vv,Ww,delta]
-    rightbranches  = []
-    char           = ''
-    fish           = ')'
-    letter=['','_a','_b','_c','_d','_e','_f','_g','_h','_i','_j','_k','_l','_m','_n','_o','_p','_q','_r','_s','_t','_u','_v','_w','_x','_y','_z']
-    result_iter.append((t_hard3,z_hard3))
-    #rightbranches.append([SB_Uu,No_SB_Uu,lower_Pmin_Uu])
-    # if sol_hard3.timeover == True:
-    #     improve = True
-    print('')
-    
-    ## Time parameters
-    timeheuLBC3 =  500 
-    print('lbc3: Heuristic iteration time:',timeheuLBC3)
-        
-    while True:
-        lbheur   = 'no'
-        char     = ''
-        if improve == False: #  and timeover == False ???
-            cutoff=1e+75            
-        model, xx = uc_Co.uc(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,mpc,Pb,Cb,C,Cs,Tunder,names,option='lbc3',
-                            SB_Uu=SB_Uu,No_SB_Uu=No_SB_Uu,lower_Pmin_Uu=lower_Pmin_Uu,V=Vv,W=Ww,delta=delta,
-                            percent_soft=90,k=k,nameins=instancia[0:5],mode='Tight',improve=improve,timeover=timeover,rightbranches=rightbranches)
-        sol_lbc3  = Solution(model=model,env=ambiente,executable=executable,nameins=instancia[0:5],letter=letter[iter],gap=gap,cutoff=cutoff,timelimit=timeheuLBC3,
-                            tee=False,emphasize=emph,lbheur=lbheur,symmetry=symmetry,tofiles=False,option='lbc3')
-        z_lbc3,g_lbc3 = sol_lbc3.solve_problem()
-        
-        sol_lbc3.cuenta_ceros_a_unos(SB_Uu, No_SB_Uu, lower_Pmin_Uu,'lbc3') ## Compara contra la última solución
-        
-        gap_iter = abs((z_lbc3 - z_old) / z_old) * 100 ## Percentage
-        improve = False
-        if z_lbc3 < incumbent :    ## Update solution
-            incumbent  = z_lbc3
-            cutoff     = z_lbc3
-            saved      = [SB_Uu,No_SB_Uu,Vv,Ww,delta]
-            char       = '***'
-            if gap_iter > gap:
-                improve = True
-            
-        result_iter.append((round(time.time()-t_o+t_hard3,1),z_lbc3))
-        if (iter == iterstop) or (time.time()-t_o+t_hard3 >= t_max):
-            break
-        z_old = z_lbc3 ## Guardamos la solución anterior
-          
-        print('<°|'+fish+'>< iter:'+str(iter)+' t_lbc3= ',round(time.time()-t_o+t_hard3,1),'z_lbc3= ',round(z_lbc3,1),char ) #,'g_lbc3= ',round(g_lbc3,5)
-        print('')       
-        fish = fish + ')'  
-        
-        ## Aqui se prepara la nueva iteracion ...  
-        timeover == False       
-        if improve == False:   
-            if sol_lbc3.timeover == True or sol_lbc3.nosoluti == True or sol_lbc3.infeasib == True:                     
-                if sol_lbc3.timeover == True:   
-                    print('k=[k/2] Time limit reach without improve: shrinking the neighborhood  ...  >(°> . o O')
-                else:
-                    print('k=[k/2] No solution/infeasible: shrinking the neighborhood  ...  >(°> . o O')
-                k = floor(k/2)  
-                timeover == True         
-            else:              
-                print('Going out from a local optimum    ...    >>+*+*+*+*+*+|°>')
-                SB_Uu, No_SB_Uu, xx, Vv, Ww, delta = sol_lbc3.select_binary_support_Uu('')  
-                lower_Pmin_Uu = sol_lbc3.update_lower_Pmin_Uu(lower_Pmin_Uu,'lbc3') 
-                rightbranches.append([SB_Uu,No_SB_Uu,lower_Pmin_Uu])
-                fish = ')'
-        else: ## Mejora la solución
-            SB_Uu, No_SB_Uu, xx, Vv, Ww, delta = sol_lbc3.select_binary_support_Uu('')  
-            lower_Pmin_Uu = sol_lbc3.update_lower_Pmin_Uu(lower_Pmin_Uu,'lbc3') 
-                    
-        iter = iter + 1
-
-         
-    t_lbc3 = time.time()-t_o+t_hard3  ## t_hard3 ya incluye el tiempo de LP
-    z_lbc3 = incumbent    
-    for item in result_iter:
-        print(item[0],',',item[1])    
-    result_iter = np.array(result_iter)
-    np.savetxt('iterlbc3'+instancia[0:5]+'.csv', result_iter, delimiter=',')
-        
-k=copy.copy(k_original)
-
              
 ## ---------------------------------------------- MILP ----------------------------------------------------------
 ## Solve as a MILP
 
-if True: 
+if  True: 
     symmetrydefault = -1 
     cutoff   = 1e+75 
     lbheur   = 'no'      
     t_o      = time.time() 
-    model,xx = uc_Co.uc(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,mpc,Pb,Cb,C,Cs,Tunder,names,option=None,nameins=instancia[0:5],mode='Tight')
+    model,xx = uc_Co.uc(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,mpc,Pb,Cb,C,Cs,Tunder,names,option='Milp',nameins=instancia[0:5],mode='Tight')
     sol_milp = Solution(model=model,nameins=instancia[0:5],env=ambiente,executable=executable,gap=gap,cutoff=cutoff,symmetry=symmetrydefault,timelimit=timemilp,
                           tee=False,tofiles=False,emphasize=emph,lbheur=lbheur,exportLP=False,option='Milp')
     z_milp, g_milp = sol_milp.solve_problem()
@@ -521,12 +391,12 @@ if True:
 ## https://pascua.iit.comillas.edu/aramos/openSDUC.py
 
 if  False:
-    SB_Uu          = SB_Uu3.copy()
-    No_SB_Uu       = No_SB_Uu3.copy()
-    lower_Pmin_Uu  = lower_Pmin_Uu3.copy()
-    Vv             = Vv3.copy()
-    Ww             = Ww3.copy()
-    delta          = delta3.copy()
+    Vv             = deepcopy(Vv3)
+    Ww             = deepcopy(Ww3)
+    delta          = deepcopy(delta3)
+    SB_Uu          = deepcopy(SB_Uu3)
+    No_SB_Uu       = deepcopy(No_SB_Uu3)
+    lower_Pmin_Uu  = deepcopy(lower_Pmin_Uu3)
     saved          = [SB_Uu,No_SB_Uu,Vv,Ww,delta]
     t_o      = time.time() 
     model,xx = uc_Co.uc(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,mpc,Pb,Cb,C,Cs,Tunder,names,option='RC',
@@ -589,6 +459,7 @@ if  False:
     # \todo{Verificar que las restricciones de arranque que usan delta en la formulación, se encontraron variables con valor None en la solución}
     # \todo{Fijar la solución entera y probar factibilidad} 
     # \todo{Crear instancias sintéticas a partir de morales-españa2013} 
+    
     
 
 ## --------------------------------- RESULTS -------------------------------------------

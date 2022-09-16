@@ -7,6 +7,7 @@ import numpy as np
 import pyomo.environ as pyo
 from   pyomo.util.infeasible import log_infeasible_constraints
 from   pyomo.opt import SolverStatus, TerminationCondition
+from copy import deepcopy
 
 class Solution:
     def __init__(self,model,env,executable,nameins='model',letter='',gap=0.0001,timelimit=300,tee=False,tofiles=False,lpmethod=0,
@@ -55,10 +56,7 @@ class Solution:
     #     return self.snminus
     # def getSnplus(self):
     #     return self.snplus
-    
-    def getSolverTime(self):
-        return self.solvertime
-   
+       
     def solve_problem(self):  
                 
         exist = os.path.exists(self.executable)   
@@ -99,12 +97,10 @@ class Solution:
             #self.model.write(filename, io_options={'symbolic_solver_labels': True})
             #self.model.write(filename = self.model.name+'.mps', io_options = {"symbolic_solver_labels":True})
         
-        
         # Create a 'rc' suffix component on the instance so the solver plugin will know which suffixes to collect
         if self.option == 'RC':
             self.model.rc = pyo.Suffix(direction=pyo.Suffix.IMPORT,datatype=pyo.Suffix.FLOAT)
 
-        t_o = time.time() 
         result = solver.solve(self.model,tee=self.tee,logfile='logfile'+self.option+self.nameins+self.letter+'.log',warmstart=True)#,suffixes='rc'
         # ## Envía el problema de optimización al solver
         # if self.option=='Hard' or self.option=='Hard3' or self.option=='lbc1' or self.option=='Check' or self.option=='KS' :
@@ -112,8 +108,6 @@ class Solution:
         # else:
         #     result = solver.solve(self.model,tee=self.tee,logfile='logfile'+self.option+self.nameins+self.letter+'.log',warmstart=True)
         # #result.write()  
-        self.solvertime = time.time() - t_o
-                
         # try:
         #     pyo.assert_optimal_termination(result)
         # except Exception as e:
@@ -127,12 +121,11 @@ class Solution:
         # np_rc = np.array((1,2,3,4,5)) 
         # if self.option == 'RC':
         #     print ("RC")
-        #     # print(self.model.rc[self.model.u[1,1]]) ##FUNCIONA!
+        #     # print(self.model.rc[self.model.u[1,1]]) ##WORKS!
         #     for c in self.model.u:
         #         self.model.rc[self.model.u[c[0],c[1]]]
         #         print(self.model.rc[self.model.u[c[0],c[1]]])
         #     # self.model.rc.pprint()
-        
 
         if (result.solver.status == SolverStatus.ok) and (result.solver.termination_condition == TerminationCondition.optimal):
             self.optimal  = True
@@ -158,24 +151,19 @@ class Solution:
             exit()
             
             
-        if self.fail == False and self.infeasib == False and self.nosoluti == False:
-            
-            ## |bestbound-bestinteger|/(1e-10+|bestinteger|)
-            __data = result.Problem._list
-            LB = __data[0].lower_bound
-            UB = __data[0].upper_bound
-            self.gap_ = abs(LB - UB) /(1e-10 + abs(UB)) 
-            
+        if self.fail == False and self.infeasib == False and self.nosoluti == False and self.option != 'Milp' and self.option != 'Check':
+            t_o = time.time()
             ## Inizialize variables making a empty-solution with all generators in cero
-            self.Uu       = [[0 for i in range(self.tt)] for j in range(self.gg)]
-            self.V        = [[0 for i in range(self.tt)] for j in range(self.gg)]
-            self.W        = [[0 for i in range(self.tt)] for j in range(self.gg)]
-            self.P        = [[0 for i in range(self.tt)] for j in range(self.gg)]
-            self.R        = [[0 for i in range(self.tt)] for j in range(self.gg)]            
-            self.delta    = [[0 for i in range(self.tt)] for j in range(self.gg)]       
+            self.Uu    = [[0 for i in range(self.tt)] for j in range(self.gg)]
+            self.V     = deepcopy(self.Uu)
+            self.W     = deepcopy(self.Uu)
+            self.P     = deepcopy(self.Uu)
+            self.R     = deepcopy(self.Uu)
+            self.delta = deepcopy(self.Uu)
+                    
             # self.snplus   = [0 for i in range(self.tt)]     
             # self.snminus  = [0 for i in range(self.tt)]
-            
+                
             ## Tranformación especial para variable delta de (g,t,s) a (g,t)[s] 
             for t in range(0, self.tt):
                 for g in range(0, self.gg):
@@ -185,7 +173,7 @@ class Solution:
                         if self.model.delta[(g+1,t+1,s+1)].value != None and self.model.delta[(g+1,t+1,s+1)].value == 1:
                             self.delta[g][t] = position 
                             #self.delta[g][t] = self.delta[g][t] + self.model.delta[(g+1,t+1,s+1)].value
-                
+                    
             ##  ALMACENA la solución entera del problema 
             # for t in range(0,self.tt):
             #     for g in range(0,self.gg):
@@ -194,7 +182,7 @@ class Solution:
                     self.W [g][t] = round(self.model.w[(g+1, t+1)].value,5)
                     self.P [g][t] = round(self.model.p[(g+1, t+1)].value,5)
                     self.R [g][t] = round(self.model.r[(g+1, t+1)].value,5)
-                    
+                        
             # # for t in range(self.tt):
             #     self.snplus[t] = round(self.model.snplus[t+1].value,5)
             #     self.snminus[t] = round(self.model.snminus[t+1].value,5)
@@ -202,21 +190,30 @@ class Solution:
             #         print('>>> WARNING: surplus in', self.snplus[t],'in period t=',t)
             #     if self.snminus[t] !=0:
             #         print('>>> WARNING: cut in',     self.snminus[t],'in period t=',t)
-                    
                         
+                            
             if self.tofiles == True:
-                self.send_to_File()            
+                self.send_to_File()      
                 
+            
+            print(self.option,'Salí de guardar solución',time.time()-t_o)      
+                    
             ## Imprimimos las posibles variables 'u' que podrían no sean enteras.
             # self.count_U_no_int()    
-                            
+                                
             self.z_exact = self.model.obj.expr()   
             
             
-        # if self.fail == True:
-        #     file = open(self.nameins +'_infeasible_model_' +'.dat', 'w')
-        #     self.model.pprint(file)
-        #     file.close()
+            # if self.fail == True:
+            #     file = open(self.nameins +'_infeasible_model_' +'.dat', 'w')
+            #     self.model.pprint(file)
+            #     file.close()
+                
+        ## |bestbound-bestinteger|/(1e-10+|bestinteger|)
+        __data = result.Problem._list
+        LB = __data[0].lower_bound
+        UB = __data[0].upper_bound
+        self.gap_ = abs(LB - UB) /(1e-10 + abs(UB))    
         
         
         return self.z_exact, self.gap_
@@ -255,11 +252,10 @@ class Solution:
         No_SB_Uu      = []
         lower_Pmin_Uu = []
         
-        ## Arreglo para almacenar la solución entera 'Uu'
-        UuxP = [[0 for i in range(self.tt)] for j in range(self.gg)]
-        
-        ## [Harjunkoski2021]
+        ## Aplicaremos la regla de [Harjunkoski2021]
         if optional == 'LR':
+            ## Arreglo para almacenar la solución entera 'Uu'
+            UuxP = [[0 for i in range(self.tt)] for j in range(self.gg)]
             for t in range(self.tt):
                 for g in range(self.gg):
                     UuxP[g][t] = self.P[g][t] * self.Uu[g][t]
@@ -272,7 +268,7 @@ class Solution:
                     else:
                         ## Vamos a guardar las variables que quedaron abajo del minimo pero diferentes de cero,
                         ## podriamos decir que este grupo de variables son <intentos de asignación>.
-                        ## >>> Éste valor podría ser usado para definir el parámetro k en el LBC o en un KS.<<<             
+                        ## >>> Éste valor podría ser usado para definir el parámetro k en el LBC o buckets en un KS.<<<             
                         if (UuxP[g][t] != 0):
                             lower_Pmin_Uu.append([g,t])
                         No_SB_Uu.append([g,t])
@@ -285,7 +281,7 @@ class Solution:
                     elif self.Uu[g][t] == 0:
                         No_SB_Uu.append([g,t])
                     else:
-                        print('>>> (select_binary_support_Uu) Valor diferente de uno o cero en Uu',g,t,self.Uu[g][t])
+                        print('>>>WARNING <select_binary_support_Uu> Valor diferente de uno o cero en Uu',g,t,self.Uu[g][t])
                         
         if optional == 'LR':            
             suma = len(SB_Uu) + len(No_SB_Uu)
@@ -301,9 +297,9 @@ class Solution:
         return SB_Uu, No_SB_Uu, lower_Pmin_Uu, self.V, self.W, self.delta
     
     
-    def update_lower_Pmin_Uu(self,lower_Pmin_Uu_o,tag):
+    def update_lower_Pmin_Uu(self,lower_Pmin_Uu_o,option):
     ## Esta función actualiza las variables en cero que siguen quedando en el conjunto B = {intentos de asignación}.
-    ## Actualizamos aquellos <intentos de asignación> originales que siguen en cero por lo tanto no se han incorporado al soporte binario.
+    ## Actualizamos aquellos <intentos de asignación> originales que siguen en cero por lo tanto no se han incorporado al <soporte binario>.
         lower_Pmin_Uu = []
         ceros=0
         try:
@@ -311,13 +307,13 @@ class Solution:
                 if self.Uu[i[0]][i[1]] == 0:
                     lower_Pmin_Uu.append(i)
                     ceros=ceros+1
-            print(tag,'Number of lower_Pmin_Uu that are zero ->',ceros)            
+            print(option,'Number of lower_Pmin_Uu that are zero ->',ceros)            
         except Exception as e:
-            print('>>> Error in <update_lower_Pmin_Uu>')            
+            print('!!! Error in <update_lower_Pmin_Uu>')            
         return lower_Pmin_Uu
     
     
-    def cuenta_ceros_a_unos(self,SB_Uu_o,No_SB_Uu_o,lower_Pmin_Uu_o,tag):
+    def cuenta_ceros_a_unos(self,SB_Uu_o,No_SB_Uu_o,lower_Pmin_Uu_o,option):
     ## Esta función cuenta aquellos elementos que han cambiado de estado de cero a uno ENTRE DOS SOLUCIONES
         uno_a_cero = 0
         cero_a_uno = 0
@@ -326,21 +322,20 @@ class Solution:
             for i in SB_Uu_o:
                 if self.Uu[i[0]][i[1]] == 0:
                     uno_a_cero=uno_a_cero+1
-            print(tag,'SB_Uu          1->0',uno_a_cero)
+            print(option,'SB_Uu          1->0',uno_a_cero)
             cero_a_uno=0
             for i in No_SB_Uu_o:
                 if self.Uu[i[0]][i[1]] == 1:
                     cero_a_uno=cero_a_uno+1
-            print(tag,'No_SB_Uu       0->1',cero_a_uno)
+            print(option,'No_SB_Uu       0->1',cero_a_uno)
             cero_a_uno2=0
             for i in lower_Pmin_Uu_o:
                 if self.Uu[i[0]][i[1]] == 1:
                     cero_a_uno2=cero_a_uno2+1
-            print(tag,'lower_Pmin_Uu  0->1',cero_a_uno2)  
+            print(option,'lower_Pmin_Uu  0->1',cero_a_uno2)  
             
         except Exception as e:
-            x=0
-            #print('>>> Sin solución')
+            print('!!!Error: <cuenta_ceros_a_unos> >>> Sin solución')
             
         if uno_a_cero + cero_a_uno == 0:
             return True
