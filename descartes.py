@@ -654,3 +654,24 @@
 #     print("t_ks= ", round(t_ks,4), "z_ks= ", round(z_ks,1), "n_SB_Uu= ", len(SB_Uu))
 
 
+## ----------------------------------- HARD-FIXING (only Uu) ---------------------------------------------
+## HARD-FIXING (only Uu) solution and solve the sub-MILP. (Require run the LP)
+
+# if False: 
+#     t_o      = time.time()
+#     lbheur   = 'yes'
+#     model,xx = uc_Co.uc(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,mpc,Pb,Cb,C,Cs,Tunder,names,option='Hard',
+#                         SB_Uu=SB_Uu,No_SB_Uu=No_SB_Uu,lower_Pmin_Uu=lower_Pmin_Uu,nameins=instancia[0:5],mode='Tight')
+#     sol_hard = Solution(model=model,env=ambiente,executable=executable,nameins=instancia[0:5],gap=gap,timelimit=timeheu,
+#                         tee=False,emphasize=emph,lbheur=lbheur,symmetry=symmetry,tofiles=False,option='Hard')
+#     z_hard,g_hard = sol_hard.solve_problem()
+#     t_hard                 = time.time() - t_o + t_lp
+#     print('t_hard= ',round(t_hard,1),'z_hard= ',round(z_hard,1),'g_hard= ',round(g_hard,5) )
+    
+#     ## ES MUY IMPORTANTE GUARDAR LAS VARIABLES 'Uu=1'(SB_Uu3) DE LA PRIMERA SOLUCIÓN FACTIBLE 'Hard'.
+#     ## ASI COMO LAS VARIABLES 'Uu=0' (No_SB_Uu3) 
+#     ## Este es el primer - Soporte Binario Entero Factible-
+#     SB_Uu3, No_SB_Uu3, xx, Vv, Ww, delta = sol_hard.select_binary_support_Uu('')    
+#     lower_Pmin_Uu3 = sol_hard.update_lower_Pmin_Uu(lower_Pmin_Uu,'Hard')
+#     sol_hard.cuenta_ceros_a_unos( SB_Uu, No_SB_Uu, lower_Pmin_Uu,'Hard')
+
