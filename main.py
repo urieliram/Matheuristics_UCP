@@ -7,6 +7,7 @@
 ## Para correr el programa usar el comando 'python3 main.py anjos.json yalma'
 ## Desde script en linux test.sh 'sh test.sh'
 ## <º)))>< ¸.·´¯`·.´¯`·.¸¸.·´¯`·.¸¸.·´¯`·.´¯`·.¸¸.·´¯`·.¸ ><(((º>
+import gc
 import time
 import sys
 import uc_Co
@@ -14,11 +15,9 @@ import util
 import reading
 import time
 import numpy as np
-from math     import floor
-from solution import Solution
-from copy import deepcopy 
-
-#util.ETL_Coplex_Log('logfileMilp.log')
+from   math     import floor
+from   solution import Solution
+from   copy import deepcopy 
 
 instancia = 'uc_03.json'       ## ejemplos dificiles 2,3,4  
 instancia = 'uc_06.json'       ## ejemplos regulares 5,6 
@@ -57,10 +56,10 @@ instancia = 'uc_58.json'       ## prueba demostrativa excelente en mi PC
 ## Emphasize balanced=0 (default); feasibility=1; optimality=2;
 ## symmetry automatic=-1; symmetry low level=1
 ambiente, ruta, executable, timeheu, timemilp, emph, symmetry, gap, k, iterstop = util.config_env()
-
-z_lp=0; z_milp=0; z_hard=0; z_hard3=0; z_ks=0; z_lbc2=0; z_lbc1=0; z_check=0; z_lbc0=0; z_lbc3=0; z_=0;
+x = 1e+75
+z_lp=x; z_milp=x; z_hard=x; z_hard3=x; z_ks=x; z_lbc2=x; z_lbc1=x; z_check=x; z_lbc0=x; z_lbc3=x; z_=0;
 t_lp=0; t_milp=0; t_hard=0; t_hard3=0; t_ks=0; t_lbc2=0; t_lbc1=0; t_check=0; t_lbc0=0; t_lbc3=0; t_=0;
-g_lp=0; g_milp=0; g_hard=0; g_hard3=0; g_ks=0; g_lbc2=0; g_lbc1=0; g_check=0; g_lbc0=0; g_lbc3=0; g_=0;
+g_lp=x; g_milp=x; g_hard=x; g_hard3=x; g_ks=x; g_lbc2=x; g_lbc1=x; g_check=x; g_lbc0=x; g_lbc3=x; g_=x;
 ns=0; nU_no_int=0; n_Uu_no_int=0; n_Uu_1_0=0;
 SB_Uu=[]; No_SB_Uu=[]; lower_Pmin_Uu=[]; Vv=[]; Ww=[]; delta=[];
 comment = 'Here it writes a message to the stat.csv results file' 
@@ -86,24 +85,25 @@ G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,Pb,Cb,C,mpc,Cs,Tunder,
 ## Relax as LP and solve it
 
 if True:
-    t_o      = time.time() 
-    model,xy = uc_Co.uc(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,mpc,Pb,Cb,C,Cs,Tunder,names,option='relax',nameins=instancia[0:5],mode='Tight')
-    sol_lp   = Solution(model=model,env=ambiente,executable=executable,nameins=instancia[0:5],gap=gap,timelimit=timeheu,
-                        tee=False,tofiles=False,emphasize=emph,exportLP=False,option='relax')
-    z_lp,g_lp = sol_lp.solve_problem() 
-    t_lp               = time.time() - t_o
+    t_o        = time.time() 
+    model,xy   = uc_Co.uc(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,mpc,Pb,Cb,C,Cs,Tunder,names,option='relax',nameins=instancia[0:5],mode='Tight')
+    sol_lp     = Solution(model=model,env=ambiente,executable=executable,nameins=instancia[0:5],gap=gap,timelimit=timeheu,
+                           tee=False,tofiles=False,emphasize=emph,exportLP=False,option='relax')
+    z_lp, g_lp = sol_lp.solve_problem() 
+    t_lp       = time.time() - t_o
     print('t_lp= ',round(t_lp,1),'z_lp= ',round(z_lp,1))
-    
-    
+
+
 ## ------------------------------------ SELECTION VARIABLES TO FIX ---------------------------------------
 
-    ## Seleccionamos las variables que serán fijadas, se requiere correr antes <linear relaxation>
+    ## Seleccionamos las variables que serán fijadas. Es requisito correr antes <linear relaxation>
     ## SB_Uu         variables que SI serán fijadas a 1. (Soporte binario)
     ## No_SB_Uu      variables que NO serán fijadas.
     ## lower_Pmin_Uu variables en las que el producto de Pmin*Uu de [Harjunkoski2021] fue menor a la potencia mínima del generador Pmin y NO serán fijadas.
-    ## lower_Pmin_Uu  >>> Éste valor podría ser usado para definir el parámetro k en el LBC o en un KS <<<  
+    ## lower_Pmin_Uu  >>> Éste valor podría ser usado para definir el parámetro k en el LBC o buckets en un KS <<<  
     SB_Uu, No_SB_Uu, lower_Pmin_Uu, Vv, Ww, delta = sol_lp.select_binary_support_Uu('LR')
-    
+    del sol_lp
+    gc.collect()
 
 ## ----------------------------------- HARD-FIXING 3 (only Uu) ---------------------------------------------
 ## HARD-FIXING 3 (only Uu) solution and solve the sub-MILP. (Require run the LP)
@@ -115,20 +115,22 @@ if True:
                         SB_Uu=SB_Uu,No_SB_Uu=No_SB_Uu,lower_Pmin_Uu=lower_Pmin_Uu,nameins=instancia[0:5],mode='Tight')
     sol_hard3 = Solution(model=model,env=ambiente,executable=executable,nameins=instancia[0:5],gap=gap,timelimit=timeheu,
                         tee=False,emphasize=emph,lbheur=lbheur,symmetry=symmetry,tofiles=False,option='Hard3')
-    z_hard3,g_hard3 = sol_hard3.solve_problem()
-    t_hard3                  = time.time() - t_o + t_lp
-    print('t_hard3= ',round(t_hard3,1),'z_hard3= ',round(z_hard3,1),'g_hard3= ',round(g_hard3,5) )
+    z_hard3, g_hard3 = sol_hard3.solve_problem()
+    g_hard3  = sol_hard3.igap(z_lp,z_milp)
+    t_hard3  = time.time() - t_o + t_lp
     
     ## ES MUY IMPORTANTE GUARDAR LAS VARIABLES 'Uu=1'(SB_Uu3) DE LA PRIMERA SOLUCIÓN FACTIBLE 'Hard3'.
     ## ASI COMO LAS VARIABLES 'Uu=0' (No_SB_Uu3) 
     ## Este es el primer - Soporte Binario Entero Factible-
-    SB_Uu3, No_SB_Uu3, xx, Vv3, Ww3, delta3 = sol_hard3.select_binary_support_Uu('')    
+    SB_Uu3, No_SB_Uu3, xx, Vv3, Ww3, delta3 = sol_hard3.select_binary_support_Uu('Hard3')    
     lower_Pmin_Uu3 = sol_hard3.update_lower_Pmin_Uu(lower_Pmin_Uu,'Hard3')
     #sol_hard3.cuenta_ceros_a_unos( SB_Uu, No_SB_Uu, lower_Pmin_Uu,'Hard3')    
 
-
+    print('t_hard3= ',round(t_hard3,1),'z_hard3= ',round(z_hard3,1),'g_hard3= ',round(g_hard3,5) )
+    del sol_hard3
+    gc.collect()
     ## NO OLVIDES COMENTAR TUS PRUEBAS ¸.·´¯`·.´¯`·.¸¸.·´¯`·.¸><(((º>
-comment    = 'Pruebas preliminares'
+comment    = 'Integrality GAP'
 
 k_original = k
 
@@ -157,13 +159,14 @@ if True:
     rightbranches  = []
     char           = ''
     fish           = ')'
+    g_lbc1         = 9999
     letter=['','_a','_b','_c','_d','_e','_f','_g','_h','_i','_j','_k','_l','_m','_n','_o','_p','_q','_r','_s','_t','_u','_v','_w','_x','_y','_z']
     result_iter    = []
     result_iter.append((t_hard3,z_hard3))
-    print('')
+    print('\t')
         
     while True:
-        if (iter==iterstop) or (time.time()-t_o+ t_hard3 >= t_max):
+        if (iter==iterstop) or (time.time()-t_o+t_hard3 >= t_max):
             break
         lbheur   = 'no'
         char     = ''
@@ -188,16 +191,15 @@ if True:
             cutoff     = z_lbc1
             saved      = [SB_Uu,No_SB_Uu,Vv,Ww,delta]
             char       = '***'
+            g_lbc1     = sol_lbc1.igap(z_lp,z_lbc1)
             if gap_iter > gap:
                 improve = True
             
         result_iter.append((round(time.time()-t_o+t_hard3,1),z_lbc1))
-        # if (iter==iterstop) or (time.time()-t_o+ t_hard3 >= t_max):
-        #     break
         z_old = z_lbc1 ## Guardamos la solución anterior
           
         print('<°|'+fish+'>< iter:'+str(iter)+' t_lbc1= ',round(time.time()-t_o+t_hard3,1),'z_lbc1= ',round(z_lbc1,1),char ) #,'g_lbc1= ',round(g_lbc1,5)
-        print('')       
+        print('\t')       
         fish = fish + ')'  
         
         ## Aqui se prepara la nueva iteracion ...  
@@ -212,15 +214,18 @@ if True:
                 timeover == True         
             else:              
                 print('Going out from a local optimum  ...  >>+*+*+*+*+*+|°>')
-                SB_Uu, No_SB_Uu, xx, Vv, Ww, delta = sol_lbc1.select_binary_support_Uu('')  
+                SB_Uu, No_SB_Uu, xx, Vv, Ww, delta = sol_lbc1.select_binary_support_Uu('lbc1')  
                 lower_Pmin_Uu = sol_lbc1.update_lower_Pmin_Uu(lower_Pmin_Uu,'lbc1') 
                 rightbranches.append([SB_Uu,No_SB_Uu,lower_Pmin_Uu])
                 fish = ')'
         else: ## Mejora la solución
-            SB_Uu, No_SB_Uu, xx, Vv, Ww, delta = sol_lbc1.select_binary_support_Uu('')  
+            SB_Uu, No_SB_Uu, xx, Vv, Ww, delta = sol_lbc1.select_binary_support_Uu('lbc1')  
             lower_Pmin_Uu = sol_lbc1.update_lower_Pmin_Uu(lower_Pmin_Uu,'lbc1') 
                     
-        t_res = t_o + timemilp - time.time()
+        t_res = - time.time() + t_o + ( timemilp - t_hard3 )
+        
+        del sol_lbc1
+        gc.collect()
         iter  = iter + 1
 
          
@@ -230,6 +235,8 @@ if True:
         print(item[0],',',item[1])    
     result_iter = np.array(result_iter)
     np.savetxt('iterLBC1'+instancia[0:5]+'.csv', result_iter, delimiter=',')
+    
+
         
 k = k_original
     
@@ -245,7 +252,8 @@ if  True:
     z_check,g_check = sol_check.solve_problem()
     t_check         = time.time() - t_o
     print('t_check= ',round(t_check,1),'z_check= ',round(z_check,4),'g_check= ',round(g_check,4))
-    
+    del sol_check
+    gc.collect()
         
 ## --------------------------------------- LOCAL BRANCHING 2 ------------------------------------------
 ## LBC COUNTINOUS VERSION without soft-fixing
@@ -271,10 +279,11 @@ if  True:
     rightbranches  = []
     char           = ''
     fish           = ')'
+    g_lbc2         = 9999
     letter=['','_a','_b','_c','_d','_e','_f','_g','_h','_i','_j','_k','_l','_m','_n','_o','_p','_q','_r','_s','_t','_u','_v','_w','_x','_y','_z']
     result_iter    = []
     result_iter.append((t_hard3,z_hard3))
-    print('')
+    print('\t')
         
     while True:
         if (iter==iterstop) or (time.time()-t_o+ t_hard3 >= t_max):
@@ -302,16 +311,15 @@ if  True:
             cutoff     = z_lbc2
             saved      = [SB_Uu,No_SB_Uu,Vv,Ww,delta]
             char       = '***'
+            g_lbc2     = sol_lbc2.igap(z_lp,z_lbc2)
             if gap_iter > gap:
                 improve = True
             
         result_iter.append((round(time.time()-t_o+t_hard3,1),z_lbc2))
-        if (iter==iterstop) or (time.time()-t_o+t_hard3>=t_max):
-            break
         z_old = z_lbc2 ## Guardamos la solución anterior
           
         print('<°|'+fish+'>< iter:'+str(iter)+' t_lbc2= ',round(time.time()-t_o+t_hard3,1),'z_lbc2= ',round(z_lbc2,1),char ) #,'g_lbc2= ',round(g_lbc2,5)
-        print('')       
+        print('\t')       
         fish = fish + ')'  
         
         ## Aquí se prepara la nueva iteracion ...  
@@ -326,15 +334,18 @@ if  True:
                 timeover == True         
             else:              
                 print('Going out from a local optimum    ...    >>+*+*+*+*+*+|°>')
-                SB_Uu, No_SB_Uu, xx, Vv, Ww, delta = sol_lbc2.select_binary_support_Uu('')  
+                SB_Uu, No_SB_Uu, xx, Vv, Ww, delta = sol_lbc2.select_binary_support_Uu('lbc2')  
                 lower_Pmin_Uu = sol_lbc2.update_lower_Pmin_Uu(lower_Pmin_Uu,'lbc2') 
                 rightbranches.append([SB_Uu,No_SB_Uu,lower_Pmin_Uu])
                 fish = ')'
         else: ## Mejora la solución
-            SB_Uu, No_SB_Uu, xx, Vv, Ww, delta = sol_lbc2.select_binary_support_Uu('')  
+            SB_Uu, No_SB_Uu, xx, Vv, Ww, delta = sol_lbc2.select_binary_support_Uu('lbc2')  
             lower_Pmin_Uu = sol_lbc2.update_lower_Pmin_Uu(lower_Pmin_Uu,'lbc2') 
                     
-        t_res = - time.time() + t_o + timemilp
+        t_res = - time.time() + t_o + ( timemilp - t_hard3 )
+        
+        del sol_lbc2
+        gc.collect()
         iter = iter + 1
 
     t_lbc2 = time.time()-t_o+t_hard3  ## t_hard3 ya incluye el tiempo de LP
@@ -407,7 +418,7 @@ if  False:
     t_rc         = time.time() - t_o
     
     sol_rc.cuenta_ceros_a_unos(SB_Uu, No_SB_Uu, lower_Pmin_Uu,'RC') ## Compara contra la última solución
-    SB_Uu, No_SB_Uu, xx, Vv, Ww, delta = sol_rc.select_binary_support_Uu('')  
+    SB_Uu, No_SB_Uu, xx, Vv, Ww, delta = sol_rc.select_binary_support_Uu('lbc2')  
     lower_Pmin_Uu = sol_rc.update_lower_Pmin_Uu(lower_Pmin_Uu,'RC') 
 
     ## Ordenaremos los costos reducidos para elegir los candidatos de los buckets
@@ -468,6 +479,7 @@ if  False:
 #                                                       t_lp,t_hard,t_milp,t_milp2,t_soft,t_softpmin,t_softcut,t_softcut2,t_softcut3,t_lbc,
 #                                                       n_fixU,nU_no_int,n_Uu_no_int,n_Uu_1_0,k,bin_sup,comment'
 
+
 row = [ambiente,localtime,instancia,len(T),len(G),gap,emph,timeheu,timemilp,
     round(z_lp,1),round(z_milp,1),round(z_hard,1),round(z_hard3,1),round(z_lbc1,1),round(z_lbc2,1),round(z_lbc3,1),round(z_,1),round(z_,1),
     round(t_lp,1),round(t_milp,1),round(t_hard,1),round(t_hard3,1),round(t_lbc1,1),round(t_lbc2,1),round(t_lbc3,1),round(t_,1),round(t_,1),
@@ -475,7 +487,7 @@ row = [ambiente,localtime,instancia,len(T),len(G),gap,emph,timeheu,timemilp,
                   k,ns,comment] #round(((z_milp-z_milp2)/z_milp)*100,6)
 util.append_list_as_row('stat.csv',row)
 
-print(localtime,'terminé instancia ..´¯`·...·´¯`·.. ><(((º> ',instancia)
+print(localtime,'terminé instancia ...´¯`·...·´¯`·.. ><(((º> ',instancia)
 
 exit()
 

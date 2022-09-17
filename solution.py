@@ -1,5 +1,4 @@
 # from ctypes import util
-from math import ceil
 import os
 import time
 import util
@@ -7,7 +6,8 @@ import numpy as np
 import pyomo.environ as pyo
 from   pyomo.util.infeasible import log_infeasible_constraints
 from   pyomo.opt import SolverStatus, TerminationCondition
-from copy import deepcopy
+from   copy import deepcopy
+from   math import ceil
 
 class Solution:
     def __init__(self,model,env,executable,nameins='model',letter='',gap=0.0001,timelimit=300,tee=False,tofiles=False,lpmethod=0,
@@ -102,6 +102,9 @@ class Solution:
             self.model.rc = pyo.Suffix(direction=pyo.Suffix.IMPORT,datatype=pyo.Suffix.FLOAT)
 
         result = solver.solve(self.model,tee=self.tee,logfile='logfile'+self.option+self.nameins+self.letter+'.log',warmstart=True)#,suffixes='rc'
+        
+        t_o = time.time()
+        
         # ## Envía el problema de optimización al solver
         # if self.option=='Hard' or self.option=='Hard3' or self.option=='lbc1' or self.option=='Check' or self.option=='KS' :
         #    result = solver.solve(self.model,tee=self.tee,logfile='logfile'+self.option+self.nameins+self.letter+'.log',warmstart=True)
@@ -128,7 +131,7 @@ class Solution:
         #     # self.model.rc.pprint()
 
         if (result.solver.status == SolverStatus.ok) and (result.solver.termination_condition == TerminationCondition.optimal):
-            self.optimal  = True
+            self.optimal = True
             
         elif result.solver.termination_condition == TerminationCondition.infeasible:
             ##https://stackoverflow.com/questions/51044262/finding-out-reason-of-pyomo-model-infeasibility
@@ -151,37 +154,34 @@ class Solution:
             exit()
             
             
-        if self.fail == False and self.infeasib == False and self.nosoluti == False and self.option != 'Milp' and self.option != 'Check':
-            t_o = time.time()
-            ## Inizialize variables making a empty-solution with all generators in cero
-            self.Uu    = [[0 for i in range(self.tt)] for j in range(self.gg)]
-            self.V     = deepcopy(self.Uu)
-            self.W     = deepcopy(self.Uu)
-            self.P     = deepcopy(self.Uu)
-            self.R     = deepcopy(self.Uu)
-            self.delta = deepcopy(self.Uu)
+        ##  ALMACENA la solución Uu, V, W, P, R, delta, del problema 
+        if self.fail == False and self.infeasib == False and self.nosoluti == False:
+            if self.option != 'Milp' and self.option != 'Check':
+                ## Inizialize variables making a empty-solution with all generators in cero
+                self.Uu    = [[0 for i in range(self.tt)] for j in range(self.gg)]
+                self.V     = deepcopy(self.Uu)
+                self.W     = deepcopy(self.Uu)
+                self.P     = deepcopy(self.Uu)
+                self.R     = deepcopy(self.Uu)
+                self.delta = deepcopy(self.Uu)
+                        
+                # self.snplus   = [0 for i in range(self.tt)]     
+                # self.snminus  = [0 for i in range(self.tt)]
                     
-            # self.snplus   = [0 for i in range(self.tt)]     
-            # self.snminus  = [0 for i in range(self.tt)]
-                
-            ## Tranformación especial para variable delta de (g,t,s) a (g,t)[s] 
-            for t in range(0, self.tt):
-                for g in range(0, self.gg):
-                    position = 0
-                    for s in range(0, len(self.model.S[g+1])):
-                        position = position + 1
-                        if self.model.delta[(g+1,t+1,s+1)].value != None and self.model.delta[(g+1,t+1,s+1)].value == 1:
-                            self.delta[g][t] = position 
-                            #self.delta[g][t] = self.delta[g][t] + self.model.delta[(g+1,t+1,s+1)].value
-                    
-            ##  ALMACENA la solución entera del problema 
-            # for t in range(0,self.tt):
-            #     for g in range(0,self.gg):
-                    self.Uu[g][t] = round(self.model.u[(g+1, t+1)].value,5)
-                    self.V [g][t] = round(self.model.v[(g+1, t+1)].value,5)
-                    self.W [g][t] = round(self.model.w[(g+1, t+1)].value,5)
-                    self.P [g][t] = round(self.model.p[(g+1, t+1)].value,5)
-                    self.R [g][t] = round(self.model.r[(g+1, t+1)].value,5)
+                ## Tranformación especial para variable delta de (g,t,s) a (g,t)[s] 
+                for t in range(0, self.tt):
+                    for g in range(0, self.gg):
+                        position = 0
+                        for s in range(0, len(self.model.S[g+1])):
+                            position = position + 1
+                            if self.model.delta[(g+1,t+1,s+1)].value != None and self.model.delta[(g+1,t+1,s+1)].value == 1:
+                                self.delta[g][t] = position 
+                                #self.delta[g][t] = self.delta[g][t] + self.model.delta[(g+1,t+1,s+1)].value                    
+                        self.Uu[g][t] = round(self.model.u[(g+1, t+1)].value,5)
+                        self.V [g][t] = round(self.model.v[(g+1, t+1)].value,5)
+                        self.W [g][t] = round(self.model.w[(g+1, t+1)].value,5)
+                        self.P [g][t] = round(self.model.p[(g+1, t+1)].value,5)
+                        self.R [g][t] = round(self.model.r[(g+1, t+1)].value,5)
                         
             # # for t in range(self.tt):
             #     self.snplus[t] = round(self.model.snplus[t+1].value,5)
@@ -190,33 +190,35 @@ class Solution:
             #         print('>>> WARNING: surplus in', self.snplus[t],'in period t=',t)
             #     if self.snminus[t] !=0:
             #         print('>>> WARNING: cut in',     self.snminus[t],'in period t=',t)
-                        
-                            
+                                
             if self.tofiles == True:
-                self.send_to_File()      
-                
-            
-            print(self.option,'Salí de guardar solución',time.time()-t_o)      
-                    
+                self.send_to_File()  
+                                    
             ## Imprimimos las posibles variables 'u' que podrían no sean enteras.
             # self.count_U_no_int()    
-                                
-            self.z_exact = self.model.obj.expr()   
-            
-            
+                
             # if self.fail == True:
             #     file = open(self.nameins +'_infeasible_model_' +'.dat', 'w')
             #     self.model.pprint(file)
             #     file.close()
-                
-        ## |bestbound-bestinteger|/(1e-10+|bestinteger|)
-        __data = result.Problem._list
-        LB = __data[0].lower_bound
-        UB = __data[0].upper_bound
-        self.gap_ = abs(LB - UB) /(1e-10 + abs(UB))    
+                    
+            self.z_exact = self.model.obj.expr()   
+            
+            ## |bestbound-bestinteger|/(1e-10+|bestinteger|)
+            __data = result.Problem._list
+            LB = __data[0].lower_bound
+            UB = __data[0].upper_bound
+            self.gap_ = self.igap(LB,UB)
+            # self.gap_ = abs(LB - UB) /(1e-10 + abs(UB))    
         
+        print(self.option,'                      <solve_problem> --->',time.time()-t_o)
         
         return self.z_exact, self.gap_
+    
+    
+    def igap(self,LB,UB):
+    ## Calcula el integrality gap    
+        return abs( LB - UB ) / ( 1e-10 + abs(UB) )    
     
           
     def send_to_File(self,letra=""):     
@@ -246,14 +248,15 @@ class Solution:
                 
         return 0
     
-    def select_binary_support_Uu(self,optional=''):
+    def select_binary_support_Uu(self,option=''):
     ## En esta función seleccionamos el conjunto de variables Uu que quedarán en uno y ceros para ser fijadas posteriormente.
+
         SB_Uu         = []  
         No_SB_Uu      = []
         lower_Pmin_Uu = []
         
         ## Aplicaremos la regla de [Harjunkoski2021]
-        if optional == 'LR':
+        if option == 'LR':
             ## Arreglo para almacenar la solución entera 'Uu'
             UuxP = [[0 for i in range(self.tt)] for j in range(self.gg)]
             for t in range(self.tt):
@@ -272,8 +275,7 @@ class Solution:
                         if (UuxP[g][t] != 0):
                             lower_Pmin_Uu.append([g,t])
                         No_SB_Uu.append([g,t])
-                        
-        if optional == '':
+        else:
             for t in range(self.tt):
                 for g in range(self.gg):
                     if self.Uu[g][t] == 1:
@@ -281,19 +283,17 @@ class Solution:
                     elif self.Uu[g][t] == 0:
                         No_SB_Uu.append([g,t])
                     else:
-                        print('>>>WARNING <select_binary_support_Uu> Valor diferente de uno o cero en Uu',g,t,self.Uu[g][t])
+                        print('>>> WARNING <select_binary_support_Uu> Valor diferente de uno o cero en Uu',g,t,self.Uu[g][t])
                         
-        if optional == 'LR':            
+        if option == 'LR':            
             suma = len(SB_Uu) + len(No_SB_Uu)
             print('|   Uu     |   SB_Uu     |   No_SB_Uu  |lower_Pmin_Uu|')   
             print('|',suma,'   |   ',len(SB_Uu),'   |   ',len(No_SB_Uu),'   |   ',len(lower_Pmin_Uu),'    |',)   
-        
-        if optional == '':
+        else:
             suma = len(SB_Uu) + len(No_SB_Uu)
             print('|   Uu     |   SB_Uu     |   No_SB_Uu  | Summary Binary Support ')   
-            print('|',suma,'   |   ',len(SB_Uu),'   |   ',len(No_SB_Uu),'   |   ')
-
-                       
+            print('|',suma,'   |   ',len(SB_Uu),'   |   ',len(No_SB_Uu),'   |   ')       
+               
         return SB_Uu, No_SB_Uu, lower_Pmin_Uu, self.V, self.W, self.delta
     
     
@@ -335,7 +335,7 @@ class Solution:
             print(option,'lower_Pmin_Uu  0->1',cero_a_uno2)  
             
         except Exception as e:
-            print('!!!Error: <cuenta_ceros_a_unos> >>> Sin solución')
+            print('!!! Error: <cuenta_ceros_a_unos> >>> Sin solución')
             
         if uno_a_cero + cero_a_uno == 0:
             return True
