@@ -17,16 +17,15 @@
 ## (Alternative) Piecewise production   (42), (43), (44)         'Garver1962',
 ## --------------------------------------------------------------------------------
 import math
-#from pickle import FALSE
-import numpy as np
+import time
 import pyomo.environ as pyo
 from   pyomo.environ import *
-
 
 def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,CR,Pb,Cb,C,Cs,Tunder,names,option='None',
        SB_Uu=[],No_SB_Uu=[],lower_Pmin_Uu=[],V=[],W=[],delta=[],
        percent_soft=90,k=20,nameins='model',mode="Compact",improve=True,timeover=False,rightbranches=[],):
                       
+    t_o = time.time()
     inside90   = 0 ## Número de variables que podrían moverse en el Sub-milp (Binary support)
 
     model      = pyo.ConcreteModel(nameins)    
@@ -784,5 +783,7 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,CR,Pb,Cb,C,Cs,T
         
     ## ---------------------------- Termina y regresa el modelo MILP ------------------------------------------
 
+    print(option,'Pyomo model has been built <uc_Co.uc> --->',time.time()-t_o) 
+    
     return model, inside90
 
