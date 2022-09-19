@@ -101,13 +101,13 @@ class Solution:
         if self.option == 'RC':
             self.model.rc = pyo.Suffix(direction=pyo.Suffix.IMPORT,datatype=pyo.Suffix.FLOAT)
 
+        ## Envía el problema de optimización al solver
         result = solver.solve(self.model,tee=self.tee,logfile='logfile'+self.option+self.nameins+self.letter+'.log',warmstart=True)#,suffixes='rc'
         
-        t_o = time.time()
         
         # ## Envía el problema de optimización al solver
         # if self.option=='Hard' or self.option=='Hard3' or self.option=='lbc1' or self.option=='Check' or self.option=='KS' :
-        #    result = solver.solve(self.model,tee=self.tee,logfile='logfile'+self.option+self.nameins+self.letter+'.log',warmstart=True)
+        #     result = solver.solve(self.model,tee=self.tee,logfile='logfile'+self.option+self.nameins+self.letter+'.log',warmstart=True)
         # else:
         #     result = solver.solve(self.model,tee=self.tee,logfile='logfile'+self.option+self.nameins+self.letter+'.log',warmstart=True)
         # #result.write()  
@@ -210,9 +210,7 @@ class Solution:
             UB = __data[0].upper_bound
             self.gap_ = self.igap(LB,UB)
             # self.gap_ = abs(LB - UB) /(1e-10 + abs(UB))    
-        
-        print(self.option,'                      <solve_problem> --->',time.time()-t_o)
-        
+                
         return self.z_exact, self.gap_
     
     
@@ -270,7 +268,7 @@ class Solution:
                         SB_Uu.append([g,t])
                     else:
                         ## Vamos a guardar las variables que quedaron abajo del minimo pero diferentes de cero,
-                        ## podriamos decir que este grupo de variables son <intentos de asignación>.
+                        ## podriamos decir que este grupo de variables son <intentos de asignación> o conjunto B.
                         ## >>> Éste valor podría ser usado para definir el parámetro k en el LBC o buckets en un KS.<<<             
                         if (UuxP[g][t] != 0):
                             lower_Pmin_Uu.append([g,t])
@@ -291,7 +289,7 @@ class Solution:
             print('|',suma,'   |   ',len(SB_Uu),'   |   ',len(No_SB_Uu),'   |   ',len(lower_Pmin_Uu),'    |',)   
         else:
             suma = len(SB_Uu) + len(No_SB_Uu)
-            print('|   Uu     |   SB_Uu     |   No_SB_Uu  | Summary Binary Support ')   
+            print('|   Uu     |   SB_Uu     |   No_SB_Uu  | Summary of Binary Support ')   
             print('|',suma,'   |   ',len(SB_Uu),'   |   ',len(No_SB_Uu),'   |   ')       
                
         return SB_Uu, No_SB_Uu, lower_Pmin_Uu, self.V, self.W, self.delta

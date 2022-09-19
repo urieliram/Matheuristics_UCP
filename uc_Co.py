@@ -618,8 +618,8 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,CR,Pb,Cb,C,Cs,T
             for f in SB_Uu:
                 expr += model.u[f[0]+1,f[1]+1]
             model.cuts.add(expr >= inside90)
-            outside90 = len(SB_Uu)-inside90
             print(option,'variables Uu that SB_Uu=1 <= inside90  =', inside90)
+            # outside90 = len(SB_Uu)-inside90
             # print(option,'variables Uu that SB_Uu=0 <= outside90 =', outside90)
             
         
@@ -697,7 +697,7 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,CR,Pb,Cb,C,Cs,T
                 model.cuts.add(expr >= k + 1)
                 
 
-    ## ---------------------------- HARD VARIABLE FIXING   ------------------------------------------
+    ## ---------------------------- HARD VARIABLE FIXING I  ------------------------------------------
     ## 
     if option == 'Hard':
         for f in SB_Uu:
@@ -718,24 +718,40 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,CR,Pb,Cb,C,Cs,T
         for f in lower_Pmin_Uu:
             model.u[f[0]+1,f[1]+1].unfix()    
             model.u[f[0]+1,f[1]+1] = 0                      ## Hints
-            
-            
-        # # 90% del soporte binario
-        # if True:
-        #     model.cuts = pyo.ConstraintList()
-        #     ## https://pyomo.readthedocs.io/en/stable/working_models.html
-        #     inside90   = math.ceil((percent_soft/100) * (len(SB_Uu))) #-len(lower_Pmin_Uu)
-        #     expr       = 0        
-        #     ## Se hace inside90 = 90% solo a el - Soporte Binario -  
-        #     for f in SB_Uu:
-        #         expr += model.u[f[0]+1,f[1]+1]
-        #     model.cuts.add(expr >= inside90)
-        #     outside90 = len(SB_Uu)-inside90
-        #     print(option,'variables Uu that SB_Uu=1 <= inside90  =', inside90)
-        #     print(option,'variables Uu that SB_Uu=0 <= outside90 =', outside90)
-            
+     
+     
+    ## ---------------------------- CHECK FEASIABILITY ------------------------------------------
+    ## 
 
+    if option == 'Check':  
+        
+        # model.u.fix(0)
+        # model.delta.fix(0) ***???!!!
+        for f in SB_Uu: 
+            model.u[f[0]+1,f[1]+1].domain = Binary 
+            model.u[f[0]+1,f[1]+1].fix(1)                   ## Hard fixing
+        for f in No_SB_Uu: 
+            model.u[f[0]+1,f[1]+1].domain = Binary 
+            model.u[f[0]+1,f[1]+1].fix(0)                   ## Hard fixing
+        for g in range(0,len(model.G)):
+            for t in range(0,len(model.T)):
+                model.v[g+1,t+1].domain   = Binary 
+                model.v[g+1,t+1].fix( V[g][t] )             ## Hard fixing
+                model.w[g+1,t+1].domain   = Binary 
+                model.w[g+1,t+1].fix( W[g][t] )             ## Hard fixing
+                if delta[g][t] != 0:
+                    model.delta[g+1,t+1,delta[g][t]].domain = Binary 
+                    model.delta[g+1,t+1,delta[g][t]].fix(1) ## Hard fixing
 
+                                
+    ## ---------------------------- REDUCED COST ------------------------------------------
+    ## 
+
+    if option == 'RC' and False:                             
+        for f in SB_Uu: 
+            model.u[f[0]+1,f[1]+1].fix(1)                   ## Hard fixing
+                                
+                    
     ## ---------------------------- KERNEL SEARCH ------------------------------------------
     ##
     if option == 'KS' and False:    
@@ -746,39 +762,6 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,CR,Pb,Cb,C,Cs,T
         for f in lower_Pmin_Uu:
             model.u[f[0]+1,f[1]+1].unfix()  
             model.u[f[0]+1,f[1]+1] = 0                      ## Hints 
-            
-            
-    ## ---------------------------- CHECK FEASIABILITY ------------------------------------------
-    ## 
-
-    if option == 'Check':  
-        
-        model.u.fix(0)
-        model.delta.fix(0)
-        for f in SB_Uu: 
-            # model.u[f[0]+1,f[1]+1].domain = Binary 
-            model.u[f[0]+1,f[1]+1].fix(1)                   ## Hard fixing
-        # for f in No_SB_Uu: 
-        #     # model.u[f[0]+1,f[1]+1].domain = Binary 
-        #     model.u[f[0]+1,f[1]+1].fix(0)                   ## Hard fixing
-        for g in range(0,len(model.G)):
-            for t in range(0,len(model.T)):
-                # model.v[g+1,t+1].domain   = Binary 
-                model.v[g+1,t+1].fix( V[g][t] )             ## Hard fixing
-                # model.w[g+1,t+1].domain   = Binary 
-                model.w[g+1,t+1].fix( W[g][t] )             ## Hard fixing
-                if delta[g][t] != 0:
-                    # model.delta[g+1,t+1,delta[g][t]].domain = Binary 
-                    model.delta[g+1,t+1,delta[g][t]].fix(1) ## Hard fixing
-                    
-                    
-                                
-    ## ---------------------------- REDUCED COST ------------------------------------------
-    ## 
-
-    if option == 'RC':                               
-        for f in SB_Uu: 
-            model.u[f[0]+1,f[1]+1].fix(1)                   ## Hard fixing
             
         
     ## ---------------------------- Termina y regresa el modelo MILP ------------------------------------------
