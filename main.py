@@ -57,11 +57,12 @@ instancia = 'uc_58.json'       ## prueba demostrativa excelente en mi PC
 ## symmetry automatic=-1; symmetry low level=1
 ambiente, ruta, executable, timeheu, timemilp, emph, symmetry, gap, k, iterstop = util.config_env()
 x = 1e+75
-z_lp=x; z_milp=x; z_hard=x; z_hard3=x; z_ks=x; z_lbc2=x; z_lbc1=x; z_check=x; z_lbc0=x; z_lbc3=x; z_=0;
-t_lp=0; t_milp=0; t_hard=0; t_hard3=0; t_ks=0; t_lbc2=0; t_lbc1=0; t_check=0; t_lbc0=0; t_lbc3=0; t_=0;
-g_lp=x; g_milp=x; g_hard=x; g_hard3=x; g_ks=x; g_lbc2=x; g_lbc1=x; g_check=x; g_lbc0=x; g_lbc3=x; g_=x;
+z_lp=x; z_milp=x; z_hard=x; z_hard3=x; z_ks=x; z_lbc1=x; z_lbc2=x; z_lbc3=x; z_check=x; z_lbc0=x; z_=0;
+t_lp=0; t_milp=0; t_hard=0; t_hard3=0; t_ks=0; t_lbc1=0; t_lbc2=0; t_lbc3=0; t_check=0; t_lbc0=0; t_=0;
+g_lp=x; g_milp=x; g_hard=x; g_hard3=x; g_ks=x; g_lbc1=x; g_lbc2=x; g_lbc3=x; g_check=x; g_lbc0=x; g_=x;
 ns=0; nU_no_int=0; n_Uu_no_int=0; n_Uu_1_0=0;
-SB_Uu=[]; No_SB_Uu=[]; lower_Pmin_Uu=[]; Vv=[]; Ww=[]; delta=[];
+SB_Uu=[];  No_SB_Uu=[];  lower_Pmin_Uu=[];  Vv=[];  Ww=[];  delta=[];
+SB_Uu3=[]; No_SB_Uu3=[]; lower_Pmin_Uu3=[]; Vv3=[]; Ww3=[]; delta3=[];
 comment = 'Here it writes a message to the stat.csv results file' 
 
 if ambiente == 'yalma':
@@ -110,7 +111,7 @@ if True:
 
 if True: 
     t_o       = time.time()
-    lbheur    = 'yes'
+    lbheur    = 'no'
     model,xx  = uc_Co.uc(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,mpc,Pb,Cb,C,Cs,Tunder,names,option='Hard3',
                         SB_Uu=SB_Uu,No_SB_Uu=No_SB_Uu,lower_Pmin_Uu=lower_Pmin_Uu,nameins=instancia[0:5],mode='Tight')
     sol_hard3 = Solution(model=model,env=ambiente,executable=executable,nameins=instancia[0:5],gap=gap,timelimit=timeheu,
@@ -147,7 +148,7 @@ if True:
     No_SB_Uu       = deepcopy(No_SB_Uu3)
     lower_Pmin_Uu  = deepcopy(lower_Pmin_Uu3)
     t_o            = time.time() 
-    t_max          = timemilp - t_hard3
+    t_net          = timemilp - t_hard3
     t_res          = timemilp - t_hard3
     cutoff         = z_hard3
     incumbent      = z_hard3
@@ -159,14 +160,13 @@ if True:
     rightbranches  = []
     char           = ''
     fish           = ')'
-    g_lbc1         = 9999
-    letter=['','_a','_b','_c','_d','_e','_f','_g','_h','_i','_j','_k','_l','_m','_n','_o','_p','_q','_r','_s','_t','_u','_v','_w','_x','_y','_z']
+    letter         = ['','_a','_b','_c','_d','_e','_f','_g','_h','_i','_j','_k','_l','_m','_n','_o','_p','_q','_r','_s','_t','_u','_v','_w','_x','_y','_z']
     result_iter    = []
     result_iter.append((t_hard3,z_hard3))
     print('\t')
         
     while True:
-        if (iter==iterstop) or (time.time()-t_o+t_hard3 >= t_max):
+        if (iter==iterstop) or (time.time() - t_o >= t_net):
             break
         lbheur   = 'no'
         char     = ''
@@ -186,17 +186,17 @@ if True:
         
         gap_iter = abs((z_lbc1 - z_old) / z_old) * 100 ## Percentage
         improve = False
-        if z_lbc1 < incumbent :    ## Update solution
+        if z_lbc1 < incumbent :                        ## Update solution
             incumbent  = z_lbc1
             cutoff     = z_lbc1
-            saved      = [SB_Uu,No_SB_Uu,Vv,Ww,delta]
+            # saved      = [SB_Uu,No_SB_Uu,Vv,Ww,delta]
             char       = '***'
             g_lbc1     = sol_lbc1.igap(z_lp,z_lbc1)
             if gap_iter > gap:
                 improve = True
-            
-        result_iter.append((round(time.time()-t_o+t_hard3,1),z_lbc1))
-        z_old = z_lbc1 ## Guardamos la solución anterior
+
+        result_iter.append((round(time.time() - t_o + t_hard3,1),z_lbc1))
+        z_old = z_lbc1 ## Guardamos la z de la solución anterior
           
         print('<°|'+fish+'>< iter:'+str(iter)+' t_lbc1= ',round(time.time()-t_o+t_hard3,1),'z_lbc1= ',round(z_lbc1,1),char ) #,'g_lbc1= ',round(g_lbc1,5)
         print('\t')       
@@ -220,23 +220,23 @@ if True:
                 fish = ')'
         else: ## Mejora la solución
             SB_Uu, No_SB_Uu, xx, Vv, Ww, delta = sol_lbc1.select_binary_support_Uu('lbc1')  
-            lower_Pmin_Uu = sol_lbc1.update_lower_Pmin_Uu(lower_Pmin_Uu,'lbc1') 
+            lower_Pmin_Uu = sol_lbc1.update_lower_Pmin_Uu(lower_Pmin_Uu,'lbc1')
+            saved         = [SB_Uu,No_SB_Uu,Vv,Ww,delta] ## Update solution
+            
                     
-        t_res = - time.time() + t_o + ( timemilp - t_hard3 )
+        t_res = t_net - time.time() + t_o 
+        print('lbc1','tiempo restante:',t_res)
         
         del sol_lbc1
         gc.collect()
         iter  = iter + 1
-
          
-    t_lbc1 = time.time()-t_o+t_hard3  ## t_hard3 ya incluye el tiempo de LP
+    t_lbc1 = time.time() - t_o + t_hard3  ## t_hard3 ya incluye el tiempo de LP
     z_lbc1 = incumbent    
     for item in result_iter:
         print(item[0],',',item[1])    
     result_iter = np.array(result_iter)
     np.savetxt('iterLBC1'+instancia[0:5]+'.csv', result_iter, delimiter=',')
-    
-
         
 k = k_original
     
@@ -249,8 +249,8 @@ if  True:
                         SB_Uu=saved[0],No_SB_Uu=saved[1],V=saved[2],W=saved[3],delta=saved[4],nameins=instancia[0:5],mode='Tight')
     sol_check = Solution(model=model,nameins=instancia[0:5],env=ambiente,executable=executable,gap=gap,timelimit=timemilp,
                          tee=False,tofiles=False,emphasize=emph,symmetry=symmetry,exportLP=False,option='Check')
-    z_check,g_check = sol_check.solve_problem()
-    t_check         = time.time() - t_o
+    z_check, g_check = sol_check.solve_problem()
+    t_check          = time.time() - t_o
     print('t_check= ',round(t_check,1),'z_check= ',round(z_check,4),'g_check= ',round(g_check,4))
     del sol_check
     gc.collect()
@@ -267,7 +267,7 @@ if  True:
     No_SB_Uu       = deepcopy(No_SB_Uu3)
     lower_Pmin_Uu  = deepcopy(lower_Pmin_Uu3)
     t_o            = time.time() 
-    t_max          = timemilp - t_hard3
+    t_net          = timemilp - t_hard3
     t_res          = timemilp - t_hard3
     cutoff         = z_hard3
     incumbent      = z_hard3
@@ -279,14 +279,13 @@ if  True:
     rightbranches  = []
     char           = ''
     fish           = ')'
-    g_lbc2         = 9999
-    letter=['','_a','_b','_c','_d','_e','_f','_g','_h','_i','_j','_k','_l','_m','_n','_o','_p','_q','_r','_s','_t','_u','_v','_w','_x','_y','_z']
+    letter         = ['','_a','_b','_c','_d','_e','_f','_g','_h','_i','_j','_k','_l','_m','_n','_o','_p','_q','_r','_s','_t','_u','_v','_w','_x','_y','_z']
     result_iter    = []
     result_iter.append((t_hard3,z_hard3))
     print('\t')
         
     while True:
-        if (iter==iterstop) or (time.time()-t_o+ t_hard3 >= t_max):
+        if (iter==iterstop) or (time.time()-t_o >= t_net):
             break
         lbheur   = 'no'
         char     = ''
@@ -306,10 +305,10 @@ if  True:
         
         gap_iter = abs((z_lbc2 - z_old)/z_old) * 100 ## Percentage
         improve = False
-        if z_lbc2 < incumbent :    ## Update solution
+        if z_lbc2 < incumbent :                      ## Update solution
             incumbent  = z_lbc2
             cutoff     = z_lbc2
-            saved      = [SB_Uu,No_SB_Uu,Vv,Ww,delta]
+            #saved      = [SB_Uu,No_SB_Uu,Vv,Ww,delta]
             char       = '***'
             g_lbc2     = sol_lbc2.igap(z_lp,z_lbc2)
             if gap_iter > gap:
@@ -341,14 +340,16 @@ if  True:
         else: ## Mejora la solución
             SB_Uu, No_SB_Uu, xx, Vv, Ww, delta = sol_lbc2.select_binary_support_Uu('lbc2')  
             lower_Pmin_Uu = sol_lbc2.update_lower_Pmin_Uu(lower_Pmin_Uu,'lbc2') 
-                    
-        t_res = - time.time() + t_o + ( timemilp - t_hard3 )
+            saved         = [SB_Uu,No_SB_Uu,Vv,Ww,delta] ## Update solution
+
+        t_res = t_net - time.time() + t_o 
+        print('lbc2 ','tiempo restante:',t_res)
         
         del sol_lbc2
         gc.collect()
         iter = iter + 1
 
-    t_lbc2 = time.time()-t_o+t_hard3  ## t_hard3 ya incluye el tiempo de LP
+    t_lbc2 = time.time() - t_o + t_hard3  ## t_hard3 ya incluye el tiempo de LP
     z_lbc2 = incumbent    
     for item in result_iter:
         print(item[0],',',item[1])    
@@ -373,7 +374,7 @@ if  True:
 ## ---------------------------------------------- MILP ----------------------------------------------------------
 ## Solve as a MILP
 
-if  True: 
+if  False: 
     symmetrydefault = -1 
     cutoff   = 1e+75 
     lbheur   = 'no'      
