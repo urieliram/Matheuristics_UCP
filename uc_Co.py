@@ -16,13 +16,14 @@
 ##  
 ## (Alternative) Piecewise production   (42), (43), (44)         'Garver1962',
 ## --------------------------------------------------------------------------------
-import math
+
 import time
 import pyomo.environ as pyo
 from   pyomo.environ import *
+from   math import floor ,ceil
 
 def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,CR,Pb,Cb,C,Cs,Tunder,names,option='None',
-       SB_Uu=[],No_SB_Uu=[],lower_Pmin_Uu=[],V=[],W=[],delta=[],
+       kernel=[],bucket=[],SB_Uu=[],No_SB_Uu=[],lower_Pmin_Uu=[],V=[],W=[],delta=[],
        percent_soft=90,k=20,nameins='model',mode="Compact",improve=True,timeover=False,rightbranches=[],):
                       
     t_o = time.time()
@@ -228,8 +229,8 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,CR,Pb,Cb,C,Cs,T
     if mode == "Tight":
         TRU = []; TRD = []; TRU.append(-1); TRD.append(-1)
         for g in G:
-            TRU.append(math.floor((model.Pmax[g]-model.SU[g])/model.RU[g]))
-            TRD.append(math.floor((model.Pmax[g]-model.SU[g])/model.RD[g]))                
+            TRU.append(floor((model.Pmax[g]-model.SU[g])/model.RU[g]))
+            TRD.append(floor((model.Pmax[g]-model.SU[g])/model.RD[g]))                
 
         def su_sd_rule23a(m,g,t):                      ## eq.(23a)
             if m.UT[g] == 1 and m.SU[g] != m.SD[g] and t<len(m.T):    ## :g ∈ G1
@@ -612,7 +613,7 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,CR,Pb,Cb,C,Cs,T
         # Soft-fixing: adding a new restriction 
         if True:
             ## https://pyomo.readthedocs.io/en/stable/working_models.html
-            inside90   = math.ceil((percent_soft/100) * (len(SB_Uu))) #-len(lower_Pmin_Uu)
+            inside90   = ceil((percent_soft/100) * (len(SB_Uu))) #-len(lower_Pmin_Uu)
             expr       = 0        
             ## Se hace inside90 = 90% solo a el - Soporte Binario -  
             for f in SB_Uu:
@@ -747,26 +748,32 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,CR,Pb,Cb,C,Cs,T
     ## ---------------------------- REDUCED COST ------------------------------------------
     ## 
 
-    if option == 'RC' and False:                             
+    if option == 'RC':                             
         for f in SB_Uu: 
-            model.u[f[0]+1,f[1]+1].fix(1)                   ## Hard fixing
+            # model.u[f[0]+1,f[1]+1].fix(1)                   ## Hard fixing
+            model.u[f[0]+1,f[1]+1].setlb(1.0)                 ## Fix upper bound
                                 
                     
     ## ---------------------------- KERNEL SEARCH ------------------------------------------
     ##
-    if option == 'KS' and False:    
-        for f in SB_Uu: 
-            model.u[f[0]+1,f[1]+1] = 1                      ## Hints
-        for f in No_SB_Uu: 
-            model.u[f[0]+1,f[1]+1].fix(0)                   ## Hard fixing
-        for f in lower_Pmin_Uu:
+    if option == 'KS':    
+        model.u.fix(0)                                      ## Hard fixing
+        for f in kernel: 
             model.u[f[0]+1,f[1]+1].unfix()  
-            model.u[f[0]+1,f[1]+1] = 0                      ## Hints 
+            model.u[f[0]+1,f[1]+1] = 1                      ## Hints
+        for f in bucket: 
+            model.u[f[2]+1,f[3]+1].unfix()                  ## Hard fixing
+            model.u[f[2]+1,f[3]+1] = 0                      ## Hints
             
+        model.cuts = pyo.ConstraintList()
+        expr       = 0      
+        for f in bucket:                                    ## Cuenta los elementos del bucket
+            expr += model.u[f[2]+1,f[3]+1] 
+        model.cuts.add(expr >= 1)      
         
     ## ---------------------------- Termina y regresa el modelo MILP ------------------------------------------
 
-    print(option,'Pyomo model has been built <uc_Co.uc> --->',time.time()-t_o) 
+    ##print(option,'Pyomo model has been built <uc_Co.uc> --->',time.time()-t_o) 
     
     return model, inside90
 
