@@ -15,7 +15,7 @@ import util
 import reading
 import time
 import numpy as np
-from   math     import floor
+from   math     import floor, ceil, log
 from   solution import Solution
 from   copy import deepcopy 
 
@@ -57,12 +57,13 @@ instancia = 'uc_58.json'       ## prueba demostrativa excelente en mi PC
 ## symmetry automatic=-1; symmetry low level=1
 ambiente, ruta, executable, timeheu, timemilp, emph, symmetry, gap, k, iterstop = util.config_env()
 x = 1e+75
-z_lp=x; z_milp=x; z_hard=x; z_hard3=x; z_ks=x; z_lbc1=x; z_lbc2=x; z_lbc3=x; z_check=x; z_lbc0=x; z_=0;
-t_lp=0; t_milp=0; t_hard=0; t_hard3=0; t_ks=0; t_lbc1=0; t_lbc2=0; t_lbc3=0; t_check=0; t_lbc0=0; t_=0;
-g_lp=x; g_milp=x; g_hard=x; g_hard3=x; g_ks=x; g_lbc1=x; g_lbc2=x; g_lbc3=x; g_check=x; g_lbc0=x; g_=x;
+z_lp=x; z_milp=x; z_hard=x; z_hard3=x; z_ks=x; z_lbc1=x; z_lbc2=x; z_lbc3=x; z_check=x; z_lbc0=x; z_ks=0; z_=0;
+t_lp=0; t_milp=0; t_hard=0; t_hard3=0; t_ks=0; t_lbc1=0; t_lbc2=0; t_lbc3=0; t_check=0; t_lbc0=0; t_ks=0; t_=0;
+g_lp=x; g_milp=x; g_hard=x; g_hard3=x; g_ks=x; g_lbc1=x; g_lbc2=x; g_lbc3=x; g_check=x; g_lbc0=x; g_ks=x; g_=x;
 ns=0; nU_no_int=0; n_Uu_no_int=0; n_Uu_1_0=0;
-SB_Uu=[];  No_SB_Uu=[];  lower_Pmin_Uu=[];  Vv=[];  Ww=[];  delta=[];
+SB_Uu=[];  No_SB_Uu =[]; lower_Pmin_Uu =[]; Vv =[]; Ww =[]; delta =[];
 SB_Uu3=[]; No_SB_Uu3=[]; lower_Pmin_Uu3=[]; Vv3=[]; Ww3=[]; delta3=[];
+letter=['','_a','_b','_c','_d','_e','_f','_g','_h','_i','_j','_k','_l','_m','_n','_o','_p','_q','_r','_s','_t','_u','_v','_w','_x','_y','_z']
 comment = 'Here it writes a message to the stat.csv results file' 
 
 if ambiente == 'yalma':
@@ -117,8 +118,9 @@ if True:
     sol_hard3 = Solution(model=model,env=ambiente,executable=executable,nameins=instancia[0:5],gap=gap,timelimit=timeheu,
                         tee=False,emphasize=emph,lbheur=lbheur,symmetry=symmetry,tofiles=False,option='Hard3')
     z_hard3, g_hard3 = sol_hard3.solve_problem()
-    g_hard3  = sol_hard3.igap(z_lp,z_milp)
-    t_hard3  = time.time() - t_o + t_lp
+    g_hard3  = sol_hard3.igap(z_lp,z_hard3)
+    t_hard3  = time.time() - t_o + t_lp    
+    print('t_hard3= ',round(t_hard3,1),'z_hard3= ',round(z_hard3,1))
     
     ## ES MUY IMPORTANTE GUARDAR LAS VARIABLES 'Uu=1'(SB_Uu3) DE LA PRIMERA SOLUCIÓN FACTIBLE 'Hard3'.
     ## ASI COMO LAS VARIABLES 'Uu=0' (No_SB_Uu3) 
@@ -127,11 +129,12 @@ if True:
     lower_Pmin_Uu3 = sol_hard3.update_lower_Pmin_Uu(lower_Pmin_Uu,'Hard3')
     #sol_hard3.cuenta_ceros_a_unos( SB_Uu, No_SB_Uu, lower_Pmin_Uu,'Hard3')    
 
-    print('t_hard3= ',round(t_hard3,1),'z_hard3= ',round(z_hard3,1),'g_hard3= ',round(g_hard3,5) )
+    # print('t_hard3= ',round(t_hard3,1),'z_hard3= ',round(z_hard3,1),'g_hard3= ',round(g_hard3,5) )
     del sol_hard3
     gc.collect()
+    
     ## NO OLVIDES COMENTAR TUS PRUEBAS ¸.·´¯`·.´¯`·.¸¸.·´¯`·.¸><(((º>
-comment    = 'Integrality GAP'
+comment    = 'Probamos Kernel Search'
 
 k_original = k
 
@@ -140,14 +143,14 @@ k_original = k
 ## LBC COUNTINOUS VERSION without soft-fixing
 ## Include the LOCAL BRANCHING CUT to the solution and solve the sub-MILP (it is using cutoff=z_hard).
 
-if True:    
+if False:    
+    t_o            = time.time() 
     Vv             = deepcopy(Vv3)
     Ww             = deepcopy(Ww3)
     delta          = deepcopy(delta3)
     SB_Uu          = deepcopy(SB_Uu3)
     No_SB_Uu       = deepcopy(No_SB_Uu3)
     lower_Pmin_Uu  = deepcopy(lower_Pmin_Uu3)
-    t_o            = time.time() 
     t_net          = timemilp - t_hard3
     t_res          = timemilp - t_hard3
     cutoff         = z_hard3
@@ -160,7 +163,6 @@ if True:
     rightbranches  = []
     char           = ''
     fish           = ')'
-    letter         = ['','_a','_b','_c','_d','_e','_f','_g','_h','_i','_j','_k','_l','_m','_n','_o','_p','_q','_r','_s','_t','_u','_v','_w','_x','_y','_z']
     result_iter    = []
     result_iter.append((t_hard3,z_hard3))
     print('\t')
@@ -242,7 +244,7 @@ k = k_original
     
 ## ---------------------------------------------- CHECK FEASIBILITY (LBC1)----------------------------------------------------------
 
-if  True: 
+if  False: 
     print('Revisando factibilidad de la solucion con z_lbc1=', z_lbc1 )
     t_o       = time.time() 
     model,xx  = uc_Co.uc(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,mpc,Pb,Cb,C,Cs,Tunder,names,option='Check',
@@ -259,14 +261,14 @@ if  True:
 ## LBC COUNTINOUS VERSION without soft-fixing
 ## Include the LOCAL BRANCHING CUT to the solution and solve the sub-MILP (it is using cutoff=z_hard).
 
-if  True:    
+if  False:    
+    t_o            = time.time() 
     Vv             = deepcopy(Vv3)
     Ww             = deepcopy(Ww3)
     delta          = deepcopy(delta3)
     SB_Uu          = deepcopy(SB_Uu3)
     No_SB_Uu       = deepcopy(No_SB_Uu3)
     lower_Pmin_Uu  = deepcopy(lower_Pmin_Uu3)
-    t_o            = time.time() 
     t_net          = timemilp - t_hard3
     t_res          = timemilp - t_hard3
     cutoff         = z_hard3
@@ -279,7 +281,6 @@ if  True:
     rightbranches  = []
     char           = ''
     fish           = ')'
-    letter         = ['','_a','_b','_c','_d','_e','_f','_g','_h','_i','_j','_k','_l','_m','_n','_o','_p','_q','_r','_s','_t','_u','_v','_w','_x','_y','_z']
     result_iter    = []
     result_iter.append((t_hard3,z_hard3))
     print('\t')
@@ -359,7 +360,7 @@ if  True:
 
 ## ---------------------------------------------- CHECK FEASIBILITY (LBC2)----------------------------------------------------------
 
-if  True: 
+if  False: 
     print('Revisando factibilidad de la solucion con z_lbc2=', z_lbc2 )
     t_o       = time.time() 
     model,xx  = uc_Co.uc(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,mpc,Pb,Cb,C,Cs,Tunder,names,option='Check',
@@ -402,7 +403,7 @@ if  False:
 ## Fix values of binary variables to get rc variables and solve it again
 ## https://pascua.iit.comillas.edu/aramos/openSDUC.py
 
-if  False:
+if  True:
     Vv             = deepcopy(Vv3)
     Ww             = deepcopy(Ww3)
     delta          = deepcopy(delta3)
@@ -410,29 +411,125 @@ if  False:
     No_SB_Uu       = deepcopy(No_SB_Uu3)
     lower_Pmin_Uu  = deepcopy(lower_Pmin_Uu3)
     saved          = [SB_Uu,No_SB_Uu,Vv,Ww,delta]
-    t_o      = time.time() 
+    t_o            = time.time() 
     model,xx = uc_Co.uc(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,mpc,Pb,Cb,C,Cs,Tunder,names,option='RC',
                         SB_Uu=saved[0],No_SB_Uu=saved[1],V=saved[2],W=saved[3],delta=saved[4],nameins=instancia[0:5],mode='Tight')
-    sol_rc = Solution(model=model,nameins=instancia[0:5],env=ambiente,executable=executable,gap=gap,timelimit=timemilp,
+    sol_rc   = Solution(model=model,nameins=instancia[0:5],env=ambiente,executable=executable,gap=gap,timelimit=timemilp,
                          tee=False,tofiles=False,emphasize=emph,symmetry=symmetry,exportLP=False,option='RC')
     z_rc,g_rc = sol_rc.solve_problem()
-    t_rc         = time.time() - t_o
+    t_rc      = time.time() - t_o
     
-    sol_rc.cuenta_ceros_a_unos(SB_Uu, No_SB_Uu, lower_Pmin_Uu,'RC') ## Compara contra la última solución
-    SB_Uu, No_SB_Uu, xx, Vv, Ww, delta = sol_rc.select_binary_support_Uu('lbc2')  
-    lower_Pmin_Uu = sol_rc.update_lower_Pmin_Uu(lower_Pmin_Uu,'RC') 
-
+    print('t_rc= ',round(t_rc,1),'z_rc= ',round(z_rc,4),'g_rc= ',round(g_rc,4))
+    
     ## Ordenaremos los costos reducidos para elegir los candidatos de los buckets
     rc = []
     i  = 0
     for c in No_SB_Uu: 
-        rc.append(( i , model.rc[model.u[c[0],c[1]]],c[0],c[1] ))
-        i = i + 1
+        rc.append(( i, model.rc[model.u[c[0],c[1]]],c[0],c[1] ))
+        i = i + 1    
+    rc.sort(key=lambda tup:tup[1], reverse=False) ## Ordenamos las variables No_SB_Uu de acuerdo a sus costos reducidos 
+    
+    ## Definimos el número de buckets 
+    K = floor(1 + 3.322 * log(len(No_SB_Uu)))  ## Sturges rule
+    print('Number of buckets K=', K)    
+    len_i  = ceil(len(No_SB_Uu) / K)
+    pos_i  = 0
+    k_     = []    
+    for i in range(len_i,len(No_SB_Uu),len_i):
+        k_.append( i )
+    
+    timeheu     = (timemilp - t_hard3  - t_rc) / K
+    t_net       =  timemilp - t_hard3  - t_rc
+    t_res       =  timemilp - t_hard3  - t_rc
+    cutoff      =  1e+75 #z_hard3 + 1 
+    incumbent   =  z_hard3
+    result_iter =  []
+    result_iter.append((t_hard3,z_hard3))
+    iter        =  0
+    iterstop    =  K
+    char        = ''
+    fish        = ')'
+    kernel      = deepcopy(SB_Uu3)
+          
+    while True: 
+        if (iter==iterstop) or (time.time() - t_o >= t_net):
+            break
         
-    rc.sort(key=lambda tup: tup[1], reverse=False)
-    print(rc)    
+        lbheur    = 'no'
+        char      = ''
+        timeheu1  = min(t_res,timeheu)         
+        bucket = rc[k_[iter]:k_[iter + 1]]       
+        
+        try:
+            ## Resolvemos el Kernel y un bucket 
+            lbheur     = 'yes'
+            model,xx   = uc_Co.uc(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,mpc,Pb,Cb,C,Cs,Tunder,names,option='KS',
+                                  kernel=kernel,bucket=bucket,nameins=instancia[0:5],mode='Tight')
+            sol_ks     = Solution(model=model,env=ambiente,executable=executable,nameins=instancia[0:5],letter=letter[iter],gap=gap,cutoff=cutoff,timelimit=timeheu1,
+                                  tee=False,emphasize=emph,lbheur=lbheur,symmetry=symmetry,tofiles=False,option='KS')
+            z_ks, g_ks = sol_ks.solve_problem()
+            t_ks       = time.time() - t_o + t_hard3 + t_rc
+            kernel, No_SB_Uu, xx, Vv, Ww, delta = sol_ks.select_binary_support_Uu('KS')    
+            
+            if z_ks < incumbent :                      ## Update solution
+                incumbent  = z_ks
+                cutoff     = z_ks
+                saved      = [kernel,No_SB_Uu,Vv,Ww,delta]
+                char       = '***'
+                g_ks       = sol_ks.igap(z_lp,z_ks)
+                
+            result_iter.append((t_ks,z_ks))
+            print('<°|'+fish+'>< iter:'+str(iter)+' t_ks= ',round(time.time()-t_o+t_hard3+t_rc,1),'z_ks= ',round(z_ks,1),char) #,'g_ks= ',round(g_ks,5)
+        except:
+            print('>>> Unfeasible solution')
+        print('\t')       
+        fish = fish + ')'  
+            
+        t_res = t_net - time.time() + t_o 
+        print('ks ','tiempo restante:',t_res)
+        
+        del sol_ks
+        gc.collect()
+        iter = iter + 1
+            
+    t_ks = time.time() - t_o + t_hard3 + t_rc ## t_hard3 ya incluye el tiempo de LP
+    z_ks = incumbent    
+    for item in result_iter:
+        print(item[0],',',item[1])
+        
 
-    print('t_rc= ',round(t_rc,1),'z_rc= ',round(z_rc,4),'g_rc= ',round(g_rc,4))
+        
+        
+        
+        
+        
+## ---------------------------------------------- CHECK FEASIBILITY (KS)----------------------------------------------------------
+
+if  True: 
+    print('Revisando factibilidad de la solucion con z_ks=', z_ks )
+    t_o       = time.time() 
+    model,xx  = uc_Co.uc(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,mpc,Pb,Cb,C,Cs,Tunder,names,option='Check',
+                        SB_Uu=saved[0],No_SB_Uu=saved[1],V=saved[2],W=saved[3],delta=saved[4],nameins=instancia[0:5],mode='Tight')
+    sol_check = Solution(model=model,nameins=instancia[0:5],env=ambiente,executable=executable,gap=gap,timelimit=timemilp,
+                         tee=False,tofiles=False,emphasize=emph,symmetry=symmetry,exportLP=False,option='Check')
+    z_check,g_check = sol_check.solve_problem()
+    t_check         = time.time() - t_o
+    print('t_check= ',round(t_check,1),'z_check= ',round(z_check,4),'g_check= ',round(g_check,4))
+    
+       
+        
+        
+    
+    
+    
+    
+    
+        
+    
+    
+
+
+
 
 
     ## PENDIENTES
@@ -482,9 +579,9 @@ if  False:
 
 
 row = [ambiente,localtime,instancia,len(T),len(G),gap,emph,timeheu,timemilp,
-    round(z_lp,1),round(z_milp,1),round(z_hard,1),round(z_hard3,1),round(z_lbc1,1),round(z_lbc2,1),round(z_lbc3,1),round(z_,1),round(z_,1),
-    round(t_lp,1),round(t_milp,1),round(t_hard,1),round(t_hard3,1),round(t_lbc1,1),round(t_lbc2,1),round(t_lbc3,1),round(t_,1),round(t_,1),
-                  round(g_milp,8),round(g_hard,8),round(g_hard3,8),round(g_lbc1,8),round(g_lbc2,8),round(g_lbc3,8),round(g_,8),round(g_,8),
+    round(z_lp,1),round(z_milp,1),round(z_hard,1),round(z_hard3,1),round(z_lbc1,1),round(z_lbc2,1),round(z_lbc3,1),round(z_ks,1),round(z_,1),
+    round(t_lp,1),round(t_milp,1),round(t_hard,1),round(t_hard3,1),round(t_lbc1,1),round(t_lbc2,1),round(t_lbc3,1),round(t_ks,1),round(t_,1),
+                  round(g_milp,8),round(g_hard,8),round(g_hard3,8),round(g_lbc1,8),round(g_lbc2,8),round(g_lbc3,8),round(g_ks,8),round(g_,8),
                   k,ns,comment] #round(((z_milp-z_milp2)/z_milp)*100,6)
 util.append_list_as_row('stat.csv',row)
 

@@ -1,6 +1,6 @@
 # from ctypes import util
 import os
-import time
+# import time
 import util
 import numpy as np
 import pyomo.environ as pyo
@@ -254,7 +254,7 @@ class Solution:
         lower_Pmin_Uu = []
         
         ## Aplicaremos la regla de [Harjunkoski2021]
-        if option == 'LR':
+        if option == 'LR' :
             ## Arreglo para almacenar la solución entera 'Uu'
             UuxP = [[0 for i in range(self.tt)] for j in range(self.gg)]
             for t in range(self.tt):
