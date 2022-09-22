@@ -771,6 +771,8 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,CR,Pb,Cb,C,Cs,T
             expr += model.u[f[2]+1,f[3]+1] 
         model.cuts.add(expr >= 1)      
         
+       
+        
     ## ---------------------------- Termina y regresa el modelo MILP ------------------------------------------
 
     ##print(option,'Pyomo model has been built <uc_Co.uc> --->',time.time()-t_o) 

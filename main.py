@@ -63,7 +63,7 @@ g_lp=x; g_milp=x; g_hard=x; g_hard3=x; g_ks=x; g_lbc1=x; g_lbc2=x; g_lbc3=x; g_c
 ns=0; nU_no_int=0; n_Uu_no_int=0; n_Uu_1_0=0;
 SB_Uu=[];  No_SB_Uu =[]; lower_Pmin_Uu =[]; Vv =[]; Ww =[]; delta =[];
 SB_Uu3=[]; No_SB_Uu3=[]; lower_Pmin_Uu3=[]; Vv3=[]; Ww3=[]; delta3=[];
-letter=['','_a','_b','_c','_d','_e','_f','_g','_h','_i','_j','_k','_l','_m','_n','_o','_p','_q','_r','_s','_t','_u','_v','_w','_x','_y','_z']
+letter=['','_a','_b','_c','_d','_e','_f','_g','_h','_i','_j','_k','_l','_m','_n','_o','_p','_q','_r','_s','_t','_u','_v','_w','_x','_y','_z','_za','_zb','_zc','_zd','_ze','_zf','_zg','_zh','_zi','_zj','_zk','_zl','_zm','_zn','_zo','_zp','_zq','_zr','_zs','_zt','_zu','_zv','_zw','_zx','_zy','_zz']
 comment = 'Here it writes a message to the stat.csv results file' 
 
 if ambiente == 'yalma':
@@ -412,64 +412,76 @@ if  True:
     lower_Pmin_Uu  = deepcopy(lower_Pmin_Uu3)
     saved          = [SB_Uu,No_SB_Uu,Vv,Ww,delta]
     t_o            = time.time() 
-    model,xx = uc_Co.uc(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,mpc,Pb,Cb,C,Cs,Tunder,names,option='RC',
-                        SB_Uu=saved[0],No_SB_Uu=saved[1],V=saved[2],W=saved[3],delta=saved[4],nameins=instancia[0:5],mode='Tight')
-    sol_rc   = Solution(model=model,nameins=instancia[0:5],env=ambiente,executable=executable,gap=gap,timelimit=timemilp,
+    model,xx  = uc_Co.uc(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,mpc,Pb,Cb,C,Cs,Tunder,names,option='RC',
+                         SB_Uu=saved[0],No_SB_Uu=saved[1],V=saved[2],W=saved[3],delta=saved[4],nameins=instancia[0:5],mode='Tight')
+    sol_rc    = Solution(model=model,nameins=instancia[0:5],env=ambiente,executable=executable,gap=gap,timelimit=timemilp,
                          tee=False,tofiles=False,emphasize=emph,symmetry=symmetry,exportLP=False,option='RC')
     z_rc,g_rc = sol_rc.solve_problem()
     t_rc      = time.time() - t_o
-    
     print('t_rc= ',round(t_rc,1),'z_rc= ',round(z_rc,4),'g_rc= ',round(g_rc,4))
     
-    ## Ordenaremos los costos reducidos para elegir los candidatos de los buckets
-    rc = []
-    i  = 0
-    for c in No_SB_Uu: 
-        rc.append(( i, model.rc[model.u[c[0],c[1]]],c[0],c[1] ))
+    
+    ##  Ordenaremos los costos reducidos para elegir los candidatos de los buckets
+    t_o  = time.time() 
+    print('Ordenaremos los costos reducidos para elegir los candidatos de los buckets')
+    rc   = []
+    i    = 0
+    
+    print('LEN(model.rc)',len(model.rc))
+    print('model.rc',model.rc)
+    
+    for f in No_SB_Uu: 
+        # print(i, model.rc[model.u[f[0]+1,f[1]+1]],f[0],f[1])
+        rc.append(( i, model.rc[model.u[f[0]+1,f[1]+1]],f[0],f[1] ))
         i = i + 1    
     rc.sort(key=lambda tup:tup[1], reverse=False) ## Ordenamos las variables No_SB_Uu de acuerdo a sus costos reducidos 
     
-    ## Definimos el número de buckets 
+    ##  Definimos el número de buckets 
     K = floor(1 + 3.322 * log(len(No_SB_Uu)))  ## Sturges rule
     print('Number of buckets K=', K)    
-    len_i  = ceil(len(No_SB_Uu) / K)
+    len_i  = ceil(len(No_SB_Uu) / (K))
     pos_i  = 0
-    k_     = []    
-    for i in range(len_i,len(No_SB_Uu),len_i):
+    k_     = [0]    
+    for i in range(len_i,len(No_SB_Uu),len_i+1):
         k_.append( i )
+    print(k_)
     
-    timeheu     = (timemilp - t_hard3  - t_rc) / K
-    t_net       =  timemilp - t_hard3  - t_rc
-    t_res       =  timemilp - t_hard3  - t_rc
-    cutoff      =  1e+75 #z_hard3 + 1 
+    timeheu     = ((timemilp - t_hard3 - t_rc) - (time.time() - t_o) ) / K
+    t_net       = ( timemilp - t_hard3 - t_rc) - (time.time() - t_o)
+    t_res       = ( timemilp - t_hard3 - t_rc) - (time.time() - t_o)
+    
+    cutoff      =  1e+75 # z_hard3  
     incumbent   =  z_hard3
-    result_iter =  []
-    result_iter.append((t_hard3,z_hard3))
-    iter        =  0
-    iterstop    =  K
+    iterstop    =  K - 2
     char        = ''
     fish        = ')'
     kernel      = deepcopy(SB_Uu3)
+    iter        =  0
+    result_iter =  []
+    sol_ks      =  []
+    result_iter.append((t_hard3 + t_rc + time.time() - t_o, z_hard3))
           
     while True: 
-        if (iter==iterstop) or (time.time() - t_o >= t_net):
+        if (iter==iterstop) or ((time.time() - t_o) >= t_net):
             break
-        
+
         lbheur    = 'no'
         char      = ''
         timeheu1  = min(t_res,timeheu)         
-        bucket = rc[k_[iter]:k_[iter + 1]]       
+        bucket = rc[k_[iter]:k_[iter + 1]] 
+        print(iter,k_[iter],'-',k_[iter + 1],len(rc[k_[iter]:k_[iter + 1]]) )      
         
         try:
-            ## Resolvemos el Kernel y un bucket 
+            ##  Resolvemos el kernel y un bucket 
             lbheur     = 'yes'
+            emph       = 1
             model,xx   = uc_Co.uc(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,mpc,Pb,Cb,C,Cs,Tunder,names,option='KS',
                                   kernel=kernel,bucket=bucket,nameins=instancia[0:5],mode='Tight')
             sol_ks     = Solution(model=model,env=ambiente,executable=executable,nameins=instancia[0:5],letter=letter[iter],gap=gap,cutoff=cutoff,timelimit=timeheu1,
                                   tee=False,emphasize=emph,lbheur=lbheur,symmetry=symmetry,tofiles=False,option='KS')
             z_ks, g_ks = sol_ks.solve_problem()
             t_ks       = time.time() - t_o + t_hard3 + t_rc
-            kernel, No_SB_Uu, xx, Vv, Ww, delta = sol_ks.select_binary_support_Uu('KS')    
+            kernel, No_SB_Uu, xx, Vv, Ww, delta = sol_ks.select_binary_support_Uu('KS') 
             
             if z_ks < incumbent :                      ## Update solution
                 incumbent  = z_ks
@@ -478,10 +490,10 @@ if  True:
                 char       = '***'
                 g_ks       = sol_ks.igap(z_lp,z_ks)
                 
-            result_iter.append((t_ks,z_ks))
+            result_iter.append((round(time.time()-t_o+t_hard3+t_rc,1), z_ks))
             print('<°|'+fish+'>< iter:'+str(iter)+' t_ks= ',round(time.time()-t_o+t_hard3+t_rc,1),'z_ks= ',round(z_ks,1),char) #,'g_ks= ',round(g_ks,5)
         except:
-            print('>>> Unfeasible solution')
+            print('>>> Un error se ha detectado')
         print('\t')       
         fish = fish + ')'  
             
@@ -497,11 +509,6 @@ if  True:
     for item in result_iter:
         print(item[0],',',item[1])
         
-
-        
-        
-        
-        
         
 ## ---------------------------------------------- CHECK FEASIBILITY (KS)----------------------------------------------------------
 
@@ -515,21 +522,6 @@ if  True:
     z_check,g_check = sol_check.solve_problem()
     t_check         = time.time() - t_o
     print('t_check= ',round(t_check,1),'z_check= ',round(z_check,4),'g_check= ',round(g_check,4))
-    
-       
-        
-        
-    
-    
-    
-    
-    
-        
-    
-    
-
-
-
 
 
     ## PENDIENTES
