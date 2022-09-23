@@ -57,9 +57,9 @@ instancia = 'uc_58.json'       ## prueba demostrativa excelente en mi PC
 ## symmetry automatic=-1; symmetry low level=1
 ambiente, ruta, executable, timeheu, timemilp, emph, symmetry, gap, k, iterstop = util.config_env()
 x = 1e+75
-z_lp=x; z_milp=x; z_hard=x; z_hard3=x; z_ks=x; z_lbc1=x; z_lbc2=x; z_lbc3=x; z_check=x; z_lbc0=x; z_ks=0; z_=0;
-t_lp=0; t_milp=0; t_hard=0; t_hard3=0; t_ks=0; t_lbc1=0; t_lbc2=0; t_lbc3=0; t_check=0; t_lbc0=0; t_ks=0; t_=0;
-g_lp=x; g_milp=x; g_hard=x; g_hard3=x; g_ks=x; g_lbc1=x; g_lbc2=x; g_lbc3=x; g_check=x; g_lbc0=x; g_ks=x; g_=x;
+z_lp=x; z_milp=x; z_hard=x; z_hard3=x; z_ks=x; z_lbc1=x; z_lbc2=x; z_lbc3=x; z_check=x; z_lbc0=x; z_ks=0; z_ivf=0; z_=0;
+t_lp=0; t_milp=0; t_hard=0; t_hard3=0; t_ks=0; t_lbc1=0; t_lbc2=0; t_lbc3=0; t_check=0; t_lbc0=0; t_ks=0; t_ivf=0; t_=0;
+g_lp=x; g_milp=x; g_hard=x; g_hard3=x; g_ks=x; g_lbc1=x; g_lbc2=x; g_lbc3=x; g_check=x; g_lbc0=x; g_ks=x; g_ivf=x; g_=x;
 ns=0; nU_no_int=0; n_Uu_no_int=0; n_Uu_1_0=0;
 SB_Uu=[];  No_SB_Uu =[]; lower_Pmin_Uu =[]; Vv =[]; Ww =[]; delta =[];
 SB_Uu3=[]; No_SB_Uu3=[]; lower_Pmin_Uu3=[]; Vv3=[]; Ww3=[]; delta3=[];
@@ -113,7 +113,7 @@ if True:
 if True: 
     t_o       = time.time()
     lbheur    = 'no'
-    model,xx  = uc_Co.uc(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,mpc,Pb,Cb,C,Cs,Tunder,names,option='Hard3',
+    model,__  = uc_Co.uc(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,mpc,Pb,Cb,C,Cs,Tunder,names,option='Hard3',
                         SB_Uu=SB_Uu,No_SB_Uu=No_SB_Uu,lower_Pmin_Uu=lower_Pmin_Uu,nameins=instancia[0:5],mode='Tight')
     sol_hard3 = Solution(model=model,env=ambiente,executable=executable,nameins=instancia[0:5],gap=gap,timelimit=timeheu,
                         tee=False,emphasize=emph,lbheur=lbheur,symmetry=symmetry,tofiles=False,option='Hard3')
@@ -125,7 +125,7 @@ if True:
     ## ES MUY IMPORTANTE GUARDAR LAS VARIABLES 'Uu=1'(SB_Uu3) DE LA PRIMERA SOLUCIÓN FACTIBLE 'Hard3'.
     ## ASI COMO LAS VARIABLES 'Uu=0' (No_SB_Uu3) 
     ## Este es el primer - Soporte Binario Entero Factible-
-    SB_Uu3, No_SB_Uu3, xx, Vv3, Ww3, delta3 = sol_hard3.select_binary_support_Uu('Hard3')    
+    SB_Uu3, No_SB_Uu3, __, Vv3, Ww3, delta3 = sol_hard3.select_binary_support_Uu('Hard3')    
     lower_Pmin_Uu3 = sol_hard3.update_lower_Pmin_Uu(lower_Pmin_Uu,'Hard3')
     #sol_hard3.cuenta_ceros_a_unos( SB_Uu, No_SB_Uu, lower_Pmin_Uu,'Hard3')    
 
@@ -177,7 +177,7 @@ if False:
             cutoff=1e+75
                  
         timeheu1  = min(t_res,timeheu)
-        model, xx = uc_Co.uc(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,mpc,Pb,Cb,C,Cs,Tunder,names,option='lbc1',
+        model, __ = uc_Co.uc(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,mpc,Pb,Cb,C,Cs,Tunder,names,option='lbc1',
                             SB_Uu=SB_Uu,No_SB_Uu=No_SB_Uu,lower_Pmin_Uu=lower_Pmin_Uu,V=Vv,W=Ww,delta=delta,
                             percent_soft=90,k=k,nameins=instancia[0:5],mode='Tight',improve=improve,timeover=timeover,rightbranches=rightbranches)
         sol_lbc1  = Solution(model=model,env=ambiente,executable=executable,nameins=instancia[0:5],letter=letter[iter],gap=gap,cutoff=cutoff,timelimit=timeheu1,
@@ -216,12 +216,12 @@ if False:
                 timeover == True         
             else:              
                 print('Going out from a local optimum  ...  >>+*+*+*+*+*+|°>')
-                SB_Uu, No_SB_Uu, xx, Vv, Ww, delta = sol_lbc1.select_binary_support_Uu('lbc1')  
+                SB_Uu, No_SB_Uu, __, Vv, Ww, delta = sol_lbc1.select_binary_support_Uu('lbc1')  
                 lower_Pmin_Uu = sol_lbc1.update_lower_Pmin_Uu(lower_Pmin_Uu,'lbc1') 
                 rightbranches.append([SB_Uu,No_SB_Uu,lower_Pmin_Uu])
                 fish = ')'
         else: ## Mejora la solución
-            SB_Uu, No_SB_Uu, xx, Vv, Ww, delta = sol_lbc1.select_binary_support_Uu('lbc1')  
+            SB_Uu, No_SB_Uu, __, Vv, Ww, delta = sol_lbc1.select_binary_support_Uu('lbc1')  
             lower_Pmin_Uu = sol_lbc1.update_lower_Pmin_Uu(lower_Pmin_Uu,'lbc1')
             saved         = [SB_Uu,No_SB_Uu,Vv,Ww,delta] ## Update solution
             
@@ -245,9 +245,9 @@ k = k_original
 ## ---------------------------------------------- CHECK FEASIBILITY (LBC1)----------------------------------------------------------
 
 if  False: 
-    print('Revisando factibilidad de la solucion con z_lbc1=', z_lbc1 )
+    print('Revisando la factibilidad de la solucion con z_lbc1=', z_lbc1 )
     t_o       = time.time() 
-    model,xx  = uc_Co.uc(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,mpc,Pb,Cb,C,Cs,Tunder,names,option='Check',
+    model,__  = uc_Co.uc(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,mpc,Pb,Cb,C,Cs,Tunder,names,option='Check',
                         SB_Uu=saved[0],No_SB_Uu=saved[1],V=saved[2],W=saved[3],delta=saved[4],nameins=instancia[0:5],mode='Tight')
     sol_check = Solution(model=model,nameins=instancia[0:5],env=ambiente,executable=executable,gap=gap,timelimit=timemilp,
                          tee=False,tofiles=False,emphasize=emph,symmetry=symmetry,exportLP=False,option='Check')
@@ -295,7 +295,7 @@ if  False:
             cutoff=1e+75
         
         timeheu1  = min(t_res,timeheu)      
-        model, xx = uc_Co.uc(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,mpc,Pb,Cb,C,Cs,Tunder,names,option='lbc2',
+        model, __ = uc_Co.uc(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,mpc,Pb,Cb,C,Cs,Tunder,names,option='lbc2',
                             SB_Uu=SB_Uu,No_SB_Uu=No_SB_Uu,lower_Pmin_Uu=lower_Pmin_Uu,V=Vv,W=Ww,delta=delta,
                             percent_soft=90,k=k,nameins=instancia[0:5],mode='Tight',improve=improve,timeover=timeover,rightbranches=rightbranches)
         sol_lbc2  = Solution(model=model,env=ambiente,executable=executable,nameins=instancia[0:5],letter=letter[iter],gap=gap,cutoff=cutoff,timelimit=timeheu1,
@@ -334,12 +334,12 @@ if  False:
                 timeover == True         
             else:              
                 print('Going out from a local optimum    ...    >>+*+*+*+*+*+|°>')
-                SB_Uu, No_SB_Uu, xx, Vv, Ww, delta = sol_lbc2.select_binary_support_Uu('lbc2')  
+                SB_Uu, No_SB_Uu, __, Vv, Ww, delta = sol_lbc2.select_binary_support_Uu('lbc2')  
                 lower_Pmin_Uu = sol_lbc2.update_lower_Pmin_Uu(lower_Pmin_Uu,'lbc2') 
                 rightbranches.append([SB_Uu,No_SB_Uu,lower_Pmin_Uu])
                 fish = ')'
         else: ## Mejora la solución
-            SB_Uu, No_SB_Uu, xx, Vv, Ww, delta = sol_lbc2.select_binary_support_Uu('lbc2')  
+            SB_Uu, No_SB_Uu, __, Vv, Ww, delta = sol_lbc2.select_binary_support_Uu('lbc2')  
             lower_Pmin_Uu = sol_lbc2.update_lower_Pmin_Uu(lower_Pmin_Uu,'lbc2') 
             saved         = [SB_Uu,No_SB_Uu,Vv,Ww,delta] ## Update solution
 
@@ -361,9 +361,9 @@ if  False:
 ## ---------------------------------------------- CHECK FEASIBILITY (LBC2)----------------------------------------------------------
 
 if  False: 
-    print('Revisando factibilidad de la solucion con z_lbc2=', z_lbc2 )
+    print('Revisando la factibilidad de la solucion con z_lbc2=', z_lbc2 )
     t_o       = time.time() 
-    model,xx  = uc_Co.uc(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,mpc,Pb,Cb,C,Cs,Tunder,names,option='Check',
+    model,__  = uc_Co.uc(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,mpc,Pb,Cb,C,Cs,Tunder,names,option='Check',
                         SB_Uu=saved[0],No_SB_Uu=saved[1],V=saved[2],W=saved[3],delta=saved[4],nameins=instancia[0:5],mode='Tight')
     sol_check = Solution(model=model,nameins=instancia[0:5],env=ambiente,executable=executable,gap=gap,timelimit=timemilp,
                          tee=False,tofiles=False,emphasize=emph,symmetry=symmetry,exportLP=False,option='Check')
@@ -380,7 +380,7 @@ if  False:
     cutoff   = 1e+75 
     lbheur   = 'no'      
     t_o      = time.time() 
-    model,xx = uc_Co.uc(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,mpc,Pb,Cb,C,Cs,Tunder,names,option='Milp',nameins=instancia[0:5],mode='Tight')
+    model,__ = uc_Co.uc(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,mpc,Pb,Cb,C,Cs,Tunder,names,option='Milp',nameins=instancia[0:5],mode='Tight')
     sol_milp = Solution(model=model,nameins=instancia[0:5],env=ambiente,executable=executable,gap=gap,cutoff=cutoff,symmetry=symmetrydefault,timelimit=timemilp,
                           tee=False,tofiles=False,emphasize=emph,lbheur=lbheur,exportLP=False,option='Milp')
     z_milp, g_milp = sol_milp.solve_problem()
@@ -388,134 +388,141 @@ if  False:
     print('t_milp= ',round(t_milp,1),'z_milp= ',round(z_milp,1),'g_milp= ',round(g_milp,5))
 
 
-## ( EN DESARROLLO ... )
-
-## --------------------------------- KERNEL SEARCH WITH + HARD-CUT-OFF -------------------
-# \todo{Hacer un mix de KS de Guastaroba con LB de A.Lodi}
+## ---------------------------------  KERNEL SEARCH  ---------------------------------
 ## La versión básica de KS consiste en relajar la formulacion y a partir de ello sacar 
 ## las variables del kernel y de los buckets, después de manera iterativa se resulven los 
 ## SUB-MILP´S 'restringidos' mas pequeños.
 ## KS solution and solve the sub-MILP (it is using cutoff = z_hard).
 ## Use 'Soft+pmin' (lower subset of Uu-Pmin)  as the first and unique bucket to consider
 ## Use relax the integrality variable Uu.
-
-## --------------------------------------- CALCULATE REDUCED COST Uu ------------------------------------
-## Fix values of binary variables to get rc variables and solve it again
-## https://pascua.iit.comillas.edu/aramos/openSDUC.py
-
-if  True:
+if True:
     Vv             = deepcopy(Vv3)
     Ww             = deepcopy(Ww3)
     delta          = deepcopy(delta3)
     SB_Uu          = deepcopy(SB_Uu3)
     No_SB_Uu       = deepcopy(No_SB_Uu3)
-    lower_Pmin_Uu  = deepcopy(lower_Pmin_Uu3)
     saved          = [SB_Uu,No_SB_Uu,Vv,Ww,delta]
-    t_o            = time.time() 
-    model,xx  = uc_Co.uc(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,mpc,Pb,Cb,C,Cs,Tunder,names,option='RC',
-                         SB_Uu=saved[0],No_SB_Uu=saved[1],V=saved[2],W=saved[3],delta=saved[4],nameins=instancia[0:5],mode='Tight')
-    sol_rc    = Solution(model=model,nameins=instancia[0:5],env=ambiente,executable=executable,gap=gap,timelimit=timemilp,
-                         tee=False,tofiles=False,emphasize=emph,symmetry=symmetry,exportLP=False,option='RC')
-    z_rc,g_rc = sol_rc.solve_problem()
-    t_rc      = time.time() - t_o
-    print('t_rc= ',round(t_rc,1),'z_rc= ',round(z_rc,4),'g_rc= ',round(g_rc,4))
-    
-    
-    ##  Ordenaremos los costos reducidos para elegir los candidatos de los buckets
-    t_o  = time.time() 
-    print('Ordenaremos los costos reducidos para elegir los candidatos de los buckets')
-    rc   = []
-    i    = 0
-    
-    print('LEN(model.rc)',len(model.rc))
-    print('model.rc',model.rc)
-    
-    for f in No_SB_Uu: 
-        # print(i, model.rc[model.u[f[0]+1,f[1]+1]],f[0],f[1])
-        rc.append(( i, model.rc[model.u[f[0]+1,f[1]+1]],f[0],f[1] ))
-        i = i + 1    
-    rc.sort(key=lambda tup:tup[1], reverse=False) ## Ordenamos las variables No_SB_Uu de acuerdo a sus costos reducidos 
-    
-    ##  Definimos el número de buckets 
-    K = floor(1 + 3.322 * log(len(No_SB_Uu)))  ## Sturges rule
-    print('Number of buckets K=', K)    
-    len_i  = ceil(len(No_SB_Uu) / (K))
-    pos_i  = 0
-    k_     = [0]    
-    for i in range(len_i,len(No_SB_Uu),len_i+1):
-        k_.append( i )
-    print(k_)
-    
-    timeheu     = ((timemilp - t_hard3 - t_rc) - (time.time() - t_o) ) / K
-    t_net       = ( timemilp - t_hard3 - t_rc) - (time.time() - t_o)
-    t_res       = ( timemilp - t_hard3 - t_rc) - (time.time() - t_o)
-    
-    cutoff      =  1e+75 # z_hard3  
-    incumbent   =  z_hard3
-    iterstop    =  K - 2
-    char        = ''
-    fish        = ')'
-    kernel      = deepcopy(SB_Uu3)
-    iter        =  0
-    result_iter =  []
-    sol_ks      =  []
-    result_iter.append((t_hard3 + t_rc + time.time() - t_o, z_hard3))
-          
-    while True: 
-        if (iter==iterstop) or ((time.time() - t_o) >= t_net):
-            break
 
-        lbheur    = 'no'
-        char      = ''
-        timeheu1  = min(t_res,timeheu)         
-        bucket = rc[k_[iter]:k_[iter + 1]] 
-        print(iter,k_[iter],'-',k_[iter + 1],len(rc[k_[iter]:k_[iter + 1]]) )      
+    t_o         = time.time() 
+    incumbent   =  z_hard3
+    cutoff      =  1e+75 # z_hard3
+    iter        =  0  
+    sol_ks      =  []
+    result_iter =  []
+    result_iter.append((t_hard3 + time.time() - t_o, z_hard3))
+
+    while True:
+        ## --------------------------------------- CALCULATE REDUCED COSTS Uu ------------------------------------
+        t_res = max(0,( timemilp - t_hard3 ) - (time.time() - t_o))
+        if t_res <= 0:
+            print('SALI CICLO EXTERNO',(time.time() - t_o))
+            break
         
-        try:
-            ##  Resolvemos el kernel y un bucket 
-            lbheur     = 'yes'
-            emph       = 1
-            model,xx   = uc_Co.uc(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,mpc,Pb,Cb,C,Cs,Tunder,names,option='KS',
-                                  kernel=kernel,bucket=bucket,nameins=instancia[0:5],mode='Tight')
-            sol_ks     = Solution(model=model,env=ambiente,executable=executable,nameins=instancia[0:5],letter=letter[iter],gap=gap,cutoff=cutoff,timelimit=timeheu1,
-                                  tee=False,emphasize=emph,lbheur=lbheur,symmetry=symmetry,tofiles=False,option='KS')
-            z_ks, g_ks = sol_ks.solve_problem()
-            t_ks       = time.time() - t_o + t_hard3 + t_rc
-            kernel, No_SB_Uu, xx, Vv, Ww, delta = sol_ks.select_binary_support_Uu('KS') 
+        if  True:
+            t_1 = time.time()
+            model,__  = uc_Co.uc(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,mpc,Pb,Cb,C,Cs,Tunder,names,option='RC',
+                                SB_Uu=saved[0],No_SB_Uu=saved[1],V=saved[2],W=saved[3],delta=saved[4],nameins=instancia[0:5],mode='Tight')
+            sol_rc    = Solution(model=model,nameins=instancia[0:5],env=ambiente,executable=executable,gap=gap,timelimit=timemilp,
+                                tee=False,tofiles=False,emphasize=emph,symmetry=symmetry,exportLP=False,option='RC')
+            z_rc,g_rc = sol_rc.solve_problem() 
+            t_rc      = time.time() - t_1
+            print('t_rc= ',round(t_rc,1),'z_rc= ',round(z_rc,4))      
             
-            if z_ks < incumbent :                      ## Update solution
-                incumbent  = z_ks
-                cutoff     = z_ks
-                saved      = [kernel,No_SB_Uu,Vv,Ww,delta]
-                char       = '***'
-                g_ks       = sol_ks.igap(z_lp,z_ks)
+            ## ---------------------------------------------------------------------------
+            ##  Ordenamos los costos reducidos para elegir los candidatos de los buckets
+            rc   = []
+            i    = 0
+                    
+            for f in No_SB_Uu: 
+                rc.append(( i, model.rc[model.u[f[0]+1,f[1]+1]],f[0],f[1] ))
+                i = i + 1    
+            rc.sort(key=lambda tup:tup[1], reverse=False) ## Ordenamos las variables No_SB_Uu de acuerdo a sus costos reducidos 
+            
+            ##  Definimos el número de buckets 
+            K = floor(1 + 3.322 * log(len(No_SB_Uu)))  ## Sturges rule
+            print('Number of buckets K =', K)    
+            len_i  = ceil(len(No_SB_Uu) / (K))
+            pos_i  = 0
+            k_     = [0]    
+            for i in range(len_i,len(No_SB_Uu),len_i+1):
+                k_.append( i )
+            print( k_ )
+            
+            cutoff      = 1e+75 #incumbent !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            iter_bk     = 0
+            iterstop    = K - 2
+            char        = ''
+            kernel      = deepcopy(SB_Uu)
+            
+            ## Recontabilizamos el tiempo
+            t_res   = max(0,( timemilp - t_hard3) - (time.time() - t_o))
+            timeheu = t_res / K
+            
+            while True: 
+                t_res = max(0,( timemilp - t_hard3 ) - (time.time() - t_o))
+                if iter_bk >= iterstop or t_res <= 0:
+                    print('SALI CICLO INTERNO')
+                    break
+
+                timeheu1  = min(t_res,timeheu)      
+                bucket = rc[k_[iter_bk]:k_[iter_bk + 1]] 
+                print('bucket',letter[iter],'[',k_[iter_bk],':',k_[iter_bk + 1],']' )      
                 
-            result_iter.append((round(time.time()-t_o+t_hard3+t_rc,1), z_ks))
-            print('<°|'+fish+'>< iter:'+str(iter)+' t_ks= ',round(time.time()-t_o+t_hard3+t_rc,1),'z_ks= ',round(z_ks,1),char) #,'g_ks= ',round(g_ks,5)
-        except:
-            print('>>> Un error se ha detectado')
-        print('\t')       
-        fish = fish + ')'  
-            
-        t_res = t_net - time.time() + t_o 
-        print('ks ','tiempo restante:',t_res)
-        
-        del sol_ks
-        gc.collect()
-        iter = iter + 1
-            
-    t_ks = time.time() - t_o + t_hard3 + t_rc ## t_hard3 ya incluye el tiempo de LP
+                try:
+                    ##  Resolvemos el kernel y un bucket 
+                    lbheur     = 'yes'
+                    emph       = 1     ## feasiability
+                    model,__   = uc_Co.uc(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,mpc,Pb,Cb,C,Cs,Tunder,names,option='KS',
+                                        kernel=kernel,bucket=bucket,nameins=instancia[0:5],mode='Tight')
+                    sol_ks     = Solution(model=model,env=ambiente,executable=executable,nameins=instancia[0:5],letter=letter[iter],gap=gap,cutoff=cutoff,timelimit=timeheu1,
+                                        tee=False,emphasize=emph,lbheur=lbheur,symmetry=symmetry,tofiles=False,option='KS')
+                    z_ks, g_ks = sol_ks.solve_problem()
+                    t_ks       = time.time() - t_o + t_hard3
+                    kernel, No_SB_Uu, __, Vv, Ww, delta = sol_ks.select_binary_support_Uu('KS') 
+                    
+                    if z_ks < incumbent :                      ## Update solution
+                        incumbent  = z_ks
+                        cutoff     = z_ks
+                        saved      = [kernel,No_SB_Uu,Vv,Ww,delta]
+                        g_ks       = sol_ks.igap(z_lp,z_ks)
+                        char       = '***'
+                        
+                    result_iter.append((round(time.time()-t_o+t_hard3,1), z_ks))
+                    print('<°|>< iter:'+str(iter)+' t_ks= ',round(time.time()-t_o+t_hard3,1),'z_ks= ',round(z_ks,1),char) #,'g_ks= ',round(g_ks,5)
+                except:
+                    # print('>>> Iteración sin solución')
+                    result_iter.append((round(time.time()-t_o+t_hard3,1), 1e+75))
+                finally:    
+                    iter_bk = iter_bk + 1
+                    
+                print('\t')       
+                    
+                #t_res = t_net - time.time() + t_o 
+                t_res = max(0,( timemilp - t_hard3 ) - (time.time() - t_o))
+                print('ks ','tiempo restante:',t_res)
+                
+                del sol_ks
+                gc.collect()
+                iter = iter + 1
+                                
+        Vv             = deepcopy(saved[2])
+        Ww             = deepcopy(saved[3])
+        delta          = deepcopy(saved[4])
+        SB_Uu          = deepcopy(saved[0])
+        No_SB_Uu       = deepcopy(saved[1])
+
+    t_ks = (time.time() - t_o) + t_hard3  ## t_hard3 ya incluye el tiempo de LP
     z_ks = incumbent    
     for item in result_iter:
         print(item[0],',',item[1])
-        
+            
         
 ## ---------------------------------------------- CHECK FEASIBILITY (KS)----------------------------------------------------------
 
-if  True: 
-    print('Revisando factibilidad de la solucion con z_ks=', z_ks )
+if  False: 
+    print('Revisando la factibilidad de la solucion con z_ks=', z_ks )
     t_o       = time.time() 
-    model,xx  = uc_Co.uc(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,mpc,Pb,Cb,C,Cs,Tunder,names,option='Check',
+    model,__  = uc_Co.uc(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,mpc,Pb,Cb,C,Cs,Tunder,names,option='Check',
                         SB_Uu=saved[0],No_SB_Uu=saved[1],V=saved[2],W=saved[3],delta=saved[4],nameins=instancia[0:5],mode='Tight')
     sol_check = Solution(model=model,nameins=instancia[0:5],env=ambiente,executable=executable,gap=gap,timelimit=timemilp,
                          tee=False,tofiles=False,emphasize=emph,symmetry=symmetry,exportLP=False,option='Check')
@@ -562,6 +569,112 @@ if  True:
     # \todo{Crear instancias sintéticas a partir de morales-españa2013} 
     
     
+## ---------------------------------  ITERATIVE  VARIABLE  FIXING  --------------------------------------
+## La versión básica de IVF consiste en relajar la formulacion y a partir de ello sacar 
+## el soporte binario SB_Uu y una lista de candidatos lower_Pmin_Uu, después de manera iterativa se resulven los 
+## SUB-MILP´S 'restringidos' mas pequeños.
+## IVF solution and solve the sub-MILP (it is using cutoff = z_hard).
+## Use 'Soft+pmin' (lower subset of Uu-Pmin)  as the first and unique bucket to consider
+## Use relax the integrality variable Uu.
+
+if True:
+    Vv             = deepcopy(Vv3)
+    Ww             = deepcopy(Ww3)
+    delta          = deepcopy(delta3)
+    SB_Uu          = deepcopy(SB_Uu3)
+    No_SB_Uu       = deepcopy(No_SB_Uu3)
+    lower_Pmin_Uu  = deepcopy(lower_Pmin_Uu3)
+    saved          = [SB_Uu,No_SB_Uu,Vv,Ww,delta]
+
+    t_o         = time.time() 
+    incumbent   =  z_hard3
+    cutoff      =  z_hard3 # 1e+75 
+    iter        =  0  
+    sol_ivf     =  []
+    result_iter =  []
+    result_iter.append((t_hard3 + time.time() - t_o, z_hard3))
+
+    while True:
+        
+        t_res = max(0,( timemilp - t_hard3 ) - (time.time() - t_o))
+        if t_res <= 0:
+            break
+
+        t_1 = time.time()
+        model,__  = uc_Co.uc(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,mpc,Pb,Cb,C,Cs,Tunder,names,option='RC',
+                             SB_Uu=saved[0],No_SB_Uu=saved[1],V=saved[2],W=saved[3],delta=saved[4],nameins=instancia[0:5],mode='Tight')
+        sol_rc    = Solution(model=model,nameins=instancia[0:5],env=ambiente,executable=executable,gap=gap,timelimit=timemilp,
+                             tee=False,tofiles=False,emphasize=emph,symmetry=symmetry,exportLP=False,option='RC')
+        z_rc,g_rc = sol_rc.solve_problem() 
+        t_rc      = time.time() - t_1
+        print('t_rc= ',round(t_rc,1),'z_rc= ',round(z_rc,4))      
+                    
+        ## ------------------------------------ SELECTION VARIABLES TO FIX ---------------------------------------
+        ## lower_Pmin_Uu  >>> Éste valor podría ser usado para definir el parámetro k en el LBC o buckets en un KS <<<  
+        SB_Uu, No_SB_Uu, lower_Pmin_Uu, Vv, Ww, delta = sol_rc.select_binary_support_Uu('LR')
+        del sol_rc
+        gc.collect()
+            
+           
+        char  = ''
+        t_res = max(0,( timemilp - t_hard3 ) - (time.time() - t_o))
+        if t_res <= 0:
+            break
+
+        timeheu1  = min(t_res,timeheu)    
+                
+        try:
+        ##  Resolvemos el MILP con SB_Uu=1 y lower_Pmin_Uu=0 (no fijas) y con No_SB_Uu=0 (fijas)
+            lbheur       = 'yes'
+            emph         = 1     ## feasiability
+            model,__     = uc_Co.uc(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,mpc,Pb,Cb,C,Cs,Tunder,names,option='IVF',
+                                        SB_Uu=SB_Uu,No_SB_Uu=No_SB_Uu,lower_Pmin_Uu=lower_Pmin_Uu,nameins=instancia[0:5],mode='Tight')
+            sol_ivf      = Solution(model=model,env=ambiente,executable=executable,nameins=instancia[0:5],letter=letter[iter],gap=gap,cutoff=cutoff,timelimit=timeheu1,
+                                        tee=False,emphasize=emph,lbheur=lbheur,symmetry=symmetry,tofiles=False,option='IVF')
+            z_ivf, g_ivf = sol_ivf.solve_problem()
+            t_ivf        = time.time() - t_o + t_hard3
+            SB_Uu, No_SB_Uu, __, Vv, Ww, delta = sol_ivf.select_binary_support_Uu('IVF') 
+                        
+            if z_ivf < incumbent :                      ## Update solution
+                incumbent  = z_ivf
+                cutoff     = z_ivf
+                saved      = [SB_Uu,No_SB_Uu,Vv,Ww,delta]
+                g_ivf      = sol_ivf.igap(z_lp,z_ivf)
+                char       = '***'
+                        
+            result_iter.append((round(time.time()-t_o+t_hard3,1), z_ivf))
+            print('<°|>< iter:'+str(iter)+' t_ivf= ',round(time.time()-t_o+t_hard3,1),'z_ivf= ',round(z_ivf,1),char) #,'g_ivf= ',round(g_ivf,5)
+        except:
+            print('>>> Iteración sin solución')
+            result_iter.append((round(time.time()-t_o+t_hard3,1), 1e+75))
+                    
+        print('\t')       
+                    
+        t_res = max(0,( timemilp - t_hard3 ) - (time.time() - t_o))
+        print('ivf ','tiempo restante:',t_res)
+
+        iter = iter + 1
+                
+    t_ivf = (time.time() - t_o) + t_hard3  ## t_hard3 ya incluye el tiempo de LP
+    z_ivf = incumbent    
+    for item in result_iter:
+        print(item[0],',',item[1])
+        
+        
+                
+## ---------------------------------------------- CHECK FEASIBILITY (IVF)----------------------------------------------------------
+
+if  True: 
+    print('Revisando la factibilidad de la solucion con z_ivf=', z_ivf )
+    t_o       = time.time() 
+    model,__  = uc_Co.uc(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,mpc,Pb,Cb,C,Cs,Tunder,names,option='Check',
+                        SB_Uu=saved[0],No_SB_Uu=saved[1],V=saved[2],W=saved[3],delta=saved[4],nameins=instancia[0:5],mode='Tight')
+    sol_check = Solution(model=model,nameins=instancia[0:5],env=ambiente,executable=executable,gap=gap,timelimit=timemilp,
+                         tee=False,tofiles=False,emphasize=emph,symmetry=symmetry,exportLP=False,option='Check')
+    z_check,g_check = sol_check.solve_problem()
+    t_check         = time.time() - t_o
+    print('t_check= ',round(t_check,1),'z_check= ',round(z_check,4),'g_check= ',round(g_check,4))
+    
 
 ## --------------------------------- RESULTS -------------------------------------------
 ## Append a list as new line to an old csv file using as log, the first line of the file as shown.
@@ -571,9 +684,9 @@ if  True:
 
 
 row = [ambiente,localtime,instancia,len(T),len(G),gap,emph,timeheu,timemilp,
-    round(z_lp,1),round(z_milp,1),round(z_hard,1),round(z_hard3,1),round(z_lbc1,1),round(z_lbc2,1),round(z_lbc3,1),round(z_ks,1),round(z_,1),
-    round(t_lp,1),round(t_milp,1),round(t_hard,1),round(t_hard3,1),round(t_lbc1,1),round(t_lbc2,1),round(t_lbc3,1),round(t_ks,1),round(t_,1),
-                  round(g_milp,8),round(g_hard,8),round(g_hard3,8),round(g_lbc1,8),round(g_lbc2,8),round(g_lbc3,8),round(g_ks,8),round(g_,8),
+    round(z_lp,1),round(z_milp,1),round(z_hard,1),round(z_hard3,1),round(z_lbc1,1),round(z_lbc2,1),round(z_lbc3,1),round(z_ks,1),round(z_ivf,1),
+    round(t_lp,1),round(t_milp,1),round(t_hard,1),round(t_hard3,1),round(t_lbc1,1),round(t_lbc2,1),round(t_lbc3,1),round(t_ks,1),round(t_ivf,1),
+                  round(g_milp,8),round(g_hard,8),round(g_hard3,8),round(g_lbc1,8),round(g_lbc2,8),round(g_lbc3,8),round(g_ks,8),round(g_ivf,8),
                   k,ns,comment] #round(((z_milp-z_milp2)/z_milp)*100,6)
 util.append_list_as_row('stat.csv',row)
 
