@@ -134,8 +134,6 @@ if True:
     del sol_hard3
     gc.collect()
     
-    ## NO OLVIDES COMENTAR TUS PRUEBAS ¸.·´¯`·.´¯`·.¸¸.·´¯`·.¸><(((º>
-comment    = 'Probamos Iterative Variable Fixing'
 
 k_original = k
 
@@ -372,6 +370,8 @@ if  False:
     t_check         = time.time() - t_o
     print('t_check= ',round(t_check,1),'z_check= ',round(z_check,4),'g_check= ',round(g_check,4))
     
+## NO OLVIDES COMENTAR TUS PRUEBAS ¸.·´¯`·.´¯`·.¸¸.·´¯`·.¸><(((º>
+comment    = 'Actualizamos el cut-off al incumbente '
 
 ## ---------------------------------  KERNEL SEARCH  ---------------------------------
 ## La versión básica de KS consiste en relajar la formulacion y a partir de ello sacar 
@@ -380,7 +380,7 @@ if  False:
 ## KS solution and solve the sub-MILP (it is using cutoff = z_hard).
 ## Use 'Soft+pmin' (lower subset of Uu-Pmin)  as the first and unique bucket to consider
 ## Use relax the integrality variable Uu.
-if True:
+if False:
     Vv          = deepcopy(Vv3)
     Ww          = deepcopy(Ww3)
     delta       = deepcopy(delta3)
@@ -390,7 +390,7 @@ if True:
 
     t_o         = time.time() 
     incumbent   =  z_hard3
-    cutoff      =  1e+75 # z_hard3
+    cutoff      =  z_hard3 # 1e+75 
     iter        =  0  
     sol_ks      =  []
     result_iter =  []
@@ -432,7 +432,7 @@ if True:
                 k_.append( i )
             print( k_ )
             
-            cutoff      = 1e+75 #incumbent !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            cutoff      = incumbent # 1e+75 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
             iter_bk     = 0
             iterstop    = K - 2
             char        = ''
@@ -489,21 +489,23 @@ if True:
                 gc.collect()
                 iter = iter + 1
                                 
-        Vv             = deepcopy(saved[2])
-        Ww             = deepcopy(saved[3])
-        delta          = deepcopy(saved[4])
-        SB_Uu          = deepcopy(saved[0])
-        No_SB_Uu       = deepcopy(saved[1])
+        Vv       = deepcopy(saved[2])
+        Ww       = deepcopy(saved[3])
+        delta    = deepcopy(saved[4])
+        SB_Uu    = deepcopy(saved[0])
+        No_SB_Uu = deepcopy(saved[1])
 
     t_ks = (time.time() - t_o) + t_hard3  ## t_hard3 ya incluye el tiempo de LP
     z_ks = incumbent    
     for item in result_iter:
         print(item[0],',',item[1])
+    result_iter = np.array(result_iter)
+    np.savetxt('iterKS'+instancia[0:5]+'.csv', result_iter, delimiter=',')
             
         
 ## ---------------------------------------------- CHECK FEASIBILITY (KS)----------------------------------------------------------
 
-if  True: 
+if  False: 
     print('Revisando la factibilidad de la solucion con z_ks=', z_ks )
     t_o       = time.time() 
     model,__  = uc_Co.uc(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,mpc,Pb,Cb,C,Cs,Tunder,names,option='Check',
@@ -598,7 +600,9 @@ if True:
         SB_Uu, No_SB_Uu, lower_Pmin_Uu, Vv, Ww, delta = sol_rc.select_binary_support_Uu('LR')
         del sol_rc
         gc.collect()
-            
+        
+        if len(lower_Pmin_Uu) == 0:
+            break
            
         char  = ''
         t_res = max(0,( timemilp - t_hard3 ) - (time.time() - t_o))
@@ -608,7 +612,7 @@ if True:
         timeheu1  = min(t_res,timeheu)    
                 
         try:
-        ##  Resolvemos el MILP con SB_Uu=1 y lower_Pmin_Uu=0 (no fijas) y con No_SB_Uu=0 (fijas)
+        ##  Resolvemos el MILP con SB_Uu=1 (hints) y lower_Pmin_Uu=0 (no fijas) y con No_SB_Uu=0 (fijas)
             lbheur       = 'yes'
             emph         = 1     ## feasiability
             model,__     = uc_Co.uc(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,mpc,Pb,Cb,C,Cs,Tunder,names,option='IVF',
@@ -643,6 +647,8 @@ if True:
     z_ivf = incumbent    
     for item in result_iter:
         print(item[0],',',item[1])
+    result_iter = np.array(result_iter)
+    np.savetxt('iterIVF'+instancia[0:5]+'.csv', result_iter, delimiter=',')
         
                         
 ## ---------------------------------------------- CHECK FEASIBILITY (IVF)----------------------------------------------------------
