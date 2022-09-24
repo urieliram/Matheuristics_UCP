@@ -1,11 +1,9 @@
-# from ctypes import util
-import os
-# import time
-import util
-import numpy as np
-import pyomo.environ as pyo
-from   pyomo.util.infeasible import log_infeasible_constraints
-from   pyomo.opt import SolverStatus, TerminationCondition
+import  os
+import  util
+import  numpy as np
+# import pyomo.environ as pyo
+from   pyomo.environ import Suffix, value
+from   pyomo.opt import SolverStatus, TerminationCondition, SolverFactory
 from   copy import deepcopy
 from   math import ceil
 
@@ -61,10 +59,10 @@ class Solution:
                 
         exist = os.path.exists(self.executable)   
         if exist:
-            solver = pyo.SolverFactory('cplex',executable=self.executable) 
+            solver = SolverFactory('cplex',executable=self.executable) 
             ## executable='/home/uriel/cplex1210/cplex/bin/x86-64_linux/cplex'
         else:
-            solver = pyo.SolverFactory('cplex')
+            solver = SolverFactory('cplex')
 
         ## https://www.ibm.com/docs/en/icos/20.1.0?topic=parameters-upper-cutoff
         if self.cutoff != 1e+75:
@@ -99,7 +97,7 @@ class Solution:
         
         # Create a 'rc' suffix component on the instance so the solver plugin will know which suffixes to collect
         if self.option == 'RC':
-            self.model.rc = pyo.Suffix(direction=pyo.Suffix.IMPORT,datatype=pyo.Suffix.FLOAT)
+            self.model.rc = Suffix(direction=Suffix.IMPORT,datatype=Suffix.FLOAT)
 
         ## Envía el problema de optimización al solver
         result = solver.solve(self.model,tee=self.tee,logfile='logfile'+self.option+self.nameins+self.letter+'.log',warmstart=True)#,suffixes='rc'
@@ -153,7 +151,7 @@ class Solution:
             print ("!!! Something else is wrong, the program end.",str(result.solver)) 
             exit()
             
-            
+             
         ##  ALMACENA la solución Uu, V, W, P, R, delta, del problema 
         if self.fail == False and self.infeasib == False and self.nosoluti == False:
             if self.option != 'Milp' and self.option != 'Check':
@@ -228,7 +226,7 @@ class Solution:
         util.sendtofilesolution(self.delta ,"del_" + self.nameins + letra +".csv")
         
         file = open(self.nameins + letra + '.dat', 'w')
-        file.write('z:%s\n' % (pyo.value(self.model.obj)))
+        file.write('z:%s\n' % (value(self.model.obj)))
         file.write('g,t,u,v,w,p\n') 
             
         for g in range(0, self.gg):

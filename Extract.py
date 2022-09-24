@@ -1,4 +1,4 @@
-from xmlrpc.client import MININT
+# from xmlrpc.client import MININT
 import numpy as np
 import pandas as pd
 import re
@@ -292,6 +292,6 @@ class Extract:
         plt.style.use('seaborn-pastel') ## ggplot seaborn-pastel Solarize_Light2 https://matplotlib.org/stable/gallery/style_sheets/style_sheets_reference.html
         plt.savefig('four_in_one_'+nameins+'_'+id+'.png', transparent=True)  
         plt.show()
-        
+         
     #except:
         #print('Error en <plot_four_in_one>')

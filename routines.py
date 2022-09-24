@@ -1,9 +1,8 @@
-# --------------------------------------------------------------------------------
+## -------------------  >)|°> UriSoft© <°|(<  -------------------
 # File: routines.py
-# the unit commitment problem
 # Developers: Uriel Iram Lezama Lope
-# Purpose: Various functions that are used in the ksuc.py program
-# --------------------------------------------------------------------------------
+# Purpose: Various functions 
+## <º)))>< ¸.·´¯`·.´¯`·.¸¸.·´¯`·.¸¸.·´¯`·.´¯`·.¸¸.·´¯`·.¸ ><(((º>
 
 # Esta funcion recibe una potencia (pow) y regresa el costo de acuerdo a una función piecewise (list)
 # function to calculate the cost segment from his power
@@ -26,7 +25,7 @@ def Fo(list, pow):
         print(">>>undefined energy cost, verify that the power is within the piecewise cost; cost= $",cost)
 
     return cost
-
+ 
 
 # account times on
 def time_on(T, N, U, account):
@@ -141,18 +140,12 @@ def decode(secuence, account, status):
     return(row)
 
 
-# def suma(a, b):
-#     return a + b
-# #range(start, stop[, step])
-# Lista = [54,26,93,17,77,31,44,20,55]
-# for j in range(1, len(Lista)):
-#     for i in range(j):
-#         if Lista[i]>Lista[i+1]:
-#             aux = Lista[i+1]
-#             Lista[i] = Lista[i+1]
-#             Lista[i+1]=aux
-# print(Lista)
 
-
-#  class poo:
-#    def __init__:    # Esto es el constructor
+def getLetter(index):    
+    total    = 26
+    cociente = int(index / total)-1
+    modulo   = int(index % total)    
+    if index < total:
+        return   '_'+chr(index+97)
+    else:
+        return   '_'+chr(cociente+97)+chr(modulo+97)
