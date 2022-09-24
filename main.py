@@ -7,17 +7,18 @@
 ## Para correr el programa usar el comando 'python3 main.py anjos.json yalma'
 ## Desde script en linux test.sh 'sh test.sh'
 ## <º)))>< ¸.·´¯`·.´¯`·.¸¸.·´¯`·.¸¸.·´¯`·.´¯`·.¸¸.·´¯`·.¸ ><(((º>
-import gc
-import time
-import sys
-import uc_Co
-import util
-import reading
-import time
-import numpy as np
-from   math     import floor, ceil, log
-from   solution import Solution
-from   copy import deepcopy 
+import  gc
+import  time
+import  sys
+import  uc_Co
+import  util
+import  reading
+import  time
+import  numpy as np
+from    math     import floor, ceil, log
+from    copy     import deepcopy 
+from    routines import getLetter
+from    solution import Solution
 
 instancia = 'uc_03.json'       ## ejemplos dificiles 2,3,4  
 instancia = 'uc_06.json'       ## ejemplos regulares 5,6 
@@ -63,7 +64,6 @@ g_lp=x; g_milp=x; g_hard=x; g_hard3=x; g_ks=x; g_lbc1=x; g_lbc2=x; g_lbc3=x; g_c
 ns=0; nU_no_int=0; n_Uu_no_int=0; n_Uu_1_0=0;
 SB_Uu=[];  No_SB_Uu =[]; lower_Pmin_Uu =[]; Vv =[]; Ww =[]; delta =[];
 SB_Uu3=[]; No_SB_Uu3=[]; lower_Pmin_Uu3=[]; Vv3=[]; Ww3=[]; delta3=[];
-letter=['','_a','_b','_c','_d','_e','_f','_g','_h','_i','_j','_k','_l','_m','_n','_o','_p','_q','_r','_s','_t','_u','_v','_w','_x','_y','_z','_za','_zb','_zc','_zd','_ze','_zf','_zg','_zh','_zi','_zj','_zk','_zl','_zm','_zn','_zo','_zp','_zq','_zr','_zs','_zt','_zu','_zv','_zw','_zx','_zy','_zz']
 comment = 'Here it writes a message to the stat.csv results file' 
 
 if ambiente == 'yalma':
@@ -81,6 +81,7 @@ print(localtime,'Solving ---> ---> ---> ---> --->',instancia)
 
 ## Lee instancia de archivo .json con formato de [Knueven2020]
 G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,Pb,Cb,C,mpc,Cs,Tunder,names = reading.reading(ruta+instancia)
+
 
 
 ## --------------------------------------- LINEAR RELAXATION ---------------------------------------------
@@ -134,7 +135,7 @@ if True:
     gc.collect()
     
     ## NO OLVIDES COMENTAR TUS PRUEBAS ¸.·´¯`·.´¯`·.¸¸.·´¯`·.¸><(((º>
-comment    = 'Probamos Kernel Search'
+comment    = 'Probamos Iterative Variable Fixing'
 
 k_original = k
 
@@ -180,7 +181,7 @@ if False:
         model, __ = uc_Co.uc(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,mpc,Pb,Cb,C,Cs,Tunder,names,option='lbc1',
                             SB_Uu=SB_Uu,No_SB_Uu=No_SB_Uu,lower_Pmin_Uu=lower_Pmin_Uu,V=Vv,W=Ww,delta=delta,
                             percent_soft=90,k=k,nameins=instancia[0:5],mode='Tight',improve=improve,timeover=timeover,rightbranches=rightbranches)
-        sol_lbc1  = Solution(model=model,env=ambiente,executable=executable,nameins=instancia[0:5],letter=letter[iter],gap=gap,cutoff=cutoff,timelimit=timeheu1,
+        sol_lbc1  = Solution(model=model,env=ambiente,executable=executable,nameins=instancia[0:5],letter=getLetter(iter-1),gap=gap,cutoff=cutoff,timelimit=timeheu1,
                             tee=False,emphasize=emph,lbheur=lbheur,symmetry=symmetry,tofiles=False,option='lbc1')
         z_lbc1,g_lbc1 = sol_lbc1.solve_problem()
         
@@ -298,7 +299,7 @@ if  False:
         model, __ = uc_Co.uc(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,mpc,Pb,Cb,C,Cs,Tunder,names,option='lbc2',
                             SB_Uu=SB_Uu,No_SB_Uu=No_SB_Uu,lower_Pmin_Uu=lower_Pmin_Uu,V=Vv,W=Ww,delta=delta,
                             percent_soft=90,k=k,nameins=instancia[0:5],mode='Tight',improve=improve,timeover=timeover,rightbranches=rightbranches)
-        sol_lbc2  = Solution(model=model,env=ambiente,executable=executable,nameins=instancia[0:5],letter=letter[iter],gap=gap,cutoff=cutoff,timelimit=timeheu1,
+        sol_lbc2  = Solution(model=model,env=ambiente,executable=executable,nameins=instancia[0:5],letter=getLetter(iter-1),gap=gap,cutoff=cutoff,timelimit=timeheu1,
                             tee=False,emphasize=emph,lbheur=lbheur,symmetry=symmetry,tofiles=False,option='lbc2')
         z_lbc2,g_lbc2 = sol_lbc2.solve_problem()
         
@@ -371,22 +372,6 @@ if  False:
     t_check         = time.time() - t_o
     print('t_check= ',round(t_check,1),'z_check= ',round(z_check,4),'g_check= ',round(g_check,4))
     
-             
-## ---------------------------------------------- MILP ----------------------------------------------------------
-## Solve as a MILP
-
-if  False: 
-    symmetrydefault = -1 
-    cutoff   = 1e+75 
-    lbheur   = 'no'      
-    t_o      = time.time() 
-    model,__ = uc_Co.uc(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,mpc,Pb,Cb,C,Cs,Tunder,names,option='Milp',nameins=instancia[0:5],mode='Tight')
-    sol_milp = Solution(model=model,nameins=instancia[0:5],env=ambiente,executable=executable,gap=gap,cutoff=cutoff,symmetry=symmetrydefault,timelimit=timemilp,
-                          tee=False,tofiles=False,emphasize=emph,lbheur=lbheur,exportLP=False,option='Milp')
-    z_milp, g_milp = sol_milp.solve_problem()
-    t_milp         = time.time() - t_o
-    print('t_milp= ',round(t_milp,1),'z_milp= ',round(z_milp,1),'g_milp= ',round(g_milp,5))
-
 
 ## ---------------------------------  KERNEL SEARCH  ---------------------------------
 ## La versión básica de KS consiste en relajar la formulacion y a partir de ello sacar 
@@ -396,12 +381,12 @@ if  False:
 ## Use 'Soft+pmin' (lower subset of Uu-Pmin)  as the first and unique bucket to consider
 ## Use relax the integrality variable Uu.
 if True:
-    Vv             = deepcopy(Vv3)
-    Ww             = deepcopy(Ww3)
-    delta          = deepcopy(delta3)
-    SB_Uu          = deepcopy(SB_Uu3)
-    No_SB_Uu       = deepcopy(No_SB_Uu3)
-    saved          = [SB_Uu,No_SB_Uu,Vv,Ww,delta]
+    Vv          = deepcopy(Vv3)
+    Ww          = deepcopy(Ww3)
+    delta       = deepcopy(delta3)
+    SB_Uu       = deepcopy(SB_Uu3)
+    No_SB_Uu    = deepcopy(No_SB_Uu3)
+    saved       = [SB_Uu,No_SB_Uu,Vv,Ww,delta]
 
     t_o         = time.time() 
     incumbent   =  z_hard3
@@ -428,11 +413,10 @@ if True:
             t_rc      = time.time() - t_1
             print('t_rc= ',round(t_rc,1),'z_rc= ',round(z_rc,4))      
             
-            ## ---------------------------------------------------------------------------
-            ##  Ordenamos los costos reducidos para elegir los candidatos de los buckets
+            ## ----------------------------- SECOND PHASE ----------------------------------------------
+            ##  
             rc   = []
-            i    = 0
-                    
+            i    = 0                    
             for f in No_SB_Uu: 
                 rc.append(( i, model.rc[model.u[f[0]+1,f[1]+1]],f[0],f[1] ))
                 i = i + 1    
@@ -466,15 +450,15 @@ if True:
 
                 timeheu1  = min(t_res,timeheu)      
                 bucket = rc[k_[iter_bk]:k_[iter_bk + 1]] 
-                print('bucket',letter[iter],'[',k_[iter_bk],':',k_[iter_bk + 1],']' )      
+                print('bucket',getLetter(iter),'[',k_[iter_bk],':',k_[iter_bk + 1],']' )      
                 
                 try:
-                    ##  Resolvemos el kernel y un bucket 
+                    ##  Resolvemos el kernel con cada uno de los buckets
                     lbheur     = 'yes'
                     emph       = 1     ## feasiability
                     model,__   = uc_Co.uc(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,mpc,Pb,Cb,C,Cs,Tunder,names,option='KS',
                                         kernel=kernel,bucket=bucket,nameins=instancia[0:5],mode='Tight')
-                    sol_ks     = Solution(model=model,env=ambiente,executable=executable,nameins=instancia[0:5],letter=letter[iter],gap=gap,cutoff=cutoff,timelimit=timeheu1,
+                    sol_ks     = Solution(model=model,env=ambiente,executable=executable,nameins=instancia[0:5],letter=getLetter(iter),gap=gap,cutoff=cutoff,timelimit=timeheu1,
                                         tee=False,emphasize=emph,lbheur=lbheur,symmetry=symmetry,tofiles=False,option='KS')
                     z_ks, g_ks = sol_ks.solve_problem()
                     t_ks       = time.time() - t_o + t_hard3
@@ -519,7 +503,7 @@ if True:
         
 ## ---------------------------------------------- CHECK FEASIBILITY (KS)----------------------------------------------------------
 
-if  False: 
+if  True: 
     print('Revisando la factibilidad de la solucion con z_ks=', z_ks )
     t_o       = time.time() 
     model,__  = uc_Co.uc(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,mpc,Pb,Cb,C,Cs,Tunder,names,option='Check',
@@ -629,7 +613,7 @@ if True:
             emph         = 1     ## feasiability
             model,__     = uc_Co.uc(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,mpc,Pb,Cb,C,Cs,Tunder,names,option='IVF',
                                         SB_Uu=SB_Uu,No_SB_Uu=No_SB_Uu,lower_Pmin_Uu=lower_Pmin_Uu,nameins=instancia[0:5],mode='Tight')
-            sol_ivf      = Solution(model=model,env=ambiente,executable=executable,nameins=instancia[0:5],letter=letter[iter],gap=gap,cutoff=cutoff,timelimit=timeheu1,
+            sol_ivf      = Solution(model=model,env=ambiente,executable=executable,nameins=instancia[0:5],letter=getLetter(iter),gap=gap,cutoff=cutoff,timelimit=timeheu1,
                                         tee=False,emphasize=emph,lbheur=lbheur,symmetry=symmetry,tofiles=False,option='IVF')
             z_ivf, g_ivf = sol_ivf.solve_problem()
             t_ivf        = time.time() - t_o + t_hard3
@@ -660,8 +644,7 @@ if True:
     for item in result_iter:
         print(item[0],',',item[1])
         
-        
-                
+                        
 ## ---------------------------------------------- CHECK FEASIBILITY (IVF)----------------------------------------------------------
 
 if  True: 
@@ -675,7 +658,23 @@ if  True:
     t_check         = time.time() - t_o
     print('t_check= ',round(t_check,1),'z_check= ',round(z_check,4),'g_check= ',round(g_check,4))
     
+             
+## ---------------------------------------------- MILP ----------------------------------------------------------
+## Solve as a MILP
 
+if  False: 
+    symmetrydefault = -1 
+    cutoff   = 1e+75 
+    lbheur   = 'no'      
+    t_o      = time.time() 
+    model,__ = uc_Co.uc(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,mpc,Pb,Cb,C,Cs,Tunder,names,option='Milp',nameins=instancia[0:5],mode='Tight')
+    sol_milp = Solution(model=model,nameins=instancia[0:5],env=ambiente,executable=executable,gap=gap,cutoff=cutoff,symmetry=symmetrydefault,timelimit=timemilp,
+                          tee=False,tofiles=False,emphasize=emph,lbheur=lbheur,exportLP=False,option='Milp')
+    z_milp, g_milp = sol_milp.solve_problem()
+    t_milp         = time.time() - t_o
+    print('t_milp= ',round(t_milp,1),'z_milp= ',round(z_milp,1),'g_milp= ',round(g_milp,5))
+    
+    
 ## --------------------------------- RESULTS -------------------------------------------
 ## Append a list as new line to an old csv file using as log, the first line of the file as shown.
 ## 'ambiente,localtime,instancia,T,G,gap,emphasize,timelimit,z_lp,z_hard,z_milp,z_milp2,z_soft,z_softpmin,z_softcut,z_softcut2,z_softcut3,z_lbc,

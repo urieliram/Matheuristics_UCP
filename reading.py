@@ -3,7 +3,6 @@ import util
 import shutil
 import os
 import pandas as pd
-import numpy as np
 
 def reading(file):
     with open(file) as json_file:
@@ -281,7 +280,7 @@ def validation(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,Pb,Cb,C
           mini = Pmin[i] + mini
     mini = gen0 - mini
     print('capacidad bajar gen_0   =',mini)
-    
+     
     rampUp=0
     for i in RU:
         if u_0[i]==1:

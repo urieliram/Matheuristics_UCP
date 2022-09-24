@@ -653,7 +653,7 @@
 #     t_ks = time.time() - t_o + t_hard ## t_hard (ya incluye el tiempo de LP)
 #     print("t_ks= ", round(t_ks,4), "z_ks= ", round(z_ks,1), "n_SB_Uu= ", len(SB_Uu))
 
-
+ 
 ## ----------------------------------- HARD-FIXING (only Uu) ---------------------------------------------
 ## HARD-FIXING (only Uu) solution and solve the sub-MILP. (Require run the LP)
 

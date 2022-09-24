@@ -1,9 +1,6 @@
-import numpy as np
-import pandas as pd
-from   Extract import Extract
-import matplotlib.pyplot as plt
 import sys
 import util
+from   Extract import Extract
 
 ## --------------------------------- GRAFICAS -------------------------------------------
 
@@ -55,7 +52,7 @@ if ambiente == 'yalma':
 bb1,vari = Extract().extract('logfile'+'Milp' +instancia[0:5]+'.log') 
 bb2      = Extract().read_LBC('iterLBC1'+instancia[0:5]+'.csv')
 bb3      = Extract().read_LBC('iterLBC2'+instancia[0:5]+'.csv')
-
+ 
 print(bb2)
 print(bb3)
 

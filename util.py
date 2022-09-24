@@ -1,8 +1,7 @@
-from math import ceil
+from   math import ceil
+from   csv import writer
 import numpy as np
-from csv import writer
 import pandas as pd
-import matplotlib.pyplot as plt
 
 #https://thispointer.com/python-how-to-append-a-new-row-to-an-existing-csv-file/#:~:text=Open%20our%20csv%20file%20in,in%20the%20associated%20csv%20file
 def append_list_as_row(file_name, list_of_elem):
@@ -60,7 +59,7 @@ def resultados_lp_milp(instance,ambiente,gap,timelimit):
         t_hard = df['t_hard'].values[0]
         precargado = True
         print('Resultados de <milp> y <hard-fixing> pre-cargados y asignados.')
-        
+         
     return precargado, z_milp, z_hard, t_milp, t_hard
 
 def config_env():
