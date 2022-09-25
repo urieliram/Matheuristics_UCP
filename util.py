@@ -33,7 +33,6 @@ def sendtofileTUTD(TU,TD,name):
     file.close()
     
     
-    
 def imprime_sol(model,sol):
     Uu = dict(zip(model.T, sol.getUu()))
     V  = dict(zip(model.T, sol.getV()))
@@ -46,21 +45,6 @@ def imprime_sol(model,sol):
     # print("p",P)
     # print("r",R)
     
-def resultados_lp_milp(instance,ambiente,gap,timelimit):
-    
-    z_milp = 0; z_hard = 0; t_milp = 0; t_hard = 0; precargado = False
-    df = pd.read_csv('resultados_previos.csv')
-    df = df.loc[(df['instancia'] == instance) & (df['ambiente'] == ambiente) & (df['gap'] == gap) & (df['timelimit'] == timelimit)]
-    
-    if len(df.index) != 0:
-        z_milp = df['z_milp'].values[0]
-        z_hard = df['z_hard'].values[0]
-        t_milp = df['t_milp'].values[0]
-        t_hard = df['t_hard'].values[0]
-        precargado = True
-        print('Resultados de <milp> y <hard-fixing> pre-cargados y asignados.')
-         
-    return precargado, z_milp, z_hard, t_milp, t_hard
 
 def config_env():
     #ambiente='localPC',ruta='instances/',executable='/home/uriel/cplex1210/cplex/bin/x86-64_linux/cplex3'
@@ -87,3 +71,58 @@ def config_env():
 
 def trunc(values, decs=1):
     return np.trunc(values*10**decs)/(10**decs)
+
+def getLetter(index):    
+    total    = 26
+    cociente = int(index / total)-1
+    modulo   = int(index % total)    
+    if index < total:
+        return   '_'+chr(index+97)
+    else:
+        return   '_'+chr(cociente+97)+chr(modulo+97)
+
+def saveSolution(t_lp,z_lp,t_,z_,SB_Uu,No_SB_Uu,lower_Pmin_Uu,Vv,Ww,delta,option,instance):
+    result_ = []
+    result_.append((t_lp,z_lp))
+    result_.append((t_,z_))
+    result_.append((len(SB_Uu)        , len(No_SB_Uu)))
+    result_.append((len(lower_Pmin_Uu), len(Vv)))
+    result_.append((len(Ww)           , len(delta)))
+    result_ = result_ + SB_Uu + No_SB_Uu + lower_Pmin_Uu
+    result_ = np.array(result_)    
+    np.savetxt('sol'+option+'_a_'+instance+'.csv', result_, delimiter=',')
+    result_ = Vv + Ww + delta 
+    result_ = np.array(result_)    
+    np.savetxt('sol'+option+'_b_'+instance+'.csv', result_, delimiter=',')
+    return None
+
+def loadSolution(option,instance):
+    array_a = np.loadtxt('sol'+option+'_a_'+instance+'.csv', delimiter=',')
+    array_b = np.loadtxt('sol'+option+'_b_'+instance+'.csv', delimiter=',')
+    t_lp           = array_a[0][0]
+    z_lp           = array_a[0][1]
+    t_             = array_a[1][0]
+    z_             = array_a[1][1]
+    nSB_Uu         = array_a[2][0].astype(int)
+    nNo_SB_Uu      = array_a[2][1].astype(int)
+    nlower_Pmin_Uu = array_a[3][0].astype(int)
+    nVv            = array_a[3][1].astype(int)
+    nWw            = array_a[4][0].astype(int)
+    ndelta         = array_a[4][1].astype(int)
+    array_a        = array_a[5:]
+    a = nSB_Uu + nNo_SB_Uu
+    SB_Uu         = array_a[:nSB_Uu].astype(int)
+    No_SB_Uu      = array_a[nSB_Uu:a].astype(int)
+    lower_Pmin_Uu = array_a[a:].astype(int)
+    b = nVv + nWw
+    Vv            = array_b[:nVv].astype(int)
+    Ww            = array_b[nVv:b].astype(int)
+    delta         = array_b[b:].astype(int)
+    
+    #t_,z_,SB_Uu,No_SB_Uu,lower_Pmin_Uu,Vv,Ww,delta,option,instance
+    # print(t_,z_,len(SB_Uu),len(No_SB_Uu),len(lower_Pmin_Uu),len(Vv),len(Ww),len(delta))
+    return t_lp,z_lp,t_,z_,SB_Uu,No_SB_Uu,lower_Pmin_Uu,Vv,Ww,delta
+
+def igap(LB,UB):
+    ## Calcula el integrality gap    
+    return abs( LB - UB ) / ( 1e-10 + abs(UB) )    

@@ -206,17 +206,12 @@ class Solution:
             __data = result.Problem._list
             LB = __data[0].lower_bound
             UB = __data[0].upper_bound
-            self.gap_ = self.igap(LB,UB)
+            self.gap_ = util.igap(LB,UB)
             # self.gap_ = abs(LB - UB) /(1e-10 + abs(UB))    
                 
         return self.z_exact, self.gap_
     
-    
-    def igap(self,LB,UB):
-    ## Calcula el integrality gap    
-        return abs( LB - UB ) / ( 1e-10 + abs(UB) )    
-    
-          
+            
     def send_to_File(self,letra=""):     
         util.sendtofilesolution(self.Uu    ,"U_"   + self.nameins + letra +".csv")
         util.sendtofilesolution(self.V     ,"V_"   + self.nameins + letra +".csv")
@@ -299,6 +294,7 @@ class Solution:
         lower_Pmin_Uu = []
         ceros=0
         try:
+        # if True:
             for i in lower_Pmin_Uu_o:
                 if self.Uu[i[0]][i[1]] == 0:
                     lower_Pmin_Uu.append(i)

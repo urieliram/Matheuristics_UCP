@@ -141,11 +141,3 @@ def decode(secuence, account, status):
 
 
 
-def getLetter(index):    
-    total    = 26
-    cociente = int(index / total)-1
-    modulo   = int(index % total)    
-    if index < total:
-        return   '_'+chr(index+97)
-    else:
-        return   '_'+chr(cociente+97)+chr(modulo+97)

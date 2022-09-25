@@ -77,7 +77,7 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,CR,Pb,Cb,C,Cs,T
         return ((g,s) for g in m.G for s in range(1,len(m.S[g])+1)) ##CHECAR SI REQUIERE +1
     model.indexGSg = Set(initialize=index_G_Sg, dimen=2)
     
-    if(option == 'relax' or option == 'RC'): #Si se desea relajar las variables enteras como continuas
+    if(option == 'LR' or option == 'RC'): #Si se desea relajar las variables enteras como continuas
         model.u     = Var( model.G , model.T , within = UnitInterval)   ## UnitInterval: floating point values in the interval [0,1]
         model.v     = Var( model.G , model.T , within = UnitInterval)   
         model.w     = Var( model.G , model.T , within = UnitInterval)   
@@ -711,11 +711,13 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,CR,Pb,Cb,C,Cs,T
             
     ## ---------------------------- HARD VARIABLE FIXING III------------------------------------------
     ##     
-    if option == 'Hard3':
+    if option == 'Hard3' or option == 'IVF':
+        model.u.fix(0)                                      ## Hard fixing
         for f in SB_Uu:       
+            model.u[f[0]+1,f[1]+1].unfix()                  ## Hard fixing
             model.u[f[0]+1,f[1]+1] = 1                      ## Hints   
-        for f in No_SB_Uu: 
-            model.u[f[0]+1,f[1]+1].fix(0)                   ## Hard fixing
+        # for f in No_SB_Uu: 
+        #     model.u[f[0]+1,f[1]+1].fix(0)                 ## Hard fixing
         for f in lower_Pmin_Uu:
             model.u[f[0]+1,f[1]+1].unfix()    
             model.u[f[0]+1,f[1]+1] = 0                      ## Hints
@@ -726,8 +728,6 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,CR,Pb,Cb,C,Cs,T
 
     if option == 'Check':  
         
-        # model.u.fix(0)
-        # model.delta.fix(0) ***???!!!
         for f in SB_Uu: 
             model.u[f[0]+1,f[1]+1].domain = Binary 
             model.u[f[0]+1,f[1]+1].fix(1)                   ## Hard fixing
@@ -746,18 +746,16 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,CR,Pb,Cb,C,Cs,T
 
                                 
     ## ---------------------------- REDUCED COST ------------------------------------------
-    ##                       (OR LINEAR RELAXATION FIX)
+    ## 
 
     if option == 'RC':                             
         for f in SB_Uu: 
             model.u[f[0]+1,f[1]+1].setlb(1.0)                 ## Fix upper bound
-                                
-                                
                                                                                                 
                     
     ## ---------------------------- KERNEL SEARCH ------------------------------------------
     ##
-    if option == 'KS':    
+    if option == 'KS' or option == 'RKS' :    
         model.u.fix(0)                                      ## Hard fixing
         for f in kernel: 
             model.u[f[0]+1,f[1]+1].unfix()  
@@ -770,21 +768,7 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,CR,Pb,Cb,C,Cs,T
         expr       = 0      
         for f in bucket:                                    ## Cuenta los elementos del bucket
             expr += model.u[f[2]+1,f[3]+1] 
-        model.cuts.add(expr >= 1)      
-        
-                                                                                                       
-                     
-    ## ---------------------------- ITERATIVE VARIABLE FIXING  ------------------------------------------
-    ## 
-    if option == 'IVF':    
-        model.u.fix(0)                                      ## Hard fixing
-        for f in SB_Uu: 
-            model.u[f[0]+1,f[1]+1].unfix()  
-            model.u[f[0]+1,f[1]+1] = 1                      ## Hints
-        for f in lower_Pmin_Uu: 
-            model.u[f[0]+1,f[1]+1].unfix()                  ## Hard fixing
-            model.u[f[0]+1,f[1]+1] = 0                      ## Hints
- 
+        model.cuts.add(expr >= 1)            
         
     ## ---------------------------- Termina y regresa el modelo MILP ------------------------------------------
     

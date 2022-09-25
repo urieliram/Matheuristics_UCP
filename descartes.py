@@ -675,3 +675,119 @@
 #     lower_Pmin_Uu3 = sol_hard.update_lower_Pmin_Uu(lower_Pmin_Uu,'Hard')
 #     sol_hard.cuenta_ceros_a_unos( SB_Uu, No_SB_Uu, lower_Pmin_Uu,'Hard')
 
+# def resultados_lp_milp(instance,ambiente,gap,timelimit):
+    
+#     z_milp = 0; z_hard = 0; t_milp = 0; t_hard = 0; precargado = False
+#     df = pd.read_csv('resultados_previos.csv')
+#     df = df.loc[(df['instancia'] == instance) & (df['ambiente'] == ambiente) & (df['gap'] == gap) & (df['timelimit'] == timelimit)]
+    
+#     if len(df.index) != 0:
+#         z_milp = df['z_milp'].values[0]
+#         z_hard = df['z_hard'].values[0]
+#         t_milp = df['t_milp'].values[0]
+#         t_hard = df['t_hard'].values[0]
+#         precargado = True
+#         print('Resultados de <milp> y <hard-fixing> pre-cargados y asignados.')
+         
+#     return precargado, z_milp, z_hard, t_milp, t_hard
+
+
+
+## ---------------------------------  ITERATIVE  VARIABLE  FIXING  --------------------------------------
+## La versión básica de IVF consiste en relajar la formulacion y a partir de ello sacar 
+## el soporte binario SB_Uu y una lista de candidatos lower_Pmin_Uu, después de manera iterativa se resulven los 
+## SUB-MILP´S 'restringidos' mas pequeños usando el paradigna de KS.
+## IVF solution and solve the sub-MILP (it is using cutoff = z_hard).
+## Use 'Soft+pmin' (lower subset of Uu-Pmin)  as the first and unique bucket to consider
+## Use relax the integrality variable Uu.
+
+# if True:
+#     Vv             = deepcopy(Vv3)
+#     Ww             = deepcopy(Ww3)
+#     delta          = deepcopy(delta3)
+#     SB_Uu          = deepcopy(SB_Uu3)
+#     No_SB_Uu       = deepcopy(No_SB_Uu3)
+#     lower_Pmin_Uu  = deepcopy(lower_Pmin_Uu3)
+#     saved          = [SB_Uu,No_SB_Uu,Vv,Ww,delta]
+
+#     t_o         = time.time() 
+#     incumbent   =  z_hard3
+#     cutoff      =  z_hard3 # 1e+75 
+#     iter        =  0  
+#     sol_ivf     =  []
+#     result_iter =  []
+#     result_iter.append((t_hard3 + time.time() - t_o, z_hard3))
+
+#     while True:
+        
+#         t_res = max(0,( timemilp - t_hard3 ) - (time.time() - t_o))
+#         if t_res <= 0:
+#             break
+
+#         t_1 = time.time()
+#         model,__  = uc_Co.uc(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,mpc,Pb,Cb,C,Cs,Tunder,names,option='LR',
+#                              SB_Uu=saved[0],No_SB_Uu=saved[1],V=saved[2],W=saved[3],delta=saved[4],nameins=instancia[0:5],mode='Tight')
+#         sol_rc    = Solution(model=model,nameins=instancia[0:5],env=ambiente,executable=executable,gap=gap,timelimit=timemilp,
+#                              tee=False,tofiles=False,emphasize=emph,symmetry=symmetry,exportLP=False,option='RC')
+#         z_rc,g_rc = sol_rc.solve_problem() 
+#         t_rc      = time.time() - t_1
+#         print('t_rc= ',round(t_rc,1),'z_rc= ',round(z_rc,4))      
+                    
+#         ## ------------------------------------ Selection variables to fix ---------------------------------------
+#         ## lower_Pmin_Uu  >>> Este valor podría ser usado para definir el parámetro k en el LBC o buckets en un KS <<<  
+#         SB_Uu, No_SB_Uu, lower_Pmin_Uu, Vv, Ww, delta = sol_rc.select_binary_support_Uu('LR')
+        
+#         del sol_rc
+#         gc.collect()
+        
+#         if len(lower_Pmin_Uu) == 0:
+#             break
+           
+#         char  = ''
+#         t_res = max(0,( timemilp - t_hard3 ) - (time.time() - t_o))
+#         if t_res <= 0:
+#             break
+
+#         timeheu1  = min(t_res,timeheu)    
+                
+#         try:
+#         ##  Resolvemos el MILP con SB_Uu=1 (hints) y lower_Pmin_Uu=0 (no fijas) y con No_SB_Uu=0 (fijas)
+#             lbheur       = 'yes'
+#             emph         = 1     ## feasiability
+#             model,__     = uc_Co.uc(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,mpc,Pb,Cb,C,Cs,Tunder,names,option='IVF',
+#                                         SB_Uu=SB_Uu,No_SB_Uu=No_SB_Uu,lower_Pmin_Uu=lower_Pmin_Uu,nameins=instancia[0:5],mode='Tight')
+#             sol_ivf      = Solution(model=model,env=ambiente,executable=executable,nameins=instancia[0:5],letter=util.getLetter(iter),gap=gap,cutoff=cutoff,timelimit=timeheu1,
+#                                         tee=False,emphasize=emph,lbheur=lbheur,symmetry=symmetry,tofiles=False,option='IVF')
+#             z_ivf, g_ivf = sol_ivf.solve_problem()
+#             t_ivf        = time.time() - t_o + t_hard3
+#             SB_Uu, No_SB_Uu, __, Vv, Ww, delta = sol_ivf.select_binary_support_Uu('IVF') 
+                        
+#             if z_ivf < incumbent :                      ## Update solution
+#                 incumbent  = z_ivf
+#                 cutoff     = z_ivf
+#                 saved      = [SB_Uu,No_SB_Uu,Vv,Ww,delta]
+#                 g_ivf      = util.igap(z_lp,z_ivf)
+#                 char       = '***'
+                        
+#             result_iter.append((round(time.time()-t_o+t_hard3,1), z_ivf))
+#             print('<°|>< iter:'+str(iter)+' t_ivf= ',round(time.time()-t_o+t_hard3,1),'z_ivf= ',round(z_ivf,1),char) #,'g_ivf= ',round(g_ivf,5)
+#         except:
+#             print('>>> Iteración sin solución')
+#             result_iter.append((round(time.time()-t_o+t_hard3,1), 1e+75))
+                    
+#         print('\t')       
+                    
+#         t_res = max(0,( timemilp - t_hard3 ) - (time.time() - t_o))
+#         print('ivf ','tiempo restante:',t_res)
+
+#         iter = iter + 1
+                
+#     t_ivf = (time.time() - t_o) + t_hard3  ## t_hard3 ya incluye el tiempo de LP
+#     z_ivf = incumbent    
+#     for item in result_iter:
+#         print(item[0],',',item[1])
+#     result_iter = np.array(result_iter)
+#     np.savetxt('iterIVF'+instancia[0:5]+'.csv', result_iter, delimiter=',')
+        
+#     checkSol('z_ivf',z_ivf) ## Check feasibility (IVF)
+             
