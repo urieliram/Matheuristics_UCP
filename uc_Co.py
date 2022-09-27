@@ -711,7 +711,7 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,CR,Pb,Cb,C,Cs,T
             
     ## ---------------------------- HARD VARIABLE FIXING III------------------------------------------
     ##     
-    if option == 'Hard3' or option == 'IVF':
+    if option == 'Hard3':
         model.u.fix(0)                                      ## Hard fixing
         for f in SB_Uu:       
             model.u[f[0]+1,f[1]+1].unfix()                  ## Hard fixing
@@ -761,7 +761,7 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,CR,Pb,Cb,C,Cs,T
             model.u[f[0]+1,f[1]+1].unfix()  
             model.u[f[0]+1,f[1]+1] = 1                      ## Hints
         for f in bucket: 
-            model.u[f[2]+1,f[3]+1].unfix()                  ## Hard fixing
+            model.u[f[2]+1,f[3]+1].unfix()                  
             model.u[f[2]+1,f[3]+1] = 0                      ## Hints
             
         model.cuts = ConstraintList()
@@ -769,6 +769,8 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,CR,Pb,Cb,C,Cs,T
         for f in bucket:                                    ## Cuenta los elementos del bucket
             expr += model.u[f[2]+1,f[3]+1] 
         model.cuts.add(expr >= 1)            
+        
+  
         
     ## ---------------------------- Termina y regresa el modelo MILP ------------------------------------------
     

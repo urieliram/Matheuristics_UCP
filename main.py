@@ -46,12 +46,12 @@ instancia = 'morales_ejemplo_III_D.json'  ##
 #instancia = 'output.json'      ##     
 
 instancia = 'uc_97.json'       ## 
-instancia = 'uc_01.json'       ##
 
 instancia = 'uc_70.json'       ## 
 
 instancia = 'uc_47.json'       ## ejemplo sencillo  
 instancia = 'uc_58.json'       ## prueba demostrativa excelente en mi PC 
+instancia = 'uc_61.json'       ##
 
 
 ## Cargamos parámetros de configuración desde archivo <config>
@@ -160,7 +160,7 @@ k_original = k  ## Si es que LBC cambió el parámetro k
 ## LBC COUNTINOUS VERSION without soft-fixing
 ## Include the LOCAL BRANCHING CUT to the solution and solve the sub-MILP (it is using cutoff=z_hard).
 
-if False:    
+if  True:    
     t_o            = time.time() 
     Vv             = deepcopy(Vv3)
     Ww             = deepcopy(Ww3)
@@ -265,7 +265,7 @@ k = k_original  ## Si es que LBC cambió el parámetro k
 ## LBC COUNTINOUS VERSION without soft-fixing
 ## Include the LOCAL BRANCHING CUT to the solution and solve the sub-MILP (it is using cutoff=z_hard).
 
-if  False:    
+if  True:    
     t_o            = time.time() 
     Vv             = deepcopy(Vv3)
     Ww             = deepcopy(Ww3)
@@ -364,14 +364,15 @@ if  False:
     checkSol('z_lbc2',z_lbc2,SB_Uu,No_SB_Uu,Vv,Ww,delta) ## Check feasibility (LBC2)
 
 
-## ---------------------------------  KERNEL SEARCH  ---------------------------------
+## ---------------------------------  KERNEL SEARCH I ---------------------------------
+##
 ## La versión básica de KS consiste en relajar la formulacion y a partir de ello sacar 
 ## las variables del kernel y de los buckets, después de manera iterativa se resulven los 
 ## SUB-MILP´S 'restringidos' mas pequeños.
 ## KS solution and solve the sub-MILP (it is using cutoff = z_hard).
 ## Use 'Soft+pmin' (lower subset of Uu-Pmin)  as the first and unique bucket to consider
 ## Use relax the integrality variable Uu.
-if  False:
+if  True:
     Vv          = deepcopy(Vv3)
     Ww          = deepcopy(Ww3)
     delta       = deepcopy(delta3)
@@ -402,7 +403,7 @@ if  False:
                                 tee=False,tofiles=False,emphasize=emph,symmetry=symmetry,exportLP=False,option='RC')
             z_rc,g_rc = sol_rc.solve_problem() 
             t_rc      = time.time() - t_1
-            print('t_rc= ',round(t_rc,1),'z_rc= ',round(z_rc,4))      
+            print('KS t_rc= ',round(t_rc,1),'z_rc= ',round(z_rc,4))      
             
             ## ----------------------------- SECOND PHASE ----------------------------------------------
             ##  Defining buckets 
@@ -415,12 +416,13 @@ if  False:
             
             ##  Definimos el número de buckets 
             K = floor(1 + 3.322 * log(len(No_SB_Uu)))  ## Sturges rule
-            print('Number of buckets K =', K)    
+            print('KS Number of buckets K =', K)    
             len_i  = ceil(len(No_SB_Uu) / K)
             pos_i  = 0
             k_     = [0]    
             for i in range(len_i,len(No_SB_Uu),len_i+1):
                 k_.append( i )
+            k_[-1] = len(No_SB_Uu)
             print( k_ )
             
             cutoff      = incumbent # 1e+75 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -440,13 +442,13 @@ if  False:
                     break
 
                 timeheu1  = min(t_res,timeheu)      
-                bucket = rc[k_[iter_bk]:k_[iter_bk + 1]] 
+                bucket    = rc[k_[iter_bk]:k_[iter_bk + 1]] 
                 print('bucket',util.getLetter(iter),'[',k_[iter_bk],':',k_[iter_bk + 1],']' )      
                 
                 try:
                     ##  Resolvemos el kernel con cada uno de los buckets
                     lbheur     = 'yes'
-                    emph       = 1     ## feasibility
+                    emph       = 0     ## feasibility =1
                     model,__   = uc_Co.uc(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,mpc,Pb,Cb,C,Cs,Tunder,names,option='KS',
                                         kernel=kernel,bucket=bucket,nameins=instancia[0:5],mode='Tight')
                     sol_ks     = Solution(model=model,env=ambiente,executable=executable,nameins=instancia[0:5],letter=util.getLetter(iter),gap=gap,cutoff=cutoff,timelimit=timeheu1,
@@ -534,9 +536,12 @@ if  False:
     # \todo{Crear instancias sintéticas a partir de morales-españa2013} 
     
 ## NO OLVIDES COMENTAR TUS PRUEBAS ¸.·´¯`·.´¯`·.¸¸.·´¯`·.¸><(((º>
-comment    = 'Testing  REDUCED KERNEL SEARCH'
+comment    = 'Versión estable de LBC1, LBC2, KS, RKS'
+    
+    
     
 ## ---------------------------------  REDUCED KERNEL SEARCH --------------------------------------
+## 
 ## La versión básica de RKS consiste en relajar la formulacion fijando el soporte binario y a partir de ello sacar 
 ## el kernel SB_Uu y un conjunto de buckets a partir de lower_Pmin_Uu, después de manera 
 ## iterativa se resuelven los SUB-MILP´S 'restringidos' mas pequeños. Este proceso se repite hasta terminar el tiempo.
@@ -544,69 +549,61 @@ comment    = 'Testing  REDUCED KERNEL SEARCH'
 ## Use 'Soft+pmin' (lower subset of Uu-Pmin) as the first and unique bucket to consider
 
 if  True:
-    t_o           = time.time() 
-    Vv            = deepcopy(Vv3)
-    Ww            = deepcopy(Ww3)
-    delta         = deepcopy(delta3)
-    SB_Uu         = deepcopy(SB_Uu3)
-    No_SB_Uu      = deepcopy(No_SB_Uu3)
-    lower_Pmin_Uu = deepcopy(lower_Pmin_Uu3)
-    saved         = [SB_Uu,No_SB_Uu,Vv,Ww,delta]
+    Vv          = deepcopy(Vv3)
+    Ww          = deepcopy(Ww3)
+    delta       = deepcopy(delta3)
+    SB_Uu       = deepcopy(SB_Uu3)
+    No_SB_Uu    = deepcopy(No_SB_Uu3)
+    saved       = [SB_Uu,No_SB_Uu,Vv,Ww,delta]
 
-    incumbent     =  1e+75 # z_hard3
-    cutoff        =  1e+75 # z_hard3
-    iter          =  0  
-    sol_rks       =  []
-    result_iter   =  []
+    t_o         = time.time() 
+    incumbent   =  z_hard3
+    cutoff      =  z_hard3 # 1e+75 
+    iter        =  0  
+    sol_rks     =  []
+    result_iter =  []
     result_iter.append((t_hard3 + time.time() - t_o, z_hard3))
 
     while True:
         ## --------------------------------------- CALCULATE REDUCED COSTS Uu ------------------------------------
         t_res = max(0,( timemilp - t_hard3 ) - (time.time() - t_o))
-        if t_res <= 0: # or len(lower_Pmin_Uu == 0) 
-            print('RKS Salí ciclo externo: t_res=',(time.time() - t_o))
+        if t_res <= 0:
+            print('RKS Salí ciclo externo')
             break
         
         if  True:
             t_1 = time.time()
-            model,__   = uc_Co.uc(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,mpc,Pb,Cb,C,Cs,Tunder,names,option='RC',
-                                  SB_Uu=SB_Uu,nameins=instancia[0:5],mode='Tight')
-            sol_rc     = Solution(model=model,env=ambiente,executable=executable,nameins=instancia[0:5],gap=gap,timelimit=timeheu,
-                                  tee=False,tofiles=False,emphasize=emph,exportLP=False,option='RC')
-            z_rc, g_rc = sol_rc.solve_problem() 
-            t_rc      = time.time() - t_1    
-            print('t_rc= ',round(t_rc,1),'z_rc= ',round(z_rc,4))  
+            model,__  = uc_Co.uc(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,mpc,Pb,Cb,C,Cs,Tunder,names,option='RC',
+                                SB_Uu=saved[0],No_SB_Uu=saved[1],V=saved[2],W=saved[3],delta=saved[4],nameins=instancia[0:5],mode='Tight')
+            sol_rc    = Solution(model=model,nameins=instancia[0:5],env=ambiente,executable=executable,gap=gap,timelimit=timemilp,
+                                tee=False,tofiles=False,emphasize=emph,symmetry=symmetry,exportLP=False,option='RC')
+            z_rc,g_rc = sol_rc.solve_problem() 
+            t_rc      = time.time() - t_1
+            print('RKS t_rc= ',round(t_rc,1),'z_rc= ',round(z_rc,4))      
             
             ## ----------------------------- SECOND PHASE ----------------------------------------------
             ##  Defining buckets 
-            
-            ## ------------------------------------ SELECTION VARIABLES TO FIX ---------------------------------------
-            SB_Uu, No_SB_Uu, lower_Pmin_Uu, Vv, Ww, delta = sol_rc.select_binary_support_Uu('LR')
-
-            if len(lower_Pmin_Uu) == 0:
-                print('RKS Salí ciclo externo: lower_Pmin_Uu == 0')
-                break
-            
             rc   = []
             i    = 0                    
-            for f in lower_Pmin_Uu: 
+            for f in No_SB_Uu: 
                 rc.append(( i, model.rc[model.u[f[0]+1,f[1]+1]],f[0],f[1] ))
                 i = i + 1    
             rc.sort(key=lambda tup:tup[1], reverse=False) ## Ordenamos las variables No_SB_Uu de acuerdo a sus costos reducidos 
             
             ##  Definimos el número de buckets 
-            K = floor(1 + 3.322 * log(len(lower_Pmin_Uu)))  ## Sturges rule
+            K = floor(1 + 3.322 * log(len(No_SB_Uu)))  ## Sturges rule
             print('RKS Number of buckets K =', K)    
-            len_i  = ceil(len(lower_Pmin_Uu) / K)
+            len_i  = ceil(len(No_SB_Uu) / K)
             pos_i  = 0
             k_     = [0]    
-            for i in range(len_i,len(lower_Pmin_Uu),len_i+1):
+            for i in range(len_i,len(No_SB_Uu),len_i+1):
                 k_.append( i )
+            k_[-1] = len(No_SB_Uu)
             print( k_ )
             
             cutoff      = incumbent # 1e+75 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
             iter_bk     = 0
-            iterstop    = K - 2
+            iterstop    = 3 #K - 2  #  
             char        = ''
             kernel      = deepcopy(SB_Uu)
             
@@ -621,22 +618,22 @@ if  True:
                     break
 
                 timeheu1  = min(t_res,timeheu)      
-                bucket = rc[k_[iter_bk]:k_[iter_bk + 1]] 
+                bucket    = rc[k_[iter_bk]:k_[iter_bk + 1]] 
                 print('bucket',util.getLetter(iter),'[',k_[iter_bk],':',k_[iter_bk + 1],']' )      
                 
                 try:
                     ##  Resolvemos el kernel con cada uno de los buckets
-                    lbheur       = 'yes'
-                    emph         = 1        ## feasibility
-                    model,__     = uc_Co.uc(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,mpc,Pb,Cb,C,Cs,Tunder,names,option='RKS',
-                                            kernel=kernel,bucket=bucket,nameins=instancia[0:5],mode='Tight')
-                    sol_rks      = Solution(model=model,env=ambiente,executable=executable,nameins=instancia[0:5],letter=util.getLetter(iter),gap=gap,cutoff=cutoff,timelimit=timeheu1,
-                                            tee=False,emphasize=emph,lbheur=lbheur,symmetry=symmetry,tofiles=False,option='RKS')
+                    lbheur     = 'yes'
+                    emph       = 0     ## feasibility =1
+                    model,__   = uc_Co.uc(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,mpc,Pb,Cb,C,Cs,Tunder,names,option='RKS',
+                                        kernel=kernel,bucket=bucket,nameins=instancia[0:5],mode='Tight')
+                    sol_rks     = Solution(model=model,env=ambiente,executable=executable,nameins=instancia[0:5],letter=util.getLetter(iter),gap=gap,cutoff=cutoff,timelimit=timeheu1,
+                                        tee=False,emphasize=emph,lbheur=lbheur,symmetry=symmetry,tofiles=False,option='RKS')
                     z_rks, g_rks = sol_rks.solve_problem()
-                    t_rks        = time.time() - t_o + t_hard3
+                    t_rks       = time.time() - t_o + t_hard3
                     kernel, No_SB_Uu, __, Vv, Ww, delta = sol_rks.select_binary_support_Uu('RKS') 
                     
-                    if z_rks < incumbent :  ## Update solution
+                    if z_rks < incumbent :                      ## Update solution
                         incumbent  = z_rks
                         cutoff     = z_rks
                         saved      = [kernel,No_SB_Uu,Vv,Ww,delta]
@@ -654,7 +651,7 @@ if  True:
                 print('\t')       
                     
                 t_res = max(0,( timemilp - t_hard3 ) - (time.time() - t_o))
-                print('RKS','tiempo restante:',t_res)
+                print('RKS ','tiempo restante:',t_res)
                 
                 del sol_rks
                 gc.collect()
@@ -666,7 +663,7 @@ if  True:
         SB_Uu    = deepcopy(saved[0])
         No_SB_Uu = deepcopy(saved[1])
 
-    t_rks = (time.time() - t_o) + t_hard3 
+    t_rks = (time.time() - t_o) + t_hard3  
     z_rks = incumbent    
     for item in result_iter:
         print(item[0],',',item[1])
@@ -684,7 +681,7 @@ if  False:
     cutoff   = 1e+75 
     lbheur   = 'no'      
     t_o      = time.time() 
-    model,__ = uc_Co.uc(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,TDgetLetteri_0,SU,SD,RU,RD,p_0,mpc,Pb,Cb,C,Cs,Tunder,names,option='Milp',nameins=instancia[0:5],mode='Tight')
+    model,__ = uc_Co.uc(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,mpc,Pb,Cb,C,Cs,Tunder,names,option='Milp',nameins=instancia[0:5],mode='Tight')
     sol_milp = Solution(model=model,nameins=instancia[0:5],env=ambiente,executable=executable,gap=gap,cutoff=cutoff,symmetry=symmetrydefault,timelimit=timemilp,
                           tee=False,tofiles=False,emphasize=emph,lbheur=lbheur,exportLP=False,option='Milp')
     z_milp, g_milp = sol_milp.solve_problem()
