@@ -34,6 +34,7 @@ def reading(file):
     Cs      = {}   ## Costo de cada escalón del conjunto S de la función de costo variable de arranque.
     Tunder  = {}   ## lag de cada escalón del conjunto S de la función de costo variable de arranque.
     Startup = {}   ## start-up cost
+    
         
     time_periods = int(md['time_periods'])
     demand       = md['demand']  
@@ -44,11 +45,11 @@ def reading(file):
     De   = dict(zip(T, demand))
     R    = dict(zip(T, reserves))
     
-    names_list = []
+    names_gens = []
     i = 1
     ## Se obtiene nombre de los generadores y número
     for gen in md['thermal_generators']:  
-        names_list.append(gen)
+        names_gens.append(gen)
         G.append(i)
         i+=1
         
@@ -79,7 +80,7 @@ def reading(file):
     
     ## To get the data from the generators
     i=1 ## Cuenta los generadores
-    for gen in names_list:  
+    for gen in names_gens:  
         must_run.append(md['thermal_generators'][gen]["must_run"]) #0,
         power_output_minimum.append(md['thermal_generators'][gen]["power_output_minimum"])#80
         power_output_maximum.append(md['thermal_generators'][gen]["power_output_maximum"])#300.0
@@ -164,7 +165,7 @@ def reading(file):
         p_0_list.append(power_output_t0[i-1])
         ########################################################################
                                  
-        i+=1  ## Se incrementa un generador  
+        i+=1;  ## Se incrementa un generador  
                             
        
        
@@ -203,6 +204,61 @@ def reading(file):
             # print(k,",",n,",",j[0],",",j[1])
             Tunder[k,n] = j[0]
             Cs[k,n]     = j[1] 
+            
+    ## Leemos cargas elásticas
+            
+    LOAD                      = []  
+    LD                        = {}   ## eslabones de oferta de compra en piecewise
+    names_loads               = []  
+    piecewise_production_load = []
+    Piecewise_load            = []    
+    Pl                        = {}   ## maximum load for piecewise segment LD for a load "load"(MW).
+    Cl                        = {}   ## dib of a load "load" consuming Pl MW of power ($/h).
+    i = 1
+    ## Se obtiene nombre de las cargas elásticas y el número total
+    for load in md['loads']:  
+        names_loads.append(load)
+        LOAD.append(i)
+        i+=1   
+    
+    i=1 ## Cuenta las cargas
+    for load in names_loads:
+        piecewise_production_load = md['loads'][load]["piecewise_production"] # bids offer      
+        ## Para obtener los piecewise del costo de los generadores
+        lista_aux = []
+        j = 0
+        for piece in piecewise_production_load:
+            lista_aux.append((piece['mw'],piece['cost']))
+            j+=1            
+        Piecewise_load.append(lista_aux)
+        lista = []
+        jj=1
+        for ii in range(j-1):
+            lista.append(jj)
+            jj= jj+1
+        LD[i] = lista
+        i+=1;  
+                
+    k=0; n=0
+    for i in Piecewise_load:
+        k=k+1
+        n=0
+        for j in i:
+            if n!=0:
+                #print(k,",",n,",",j[0],",",j[1])
+                Pl[k,n] = j[0]
+                Cl[k,n] = j[1]   
+            n=n+1
+                
+        
+    print(Piecewise_load)
+    print(LD)
+    print(Pl)
+    print(Cl)
+        
+
+
+            
     
     ## Aqui se pasan de arreglos a diccionarios como los usa Pyomo
     Pmax = dict(zip(G, power_output_maximum))
@@ -218,7 +274,7 @@ def reading(file):
     RU   = dict(zip(G, ramp_up_limit))
     RD   = dict(zip(G, ramp_down_limit))
     p_0  = dict(zip(G, p_0_list))  
-    names= dict(zip(G, names_list))  
+    names= dict(zip(G, names_gens))  
     mpc  = dict(zip(G, fixed_cost))  
     
     ## -----------------  Caso de ejemplo de anjos.json  --------------------------
@@ -257,109 +313,4 @@ def reading(file):
        
     return G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,Pb,Cb,C,mpc,Cs,Tunder,names
           
-          
-# (EN PROCESO ...)
-def validation(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,Pb,Cb,C,mpc,Cs,Tunder,names,abajo_min): 
-        
-    print('>>> generadores abajo del límite mínimo:',abajo_min)  
-       
-    print('*** Capacidades totales de los generadores en el tiempo cero ***')
-    gen0=0
-    for i in p_0:
-        gen0 = p_0[i] + gen0 
-    print('potencia p_0            =',gen0)
-    maxi=0
-    for i in Pmax:
-        if u_0[i]==1:
-          maxi = Pmax[i] + maxi
-    maxi = maxi - gen0
-    print('capacidad subir gen_0   =',maxi)    
-    mini=0
-    for i in Pmin:
-        if u_0[i]==1:
-          mini = Pmin[i] + mini
-    mini = gen0 - mini
-    print('capacidad bajar gen_0   =',mini)
-     
-    rampUp=0
-    for i in RU:
-        if u_0[i]==1:
-          rampUp = util.trunc(RU[i] + rampUp,1)
-    print('rampUp_0                =',rampUp)    
-    rampDown=0
-    for i in RD:
-        if u_0[i]==1:
-          rampDown = util.trunc(RD[i] + rampDown,1)
-    print('rampDown_0              =',rampDown)
-    startUp=0
-    for i in SU:
-        if u_0[i]==0:
-          startUp = SU[i] + startUp
-    print('startUp_0               =',startUp)
-    shutDown=0
-    for i in SD:
-        if u_0[i]==1:
-          shutDown = SD[i] + shutDown
-    print('shutDown_0              =',shutDown)    
-        
-    print('Delta demanda  De_0     =',De[1]-gen0)
-    print('Reserve  R_0            =',R[1])    
-    
-    lista1 = []
-    for i in range(2,len(De)):
-        lista1.append(De[i-1]-De[i])
-    print('máx demanda subida      =',abs(util.trunc(min(lista1),1)) )
-    print('máx demanda bajada      =',abs(util.trunc(max(lista1),1) ))
-        
-    lista2 = []
-    for i in range(2,len(R)):
-        lista2.append(R[i-1]-R[i])
-    print('máx reserva subida      =',util.trunc(max(lista2),1) )
-    print('máx reserva bajada      =',util.trunc(min(lista2),1) )
-    
-    #print(gen0,maxi,mini,startUp,shutDown,rampUp,rampDown,De[1],R[1],
-          #util.trunc(max(lista1)),util.trunc(min(lista1)),util.trunc(max(lista2)),util.trunc(min(lista2)))
-        
-    return 0
-
-# (EN PROCESO ...)
-def to_dirdat(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,SU,SD,RU,RD,p_0,Pb,C,mpc,Cs,Tunder,names):    
-    print('Exporting instance data to dirdat csv files...')
-    
-## Deleting an non-empty folder dirdat
-    shutil.rmtree('dirdat', ignore_errors=True)
-    os.mkdir('dirdat')    
-##  Escribiendo HORIZOMDA.csv
-    data = {'periodos': [len(T)],'duracion': [60],'bandera': [0],'dias': [1]}
-    df = pd.DataFrame(data)
-    df.to_csv('dirdat/HORIZOMDA.csv',header=False, index=False)
-    
-##  Escribiendo PRODEM.csv
-    index = list(range(len(De)))
-    my_list = list(De.values())
-    df = pd.DataFrame(columns = index)  
-    df_length = len(df)
-    df.loc[df_length] = my_list
-    df.to_csv('dirdat/PRODEM.csv',header=False, index=False)
-    
-##  Escribiendo RRESUS.csv
-    index = list(range(len(R)))
-    my_list = list(R.values())
-    df = pd.DataFrame(columns = index)  
-    df_length = len(df)
-    df.loc[df_length] = my_list
-    df.to_csv('dirdat/RRESUS.csv',header=False, index=False)
-
-##  Escribiendo UNITRC.csv
-##  Escribiendo ASIGNRC.csv
-##  Escribiendo LIUNITRC.csv
-##  Escribiendo LSUNITRC.csv
-##  Escribiendo RAMPASRC.csv
-##  Escribiendo ARRARC.csv
-##  Escribiendo OPPARORC.csv
-##  Escribiendo UNITRCCI.csv
-##  Escribiendo CGMRC.csv
-##  Escribiendo COVAARRC.csv
-##  Escribiendo POTVERC.csv
-##  Escribiendo PREVERC.csv
-##  Escribiendo UNIHMDA.csv
+   

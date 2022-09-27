@@ -2493,5 +2493,65 @@
         }
       ]
     }
-  }
+  },
+
+  "loads": {
+      "l1": {
+        "must_run": 0,
+        "name": "l1",
+        "fixed_load": 0,
+        "piecewise_production": [
+          {
+            "mw": 0,
+            "cost": 0
+          },
+          {
+            "mw": 1.1,
+            "cost": 10.1
+          },
+          {
+            "mw": 2.2,
+            "cost": 20.2
+          },
+          {
+            "mw": 3.3,
+            "cost": 30.3
+          }
+        ]
+      },
+      "l2": {
+        "must_run": 0,
+        "name": "l2",
+        "fixed_load": 0,
+        "piecewise_production": [
+          {
+            "mw": 0,
+            "cost": 0
+          },
+          {
+            "mw": 1.1,
+            "cost": 10.1
+          },
+          {
+            "mw": 2.2,
+            "cost": 20.2
+          }
+        ]
+      },
+      "l3": {
+        "must_run": 0,
+        "name": "l3",
+        "fixed_load": 0,
+        "piecewise_production": [
+          {
+            "mw": 7.7,
+            "cost": 77
+          },
+          {
+            "mw": 8.8,
+            "cost": 88
+          }
+        ]
+      }
+    }
 }
