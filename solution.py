@@ -96,7 +96,7 @@ class Solution:
             #self.model.write(filename = self.model.name+'.mps', io_options = {"symbolic_solver_labels":True})
         
         # Create a 'rc' suffix component on the instance so the solver plugin will know which suffixes to collect
-        if self.option == 'RC':
+        if self.option == 'RC' : # or self.option == 'LR'
             self.model.rc = Suffix(direction=Suffix.IMPORT,datatype=Suffix.FLOAT)
 
         ## Envía el problema de optimización al solver
