@@ -160,7 +160,7 @@ k_original = k  ## Si es que LBC cambió el parámetro k
 ## LBC COUNTINOUS VERSION without soft-fixing
 ## Include the LOCAL BRANCHING CUT to the solution and solve the sub-MILP (it is using cutoff=z_hard).
 
-if  True:    
+if  False:    
     t_o            = time.time() 
     Vv             = deepcopy(Vv3)
     Ww             = deepcopy(Ww3)
@@ -265,7 +265,7 @@ k = k_original  ## Si es que LBC cambió el parámetro k
 ## LBC COUNTINOUS VERSION without soft-fixing
 ## Include the LOCAL BRANCHING CUT to the solution and solve the sub-MILP (it is using cutoff=z_hard).
 
-if  True:    
+if  False:    
     t_o            = time.time() 
     Vv             = deepcopy(Vv3)
     Ww             = deepcopy(Ww3)
@@ -548,7 +548,7 @@ comment    = 'Versión estable de LBC1, LBC2, KS, RKS'
 ## RKS solution and solve the sub-MILP (it is using cutoff = z_hard).
 ## Use 'Soft+pmin' (lower subset of Uu-Pmin) as the first and unique bucket to consider
 
-if  True:
+if  False:
     Vv          = deepcopy(Vv3)
     Ww          = deepcopy(Ww3)
     delta       = deepcopy(delta3)
