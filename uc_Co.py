@@ -1,7 +1,7 @@
 ## -------------------  >)|°> UriSoft© <°|(<  -------------------
 ## File: uc_Co.py
 ## Developers: Uriel Iram Lezama Lope
-## Purpose: UC "Compact" model introduced by Knueven2020b
+## Purpose: UC 'Compact' model introduced by Knueven2020b
 ## Description:
 ## Objetive               (69)
 ## Up-time/down-time      (2), (3), (4), (5)       'garver_3bin_vars',
@@ -20,42 +20,78 @@
 
 # import pyomo.environ as pyo
 # from   pyomo.environ import *
-from  pyomo.environ import Set, ConcreteModel, Param, Var,Objective, ConstraintList, Constraint, Any, value, UnitInterval, Binary
+from  pyomo.environ import Set, ConcreteModel, Param, Var, Objective, minimize, ConstraintList, Constraint, Any, value, UnitInterval, Binary
 from  math import floor ,ceil
-
-def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,CR,Pb,Cb,C,Cs,Tunder,names,option='None',
+      
+def uc(instance,option='None',
        kernel=[],bucket=[],SB_Uu=[],No_SB_Uu=[],lower_Pmin_Uu=[],V=[],W=[],delta=[],
-       percent_soft=90,k=20,nameins='model',mode="Compact",improve=True,timeover=False,rightbranches=[],):
-                      
-    inside90   = 0 ## Número de variables que podrían moverse en el Sub-milp (Binary support)
-
+       percent_soft=90,k=20,nameins='ml',mode='Tight',scope='',improve=True,timeover=False,rightbranches=[]):      
+       
+    G       = instance[0]
+    T       = instance[1]
+    L       = instance[2]
+    S       = instance[3]
+    Pmax    = instance[4]
+    Pmin    = instance[5]
+    UT      = instance[6] 
+    DT      = instance[7] 
+    De      = instance[8]
+    R       = instance[9]
+    u_0     = instance[10]
+    U       = instance[11]
+    D       = instance[12]
+    TD_0    = instance[13]
+    SU      = instance[14]
+    SD      = instance[15]
+    RU      = instance[16]
+    RD      = instance[17]
+    p_0     = instance[18]
+    Pb      = instance[19]
+    Cb      = instance[20]
+    C       = instance[21] 
+    CR      = instance[22] ## Minimum production cost
+    Cs      = instance[23]
+    Tunder  = instance[24]
+    names   = instance[25]
+    
+    if scope == 'market':
+        LOAD    = instance[26]
+        Ld      = instance[27]
+        Pd      = instance[28]
+        Cd      = instance[29]
+        
     model      = ConcreteModel(nameins)    
-    model.G    = Set(initialize = G)
-    model.T    = Set(initialize = T)  
+    model.G    = Set(         initialize = G)
+    model.T    = Set(         initialize = T)  
     model.L    = Set(model.G, initialize = L) 
     model.S    = Set(model.G, initialize = S) 
     
-    model.Pmax = Param(model.G , initialize = Pmax , within = Any)
-    model.Pmin = Param(model.G , initialize = Pmin , within = Any)
-    model.UT   = Param(model.G , initialize = UT   , within = Any)
-    model.DT   = Param(model.G , initialize = DT   , within = Any)
-    model.De   = Param(model.T , initialize = De   , within = Any)
-    model.R    = Param(model.T , initialize = R    , within = Any)
-    model.u_0  = Param(model.G , initialize = u_0  , within = Any)
-    model.D    = Param(model.G , initialize = D    , within = Any)
-    model.U    = Param(model.G , initialize = U    , within = Any)
-    model.SU   = Param(model.G , initialize = SU   , within = Any)
-    model.SD   = Param(model.G , initialize = SD   , within = Any)
-    model.RU   = Param(model.G , initialize = RU   , within = Any)
-    model.RD   = Param(model.G , initialize = RD   , within = Any)
-    model.p_0  = Param(model.G , initialize = p_0  , within = Any) 
-    model.CR   = Param(model.G , initialize = CR   , within = Any) #cost of generator g running and operating at minimum production
+    if scope == 'market':
+        model.LOAD = Set(initialize = LOAD)  
+        model.Ld   = Set(model.LOAD, initialize = Ld) ## Set of segments of purchase bid of elastic load
+    
+    model.Pmax = Param(model.G    , initialize = Pmax , within = Any)
+    model.Pmin = Param(model.G    , initialize = Pmin , within = Any)
+    model.UT   = Param(model.G    , initialize = UT   , within = Any)
+    model.DT   = Param(model.G    , initialize = DT   , within = Any)
+    model.De   = Param(model.T    , initialize = De   , within = Any)
+    model.R    = Param(model.T    , initialize = R    , within = Any)
+    model.u_0  = Param(model.G    , initialize = u_0  , within = Any)
+    model.D    = Param(model.G    , initialize = D    , within = Any)
+    model.U    = Param(model.G    , initialize = U    , within = Any)
+    model.SU   = Param(model.G    , initialize = SU   , within = Any)
+    model.SD   = Param(model.G    , initialize = SD   , within = Any)
+    model.RU   = Param(model.G    , initialize = RU   , within = Any)
+    model.RD   = Param(model.G    , initialize = RD   , within = Any)
+    model.p_0  = Param(model.G    , initialize = p_0  , within = Any) 
+    model.CR   = Param(model.G    , initialize = CR   , within = Any) #cost of generator g running and operating at minimum production
     # model.c    = Param(model.G , initialize = {1:5,2:15,3:30}    ,within =Any)
     # model.cU   = Param(model.G , initialize = {1:800,2:500,3:250},within = Any)
-       
+          
     
-    CLP = 1000.0 #penalty cost for failing to meet or exceeding load ($/megawatt-hour (MWh)).
-    CRP = 999999999999.0 #penalty cost for failing to meet reserve requirement
+    inside90 = 0              ## default
+    CLP      = 1000.0         ## penalty cost for failing to meet or exceeding load ($/megawatt-hour (MWh)).
+    CRP      = 999999999999.0 ## penalty cost for failing to meet reserve requirement
     
     ##  Defined index to compute the per-generator, per-time, and segment period production costs.
     def index_G_T_Lg(m):
@@ -69,15 +105,26 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,CR,Pb,Cb,C,Cs,T
     
     ##  Defined index to compute the per-generator, per-time, and  start-up segment cost variable.
     def index_G_T_Sg(m):
-        return ((g,t,s) for g in m.G for t in m.T for s in range(1,len(m.S[g])+1)) ##CHECAR SI REQUIERE +1
+        return ((g,t,s) for g in m.G for t in m.T for s in range(1,len(m.S[g])+1)) 
     model.indexGTSg = Set(initialize=index_G_T_Sg, dimen=3)    
     
     ##  Defined index to compute the per-generator, and start-up segment cost variable.
     def index_G_Sg(m):
-        return ((g,s) for g in m.G for s in range(1,len(m.S[g])+1)) ##CHECAR SI REQUIERE +1
+        return ((g,s) for g in m.G for s in range(1,len(m.S[g])+1)) 
     model.indexGSg = Set(initialize=index_G_Sg, dimen=2)
     
-    if(option == 'LR' or option == 'RC'): #Si se desea relajar las variables enteras como continuas
+    if scope == 'market':
+        ##  Defined index to compute the per-load, per-time, and segment energy purchase.
+        def index_LOAD_T_Ld(m):
+            return ((l,t,i) for l in m.LOAD for t in m.T for i in range(1,len(m.Ld[l])+1))
+        model.indexLoadTLd = Set(initialize=index_LOAD_T_Ld, dimen=3)
+        
+        ##  Defined index to compute the per-load, and segment energy purchase.
+        def index_LOAD_Ld(m):
+            return ((l,i) for l in m.LOAD for i in range(1,len(m.Ld[l])+1))
+        model.indexLoadLd = Set(initialize=index_LOAD_Ld, dimen=2)
+    
+    if(option == 'LR' or option == 'RC' or option == 'FixSol'): #Si se desea relajar las variables enteras como continuas
         model.u     = Var( model.G , model.T , within = UnitInterval)   ## UnitInterval: floating point values in the interval [0,1]
         model.v     = Var( model.G , model.T , within = UnitInterval)   
         model.w     = Var( model.G , model.T , within = UnitInterval)   
@@ -97,16 +144,17 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,CR,Pb,Cb,C,Cs,T
     model.cSU       = Var( model.G , model.T , bounds = (0.0,9999999.0))
     model.cSD       = Var( model.G , model.T , bounds = (0.0,9999999.0))
     model.mpc       = Var( model.G , model.T , bounds = (0.0,9999999.0))
-    # model.snplus    = Var( model.T ,           bounds = (0.0,9999999.0)) ##surplus demand
-    # model.snminus   = Var( model.T ,           bounds = (0.0,9999999.0)) ##surplus demand
-    model.sn        = Var( model.T ,           bounds = (0.0,9999999.0)) ##surplus demand
-    model.sR        = Var( model.T ,           bounds = (0.0,9999999.0)) ##surplus reserve         
-    model.pl        = Var(model.indexGTLg,     bounds = (0.0,99999.0))   ## within=UnitInterval UnitInterval == [0,1]   
-    model.total_cSU = Var( bounds = (0.0,999999999999.0))                ## Acumula total prendidos
-    model.total_cSD = Var( bounds = (0.0,999999999999.0))                ## Acumula total apagados
+    # model.snplus    = Var( model.T ,           bounds = (0.0,9999999.0))    ##surplus demand
+    # model.snminus   = Var( model.T ,           bounds = (0.0,9999999.0))    ##surplus demand
+    model.sn        = Var(model.T ,           bounds = (0.0,9999999.0))       ##surplus demand
+    model.sR        = Var(model.T ,           bounds = (0.0,9999999.0))       ##surplus reserve         
+    model.pl        = Var(model.indexGTLg,    bounds = (0.0,99999.0))         ## within=UnitInterval UnitInterval == [0,1]   
+    model.total_cSU = Var(                    bounds = (0.0,999999999999.0))  ## Acumula total prendidos
+    # model.total_cSD = Var( bounds = (0.0,999999999999.0))              ## Acumula total apagados
     model.total_cEN = Var( bounds = (0.0,999999999999.0))                ## Acumula total energia
-    model.total_cMP = Var( bounds = (0.0,999999999999.0))               ## Acumula total CR
-    model.total_MPC = Var( bounds = (0.0,999999999999.0))               ## Acumula total MPC
+    model.total_cMP = Var( bounds = (0.0,999999999999.0))                ## Acumula total CR
+    model.total_MPC = Var( bounds = (0.0,999999999999.0))                ## Acumula total MPC
+    model.total_cDE = Var( bounds = (0.0,999999999999.0))                ## Acumula total compra de energia de demandas elasticas 'd'
 
     model.Pb     = Param(model.indexGLg, initialize = Pb,     within = Any)
     model.Cb     = Param(model.indexGLg, initialize = Cb,     within = Any)
@@ -114,6 +162,14 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,CR,Pb,Cb,C,Cs,T
     model.Cs     = Param(model.indexGSg, initialize = Cs,     within = Any)
     model.Tunder = Param(model.indexGSg, initialize = Tunder, within = Any)
     
+    if scope == 'market':
+        model.l  = Var(  model.LOAD,     model.T, bounds = (0.0,9999999999.0)) ## elastic demand commit
+        model.cd = Var(  model.LOAD,     model.T, bounds = (0.0,9999999999.0))        
+        model.pd = Var(  model.indexLoadTLd,      bounds = (0.0,99999.0))
+        model.Pd = Param(model.indexLoadLd,   initialize = Pd,     within = Any)
+        model.Cd = Param(model.indexLoadLd,   initialize = Cd,     within = Any)
+        
+        
     ## model.mut2.pprint()        ## For entire Constraint List
     ## print(model.mut2[1].expr)  ## For only one index of Constraint List
     ## print(model.mdt2[3].expr)  ## For only one index of Constraint List
@@ -122,16 +178,31 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,CR,Pb,Cb,C,Cs,T
     ## https://pyomo.readthedocs.io/en/stable/working_models.html
     ## model.u[3,1].fix(0)
     ## model.u.fix(0)
+    if scope == '':
+        def obj_rule(m): 
+            return  + m.total_cSU \
+                    + m.total_cEN \
+                    + m.total_cMP \
+                    + m.total_MPC \
+                    + 0
+                    # + sum(m.sn[t]   * CLP                    for t in m.T) 
+                #   + sum(m.sR[t]   * CRP                    for t in m.T) \
+                #   + m.total_cSD\
+        model.obj = Objective(rule = obj_rule,sense=minimize)
+        
+    if scope == 'market':
+        def obj_rule(m): 
+            return  + m.total_cSU \
+                    + m.total_cEN \
+                    + m.total_cMP \
+                    + m.total_MPC \
+                    - m.total_cDE \
+                    + 0
+                    # + sum(m.sn[t]   * CLP                    for t in m.T) 
+                #   + sum(m.sR[t]   * CRP                    for t in m.T) \
+                #   + m.total_cSD\
+        model.obj = Objective(rule = obj_rule,sense=minimize)
     
-    def obj_rule(m): 
-        return  + m.total_cSU \
-                + m.total_cEN \
-                + m.total_cMP \
-                + m.total_MPC \
-                + sum(m.sn[t]   * CLP                    for t in m.T) 
-            #   + sum(m.sR[t]   * CRP                    for t in m.T) \
-            #   + m.total_cSD\
-    model.obj = Objective(rule = obj_rule)
 
     ## -----------------------------TOTAL COSTOS VACIO------------------------------------------  
     def total_cMP_rule(m):  ## to account CR cost
@@ -153,11 +224,17 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,CR,Pb,Cb,C,Cs,T
         return m.total_MPC == sum( m.mpc[g,t] * 1 for g in m.G for t in m.T)
     model.total_MPC_ = Constraint(rule = total_MPC_rule)   
     
+    ## --------------------------------------- TOTAL OFERTAS DE COMPRA ------------------------------------------------  
+    if scope == 'market':
+        def total_cDE_rule(m):  ## to account purchase of energy of elastic loads
+            return m.total_cDE == sum( m.cd[l,t] for l in m.LOAD for t in m.T)
+        model.total_cDE_rule = Constraint(rule = total_cDE_rule)  
+      
     ## -----------------------------TOTAL COSTOS APAGADO------------------------------------------  
     # def total_cSD_rule(m):  ## to account for stoppages cost
     #     return m.total_cSD == sum( m.cSD[g,t] * 1 for g in m.G for t in m.T)
     # model.total_cSD_ = Constraint(rule = total_cSD_rule)
-      
+        
     
     ## -----------------------------GARVER------------------------------------------  
 
@@ -226,7 +303,7 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,CR,Pb,Cb,C,Cs,T
     
     ## -------------------------------GENERATION LIMITS (Tight)------------------------------------------ 
 
-    if mode == "Tight":
+    if mode == 'Tight':
         TRU = []; TRD = []; TRU.append(-1); TRD.append(-1)
         for g in G:
             TRU.append(floor((model.Pmax[g]-model.SU[g])/model.RU[g]))
@@ -284,16 +361,18 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,CR,Pb,Cb,C,Cs,T
  
     def demand_rule65(m,t):                      ## demand eq.(65)
         ##return sum( m.p[g,t] for g in m.G ) +  m.sn[t]  == m.De[t] 
-        return sum( m.p[g,t] for g in m.G )  + 0  == m.De[t] 
+        if scope == 'market':
+            return sum( m.p[g,t] for g in m.G )   == m.De[t] + sum( m.l[l,t] for l in m.LOAD )
+        else:
+            return sum( m.p[g,t] for g in m.G )   == m.De[t] 
     model.demand_rule65 = Constraint(model.T, rule = demand_rule65)
-    
-    # def demand_rule66a(m,t):                      ## holguras o excesos en la demanda eq.(66a)
-    #     return m.sn[t] == m.snplus[t] - m.snminus[t]  
-    # model.demand_rule66a = Constraint(model.T, rule = demand_rule66a)
 
     def demand_rule67(m,t):                      ## demand + reserve eq.(67)
         ##return sum( m.pb[g,t] for g in m.G ) +  m.sn[t] >= m.De[t] + m.R[t] 
-        return sum( m.pb[g,t] for g in m.G )   +  0       >= m.De[t] + m.R[t] 
+        if scope == 'market':
+            return sum( m.pb[g,t] for g in m.G )  >= m.De[t] + sum( m.l[l,t] for l in m.LOAD) + m.R[t] 
+        else: 
+            return sum( m.pb[g,t] for g in m.G )  >= m.De[t] + m.R[t] 
     model.demand_rule67 = Constraint(model.T, rule = demand_rule67)
 
     def reserve_rule68(m,t):                      ## reserve eq.(68)
@@ -301,6 +380,9 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,CR,Pb,Cb,C,Cs,T
         return sum( m.r[g,t] for g in m.G)    + 0       >= m.R[t] 
     model.reserve_rule68 = Constraint(model.T, rule = reserve_rule68)
 
+    # def demand_rule66a(m,t):                      ## holguras o excesos en la demanda eq.(66a)
+    #     return m.sn[t] == m.snplus[t] - m.snminus[t]  
+    # model.demand_rule66a = Constraint(model.T, rule = demand_rule66a)
 
     ## --------------------------------MINIMUM UP/DOWN TIME---------------------------------------
 
@@ -345,7 +427,7 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,CR,Pb,Cb,C,Cs,T
     
     ## ----------------------------PIECEWISE OFFER-------------------------------------------   
     
-    if mode == "Compact" and False:
+    if mode == 'Compact' and False:
         def Piecewise_offer51(m,g,t,l):  ## piecewise offer eq.(51)
             if l == 1:                
                 #return Constraint.Skip   
@@ -354,7 +436,7 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,CR,Pb,Cb,C,Cs,T
                 return m.cp[g,t] >= m.Cb[g,l]*m.p[g,t] + (m.Cb[g,l-1] - m.Cb[g,l]*m.Pb[g,l-1])*m.u[g,t]
         model.Piecewise_offer51 = Constraint(model.indexGTLg, rule = Piecewise_offer51)
     
-    if  mode == "Compact" and False: 
+    if  mode == 'Compact' and False: 
         def Piecewise_offer51(m,g,t,l):  ## piecewise offer eq.(51)
             if l == 1:   
                 x0 = 0  # m.Pmin[g]     ## PowerGenerationPiecewisePoints
@@ -382,7 +464,7 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,CR,Pb,Cb,C,Cs,T
             return m.TimePeriodLengthHours * m.PowerGenerationPiecewiseCostValues[g,t][i]
        
     
-    if mode == "Tight" and True:  ##  Garver 1962
+    if mode == 'Tight' and True:  ##  Garver 1962
         def Piecewise_offer42(m,g,t,l):  ## piecewise offer eq.(42)
             if l == 1:
                 return m.pl[g,t,l] <= (m.Pb[g,l]-m.Pmin[g] ) * m.u[g,t]
@@ -409,7 +491,7 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,CR,Pb,Cb,C,Cs,T
         model.Piecewise_mpc = Constraint(model.G,model.T, rule = Piecewise_mpc)
         
         
-    if mode == "Tight" and True:  ##  Knueven et al. (2018b)          
+    if mode == 'Tight' and True:  ##  Knueven et al. (2018b)          
         ## Tightened the bounds on pl(t)->(43),(44) with the start-up 
         ## and shutdown variables using the start-up and shutdown ramp:
         Cv = []
@@ -529,6 +611,7 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,CR,Pb,Cb,C,Cs,T
     
     
     ## ----------------------------SIMPLE COST PRODUCTION-------------------------------------------   
+    
     if False:
         def simple_cost(m,g,t):   
             return m.C[g,1] * m.p[g,t] == m.cp[g,t]                                            
@@ -537,7 +620,7 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,CR,Pb,Cb,C,Cs,T
     
     ## ----------------------------VARIABLE START-UP COST-------------------------------------------     
     
-    def Start_up_cost54(m,g,t,s):  ##  start-up cost eq.(54)   Checar and t >= m.Tunder[g,s+1]:------------------- 
+    def Start_up_cost54(m,g,t,s):  ##  start-up cost eq.(54)   Checar and t >= m.Tunder[g,s+1]:----- 
         if s != len(m.S[g]) and t >= m.Tunder[g,s+1]:  
             return m.delta[g,t,s] <= sum(m.w[g,t-i] for i in range(m.Tunder[g,s],m.Tunder[g,s+1])) 
         else:
@@ -564,7 +647,7 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,CR,Pb,Cb,C,Cs,T
         
     
     ## Initial Startup (t=0)Type required by MLR and Knueven from
-    ## "Tight and Compact MILP Formulation for the Thermal Unit Commitment Problem",
+    ## 'Tight and Compact MILP Formulation for the Thermal Unit Commitment Problem',
     ## Germán Morales-España, Jesus M. Latorre, and Andrés Ramos.  
        
     for g in range(1,len(G)+1): 
@@ -575,10 +658,27 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,CR,Pb,Cb,C,Cs,T
                         if t > max(model.Tunder[g,s+1]-TD_0[g],1):
                             model.delta[g,t,s].fix(0)
                             # print('fix delta:',g,t,s)
+                            
+                            
+    ## ---------------------------- SIMPLE PURCHASE BID -------------------------------------------   
+    
+    if scope == 'market':
+        print("")
+        
+        def simple_bid(m,l,t):   
+            return m.cd[l,t] == 25.919999* m.l[l,t]                                           
+        model.simple_bid = Constraint(model.LOAD, model.T, rule = simple_bid)
+        
+        def load_min_bid(m,l,t):   
+            return m.l[l,t] >= 0  #m.Pd[l,1]                                      
+        model.lim_min_bid = Constraint(model.LOAD, model.T, rule = load_min_bid)
+        
+        def load_max_bid(m,l,t):   
+            return m.l[l,t] <= 10  #m.Pd[l,1]                                      
+        model.lim_max_bid = Constraint(model.LOAD, model.T, rule = load_max_bid)
 
 
     ## ---------------------------- Inequality related with 'delta' and 'v' ------------------------------------------
-
     if option == 'Milp2':
         def Start_up_cost_desigualdad_Uriel(m,g):  ##  start-up cost eq.(54)(s < value(len(m.S[g])) and t >= m.Tunder[g,s+1]):
             return sum(m.v[g,t] for t in m.T) == sum(m.delta[g,t,s] for s in range(1,value(len(m.S[g]))+1) for t in m.T)  
@@ -586,8 +686,7 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,CR,Pb,Cb,C,Cs,T
         
 
     ## ---------------------------- LOCAL BRANCHING CONSTRAINT LBC 1 (SOFT-FIXING)------------------------------------------    
-    ## Define a neighbourhood with LBC1.
-    
+    ## Define a neighbourhood with LBC1.    
     if(option == 'lbc1'):
                   
         for f in No_SB_Uu:   
@@ -647,11 +746,9 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,CR,Pb,Cb,C,Cs,T
                     expr +=     model.u[f[0]+1,f[1]+1] 
                 model.cuts.add(expr >= k + 1)
                 
-                
-                
+               
     ## ---------------------------- LOCAL BRANCHING CONSTRAINT LBC2 (INTEGER VERSION)------------------------------------------    
-    ## Define a neighbourhood with LBC2.
-       
+    ## Define a neighbourhood with LBC2.       
     if(option == 'lbc2'):
                   
         for f in No_SB_Uu:   
@@ -699,7 +796,7 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,CR,Pb,Cb,C,Cs,T
                 
 
     ## ---------------------------- HARD VARIABLE FIXING I  ------------------------------------------
-    ## 
+    ##     
     if option == 'Hard':
         for f in SB_Uu:
             model.u[f[0]+1,f[1]+1].fix(1)                   ## Hard fixing
@@ -725,7 +822,6 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,CR,Pb,Cb,C,Cs,T
      
     ## ---------------------------- CHECK FEASIABILITY ------------------------------------------
     ## 
-
     if option == 'Check':  
         
         for f in SB_Uu: 
@@ -744,10 +840,24 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,CR,Pb,Cb,C,Cs,T
                     model.delta[g+1,t+1,delta[g][t]].domain = Binary 
                     model.delta[g+1,t+1,delta[g][t]].fix(1) ## Hard fixing
 
+   
+    ## ---------------------------- FIX SOLUTION LINEAR ------------------------------------------
+    ## 
+    if option == 'FixSol':  
+        
+        for f in SB_Uu: 
+            model.u[f[0]+1,f[1]+1].fix(1)                   ## Hard fixing
+        for f in No_SB_Uu: 
+            model.u[f[0]+1,f[1]+1].fix(0)                   ## Hard fixing
+        for g in range(0,len(model.G)):
+            for t in range(0,len(model.T)):
+                model.v[g+1,t+1].fix( V[g][t] )             ## Hard fixing
+                model.w[g+1,t+1].fix( W[g][t] )             ## Hard fixing
+                if delta[g][t] != 0:
+                    model.delta[g+1,t+1,delta[g][t]].fix(1) ## Hard fixing
                                 
     ## ---------------------------- REDUCED COST ------------------------------------------
     ## 
-
     if option == 'RC':                             
         for f in SB_Uu: 
             model.u[f[0]+1,f[1]+1].setlb(1.0)                 ## Fix upper bound
@@ -755,7 +865,7 @@ def uc(G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,CR,Pb,Cb,C,Cs,T
                     
     ## ---------------------------- KERNEL SEARCH ------------------------------------------
     ##
-    if option == 'KS' or option == 'RKS' :    
+    if option == 'KS' :    
         model.u.fix(0)                                      ## Hard fixing
         for f in kernel: 
             model.u[f[0]+1,f[1]+1].unfix()  
