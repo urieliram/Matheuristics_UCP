@@ -9,7 +9,7 @@ from   math import ceil
 
 class Solution:
     def __init__(self,model,env,executable,nameins='model',letter='',gap=0.0001,timelimit=300,tee=False,tofiles=False,lpmethod=0,
-                 cutoff=1e+75,emphasize=1,lbheur='no',symmetry=-1,exportLP=False,option=''):
+                 cutoff=1e+75,emphasize=1,lbheur='no',symmetry=-1,exportLP=False,option='',scope='',rc=False,dual=False):
         self.model      = model
         self.nameins    = nameins     ## name of instance 
         self.letter     = letter      ## letter that enlisted the LBC iteration
@@ -23,19 +23,24 @@ class Solution:
         self.cutoff     = cutoff      ## Agrega una cota superior factible, apara yudar a descartar nodos del árbol del B&B
         self.emphasize  = emphasize   ## Emphasize feasibility=1;  Optimality=2 https://www.ibm.com/docs/en/icos/20.1.0?topic=parameters-mip-emphasis-switch
         self.lbheur     = lbheur      ## Local branching heuristic is off; default
+        self.rc         = rc      ## To calculate Suffix data (dual and reduced cost)
         self.symmetry   = symmetry    ## symmetry breaking: Automatic =-1 Turn off=0 ; moderade=1 ; extremely aggressive=5
         self.exportLP   = exportLP    ## True si se exporta el modelo a formato LP y MPS
         self.gg         = len(model.G)
         self.tt         = len(model.T)
+        if scope == 'market':
+            self.ll     = len(model.LOAD)
         self.S          = model.S
         self.gap_       = 1e+75       ## relative gap calculated with #|bestbound-bestinteger|/(1e-10+|bestinteger|)
         self.z_exact    = 1e+75
         self.option     = option
+        self.scope      = scope
         self.fail       = False
         self.timeover   = False
         self.infeasib   = False
         self.nosoluti   = False
         self.optimal    = False
+        self.dual       = dual
                
     def getModel(self):
         return self.model
@@ -49,6 +54,8 @@ class Solution:
         return self.P
     def getR(self):
         return self.R
+    def getL(self):
+        return self.L
     
     # def getSnminus(self):
     #     return self.snminus
@@ -93,14 +100,18 @@ class Solution:
             filename = os.path.join(os.path.dirname(__file__), self.model.name+'.lp')
         ## write MPS file
             #self.model.write(filename, io_options={'symbolic_solver_labels': True})
-            #self.model.write(filename = self.model.name+'.mps', io_options = {"symbolic_solver_labels":True})
+            #self.model.write(filename = self.model.name+'.mps', io_options = {'symbolic_solver_labels':True})
         
         # Create a 'rc' suffix component on the instance so the solver plugin will know which suffixes to collect
-        if self.option == 'RC' : # or self.option == 'LR'
-            self.model.rc = Suffix(direction=Suffix.IMPORT,datatype=Suffix.FLOAT)
+        if self.rc == True: # or self.option == 'LR'
+            self.model.rc   = Suffix(direction=Suffix.IMPORT,datatype=Suffix.FLOAT)
+            print(self.option,'Reduced cost calculated')
+        if self.dual == True:
+            self.model.dual = Suffix(direction=Suffix.IMPORT,datatype=Suffix.FLOAT)
+            print(self.option,'Dual calculated')
 
         ## Envía el problema de optimización al solver
-        result = solver.solve(self.model,tee=self.tee,logfile='logfile'+self.option+self.nameins+self.letter+'.log',warmstart=True)#,suffixes='rc'
+        result = solver.solve(self.model,tee=self.tee,logfile='logfile'+self.option+self.nameins+self.letter+'.log',warmstart=True) #,suffixes='rc'
         
         
         # ## Envía el problema de optimización al solver
@@ -121,7 +132,7 @@ class Solution:
         
         # np_rc = np.array((1,2,3,4,5)) 
         # if self.option == 'RC':
-        #     print ("RC")
+        #     print ('RC')
         #     # print(self.model.rc[self.model.u[1,1]]) ##WORKS!
         #     for c in self.model.u:
         #         self.model.rc[self.model.u[c[0],c[1]]]
@@ -133,22 +144,22 @@ class Solution:
             
         elif result.solver.termination_condition == TerminationCondition.infeasible:
             ##https://stackoverflow.com/questions/51044262/finding-out-reason-of-pyomo-model-infeasibility
-            print(">>> Infeasible solution  (╯︵╰,)")
+            print('>>> Infeasible solution  (╯︵╰,)')
             self.infeasib = True
             # print(log_infeasible_constraints(self.model, log_expression=True, log_variables=True))
             # logging.basicConfig(filename='example.log', encoding='utf-8', level=logging.INFO)
             #logging.basicConfig(filename='unfeasible.log', encoding='utf-8', level=logging.INFO)
-            #sys.exit("!!! Unfortunately, the program has stopped.") 
+            #sys.exit('!!! Unfortunately, the program has stopped.') 
         elif (result.solver.termination_condition == TerminationCondition.maxTimeLimit):
-            print ("Zzz... The maximum time limit has been reached")
+            print ('Zzz... The maximum time limit has been reached')
             self.timeover = True
                     
         elif (result.solver.termination_condition == TerminationCondition.unknown):
-            print ("(✖╭╮✖) Time limit exceeded, no solution found")
+            print ('(✖╭╮✖) Time limit exceeded, no solution found')
             self.nosoluti = True
             
         else:
-            print ("!!! Something else is wrong, the program end.",str(result.solver)) 
+            print ('!!! Something else is wrong, the program end.',str(result.solver)) 
             exit()
             
              
@@ -162,6 +173,9 @@ class Solution:
                 self.P     = deepcopy(self.Uu)
                 self.R     = deepcopy(self.Uu)
                 self.delta = deepcopy(self.Uu)
+                
+                if self.scope == 'market':
+                    self.L    = [[0 for i in range(self.tt)] for j in range(self.ll)]
                         
                 # self.snplus   = [0 for i in range(self.tt)]     
                 # self.snminus  = [0 for i in range(self.tt)]
@@ -181,6 +195,10 @@ class Solution:
                         self.P [g][t] = round(self.model.p[(g+1, t+1)].value,5)
                         self.R [g][t] = round(self.model.r[(g+1, t+1)].value,5)
                         
+                if self.scope == 'market':
+                    for t in range(0, self.tt):
+                        for l in range(0, self.ll):
+                            self.L [l][t] = round(self.model.l[(l+1, t+1)].value,5)
             # # for t in range(self.tt):
             #     self.snplus[t] = round(self.model.snplus[t+1].value,5)
             #     self.snminus[t] = round(self.model.snminus[t+1].value,5)
@@ -212,13 +230,15 @@ class Solution:
         return self.z_exact, self.gap_
     
             
-    def send_to_File(self,letra=""):     
-        util.sendtofilesolution(self.Uu    ,"U_"   + self.nameins + letra +".csv")
-        util.sendtofilesolution(self.V     ,"V_"   + self.nameins + letra +".csv")
-        util.sendtofilesolution(self.W     ,"W_"   + self.nameins + letra +".csv")
-        util.sendtofilesolution(self.P     ,"P_"   + self.nameins + letra +".csv")
-        util.sendtofilesolution(self.R     ,"R_"   + self.nameins + letra +".csv")
-        util.sendtofilesolution(self.delta ,"del_" + self.nameins + letra +".csv")
+    def send_to_File(self,letra=''):     
+        util.sendtofilesolution(self.Uu    ,'U_'   + self.nameins + letra +'.csv')
+        util.sendtofilesolution(self.V     ,'V_'   + self.nameins + letra +'.csv')
+        util.sendtofilesolution(self.W     ,'W_'   + self.nameins + letra +'.csv')
+        util.sendtofilesolution(self.P     ,'P_'   + self.nameins + letra +'.csv')
+        util.sendtofilesolution(self.R     ,'R_'   + self.nameins + letra +'.csv')
+        util.sendtofilesolution(self.delta ,'del_' + self.nameins + letra +'.csv')
+        if self.scope == 'market':
+            util.sendtofilesolution(self.L     ,'l_'   + self.nameins + letra +'.csv')
         
         file = open(self.nameins + letra + '.dat', 'w')
         file.write('z:%s\n' % (value(self.model.obj)))
@@ -343,9 +363,9 @@ class Solution:
                     Uu_no_int.append([g,t,self.Uu[g][t]])    
         if len(Uu_no_int) != 0:
             if self.option=='relax':
-                print(self.option+" Numero de No binarios en la solución ---> solution.Uu_no_int=",len(Uu_no_int))   
+                print(self.option+' Numero de No binarios en la solución ---> solution.Uu_no_int=',len(Uu_no_int))   
             else:
-                print(self.option+" >>> WARNING: se han encontrado No binarios en la solución ---> solution.Uu_no_int=",len(Uu_no_int),Uu_no_int)   
+                print(self.option+' >>> WARNING: se han encontrado No binarios en la solución ---> solution.Uu_no_int=',len(Uu_no_int),Uu_no_int)   
         return 0
     
     
@@ -359,7 +379,7 @@ class Solution:
         equal_arrays = comparison.all() 
         print('Uu equal_arrays  =',equal_arrays)        
         out_num = np.subtract(npArray1, npArray2) 
-        print ("Uu Difference of two input number : ",type(out_num), out_num) 
+        print ('Uu Difference of two input number : ',type(out_num), out_num) 
         
         
         

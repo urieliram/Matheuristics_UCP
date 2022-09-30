@@ -1,6 +1,6 @@
 import json
 import util
-import shutil
+# import shutil
 import os
 import pandas as pd
 
@@ -23,13 +23,13 @@ def reading(file):
     RD      = {}   ## ramp_down_limit", "ramp_down_60min"
     SU      = {}   ## ramp_startup_limit", "startup_capacity"
     SD      = {}   ## ramp_shutdown_limit", "shutdown_capacity"
-    TU      = {}   ## time_upminimum
-    TD      = {}   ## time_down_minimum
+    UT      = {}   ## time_upminimum
+    DT      = {}   ## time_down_minimum
     D       = {}   ## number of hours generator g is required to be off at t=1 (h).
     U       = {}   ## number of hours generator g is required to be on at t=1 (h).
     TD_0    = {}   ## Number of hours that the unit has been offline before the scheduling horizon.
     p_0     = {}   ## power_output_t0
-    mpc     = {}   ## cost of generator g running and operating at minimum production Pmin ($/h).
+    CR      = {}   ## cost of generator g running and operating at minimum production Pmin ($/h).
     C       = {}   ## 
     Cs      = {}   ## Costo de cada escalón del conjunto S de la función de costo variable de arranque.
     Tunder  = {}   ## lag de cada escalón del conjunto S de la función de costo variable de arranque.
@@ -177,9 +177,9 @@ def reading(file):
         for j in i:
             n=n+1
             C[k,n] = j[1]
-            # ## Se calcula el costo mínimo de operación mpc
+            # ## Se calcula el costo mínimo de operación CR
             # if n==1:
-            #     mpc[k] = j[0]*j[1] 
+            #     CR[k] = j[0]*j[1] 
         del C[(k,n)]      
          
         
@@ -205,77 +205,74 @@ def reading(file):
             Tunder[k,n] = j[0]
             Cs[k,n]     = j[1] 
             
+    
     ## Leemos cargas elásticas
-            
+    
     LOAD                      = []  
-    LD                        = {}   ## eslabones de oferta de compra en piecewise
+    Ld                        = {}   ## eslabones de oferta de compra en piecewise
     names_loads               = []  
     piecewise_production_load = []
     Piecewise_load            = []    
-    Pl                        = {}   ## maximum load for piecewise segment LD for a load "load"(MW).
-    Cl                        = {}   ## dib of a load "load" consuming Pl MW of power ($/h).
-    i = 1
-    ## Se obtiene nombre de las cargas elásticas y el número total
-    for load in md['loads']:  
-        names_loads.append(load)
-        LOAD.append(i)
-        i+=1   
-    
-    i=1 ## Cuenta las cargas
-    for load in names_loads:
-        piecewise_production_load = md['loads'][load]["piecewise_production"] # bids offer      
-        ## Para obtener los piecewise del costo de los generadores
-        lista_aux = []
-        j = 0
-        for piece in piecewise_production_load:
-            lista_aux.append((piece['mw'],piece['cost']))
-            j+=1            
-        Piecewise_load.append(lista_aux)
-        lista = []
-        jj=1
-        for ii in range(j-1):
-            lista.append(jj)
-            jj= jj+1
-        LD[i] = lista
-        i+=1;  
-                
-    k=0; n=0
-    for i in Piecewise_load:
-        k=k+1
-        n=0
-        for j in i:
-            if n!=0:
-                #print(k,",",n,",",j[0],",",j[1])
-                Pl[k,n] = j[0]
-                Cl[k,n] = j[1]   
-            n=n+1
-                
+    Pd                        = {}   ## maximum load for piecewise segment LD for a load "load"(MW).
+    Cd                        = {}   ## dib of a load "load" consuming Pd MW of power ($/h).
+    try:
+        i = 1
+        ## Se obtiene nombre de las cargas elásticas y el número total
+        for load in md['loads']:  
+            names_loads.append(load)
+            LOAD.append(i)
+            i+=1   
         
-    print(Piecewise_load)
-    print(LD)
-    print(Pl)
-    print(Cl)
-        
+        i=1 ## Cuenta las cargas
+        for load in names_loads:
+            piecewise_production_load = md['loads'][load]["piecewise_production"] # bids offer      
+            ## Para obtener los piecewise del costo de los generadores
+            lista_aux = []
+            j = 0
+            for piece in piecewise_production_load:
+                lista_aux.append((piece['mw'],piece['cost']))
+                j+=1            
+            Piecewise_load.append(lista_aux)
+            lista = []
+            jj=1
+            for ii in range(j-1):
+                lista.append(jj)
+                jj= jj+1
+            Ld[i] = lista
+            i+=1;  
+                    
+        k=0; n=0
+        for i in Piecewise_load:
+            k=k+1
+            n=0
+            for j in i:
+                if n!=0:
+                    #print(k,",",n,",",j[0],",",j[1])
+                    Pd[k,n] = j[0]
+                    Cd[k,n] = j[1]   
+                n=n+1
 
-
+    except:
+        print('Sin información de cargas elásticas')    
             
     
     ## Aqui se pasan de arreglos a diccionarios como los usa Pyomo
-    Pmax = dict(zip(G, power_output_maximum))
-    Pmin = dict(zip(G, power_output_minimum))
-    TU   = dict(zip(G, time_up_minimum))     
-    TD   = dict(zip(G, time_down_minimum))  
-    u_0  = dict(zip(G, u_0_list))          
-    U    = dict(zip(G, Ulist))              
-    D    = dict(zip(G, Dlist))             
-    TD_0 = dict(zip(G, TD0list))                
-    SU   = dict(zip(G, ramp_startup_limit))
-    SD   = dict(zip(G, ramp_shutdown_limit))
-    RU   = dict(zip(G, ramp_up_limit))
-    RD   = dict(zip(G, ramp_down_limit))
-    p_0  = dict(zip(G, p_0_list))  
-    names= dict(zip(G, names_gens))  
-    mpc  = dict(zip(G, fixed_cost))  
+    Pmax   = dict(zip(G, power_output_maximum))
+    Pmin   = dict(zip(G, power_output_minimum))
+    UT     = dict(zip(G, time_up_minimum))     
+    DT     = dict(zip(G, time_down_minimum))  
+    u_0    = dict(zip(G, u_0_list))          
+    U      = dict(zip(G, Ulist))              
+    D      = dict(zip(G, Dlist))             
+    TD_0   = dict(zip(G, TD0list))                
+    SU     = dict(zip(G, ramp_startup_limit))
+    SD     = dict(zip(G, ramp_shutdown_limit))
+    RU     = dict(zip(G, ramp_up_limit))
+    RD     = dict(zip(G, ramp_down_limit))
+    p_0    = dict(zip(G, p_0_list))  
+    names  = dict(zip(G, names_gens))  
+    CR     = dict(zip(G, fixed_cost))      
+    
     
     ## -----------------  Caso de ejemplo de anjos.json  --------------------------
     #G        = [1, 2, 3]
@@ -284,8 +281,8 @@ def reading(file):
     #S        = {1: [1, 2, 3], 2: [1, 2, 3], 3: [1, 2, 3, 4]}
     #Pmax     = {1: 300.0, 2: 200.0, 3: 100.0}
     #Pmin     = {1: 80, 2: 50, 3: 30}
-    #TU       = {1: 3, 2: 2, 3: 1}
-    #TD       = {1: 2, 2: 2, 3: 2}
+    #UT       = {1: 3, 2: 2, 3: 1}
+    #DT       = {1: 2, 2: 2, 3: 2}
     #De       = {1: 240, 2: 250, 3: 200, 4: 170, 5: 230, 6: 190}
     #R        = {1: 10, 2: 10, 3: 10, 4: 10, 5: 10, 6: 10}
     #u_0      = {1: 1, 2: 0, 3: 0}
@@ -296,7 +293,7 @@ def reading(file):
     #RU       = {1: 50, 2: 60, 3: 70}
     #RD       = {1: 30, 2: 40, 3: 50}
     #p_0     = {1: 40, 2: 0, 3: 0}
-    #mpc      = {1: 400.0, 2: 750.0, 3: 900.0}
+    #CR      = {1: 400.0, 2: 750.0, 3: 900.0}
     #Pb       = {(1, 1): 80, (1, 2): 150, (1, 3): 300, (2, 1): 50, (2, 2): 100, (2, 3): 200, (3, 1): 30, (3, 2): 50, (3, 3): 70, (3, 4): 100}   
     #C        = {(1, 1): 5.0, (1, 2): 5.0, (1, 3): 5.0, (2, 1): 15.0, (2, 2): 15.0, (2, 3): 15.0, (3, 1): 30.0, (3, 2): 30.0, (3, 3): 30.0, (3, 4): 30.0}
     #Cs       = {(1, 1): 800.0, (1, 2): 800.0, (1, 3): 800.0, (2, 1): 500.0, (2, 2): 500.0, (2, 3): 500.0, (3, 1): 25.0, (3, 2): 250.0, (3, 3): 
@@ -306,11 +303,9 @@ def reading(file):
     #relax    = False
     #ambiente = 'localPC'
     ## ----------------------------------  o  -------------------------------------
+
+    instance = [G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,Pb,Cb,C,CR,Cs,Tunder,names,LOAD,Ld,Pd,Cd ]
     
-    #to_dirdat(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,SU,SD,RU,RD,p_0,Pb,C,mpc,Cs,Tunder,names)
-    
-    # validation(G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,Pb,Cb,C,mpc,Cs,Tunder,names,abajo_min)
-       
-    return G,T,L,S,Pmax,Pmin,TU,TD,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,Pb,Cb,C,mpc,Cs,Tunder,names
+    return instance 
           
    

@@ -898,3 +898,143 @@
 # ##  Escribiendo POTVERC.csv
 # ##  Escribiendo PREVERC.csv
 # ##  Escribiendo UNIHMDA.csv
+
+
+
+    
+## ---------------------------------  REDUCED KERNEL SEARCH --------------------------------------
+## 
+## La versión básica de RKS consiste en relajar la formulacion fijando el soporte binario y a partir de ello sacar 
+## el kernel SB_Uu y un conjunto de buckets a partir de lower_Pmin_Uu, después de manera 
+## iterativa se resuelven los SUB-MILP´S 'restringidos' mas pequeños. Este proceso se repite hasta terminar el tiempo.
+## RKS solution and solve the sub-MILP (it is using cutoff = z_hard).
+## Use 'Soft+pmin' (lower subset of Uu-Pmin) as the first and unique bucket to consider
+
+# if  False:
+#     Vv          = deepcopy(Vv3)
+#     Ww          = deepcopy(Ww3)
+#     delta       = deepcopy(delta3)
+#     SB_Uu       = deepcopy(SB_Uu3)
+#     No_SB_Uu    = deepcopy(No_SB_Uu3)
+#     saved       = [SB_Uu,No_SB_Uu,Vv,Ww,delta]
+
+#     t_o         = time.time() 
+#     incumbent   =  z_hard3
+#     cutoff      =  z_hard3 # 1e+75 
+#     iter        =  0  
+#     sol_rks     =  []
+#     result_iter =  []
+#     result_iter.append((t_hard3 + time.time() - t_o, z_hard3))
+
+#     while True:
+#         ## --------------------------------------- CALCULATE REDUCED COSTS Uu ------------------------------------
+#         t_res = max(0,( timemilp - t_hard3 ) - (time.time() - t_o))
+#         if t_res <= 0:
+#             print('RKS Salí ciclo externo')
+#             break
+        
+#         if  True:
+#             t_1 = time.time()
+#             model,__  = uc_Co.uc(instance,option='RC',
+#                                 SB_Uu=saved[0],No_SB_Uu=saved[1],V=saved[2],W=saved[3],delta=saved[4],nameins=nameins[0:5],mode='Tight',scope=scope)
+#             sol_rc    = Solution(model=model,nameins=nameins[0:5],env=ambiente,executable=executable,gap=gap,timelimit=timemilp,
+#                                 tee=False,tofiles=False,emphasize=emph,symmetry=symmetry,exportLP=False,option='RC')
+#             z_rc,g_rc = sol_rc.solve_problem() 
+#             t_rc      = time.time() - t_1
+#             print('RKS t_rc= ',round(t_rc,1),'z_rc= ',round(z_rc,4))      
+            
+#             ## ----------------------------- SECOND PHASE ----------------------------------------------
+#             ##  Defining buckets 
+#             rc   = []
+#             i    = 0                    
+#             for f in No_SB_Uu: 
+#                 rc.append(( i, model.rc[model.u[f[0]+1,f[1]+1]],f[0],f[1] ))
+#                 i = i + 1    
+#             rc.sort(key=lambda tup:tup[1], reverse=False) ## Ordenamos las variables No_SB_Uu de acuerdo a sus costos reducidos 
+            
+#             ##  Definimos el número de buckets 
+#             K = floor(1 + 3.322 * log(len(No_SB_Uu)))  ## Sturges rule
+#             print('RKS Number of buckets K =', K)    
+#             len_i  = ceil(len(No_SB_Uu) / K)
+#             pos_i  = 0
+#             k_     = [0]    
+#             for i in range(len_i,len(No_SB_Uu),len_i+1):
+#                 k_.append( i )
+#             k_[-1] = len(No_SB_Uu)
+#             print( k_ )
+            
+#             cutoff      = incumbent # 1e+75 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+#             iter_bk     = 0
+#             iterstop    = 3 #K - 2  #  
+#             char        = ''
+#             kernel      = deepcopy(SB_Uu)
+            
+#             ## Recontabilizamos el tiempo
+#             t_res   = max(0,( timemilp - t_hard3) - (time.time() - t_o))
+#             timeheu = t_res / K
+            
+#             while True: 
+#                 t_res = max(0,( timemilp - t_hard3 ) - (time.time() - t_o))
+#                 if iter_bk >= iterstop or t_res <= 0:
+#                     print('RKS Salí ciclo interno')
+#                     break
+
+#                 timeheu1  = min(t_res,timeheu)      
+#                 bucket    = rc[k_[iter_bk]:k_[iter_bk + 1]] 
+#                 print('bucket',util.getLetter(iter),'[',k_[iter_bk],':',k_[iter_bk + 1],']' )      
+                
+#                 try:
+#                     ##  Resolvemos el kernel con cada uno de los buckets
+#                     lbheur     = 'yes'
+#                     emph       = 0     ## feasibility =1
+#                     model,__   = uc_Co.uc(instance,option='RKS',
+#                                           kernel=kernel,bucket=bucket,
+#                                           nameins=nameins[0:5],mode='Tight',scope=scope)
+#                     sol_rks     = Solution(model=model,env=ambiente,executable=executable,
+#                                            nameins=nameins[0:5],letter=util.getLetter(iter),
+#                                            gap=gap,cutoff=cutoff,timelimit=timeheu1,
+#                                            tee=False,emphasize=emph,lbheur=lbheur,symmetry=symmetry,tofiles=False,option='RKS')
+#                     z_rks, g_rks = sol_rks.solve_problem()
+#                     t_rks       = time.time() - t_o + t_hard3
+#                     kernel, No_SB_Uu, __, Vv, Ww, delta = sol_rks.select_binary_support_Uu('RKS') 
+                    
+#                     if z_rks < incumbent :                      ## Update solution
+#                         incumbent  = z_rks
+#                         cutoff     = z_rks
+#                         saved      = [kernel,No_SB_Uu,Vv,Ww,delta]
+#                         g_rks       = util.igap(z_lp,z_rks)
+#                         char       = '***'
+                        
+#                     result_iter.append((round(time.time()-t_o+t_hard3,1), z_rks))
+#                     print('<°|>< iter:'+str(iter)+' t_rks= ',round(time.time()-t_o+t_hard3,1),'z_rks= ',round(z_rks,1),char) #,'g_rks= ',round(g_rks,5)
+#                 except:
+#                     # print('>>> Iteración sin solución')
+#                     result_iter.append((round(time.time()-t_o+t_hard3,1), 1e+75))
+#                 finally:    
+#                     iter_bk = iter_bk + 1
+                    
+#                 print('\t')       
+                    
+#                 t_res = max(0,( timemilp - t_hard3 ) - (time.time() - t_o))
+#                 print('RKS ','tiempo restante:',t_res)
+                
+#                 del sol_rks
+#                 gc.collect()
+#                 iter = iter + 1
+                                
+#         Vv       = deepcopy(saved[2])
+#         Ww       = deepcopy(saved[3])
+#         delta    = deepcopy(saved[4])
+#         SB_Uu    = deepcopy(saved[0])
+#         No_SB_Uu = deepcopy(saved[1])
+
+#     t_rks = (time.time() - t_o) + t_hard3  
+#     z_rks = incumbent    
+#     for item in result_iter:
+#         print(item[0],',',item[1])
+#     result_iter = np.array(result_iter)
+#     np.savetxt('iterRKS'+nameins[0:5]+'.csv', result_iter, delimiter=',')
+    
+#     checkSol('z_rks',z_rks,SB_Uu,No_SB_Uu,Vv,Ww,delta) ## Check feasibility (RKS)
+             
+           
