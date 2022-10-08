@@ -231,14 +231,14 @@ class Solution:
     
             
     def send_to_File(self,letra=''):     
-        util.sendtofilesolution(self.Uu    ,'U_'   + self.nameins + letra +'.csv')
-        util.sendtofilesolution(self.V     ,'V_'   + self.nameins + letra +'.csv')
-        util.sendtofilesolution(self.W     ,'W_'   + self.nameins + letra +'.csv')
-        util.sendtofilesolution(self.P     ,'P_'   + self.nameins + letra +'.csv')
-        util.sendtofilesolution(self.R     ,'R_'   + self.nameins + letra +'.csv')
-        util.sendtofilesolution(self.delta ,'del_' + self.nameins + letra +'.csv')
-        if self.scope == 'market':
-            util.sendtofilesolution(self.L     ,'l_'   + self.nameins + letra +'.csv')
+        # util.sendtofilesolution(self.Uu    ,'U_'   + self.nameins + letra +'.csv')
+        # util.sendtofilesolution(self.V     ,'V_'   + self.nameins + letra +'.csv')
+        # util.sendtofilesolution(self.W     ,'W_'   + self.nameins + letra +'.csv')
+        # util.sendtofilesolution(self.P     ,'P_'   + self.nameins + letra +'.csv')
+        # util.sendtofilesolution(self.R     ,'R_'   + self.nameins + letra +'.csv')
+        # util.sendtofilesolution(self.delta ,'del_' + self.nameins + letra +'.csv')
+        # if self.scope == 'market':
+        #     util.sendtofilesolution(self.L     ,'l_'   + self.nameins + letra +'.csv')
         
         file = open(self.nameins + letra + '.dat', 'w')
         file.write('z:%s\n' % (value(self.model.obj)))

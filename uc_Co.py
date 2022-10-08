@@ -22,6 +22,7 @@
 # from   pyomo.environ import *
 from  pyomo.environ import Set, ConcreteModel, Param, Var, Objective, minimize, ConstraintList, Constraint, Any, value, UnitInterval, Binary
 from  math import floor ,ceil
+import threading
       
 def uc(instance,option='None',
        kernel=[],bucket=[],SB_Uu=[],No_SB_Uu=[],lower_Pmin_Uu=[],V=[],W=[],delta=[],
@@ -59,16 +60,23 @@ def uc(instance,option='None',
         Ld      = instance[27]
         Pd      = instance[28]
         Cd      = instance[29]
-        
+        GRO     = instance[30]
+        RO      = instance[31]
+        ROmin   = instance[32]
+        ROmax   = instance[33]
+    
     model      = ConcreteModel(nameins)    
-    model.G    = Set(         initialize = G)
-    model.T    = Set(         initialize = T)  
-    model.L    = Set(model.G, initialize = L) 
-    model.S    = Set(model.G, initialize = S) 
+    model.G    = Set(           initialize = G)
+    model.T    = Set(           initialize = T)  
+    model.L    = Set(model.G,   initialize = L) 
+    model.S    = Set(model.G,   initialize = S) 
     
     if scope == 'market':
-        model.LOAD = Set(initialize = LOAD)  
-        model.Ld   = Set(model.LOAD, initialize = Ld) ## Set of segments of purchase bid of elastic load
+        model.LOAD  = Set(                       initialize = LOAD)  
+        model.Ld    = Set(  model.LOAD,          initialize = Ld) ## Set of segments of purchase bid of elastic load
+
+        model.GRO   = Set(                       initialize = GRO) 
+        model.RO    = Set(  model.GRO,           initialize = RO) 
     
     model.Pmax = Param(model.G    , initialize = Pmax , within = Any)
     model.Pmin = Param(model.G    , initialize = Pmin , within = Any)
@@ -87,7 +95,6 @@ def uc(instance,option='None',
     model.CR   = Param(model.G    , initialize = CR   , within = Any) #cost of generator g running and operating at minimum production
     # model.c    = Param(model.G , initialize = {1:5,2:15,3:30}    ,within =Any)
     # model.cU   = Param(model.G , initialize = {1:800,2:500,3:250},within = Any)
-          
     
     inside90 = 0              ## default
     CLP      = 1000.0         ## penalty cost for failing to meet or exceeding load ($/megawatt-hour (MWh)).
@@ -95,34 +102,51 @@ def uc(instance,option='None',
     
     ##  Defined index to compute the per-generator, per-time, and segment period production costs.
     def index_G_T_Lg(m):
-        return ((g,t,l) for g in m.G for t in m.T for l in range(1,len(m.L[g])+1))
-    model.indexGTLg = Set(initialize=index_G_T_Lg, dimen=3)
+        return ((g,t,l) for g in m.G for t in m.T for l in range(1,len(m.L[g])+1))    
+    model.indexGTLg = Set(initialize=index_G_T_Lg, dimen=3)     
     
     ##  Defined index to compute the per-generator, and segment period production costs.
     def index_G_Lg(m):
-        return ((g,l) for g in m.G for l in range(1,len(m.L[g])+1))
-    model.indexGLg = Set(initialize=index_G_Lg, dimen=2)
+        return ((g,l) for g in m.G for l in range(1,len(m.L[g])+1))     
+    model.indexGLg  = Set(initialize=index_G_Lg, dimen=2)    
     
     ##  Defined index to compute the per-generator, per-time, and  start-up segment cost variable.
     def index_G_T_Sg(m):
-        return ((g,t,s) for g in m.G for t in m.T for s in range(1,len(m.S[g])+1)) 
-    model.indexGTSg = Set(initialize=index_G_T_Sg, dimen=3)    
+        return ((g,t,s) for g in m.G for t in m.T for s in range(1,len(m.S[g])+1))        
+    model.indexGTSg = Set(initialize=index_G_T_Sg, dimen=3) 
     
     ##  Defined index to compute the per-generator, and start-up segment cost variable.
     def index_G_Sg(m):
-        return ((g,s) for g in m.G for s in range(1,len(m.S[g])+1)) 
-    model.indexGSg = Set(initialize=index_G_Sg, dimen=2)
+        return ((g,s) for g in m.G for s in range(1,len(m.S[g])+1))     
+    model.indexGSg  = Set(initialize=index_G_Sg, dimen=2)
+    
+
     
     if scope == 'market':
-        ##  Defined index to compute the per-load, per-time, and segment energy purchase.
-        def index_LOAD_T_Ld(m):
-            return ((l,t,i) for l in m.LOAD for t in m.T for i in range(1,len(m.Ld[l])+1))
-        model.indexLoadTLd = Set(initialize=index_LOAD_T_Ld, dimen=3)
         
         ##  Defined index to compute the per-load, and segment energy purchase.
         def index_LOAD_Ld(m):
-            return ((l,i) for l in m.LOAD for i in range(1,len(m.Ld[l])+1))
+            return ((d,i)  for d in m.LOAD                for i in range(1,len(m.Ld[d])+1))
         model.indexLoadLd = Set(initialize=index_LOAD_Ld, dimen=2)
+        
+        ##  Defined index to compute the per-load, per-time, and segment energy purchase.
+        def index_LOAD_T_Ld(m):
+            return ((d,t,i) for d in m.LOAD for t in m.T for i in range(1,len(m.Ld[d])+1))
+        model.indexLoadTLd = Set(initialize=index_LOAD_T_Ld, dimen=3)        
+        
+        ##  Defined index to prohibed operative zone (POZ).
+        def index_GRO_RO(m):
+            return ((g,ro) for g in m.GRO                for ro in m.RO[g])
+        model.indexGRO_RO = Set(initialize=index_GRO_RO, dimen=2)        
+        
+        def indexGRO_T_RO(m):
+            return ((g,t,ro) for g in m.GRO for t in m.T for ro in m.RO[g])
+        model.indexGRO_T_RO = Set(initialize=indexGRO_T_RO, dimen=3)
+        
+        def index_GRO_T(m):
+            return ((g,t) for g in m.GRO                 for t in m.T)
+        model.indexGRO_T = Set(initialize=index_GRO_T, dimen=2)     
+        
     
     if(option == 'LR' or option == 'RC' or option == 'FixSol'): #Si se desea relajar las variables enteras como continuas
         model.u     = Var( model.G , model.T , within = UnitInterval)   ## UnitInterval: floating point values in the interval [0,1]
@@ -155,21 +179,31 @@ def uc(instance,option='None',
     model.total_cMP = Var( bounds = (0.0,999999999999.0))                ## Acumula total CR
     model.total_MPC = Var( bounds = (0.0,999999999999.0))                ## Acumula total MPC
     model.total_cDE = Var( bounds = (0.0,999999999999.0))                ## Acumula total compra de energia de demandas elasticas 'd'
-
+    model.allLOAD   = Var( model.T ,bounds = (0.0,999999999999.0))                ## Cuenta el total de demanda elástica asignada
     model.Pb     = Param(model.indexGLg, initialize = Pb,     within = Any)
     model.Cb     = Param(model.indexGLg, initialize = Cb,     within = Any)
     model.C      = Param(model.indexGLg, initialize = C,      within = Any)
     model.Cs     = Param(model.indexGSg, initialize = Cs,     within = Any)
     model.Tunder = Param(model.indexGSg, initialize = Tunder, within = Any)
     
+    
     if scope == 'market':
-        model.l  = Var(  model.LOAD,     model.T, bounds = (0.0,9999999999.0)) ## elastic demand commit
-        model.cd = Var(  model.LOAD,     model.T, bounds = (0.0,9999999999.0))        
-        model.pd = Var(  model.indexLoadTLd,      bounds = (0.0,99999.0))
-        model.Pd = Param(model.indexLoadLd,   initialize = Pd,     within = Any)
-        model.Cd = Param(model.indexLoadLd,   initialize = Cd,     within = Any)
+        model.l  = Var(  model.LOAD,     model.T, bounds = (0.0,9999999999.0))   ## elastic demand commit
+        model.cd = Var(  model.LOAD,     model.T, bounds = (0.0,9999999999.0))   ## partial load cost        
+        model.ld = Var(  model.indexLoadTLd,      bounds = (0.0,99999.0))        ## Stairwise segments
+        model.Pd = Param(model.indexLoadLd,   initialize = Pd, within = Any)     ## Stairwise energy
+        model.Cd = Param(model.indexLoadLd,   initialize = Cd, within = Any)     ## Stairwise cost
         
+        model.ROmin = Param(model.indexGRO_RO , initialize = ROmin)              ## Prohibed zone minimum
+        model.ROmax = Param(model.indexGRO_RO , initialize = ROmax)              ## Prohided zone maximum
+        model.pc_RO = Var(  model.indexGRO_T_RO, bounds = (0.0,99999.0))      
         
+        if option == 'LR' or option == 'RC' or option == 'FixSol':
+            model.u_RO  = Var(  model.indexGRO_T_RO, within = UnitInterval)        
+        else:
+            model.u_RO  = Var(  model.indexGRO_T_RO, within = Binary)        
+            
+       
     ## model.mut2.pprint()        ## For entire Constraint List
     ## print(model.mut2[1].expr)  ## For only one index of Constraint List
     ## print(model.mdt2[3].expr)  ## For only one index of Constraint List
@@ -207,29 +241,34 @@ def uc(instance,option='None',
     ## -----------------------------TOTAL COSTOS VACIO------------------------------------------  
     def total_cMP_rule(m):  ## to account CR cost
         return m.total_cMP == sum( m.CR[g] * m.u[g,t] for g in m.G for t in m.T)
-    model.total_cMP_ = Constraint(rule = total_cMP_rule)    
     
     ## -----------------------------TOTAL COSTOS ENERGIA------------------------------------------  
     def total_cEN_rule(m):  ## to account energy cost
-        return m.total_cEN == sum( m.cp[g,t] for g in m.G for t in m.T)
-    model.total_cEN_ = Constraint(rule = total_cEN_rule)    
+        return m.total_cEN == sum( m.cp[g,t] for g in m.G for t in m.T)    
         
     ## -----------------------------TOTAL COSTOS ARRANQUE------------------------------------------  
     def total_cSU_rule(m):  ## to account starts cost
         return m.total_cSU == sum( m.cSU[g,t] * 1 for g in m.G for t in m.T)
-    model.total_cSU_ = Constraint(rule = total_cSU_rule)   
     
     ## -----------------------------TOTAL MINIMUM PRODUCTION COST------------------------------------------  
     def total_MPC_rule(m):  ## to account minumum production cost
         return m.total_MPC == sum( m.mpc[g,t] * 1 for g in m.G for t in m.T)
-    model.total_MPC_ = Constraint(rule = total_MPC_rule)   
-    
+  
+    def merge1():    
+        model.total_cMP_ = Constraint(rule = total_cMP_rule)    
+        model.total_cEN_ = Constraint(rule = total_cEN_rule)
+        model.total_cSU_ = Constraint(rule = total_cSU_rule)        
+        model.total_MPC_ = Constraint(rule = total_MPC_rule)   
+          
+           
     ## --------------------------------------- TOTAL OFERTAS DE COMPRA ------------------------------------------------  
     if scope == 'market':
-        def total_cDE_rule(m):  ## to account purchase of energy of elastic loads
-            return m.total_cDE == sum( m.cd[l,t] for l in m.LOAD for t in m.T)
-        model.total_cDE_rule = Constraint(rule = total_cDE_rule)  
-      
+        if True:
+            def total_cDE_rule(m):  ## to account purchase of energy of elastic loads
+                return m.total_cDE == sum( m.cd[d,t] for d in m.LOAD for t in m.T)
+            model.total_cDE_rule = Constraint(rule = total_cDE_rule)    
+
+       
     ## -----------------------------TOTAL COSTOS APAGADO------------------------------------------  
     # def total_cSD_rule(m):  ## to account for stoppages cost
     #     return m.total_cSD == sum( m.cSD[g,t] * 1 for g in m.G for t in m.T)
@@ -243,39 +282,41 @@ def uc(instance,option='None',
             return m.u[g,t] - m.u_0[g]   == m.v[g,t] - m.w[g,t]
         else:
             return m.u[g,t] - m.u[g,t-1] == m.v[g,t] - m.w[g,t]
-    model.logical = Constraint(model.G,model.T,rule = logical_rule)
-    
+
     
     ## ----------------------------POWER EQUALS------------------------------------  
 
     def pow_igual_rule(m,g,t):  ## iguala p a pc eq.(12)
         return m.p[g,t] == m.pc[g,t] + m.Pmin[g] * m.u[g,t]
-    model.pow_igual = Constraint(model.G,model.T, rule = pow_igual_rule)    
 
     def pow_igual_rule2(m,g,t): ## iguala pb a pbc eq.(13)
         return m.pb[g,t] == m.pbc[g,t] + m.Pmin[g] * m.u[g,t]
-    model.pow_igual2 = Constraint(model.G,model.T, rule = pow_igual_rule2)    
 
     def pow_igual_rule3(m,g,t): ## iguala pbc a pc eq.(14)
         return m.pbc[g,t] == m.pc[g,t] + m.r[g,t]
-    model.pow_igual3 = Constraint(model.G,model.T, rule = pow_igual_rule3)
 
     def pow_igual_rule4(m,g,t): ## iguala pb a p eq.(15)
         return m.pb[g,t] == m.p[g,t] + m.r[g,t]
-    model.pow_igual4 = Constraint(model.G,model.T, rule = pow_igual_rule4)    
 
     def pow_igual_rule5(m,g,t): ## pow_pow eq.(16)
         return m.p[g,t] <= m.pb[g,t] 
-    model.pow_igual5 = Constraint(model.G,model.T, rule = pow_igual_rule5)    
 
     def pow_igual_rule6(m,g,t): ## pow_pow2 eq.(17)
         return m.pc[g,t] <= m.pbc[g,t]
-    model.pow_igual6 = Constraint(model.G,model.T, rule = pow_igual_rule6)    
     
     def Piecewise_offer44b(m,g,t):  ## piecewise offer eq.(44b)
         return m.pc[g,t] <= ( m.Pmax[g] - m.Pmin[g] ) * m.u[g,t]                                       
-    model.Piecewise_offer44b = Constraint(model.G,model.T, rule = Piecewise_offer44b)
 
+    def merge2():
+        model.logical = Constraint(model.G,model.T,rule = logical_rule)
+        model.pow_igual = Constraint(model.G,model.T, rule = pow_igual_rule)    
+        model.pow_igual2 = Constraint(model.G,model.T, rule = pow_igual_rule2)    
+        model.pow_igual3 = Constraint(model.G,model.T, rule = pow_igual_rule3)
+        model.pow_igual4 = Constraint(model.G,model.T, rule = pow_igual_rule4)    
+        model.pow_igual5 = Constraint(model.G,model.T, rule = pow_igual_rule5)    
+        model.pow_igual6 = Constraint(model.G,model.T, rule = pow_igual_rule6)    
+        model.Piecewise_offer44b = Constraint(model.G,model.T, rule = Piecewise_offer44b)    
+    
 
     ## ------------------------------START-UP AND SHUT-DOWN RAMPS---------------------------------   
 
@@ -285,22 +326,24 @@ def uc(instance,option='None',
                 - (m.Pmax[g]-m.SU[g])*m.v[g,t] - (m.Pmax[g]-m.SD[g])*m.w[g,t+1]
         else:
             return Constraint.Skip    
-    model.sdsu_ramp_rule20 = Constraint(model.G,model.T, rule = sdsu_ramp_rule20)
 
     def su_ramp_rule21a(m,g,t):           ## eq.(21a)
         if m.UT[g] == 1:                  ## :g ∈ G1
             return m.pc[g,t] + m.r[g,t] <= (m.Pmax[g]-m.Pmin[g])*m.u[g,t] - (m.Pmax[g]-m.SU[g])*m.v[g,t]
         else:
             return Constraint.Skip    
-    model.su_ramp_rule21a = Constraint(model.G,model.T, rule = su_ramp_rule21a)        
-    
+           
     def sd_ramp_rule21b(m,g,t):           # eq.(21b)
         if m.UT[g] == 1 and t < len(m.T): # :g ∈ G>1
             return m.pc[g,t] + m.r[g,t] <= (m.Pmax[g]-m.Pmin[g])*m.u[g,t] - (m.Pmax[g]-m.SD[g])*m.w[g,t+1]
         else:
             return Constraint.Skip    
-    model.sd_ramp_rule21b = Constraint(model.G,model.T, rule = sd_ramp_rule21b)
     
+    def merge3():
+        model.sdsu_ramp_rule20 = Constraint(model.G,model.T, rule = sdsu_ramp_rule20)
+        model.su_ramp_rule21a = Constraint(model.G,model.T, rule = su_ramp_rule21a)   
+        model.sd_ramp_rule21b = Constraint(model.G,model.T, rule = sd_ramp_rule21b)
+        
     ## -------------------------------GENERATION LIMITS (Tight)------------------------------------------ 
 
     if mode == 'Tight':
@@ -314,8 +357,7 @@ def uc(instance,option='None',
                 return m.pc[g,t] + m.r[g,t] <= (m.Pmax[g]-m.Pmin[g])*m.u[g,t] - (m.Pmax[g]-m.SU[g])*m.v[g,t] \
                     -max(0,m.SU[g]-m.SD[g])*m.w[g,t+1] 
             else:
-                return Constraint.Skip    
-        model.su_sd_rule23a = Constraint(model.G,model.T, rule = su_sd_rule23a)   
+                return Constraint.Skip     
          
         def su_sd_rule23b(m,g,t):                      ## eq.(23b)
             if m.UT[g] == 1 and m.SU[g] != m.SD[g] and t<len(m.T):    ## :g ∈ G1
@@ -323,7 +365,6 @@ def uc(instance,option='None',
                     -max(0,m.SD[g]-m.SU[g])*m.v[g,t] 
             else:
                 return Constraint.Skip    
-        model.su_sd_rule23b = Constraint(model.G,model.T, rule = su_sd_rule23b) 
         
         def up_ramp_rule38(m,g,t):  ## eq.(38) upper bounds based on the ramp-up and shutdown trajectory of the generator: Pan and Guan (2016)
             if t < len(m.T):
@@ -335,10 +376,14 @@ def uc(instance,option='None',
                 return m.pb[g,t] <= m.Pmax[g]*m.u[g,t] - (m.Pmax[g]-m.SD[g])*m.w[g,t+1] - expr
             else:
                 return Constraint.Skip
-        model.up_ramp_rule38 = Constraint(model.G,model.T, rule = up_ramp_rule38)   
         
         ##40
         ##41
+    
+    def merge4():
+        model.su_sd_rule23a  = Constraint(model.G,model.T, rule = su_sd_rule23a)  
+        model.su_sd_rule23b  = Constraint(model.G,model.T, rule = su_sd_rule23b) 
+        model.up_ramp_rule38 = Constraint(model.G,model.T, rule = up_ramp_rule38)   
     
     ## -------------------------------LIMITS & RAMPS------------------------------------------   
         
@@ -347,42 +392,45 @@ def uc(instance,option='None',
             return m.pbc[g,t] - max(0,m.p_0[g]-m.Pmin[g]) <= (m.SU[g]-m.Pmin[g]-m.RU[g])*m.v[g,t] + m.RU[g]*m.u[g,t]
         else:
             return m.pbc[g,t] - m.pc[g,t-1]  <= (m.SU[g]-m.Pmin[g]-m.RU[g])*m.v[g,t] + m.RU[g]*m.u[g,t]
-    model.up_ramp_rule35 = Constraint(model.G,model.T, rule = up_ramp_rule35)   
 
     def down_ramp_rule36(m,g,t):        ## ramp-down eq.(36) 
         if t == 1:
             return max(0,m.p_0[g]-Pmin[g])   - m.pc[g,t] <= (m.SD[g]-m.Pmin[g]-m.RD[g])*m.w[g,t] + m.RD[g]*m.u_0[g]
         else:
             return m.pc[g,t-1] - m.pc[g,t] <= (m.SD[g]-m.Pmin[g]-m.RD[g])*m.w[g,t] + m.RD[g]*m.u[g,t-1]
-    model.down_ramp_rule36 = Constraint(model.G,model.T, rule = down_ramp_rule36)
     
+    def merge5():
+        model.up_ramp_rule35 = Constraint(model.G,model.T, rule = up_ramp_rule35)   
+        model.down_ramp_rule36 = Constraint(model.G,model.T, rule = down_ramp_rule36)
 
     ## -------------------------------DEMAND & RESERVE----------------------------------------   
  
     def demand_rule65(m,t):                      ## demand eq.(65)
         ##return sum( m.p[g,t] for g in m.G ) +  m.sn[t]  == m.De[t] 
         if scope == 'market':
-            return sum( m.p[g,t] for g in m.G )   == m.De[t] + sum( m.l[l,t] for l in m.LOAD )
+            return sum( m.p[g,t] for g in m.G )   == m.De[t] + sum( m.l[d,t] for d in m.LOAD )
         else:
             return sum( m.p[g,t] for g in m.G )   == m.De[t] 
-    model.demand_rule65 = Constraint(model.T, rule = demand_rule65)
 
     def demand_rule67(m,t):                      ## demand + reserve eq.(67)
         ##return sum( m.pb[g,t] for g in m.G ) +  m.sn[t] >= m.De[t] + m.R[t] 
         if scope == 'market':
-            return sum( m.pb[g,t] for g in m.G )  >= m.De[t] + sum( m.l[l,t] for l in m.LOAD) + m.R[t] 
+            return sum( m.pb[g,t] for g in m.G )  >= m.De[t] + sum( m.l[d,t] for d in m.LOAD) + m.R[t] 
         else: 
             return sum( m.pb[g,t] for g in m.G )  >= m.De[t] + m.R[t] 
-    model.demand_rule67 = Constraint(model.T, rule = demand_rule67)
 
     def reserve_rule68(m,t):                      ## reserve eq.(68)
         ## return sum( m.r[g,t] for g in m.G) + m.sR[t] >= m.R[t] 
         return sum( m.r[g,t] for g in m.G)    + 0       >= m.R[t] 
-    model.reserve_rule68 = Constraint(model.T, rule = reserve_rule68)
 
     # def demand_rule66a(m,t):                      ## holguras o excesos en la demanda eq.(66a)
     #     return m.sn[t] == m.snplus[t] - m.snminus[t]  
     # model.demand_rule66a = Constraint(model.T, rule = demand_rule66a)
+    
+    def merge6():
+        model.demand_rule65 = Constraint(model.T, rule = demand_rule65)
+        model.demand_rule67 = Constraint(model.T, rule = demand_rule67)
+        model.reserve_rule68 = Constraint(model.T, rule = reserve_rule68)
 
     ## --------------------------------MINIMUM UP/DOWN TIME---------------------------------------
 
@@ -391,14 +439,12 @@ def uc(instance,option='None',
             return sum( m.v[g,i] for i in range(t-value(m.UT[g])+1,t+1)) <= m.u[g,t]        
         else:
             return Constraint.Skip
-    model.mut = Constraint(model.G, model.T, rule = mut_rule)    
 
     def mdt_rule(m,g,t): ## minimum-down time eq.(5)
         if t >= m.DT[g]:
             return sum( m.w[g,i] for i in range(t-value(m.DT[g])+1,t+1)) <= 1 - m.u[g,t] 
         else:
             return Constraint.Skip
-    model.mdt = Constraint(model.G, model.T, rule = mdt_rule)
         
     def mdt_rule2(m,g): ## enforce the minimum-down time eq.(3b)
         minimo = min( value(D[g]),len(m.T) )
@@ -406,7 +452,6 @@ def uc(instance,option='None',
             return sum( m.u[g,i] for i in range(1,minimo+1)) == 0
         else: 
             return Constraint.Skip        
-    model.mdt2 = Constraint(model.G, rule = mdt_rule2)
         
     def mut_rule2(m,g):  ## enforce the minimum-up time eq.(3a)
         minimo = min( value(m.U[g]) , len(m.T) )
@@ -414,17 +459,23 @@ def uc(instance,option='None',
             return sum( m.u[g,i] for i in range(1,minimo+1) ) == int(minimo)
         else: 
             return Constraint.Skip
-    model.mut2 = Constraint(model.G, rule = mut_rule2)
     
+        
     ## (Enforce) the initial Minimum Up/Down Times fixing the initial periods U[g] and D[g] 
     ## Tight and Compact MILP Formulation for the Thermal Unit Commitment Problem
     ## Germán Morales-España, Jesus M. Latorre, and Andrés Ramos
-    for g in model.G: 
-        for t in model.T: 
-            if t <= U[g]+D[g]:
-                model.u[g,t].fix(model.u_0[g])
-                    
-    
+    def cycle1():
+        for g in model.G: 
+            for t in model.T: 
+                if t <= U[g]+D[g]:
+                    model.u[g,t].fix(model.u_0[g])
+
+    def merge7():
+        cycle1()
+        model.mut = Constraint(model.G, model.T, rule = mut_rule)    
+        model.mdt = Constraint(model.G, model.T, rule = mdt_rule)
+        model.mdt2 = Constraint(model.G, rule = mdt_rule2)
+        model.mut2 = Constraint(model.G, rule = mut_rule2)
     ## ----------------------------PIECEWISE OFFER-------------------------------------------   
     
     if mode == 'Compact' and False:
@@ -464,21 +515,19 @@ def uc(instance,option='None',
             return m.TimePeriodLengthHours * m.PowerGenerationPiecewiseCostValues[g,t][i]
        
     
-    if mode == 'Tight' and True:  ##  Garver 1962
+    if mode == 'Tight':  ##  Garver 1962
         def Piecewise_offer42(m,g,t,l):  ## piecewise offer eq.(42)
             if l == 1:
                 return m.pl[g,t,l] <= (m.Pb[g,l]-m.Pmin[g] ) * m.u[g,t]
             if l > 1:
                 return m.pl[g,t,l] <= (m.Pb[g,l]-m.Pb[g,l-1] ) * m.u[g,t]
-        model.Piecewise_offer42 = Constraint(model.indexGTLg, rule = Piecewise_offer42)
         
         def Piecewise_offer43(m,g,t):   ## piecewise offer eq.(43)
-            return sum(m.pl[g,t,l] for l in range(1,value(len(m.L[g]))+1)) == m.pc[g,t]                                        
-        model.Piecewise_offer43 = Constraint(model.G,model.T, rule = Piecewise_offer43)
+            return sum(m.pl[g,t,l] for l in range(1,value(len(m.L[g]))+1)) == m.pc[g,t]     
         
         def Piecewise_offer44(m,g,t):   ## piecewise offer eq.(44)
-            return sum(m.C[g,l] * m.pl[g,t,l] for l in range(1,value(len(m.L[g]))+1)) == m.cp[g,t]                                       
-        model.Piecewise_offer44 = Constraint(model.G,model.T, rule = Piecewise_offer44)
+            return sum(m.C[g,l] * m.pl[g,t,l] for l in range(1,value(len(m.L[g]))+1)) == m.cp[g,t]  
+
         
         def Piecewise_mpc(m,g,t):   ## minimum production cost
             try:
@@ -491,7 +540,7 @@ def uc(instance,option='None',
         model.Piecewise_mpc = Constraint(model.G,model.T, rule = Piecewise_mpc)
         
         
-    if mode == 'Tight' and True:  ##  Knueven et al. (2018b)          
+    if mode == 'Tight':  ##  Knueven et al. (2018b)          
         ## Tightened the bounds on pl(t)->(43),(44) with the start-up 
         ## and shutdown variables using the start-up and shutdown ramp:
         Cv = []
@@ -546,7 +595,6 @@ def uc(instance,option='None',
                         return m.pl[g,t,l] <= (m.Pb[g,l]-m.Pb[g,l-1])*m.u[g,t] - Cv[g-1][l-1]*m.v[g,t] - 0
             else: ## UT[g] == 1
                 return Constraint.Skip         
-        model.Piecewise_offer46 = Constraint(model.indexGTLg, rule = Piecewise_offer46)
         
         def Piecewise_offer47a(m,g,t,l):  ## piecewise offer eq.(47a)  Knueven et al. (2018b)     
             if m.UT[g]==1:
@@ -556,7 +604,6 @@ def uc(instance,option='None',
                     return m.pl[g,t,l] <= (m.Pb[g,l]-m.Pb[g,l-1])*m.u[g,t] - Cv[g-1][l-1]*m.v[g,t]
             else:
                 return Constraint.Skip                 
-        model.Piecewise_offer47a = Constraint(model.indexGTLg, rule = Piecewise_offer47a)
         
         def Piecewise_offer47b(m,g,t,l):  ## piecewise offer eq.(47b)  Knueven et al. (2018b)     
             if m.UT[g]==1:
@@ -572,7 +619,6 @@ def uc(instance,option='None',
                         return m.pl[g,t,l] <= (m.Pb[g,l]-m.Pb[g,l-1])*m.u[g,t] - 0                       
             else:
                 return Constraint.Skip                 
-        model.Piecewise_offer47b = Constraint(model.indexGTLg, rule = Piecewise_offer47b)
         
         def Piecewise_offer48a(m,g,t,l):  ## piecewise offer eq.(48a)  Knueven et al. (2018b)     
             if m.UT[g]==1 and SU[g]!=SD[g]:
@@ -588,8 +634,7 @@ def uc(instance,option='None',
                     if t == len(m.T):    
                         return Constraint.Skip  
             else:
-                return Constraint.Skip                 
-        model.Piecewise_offer48a = Constraint(model.indexGTLg, rule = Piecewise_offer48a)       
+                return Constraint.Skip                       
                         
         # VALIDAR EXPERIMENTALMENTE
         def Piecewise_offer48b(m,g,t,l):  ## piecewise offer eq.(48b)  Knueven et al. (2018b)     
@@ -606,10 +651,20 @@ def uc(instance,option='None',
                     if t == len(m.T):   
                         return Constraint.Skip                                 
             else:
-                return Constraint.Skip                 
-        model.Piecewise_offer48b = Constraint(model.indexGTLg, rule = Piecewise_offer48b)               
+                return Constraint.Skip                            
     
+    def merge8():        
+        model.Piecewise_offer42 = Constraint(model.indexGTLg,  rule = Piecewise_offer42)                                    
+        model.Piecewise_offer43 = Constraint(model.G,model.T,  rule = Piecewise_offer43)                                    
+        model.Piecewise_offer44 = Constraint(model.G,model.T,  rule = Piecewise_offer44)
+        model.Piecewise_offer46 = Constraint(model.indexGTLg,  rule = Piecewise_offer46)
+        model.Piecewise_offer47a = Constraint(model.indexGTLg, rule = Piecewise_offer47a)
     
+    def merge8b():   
+        model.Piecewise_offer47b = Constraint(model.indexGTLg, rule = Piecewise_offer47b)
+        model.Piecewise_offer48a = Constraint(model.indexGTLg, rule = Piecewise_offer48a) 
+        model.Piecewise_offer48b = Constraint(model.indexGTLg, rule = Piecewise_offer48b)    
+        
     ## ----------------------------SIMPLE COST PRODUCTION-------------------------------------------   
     
     if False:
@@ -625,16 +680,13 @@ def uc(instance,option='None',
             return m.delta[g,t,s] <= sum(m.w[g,t-i] for i in range(m.Tunder[g,s],m.Tunder[g,s+1])) 
         else:
             return Constraint.Skip                                   
-    model.Start_up_cost54 = Constraint(model.indexGTSg, rule = Start_up_cost54)
     
     if True: ## Morales-España et al. (2013a):
         def Start_up_cost55(m,g,t):  ##  start-up cost eq.(55)
-            return m.v[g,t] == sum(m.delta[g,t,s] for s in range(1,len(m.S[g])+1)) 
-        model.Start_up_cost55 = Constraint(model.G,model.T, rule = Start_up_cost55)
+            return m.v[g,t] == sum(m.delta[g,t,s] for s in range(1,len(m.S[g])+1))
          
         def Start_up_cost56(m,g,t):  ##  start-up cost eq.(56)
             return m.cSU[g,t] == sum((m.Cs[g,s]*m.delta[g,t,s]) for s in range(1,len(m.S[g])+1))  
-        model.Start_up_cost56 = Constraint(model.G,model.T, rule = Start_up_cost56)   
         
     else:  ## delta projection suggested by Knueven 2020       
         def Start_up_cost57(m,g,t):  ##  start-up cost eq.(57)
@@ -649,42 +701,87 @@ def uc(instance,option='None',
     ## Initial Startup (t=0)Type required by MLR and Knueven from
     ## 'Tight and Compact MILP Formulation for the Thermal Unit Commitment Problem',
     ## Germán Morales-España, Jesus M. Latorre, and Andrés Ramos.  
-       
-    for g in range(1,len(G)+1): 
-        for t in range(1,len(T)+1): 
-            for s in range(1,len(S[g])): 
-                if TD_0[g]>=2:
-                    if t < model.Tunder[g,s+1]:
-                        if t > max(model.Tunder[g,s+1]-TD_0[g],1):
-                            model.delta[g,t,s].fix(0)
-                            # print('fix delta:',g,t,s)
-                            
-                            
-    ## ---------------------------- SIMPLE PURCHASE BID -------------------------------------------   
-    
-    if scope == 'market':
-        print("")
+    def cycle2():   
+        for g in range(1,len(G)+1): 
+            for t in range(1,len(T)+1): 
+                for s in range(1,len(S[g])): 
+                    if TD_0[g]>=2:
+                        if t < model.Tunder[g,s+1]:
+                            if t > max(model.Tunder[g,s+1]-TD_0[g],1):
+                                model.delta[g,t,s].fix(0)
+                                # print('fix delta:',g,t,s)  
+                                
+    def merge9():
+        cycle2()
+        model.Start_up_cost54 = Constraint(model.indexGTSg, rule = Start_up_cost54)
+        model.Start_up_cost55 = Constraint(model.G,model.T, rule = Start_up_cost55)        
+        model.Start_up_cost56 = Constraint(model.G,model.T, rule = Start_up_cost56)  
+                                
+    if  scope == 'market':        
         
-        def simple_bid(m,l,t):   
-            return m.cd[l,t] == 25.919999* m.l[l,t]                                           
-        model.simple_bid = Constraint(model.LOAD, model.T, rule = simple_bid)
-        
-        def load_min_bid(m,l,t):   
-            return m.l[l,t] >= 0  #m.Pd[l,1]                                      
-        model.lim_min_bid = Constraint(model.LOAD, model.T, rule = load_min_bid)
-        
-        def load_max_bid(m,l,t):   
-            return m.l[l,t] <= 10  #m.Pd[l,1]                                      
-        model.lim_max_bid = Constraint(model.LOAD, model.T, rule = load_max_bid)
+        if True:        
+            ## ----------------------- ELASTIC LOADS (PURCHASE BID) ----------------------------   
+            ## My version of stairwise of purchase bid based on garver eq.(42), (43) y (44)
+            def Piecewise_load_bid1(m,d,t,i):  ## based on eq.(42) Knueven
+                if i != 1:
+                    return m.ld[d,t,i-1] <= (m.Pd[d,i-1]-m.Pd[d,i] )
+                else:
+                    return Constraint.Skip 
+            model.Piecewise_load_bid1 = Constraint(model.indexLoadTLd, rule = Piecewise_load_bid1)
+            
+            def Piecewise_load_bid2(m,d,t):   ## based on eq.(43)
+                return sum(m.ld[d,t,i] for i in range(1,value(len(m.Ld[d]))+1)) == m.l[d,t]                                        
+            model.Piecewise_load_bid2 = Constraint(model.LOAD,model.T, rule = Piecewise_load_bid2)
+            
+            
+            def Piecewise_load_bid3(m,d,t):   ## based on eq.(44)
+                return sum(m.Cd[d,i] * m.ld[d,t,i] for i in range(1,value(len(m.Ld[d]))+1)) == m.cd[d,t]                                       
+            model.Piecewise_load_bid3 = Constraint(model.LOAD,model.T, rule = Piecewise_load_bid3)
+                    
+            def Piecewise_load_bid4(m,t):   ## sub-total commited load
+                return sum( m.l[d,t]  for d in m.LOAD)  ==      m.allLOAD[t]                               
+            model.Piecewise_load_bid4 = Constraint(model.T, rule = Piecewise_load_bid4)
+            
+            def load_bid_min(m,d,t):   
+                # print('Pd_min',m.Pd[d,len(m.Ld[d])]) 
+                return m.l[d,t] >= m.Pd[d,len(m.Ld[d])]                                      
+            model.load_bid_min = Constraint(model.LOAD, model.T, rule = load_bid_min)
+            
+            def load_bid_max(m,d,t):  
+                # print('Pd_max',m.Pd[d,1]) 
+                return m.l[d,t] <= m.Pd[d,1]                                      
+            model.load_bid_max = Constraint(model.LOAD, model.T, rule = load_bid_max)
 
-
-    ## ---------------------------- Inequality related with 'delta' and 'v' ------------------------------------------
-    if option == 'Milp2':
-        def Start_up_cost_desigualdad_Uriel(m,g):  ##  start-up cost eq.(54)(s < value(len(m.S[g])) and t >= m.Tunder[g,s+1]):
-            return sum(m.v[g,t] for t in m.T) == sum(m.delta[g,t,s] for s in range(1,value(len(m.S[g]))+1) for t in m.T)  
-        model.Start_up_cost_desigualdad_Uriel = Constraint(model.G,rule = Start_up_cost_desigualdad_Uriel)
+            # def simple_purchase_bid(m,d,t):   
+            #     return m.cd[d,t] == m.Cd[d,len(m.Ld[d])] * m.l[d,t]                                           
+            # model.simple_purchase_bid = Constraint(model.LOAD, model.T, rule = simple_purchase_bid)
         
+        
+        ## ----------------------- PROHIBID OPERATIVE ZONES ----------------------------  
+        if False:
+            def prohibid_operative_zones_min(m,g,t,ro):  
+                return  m.pc_RO[g,t,ro]  >=  m.ROmin[g,ro] * m.u_RO[g,t,ro]                                
+            model.prohibid_operative_zones_min = Constraint(model.indexGRO_T_RO,rule=prohibid_operative_zones_min)
+            
+            def prohibid_operative_zones_max(m,g,t,ro):  
+                return  m.pc_RO[g,t,ro]  <=  m.ROmax[g,ro] * m.u_RO[g,t,ro]                                  
+            model.prohibid_operative_zones_max= Constraint(model.indexGRO_T_RO,rule=prohibid_operative_zones_max)
+            
+            def prohibid_operative_zones1(m,g,t):
+                return  sum( m.u_RO[g,t,ro] for ro in m.RO[g] ) == m.u[g,t]                             
+            model.prohibid_operative_zones1= Constraint(model.indexGRO_T,rule=prohibid_operative_zones1)
+            
+            def prohibid_operative_zones2(m,g,t):  
+                return  sum( m.pc_RO[g,t,ro] for ro in m.RO[g] ) == m.pc[g,t]                             
+            model.prohibid_operative_zones2= Constraint(model.indexGRO_T,rule=prohibid_operative_zones2)
 
+        ## ----------------------- RESERVE OFFERS ----------------------------  
+        
+        # def simple_purchase_bid(m,d,t):   
+        #     return m.cd[d,t] == m.Cd[d,len(m.Ld[d])] * m.l[d,t]                                           
+        # model.simple_purchase_bid = Constraint(model.LOAD, model.T, rule = simple_purchase_bid)
+        
+        
     ## ---------------------------- LOCAL BRANCHING CONSTRAINT LBC 1 (SOFT-FIXING)------------------------------------------    
     ## Define a neighbourhood with LBC1.    
     if(option == 'lbc1'):
@@ -805,7 +902,6 @@ def uc(instance,option='None',
         for f in lower_Pmin_Uu:
             model.u[f[0]+1,f[1]+1] = 0                      ## Hints
             
-            
     ## ---------------------------- HARD VARIABLE FIXING III------------------------------------------
     ##     
     if option == 'Hard3':
@@ -818,7 +914,6 @@ def uc(instance,option='None',
         for f in lower_Pmin_Uu:
             model.u[f[0]+1,f[1]+1].unfix()    
             model.u[f[0]+1,f[1]+1] = 0                      ## Hints
-     
      
     ## ---------------------------- CHECK FEASIABILITY ------------------------------------------
     ## 
@@ -840,7 +935,6 @@ def uc(instance,option='None',
                     model.delta[g+1,t+1,delta[g][t]].domain = Binary 
                     model.delta[g+1,t+1,delta[g][t]].fix(1) ## Hard fixing
 
-   
     ## ---------------------------- FIX SOLUTION LINEAR ------------------------------------------
     ## 
     if option == 'FixSol':  
@@ -861,7 +955,6 @@ def uc(instance,option='None',
     if option == 'RC':                             
         for f in SB_Uu: 
             model.u[f[0]+1,f[1]+1].setlb(1.0)                 ## Fix upper bound
-                                                                                                
                     
     ## ---------------------------- KERNEL SEARCH ------------------------------------------
     ##
@@ -882,7 +975,22 @@ def uc(instance,option='None',
         
   
         
-    ## ---------------------------- Termina y regresa el modelo MILP ------------------------------------------
+    ## Creating thread
+    t1  = threading.Thread(target=merge1)
+    t2  = threading.Thread(target=merge2)    
+    t3  = threading.Thread(target=merge3)    
+    t4  = threading.Thread(target=merge4)    
+    t5  = threading.Thread(target=merge5)    
+    t6  = threading.Thread(target=merge6)    
+    t7  = threading.Thread(target=merge7)   
+    t8  = threading.Thread(target=merge8)   
+    t8b = threading.Thread(target=merge8b)   
+    t9  = threading.Thread(target=merge9)     
+    t1.start(); t2.start(); t3.start(); t4.start(); t5.start(); t6.start(); t7.start(); t8.start(); t8b.start(); t9.start();  ## starting threads 
+    t1.join();  t2.join();  t3.join();  t4.join();  t5.join();  t6.join();  t7.join();  t8.join();  t8b.join();  t9.join();   ## wait until thread 1 is completely executed     
+    print(option,"All threads completely executed!") # https://www.geeksforgeeks.org/multithreading-python-set-1/
     
+
     return model, inside90
+
 

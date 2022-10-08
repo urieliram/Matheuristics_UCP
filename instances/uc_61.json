@@ -2495,65 +2495,264 @@
     }
   },
 
-  "loads": {
-      "l1": {
-        "must_run": 0,
-        "name": "l1",
-        "fixed_load": 0,
-        "piecewise_production": [
-          {
-            "mw": 0,
-            "cost": 0
-          },
-          {
-            "mw": 1.1,
-            "cost": 10.1
-          },
-          {
-            "mw": 2.2,
-            "cost": 20.2
-          },
-          {
-            "mw": 3.3,
-            "cost": 30.3
-          }
-        ]
-      },
-      "l2": {
-        "must_run": 0,
-        "name": "l2",
-        "fixed_load": 0,
-        "piecewise_production": [
-          {
-            "mw": 0,
-            "cost": 0
-          },
-          {
-            "mw": 1.1,
-            "cost": 10.1
-          },
-          {
-            "mw": 2.2,
-            "cost": 20.2
-          }
-        ]
-      },
-      "l3": {
-        "must_run": 0,
-        "name": "l3",
-        "fixed_load": 0,
-        "piecewise_production": [
-          {
-            "mw": 7.7,
-            "cost": 77
-          },
-          {
-            "mw": 8.8,
-            "cost": 88
-          }
-        ]
-      }
+    
+  "loads": {    
+    "l1": {
+      "name": "l1",
+      "piecewise_production": [
+        {
+          "mw": 30,
+          "cost": 22
+        },
+        {
+          "mw": 20,
+          "cost": 23
+        },
+        {
+          "mw": 10,
+          "cost": 24
+        },
+        {
+          "mw": 5,
+          "cost": 25
+        },
+        {
+          "mw": 0,
+          "cost": 0
+        }
+      ]
+    },        
+    "l2": {
+      "name": "l2",
+      "piecewise_production": [
+        {
+          "mw": 30,
+          "cost": 22
+        },
+        {
+          "mw": 20,
+          "cost": 23
+        },
+        {
+          "mw": 10,
+          "cost": 24
+        },
+        {
+          "mw": 5,
+          "cost": 25
+        },
+        {
+          "mw": 0,
+          "cost": 0
+        }
+      ]
+    },        
+    "l3": {
+      "name": "l3",
+      "piecewise_production": [
+        {
+          "mw": 30,
+          "cost": 22
+        },
+        {
+          "mw": 20,
+          "cost": 23
+        },
+        {
+          "mw": 10,
+          "cost": 24
+        },
+        {
+          "mw": 5,
+          "cost": 25
+        },
+        {
+          "mw": 0,
+          "cost": 0
+        }
+      ]
+    },        
+    "l4": {
+      "name": "l4",
+      "piecewise_production": [
+        {
+          "mw": 30,
+          "cost": 22
+        },
+        {
+          "mw": 20,
+          "cost": 23
+        },
+        {
+          "mw": 10,
+          "cost": 24
+        },
+        {
+          "mw": 5,
+          "cost": 25
+        },
+        {
+          "mw": 0,
+          "cost": 0
+        }
+      ]
+    },        
+    "l5": {
+      "name": "l5",
+      "piecewise_production": [
+        {
+          "mw": 30,
+          "cost": 22
+        },
+        {
+          "mw": 20,
+          "cost": 23
+        },
+        {
+          "mw": 10,
+          "cost": 24
+        },
+        {
+          "mw": 5,
+          "cost": 25
+        },
+        {
+          "mw": 0,
+          "cost": 0
+        }
+      ]
+    },        
+    "l6": {
+      "name": "l6",
+      "piecewise_production": [
+        {
+          "mw": 30,
+          "cost": 22
+        },
+        {
+          "mw": 20,
+          "cost": 23
+        },
+        {
+          "mw": 10,
+          "cost": 24
+        },
+        {
+          "mw": 5,
+          "cost": 25
+        },
+        {
+          "mw": 0,
+          "cost": 0
+        }
+      ]
+    },        
+    "l7": {
+      "name": "l7",
+      "piecewise_production": [
+        {
+          "mw": 30,
+          "cost": 22
+        },
+        {
+          "mw": 20,
+          "cost": 23
+        },
+        {
+          "mw": 10,
+          "cost": 24
+        },
+        {
+          "mw": 5,
+          "cost": 25
+        },
+        {
+          "mw": 0,
+          "cost": 0
+        }
+      ]
+    },        
+    "l8": {
+      "name": "l8",
+      "piecewise_production": [
+        {
+          "mw": 30,
+          "cost": 22
+        },
+        {
+          "mw": 20,
+          "cost": 23
+        },
+        {
+          "mw": 10,
+          "cost": 24
+        },
+        {
+          "mw": 5,
+          "cost": 25
+        },
+        {
+          "mw": 0,
+          "cost": 0
+        }
+      ]
+    },        
+    "l9": {
+      "name": "l9",
+      "piecewise_production": [
+        {
+          "mw": 30,
+          "cost": 22
+        },
+        {
+          "mw": 20,
+          "cost": 23
+        },
+        {
+          "mw": 10,
+          "cost": 24
+        },
+        {
+          "mw": 5,
+          "cost": 25
+        },
+        {
+          "mw": 0,
+          "cost": 0
+        }
+      ]
+    },        
+    "l10": {
+      "name": "l10",
+      "piecewise_production": [
+        {
+          "mw": 30,
+          "cost": 22
+        },
+        {
+          "mw": 20,
+          "cost": 23
+        },
+        {
+          "mw": 10,
+          "cost": 24
+        },
+        {
+          "mw": 5,
+          "cost": 25
+        },
+        {
+          "mw": 0,
+          "cost": 0
+        }
+      ]
     }
 
+
     
+  }
+    
+
+
+
 }

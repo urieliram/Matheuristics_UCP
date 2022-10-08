@@ -1038,3 +1038,11 @@
 #     checkSol('z_rks',z_rks,SB_Uu,No_SB_Uu,Vv,Ww,delta) ## Check feasibility (RKS)
              
            
+           
+           
+    # ## ---------------------------- Inequality related with 'delta' and 'v' ------------------------------------------
+    # if option == 'Milp2':
+    #     def Start_up_cost_desigualdad_Uriel(m,g):  ##  start-up cost eq.(54)(s < value(len(m.S[g])) and t >= m.Tunder[g,s+1]):
+    #         return sum(m.v[g,t] for t in m.T) == sum(m.delta[g,t,s] for s in range(1,value(len(m.S[g]))+1) for t in m.T)  
+    #     model.Start_up_cost_desigualdad_Uriel = Constraint(model.G,rule = Start_up_cost_desigualdad_Uriel)
+        
