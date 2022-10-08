@@ -34,6 +34,7 @@ def reading(file):
     Cs      = {}   ## Costo de cada escalón del conjunto S de la función de costo variable de arranque.
     Tunder  = {}   ## lag de cada escalón del conjunto S de la función de costo variable de arranque.
     Startup = {}   ## start-up cost
+  
     
         
     time_periods = int(md['time_periods'])
@@ -204,7 +205,6 @@ def reading(file):
             # print(k,",",n,",",j[0],",",j[1])
             Tunder[k,n] = j[0]
             Cs[k,n]     = j[1] 
-            
     
     ## Leemos cargas elásticas
     
@@ -214,7 +214,7 @@ def reading(file):
     piecewise_production_load = []
     Piecewise_load            = []    
     Pd                        = {}   ## maximum load for piecewise segment LD for a load "load"(MW).
-    Cd                        = {}   ## dib of a load "load" consuming Pd MW of power ($/h).
+    Cd                        = {}   ## bid of a load "load" consuming Pd MW of power ($/h).
     try:
         i = 1
         ## Se obtiene nombre de las cargas elásticas y el número total
@@ -235,22 +235,25 @@ def reading(file):
             Piecewise_load.append(lista_aux)
             lista = []
             jj=1
-            for ii in range(j-1):
+            for ii in range(j):
                 lista.append(jj)
-                jj= jj+1
+                jj = jj + 1
             Ld[i] = lista
-            i+=1;  
+            i+=1
                     
         k=0; n=0
         for i in Piecewise_load:
+            # print(i)
             k=k+1
-            n=0
-            for j in i:
-                if n!=0:
-                    #print(k,",",n,",",j[0],",",j[1])
-                    Pd[k,n] = j[0]
-                    Cd[k,n] = j[1]   
+            n=1
+            for j in i:                
+                # print(j)
+                # print(k,",",n,",",j[0],",",j[1])
+                Pd[k,n] = j[0]
+                Cd[k,n] = j[1]               
                 n=n+1
+        # print('Cd',Cd)
+        # print('Pd',Pd)
 
     except:
         print('Sin información de cargas elásticas')    
@@ -273,6 +276,30 @@ def reading(file):
     names  = dict(zip(G, names_gens))  
     CR     = dict(zip(G, fixed_cost))      
     
+    ## Prohibid zones
+    # GRO    = [1]
+    # RO     = {1: [1, 2, 3]}
+    # ROmin  = {(1, 1): 150, (1, 2): 250, (1, 3): 400}   
+    # ROmax  = {(1, 1): 200, (1, 2): 350, (1, 3): 450}   
+    
+    # GRO    = [1]
+    # RO     = {1: [1]}
+    # ROmin  = {(1, 1): 150}   
+    # ROmax  = {(1, 1): 450}  
+
+    # GRO    = [1]
+    # RO     = {1: [1, 2]}
+    # ROmin  = {(1, 1): 150, (1, 2): 152}   
+    # ROmax  = {(1, 1): 151, (1, 2): 450}  
+    
+        
+    # Prohibid zones
+    GRO    = [1,3]
+    RO     = {1: [1, 2, 3], 3: [1, 2, 3]}
+    ROmin  = {(1, 1):  0, (1, 2): 100, (1, 3): 230,  (3, 1): 0, (3, 2): 60, (3, 3): 95}   
+    ROmax  = {(1, 1): 50, (1, 2): 150, (1, 3): 305,  (3, 1): 41, (3, 2): 91, (3, 3): 100}   
+    
+
     
     ## -----------------  Caso de ejemplo de anjos.json  --------------------------
     #G        = [1, 2, 3]
@@ -304,7 +331,13 @@ def reading(file):
     #ambiente = 'localPC'
     ## ----------------------------------  o  -------------------------------------
 
-    instance = [G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,Pb,Cb,C,CR,Cs,Tunder,names,LOAD,Ld,Pd,Cd ]
+    ## Para obtener los Psu y los Psd
+    for i in Pmin:
+        if SU[1]<Pmin[i]:
+            print('Pmin',Pmin[i],SU[1])
+            
+
+    instance = [G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,Pb,Cb,C,CR,Cs,Tunder,names,LOAD,Ld,Pd,Cd, GRO,RO,ROmin,ROmax]
     
     return instance 
           

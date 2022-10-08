@@ -51,11 +51,12 @@ nameins = 'uc_70.json'       ##
 
 nameins = 'uc_47.json'       ## ejemplo sencillo  
 
-nameins = 'uc_61.json'       ## prueba demostrativa excelente en mi PC 
 nameins = 'uc_58.json'       ## prueba demostrativa excelente en mi PC 
 nameins = 'uc_58_copy.json'       ## prueba demostrativa excelente en mi PC (cinco dias)
-nameins = 'uc_57_copy.json'       ## prueba demostrativa excelente en mi PC (un dia)
 
+
+nameins = 'uc_61.json'          ## prueba demostrativa excelente en mi PC 
+nameins = 'uc_57_copy.json'       ## prueba demostrativa excelente en mi PC (un dia)
 ## Cargamos parámetros de configuración desde archivo <config>
 ## Emphasize balanced=0 (default); feasibility=1; optimality=2;
 ## symmetry automatic=-1; symmetry low level=1
@@ -81,7 +82,7 @@ if ambiente == 'yalma':
 
 localtime = time.asctime(time.localtime(time.time()))
 
-#scope = '' ## basic Unit Commitment Modelmarket'
+#scope = '' ## basic Unit Commitment Model' 
 scope = 'market'
 
 print(localtime,'Solving <'+scope+'> model ---> ---> ---> --->',nameins)
@@ -553,16 +554,20 @@ if  True:
     lbheur   = 'yes'  
     emph     = 1          ## feasibility = 1
     t_o      = time.time() 
-    model,__ = uc_Co.uc(instance,option='Milp0',nameins=nameins[0:5],mode='Tight',scope=scope)
+    model,__ = uc_Co.uc(instance,option='MilpTest',nameins=nameins[0:5],mode='Tight',scope=scope)
     sol_milp = Solution(model=model,nameins=nameins[0:5],env=ambiente,executable=executable,
                         gap=gap,cutoff=cutoff,symmetry=symmetrydefault,timelimit=timemilp,
                         tee=False,tofiles=True,emphasize=emph,lbheur=lbheur,
-                        exportLP=False,option='Milp0',scope=scope)
+                        exportLP=False,option='MilpTest',scope=scope)
     z_milp, g_milp = sol_milp.solve_problem()
     t_milp         = time.time() - t_o
     print('t_milp= ',round(t_milp,1),'z_milp= ',round(z_milp,1),'g_milp= ',round(g_milp,5))
     
-    SB_Uu, No_SB_Uu, __, Vv, Ww, delta = sol_milp.select_binary_support_Uu('Milp') 
+    
+    
+    ## ----------------------------- DUAL COST ----------------------------------------------
+    
+    SB_Uu, No_SB_Uu, __, Vv, Ww, delta = sol_milp.select_binary_support_Uu('Milp0') 
     model,__  = uc_Co.uc(instance,option='FixSol',SB_Uu=SB_Uu,No_SB_Uu=No_SB_Uu,V=Vv,W=Ww,delta=delta,
                          nameins=nameins[0:5],mode='Tight',scope=scope)
     sol_fix   = Solution(model=model,env=ambiente,executable=executable,nameins=nameins[0:5],gap=gap,timelimit=timeheu,
@@ -570,20 +575,9 @@ if  True:
     z_fix, g_fix = sol_fix.solve_problem() 
     print('z_fix= ',round(z_fix,4))
     
-    # model.dual.pprint()
-    
-    for t in model.T:
-        print(model.dual[ model.demand_rule65[t] ])
-    ## ----------------------------- DUAL COST ----------------------------------------------
-    ##  Defining buckets 
-    # model.demand_rule65[1].pprint()
-    # model.lim_max_bid[1,1].pprint()
-    # dual   = []
-    # i      = 0                    
-    # for f in No_SB_Uu: 
-    #     dual.append(( i, model.dual[model.u[f[0]+1,f[1]+1]] , f[0], f[1] ))
-    #     i = i + 1  
-    
+    # for t in model.T:
+    #     print(model.dual[ model.demand_rule65[t] ],model.dual[ model.demand_rule67[t] ])
+        
 
 
 ## --------------------------------- RESULTS -------------------------------------------
