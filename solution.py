@@ -9,7 +9,7 @@ from   math import ceil
 
 class Solution:
     def __init__(self,model,env,executable,nameins='model',letter='',gap=0.0001,timelimit=300,tee=False,tofiles=False,lpmethod=0,
-                 cutoff=1e+75,emphasize=1,lbheur='no',symmetry=-1,exportLP=False,option='',scope='',rc=False,dual=False):
+                 cutoff=1e+75,emphasize=1,lbheur='no',symmetry=-1,strategy=1,exportLP=False,option='',scope='',rc=False,dual=False):
         self.model      = model
         self.nameins    = nameins     ## name of instance 
         self.letter     = letter      ## letter that enlisted the LBC iteration
@@ -21,10 +21,11 @@ class Solution:
         self.tofiles    = tofiles     ## True = send to csv file the solution value of U,V,W,P,R exporta la solución a un formato .dat
         self.lpmethod   = lpmethod    ## 0=Automatic; 1,2= Primal and dual simplex; 3=Sifting; 4=Barrier, 5=Concurrent (Dual,Barrier, and Primal in opportunistic parallel mode; Dual and Barrier in deterministic parallel mode)
         self.cutoff     = cutoff      ## Agrega una cota superior factible, apara yudar a descartar nodos del árbol del B&B
-        self.emphasize  = emphasize   ## Emphasize feasibility=1;  Optimality=2 https://www.ibm.com/docs/en/icos/20.1.0?topic=parameters-mip-emphasis-switch
+        self.emphasize  = emphasize   ## Emphasize feasibility=1;  Optimality=2 ; Balanced=0 https://www.ibm.com/docs/en/icos/20.1.0?topic=parameters-mip-emphasis-switch
         self.lbheur     = lbheur      ## Local branching heuristic is off; default
-        self.rc         = rc      ## To calculate Suffix data (dual and reduced cost)
+        self.rc         = rc          ## To calculate Suffix data (dual and reduced cost)
         self.symmetry   = symmetry    ## symmetry breaking: Automatic =-1 Turn off=0 ; moderade=1 ; extremely aggressive=5
+        self.strategy   = strategy    ## node storage file switch: No node file=0; node file in memory=1; node file on disk=2;node file on disk and compresed=3; 
         self.exportLP   = exportLP    ## True si se exporta el modelo a formato LP y MPS
         self.gg         = len(model.G)
         self.tt         = len(model.T)
@@ -83,6 +84,7 @@ class Solution:
         solver.options['emphasis mip'                  ] = self.emphasize
         solver.options['mip strategy lbheur'           ] = self.lbheur
         solver.options['preprocessing symmetry'        ] = self.symmetry
+        solver.options['mip strategy file'             ] = self.strategy
         #https://www.ibm.com/docs/en/cofz/12.8.0?topic=parameters-symmetry-breaking
         
         # solver.options['mip cuts all'                ] = -1
