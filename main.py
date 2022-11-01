@@ -52,16 +52,17 @@ nameins = 'uc_70.json'       ##
 nameins = 'uc_47.json'       ## ejemplo sencillo  
 
 nameins = 'uc_58.json'       ## prueba demostrativa excelente en mi PC 
-nameins = 'uc_58_copy.json'       ## prueba demostrativa excelente en mi PC (cinco dias)
+nameins = 'uc_58_copy.json'  ## prueba demostrativa excelente en mi PC (cinco dias)
 
 
-nameins = 'uc_61.json'          ## prueba demostrativa excelente en mi PC 
-nameins = 'uc_57_copy.json'       ## prueba demostrativa excelente en mi PC (un dia)
+nameins = 'uc_61.json'       ## prueba demostrativa excelente en mi PC 
+nameins = 'uc_57_copy.json'  ## prueba demostrativa excelente en mi PC (un dia)
+
 ## Cargamos parámetros de configuración desde archivo <config>
 ## Emphasize balanced=0 (default); feasibility=1; optimality=2;
 ## symmetry automatic=-1; symmetry low level=1
 ambiente, ruta, executable, timeheu, timemilp, emph, symmetry, gap, k, iterstop = util.config_env()
-k_original = k  ## Almacenamos el parámetro k
+k_original = k  ## Almacenamos el parámetro k de local branching
 x          = 1e+75
 z_lp=x; z_milp=x; z_hard=x; z_hard3=x; z_ks=x; z_lbc1=x; z_lbc2=x; z_lbc3=x; z_check=x; z_lbc0=x; z_ks=0; z_rks=0; z_=0;
 t_lp=0; t_milp=0; t_hard=0; t_hard3=0; t_ks=0; t_lbc1=0; t_lbc2=0; t_lbc3=0; t_check=0; t_lbc0=0; t_ks=0; t_rks=0; t_=0;
@@ -82,8 +83,8 @@ if ambiente == 'yalma':
 
 localtime = time.asctime(time.localtime(time.time()))
 
-#scope = '' ## basic Unit Commitment Model' 
-scope = 'market'
+scope = 'market'  
+scope = ''        ## Unit Commitment Model 
 
 print(localtime,'Solving <'+scope+'> model ---> ---> ---> --->',nameins)
 
@@ -542,21 +543,22 @@ if  False:
     # \todo{Crear instancias sintéticas a partir de morales-españa2013} 
     
 ## NO OLVIDES COMENTAR TUS PRUEBAS ¸.·´¯`·.´¯`·.¸¸.·´¯`·.¸><(((º>
-comment    = 'Desarrollando ofertas de compra'
+comment    = 'Leyendo zonas prohibidas'
 
   
 ## ---------------------------------------------- MILP ----------------------------------------------------------
 ## Solve as a MILP
 
 if  True: 
-    symmetrydefault = -1 
+    strategy = 3
+    symmetrydefault = 0 ## symmetry breaking: Automatic =-1 Turn off=0 ; moderade=1 ; extremely aggressive=5
     cutoff   = 1e+75 
     lbheur   = 'yes'  
-    emph     = 1          ## feasibility = 1
+    emph     = 1          ## feasibility=1 ; balanced=0
     t_o      = time.time() 
     model,__ = uc_Co.uc(instance,option='MilpTest',nameins=nameins[0:5],mode='Tight',scope=scope)
     sol_milp = Solution(model=model,nameins=nameins[0:5],env=ambiente,executable=executable,
-                        gap=gap,cutoff=cutoff,symmetry=symmetrydefault,timelimit=timemilp,
+                        gap=gap,cutoff=cutoff,symmetry=symmetrydefault,strategy=strategy,timelimit=timemilp,
                         tee=False,tofiles=True,emphasize=emph,lbheur=lbheur,
                         exportLP=False,option='MilpTest',scope=scope)
     z_milp, g_milp = sol_milp.solve_problem()
@@ -577,7 +579,6 @@ if  True:
     
     # for t in model.T:
     #     print(model.dual[ model.demand_rule65[t] ],model.dual[ model.demand_rule67[t] ])
-        
 
 
 ## --------------------------------- RESULTS -------------------------------------------
@@ -586,7 +587,7 @@ if  True:
 #                                                       t_lp,t_hard,t_milp,t_milp2,t_soft,t_softpmin,t_softcut,t_softcut2,t_softcut3,t_lbc,
 #                                                       n_fixU,nU_no_int,n_Uu_no_int,n_Uu_1_0,k,bin_sup,comment'
 
-
+#ambiente,localtime,nameins,instance[1],instance[0],gap,emph,timeheu,timemilp,z_lp,z_milp,z_hard,z_hard3,z_lbc1,z_lbc2,z_lbc3,z_ks,z_rks,t_lp,t_milp,t_hard,t_hard3,t_lbc1,t_lbc2,t_lbc3,t_ks,t_rks,g_milp,g_hard,g_hard3,g_lbc1,g_lbc2,g_lbc3,g_ks,g_rks,k,ns,comment
 row = [ambiente,localtime,nameins,instance[1],instance[0],gap,emph,timeheu,timemilp,
     round(z_lp,1),round(z_milp,1),round(z_hard,1),round(z_hard3,1),round(z_lbc1,1),round(z_lbc2,1),round(z_lbc3,1),round(z_ks,1),round(z_rks,1),
     round(t_lp,1),round(t_milp,1),round(t_hard,1),round(t_hard3,1),round(t_lbc1,1),round(t_lbc2,1),round(t_lbc3,1),round(t_ks,1),round(t_rks,1),

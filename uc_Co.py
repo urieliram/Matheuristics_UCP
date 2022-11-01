@@ -64,35 +64,52 @@ def uc(instance,option='None',
         RO      = instance[31]
         ROmin   = instance[32]
         ROmax   = instance[33]
+        Crr     = instance[34]
+        Cs10    = instance[35]
+        Cs30    = instance[36]
+        Cns10   = instance[37]
+        Cns30   = instance[38]
+        Cordc   = instance[39]
+        ORDC    = instance[40]
+        RCO     = instance[41]
     
     model      = ConcreteModel(nameins)    
-    model.G    = Set(           initialize = G)
-    model.T    = Set(           initialize = T)  
-    model.L    = Set(model.G,   initialize = L) 
-    model.S    = Set(model.G,   initialize = S) 
+    model.G    = Set(            initialize = G)
+    model.T    = Set(            initialize = T)  
+    model.L    = Set(model.G ,   initialize = L) 
+    model.S    = Set(model.G ,   initialize = S) 
     
     if scope == 'market':
-        model.LOAD  = Set(                       initialize = LOAD)  
-        model.Ld    = Set(  model.LOAD,          initialize = Ld) ## Set of segments of purchase bid of elastic load
-
-        model.GRO   = Set(                       initialize = GRO) 
-        model.RO    = Set(  model.GRO,           initialize = RO) 
+        model.ORDC  = Set(               initialize = ORDC)
+        model.LOAD  = Set(               initialize = LOAD)  
+        model.Ld    = Set(  model.LOAD , initialize = Ld) ## Set of segments of purchase bid of elastic load
+        model.GRO   = Set(               initialize = GRO) 
+        model.RO    = Set(  model.GRO  , initialize = RO)     
+        model.Crr   = Param(model.G    , initialize = Crr   , within = Any) #
+        model.Cs10  = Param(model.G    , initialize = Cs10  , within = Any) #
+        model.Cs30  = Param(model.G    , initialize = Cs30  , within = Any) #
+        model.Cns10 = Param(model.G    , initialize = Cns10 , within = Any) #
+        model.Cns30 = Param(model.G    , initialize = Cns30 , within = Any) #
+        model.Cordc = Param(model.ORDC , initialize = Cordc , within = Any) #
+        model.RCO   = Param(model.ORDC , initialize = RCO   , within = Any) #
     
-    model.Pmax = Param(model.G    , initialize = Pmax , within = Any)
-    model.Pmin = Param(model.G    , initialize = Pmin , within = Any)
-    model.UT   = Param(model.G    , initialize = UT   , within = Any)
-    model.DT   = Param(model.G    , initialize = DT   , within = Any)
-    model.De   = Param(model.T    , initialize = De   , within = Any)
-    model.R    = Param(model.T    , initialize = R    , within = Any)
-    model.u_0  = Param(model.G    , initialize = u_0  , within = Any)
-    model.D    = Param(model.G    , initialize = D    , within = Any)
-    model.U    = Param(model.G    , initialize = U    , within = Any)
-    model.SU   = Param(model.G    , initialize = SU   , within = Any)
-    model.SD   = Param(model.G    , initialize = SD   , within = Any)
-    model.RU   = Param(model.G    , initialize = RU   , within = Any)
-    model.RD   = Param(model.G    , initialize = RD   , within = Any)
-    model.p_0  = Param(model.G    , initialize = p_0  , within = Any) 
-    model.CR   = Param(model.G    , initialize = CR   , within = Any) #cost of generator g running and operating at minimum production
+    model.Pmax  = Param(model.G    , initialize = Pmax  , within = Any)
+    model.Pmin  = Param(model.G    , initialize = Pmin  , within = Any)
+    model.UT    = Param(model.G    , initialize = UT    , within = Any)
+    model.DT    = Param(model.G    , initialize = DT    , within = Any)
+    model.De    = Param(model.T    , initialize = De    , within = Any)
+    model.R     = Param(model.T    , initialize = R     , within = Any)
+    model.u_0   = Param(model.G    , initialize = u_0   , within = Any)
+    model.D     = Param(model.G    , initialize = D     , within = Any)
+    model.U     = Param(model.G    , initialize = U     , within = Any)
+    model.SU    = Param(model.G    , initialize = SU    , within = Any)
+    model.SD    = Param(model.G    , initialize = SD    , within = Any)
+    model.RU    = Param(model.G    , initialize = RU    , within = Any)
+    model.RD    = Param(model.G    , initialize = RD    , within = Any)
+    model.p_0   = Param(model.G    , initialize = p_0   , within = Any) 
+    model.CR    = Param(model.G    , initialize = CR    , within = Any) #cost of generator g running and operating at minimum production
+
+    
     # model.c    = Param(model.G , initialize = {1:5,2:15,3:30}    ,within =Any)
     # model.cU   = Param(model.G , initialize = {1:800,2:500,3:250},within = Any)
     
@@ -165,21 +182,32 @@ def uc(instance,option='None',
     model.pc        = Var( model.G , model.T , bounds = (0.0,99999.0))  ## p' (potencia de salida arriba del m.Pmin)
     model.r         = Var( model.G , model.T , bounds = (0.0,99999.0))  ## reserve in general without specific timing
     model.cp        = Var( model.G , model.T , bounds = (0.0,9999999.0))
-    model.cSU       = Var( model.G , model.T , bounds = (0.0,9999999.0))
-    model.cSD       = Var( model.G , model.T , bounds = (0.0,9999999.0))
-    model.mpc       = Var( model.G , model.T , bounds = (0.0,9999999.0))
+    
+    if scope == 'market':
+        model.rco   = Var( model.ORDC , model.T  , bounds = (0.0,9999999.0))  ## reserva comprada del sistema
+        model.rre   = Var( model.G    , model.T  , bounds = (0.0,9999999.0))  ## reserva de regulacion
+        model.rro10 = Var( model.G    , model.T  , bounds = (0.0,9999999.0))  ## reserva rodante de 10
+        model.rro30 = Var( model.G    , model.T  , bounds = (0.0,9999999.0))  ## reserva rodante de 30
+        model.rnr10 = Var( model.G    , model.T  , bounds = (0.0,9999999.0))  ## reserva no rodante de 10
+        model.rnr30 = Var( model.G    , model.T  , bounds = (0.0,9999999.0))  ## reserva no rodante de 30
+    model.cSU       = Var( model.G    , model.T  , bounds = (0.0,9999999.0))
+    model.cSD       = Var( model.G    , model.T  , bounds = (0.0,9999999.0))
+    model.mpc       = Var( model.G    , model.T  , bounds = (0.0,9999999.0))
     # model.snplus    = Var( model.T ,           bounds = (0.0,9999999.0))    ##surplus demand
     # model.snminus   = Var( model.T ,           bounds = (0.0,9999999.0))    ##surplus demand
-    model.sn        = Var(model.T ,           bounds = (0.0,9999999.0))       ##surplus demand
-    model.sR        = Var(model.T ,           bounds = (0.0,9999999.0))       ##surplus reserve         
-    model.pl        = Var(model.indexGTLg,    bounds = (0.0,99999.0))         ## within=UnitInterval UnitInterval == [0,1]   
-    model.total_cSU = Var(                    bounds = (0.0,999999999999.0))  ## Acumula total prendidos
+    model.sn        = Var(model.T               , bounds = (0.0,9999999.0))       ##surplus demand
+    model.sR        = Var(model.T               , bounds = (0.0,9999999.0))       ##surplus reserve         
+    model.pl        = Var(model.indexGTLg       , bounds = (0.0,99999.0))         ## within=UnitInterval UnitInterval == [0,1]   
+    model.total_cSU = Var(                       bounds = (0.0,999999999999.0))  ## Acumula total prendidos
     # model.total_cSD = Var( bounds = (0.0,999999999999.0))              ## Acumula total apagados
     model.total_cEN = Var( bounds = (0.0,999999999999.0))                ## Acumula total energia
     model.total_cMP = Var( bounds = (0.0,999999999999.0))                ## Acumula total CR
     model.total_MPC = Var( bounds = (0.0,999999999999.0))                ## Acumula total MPC
-    model.total_cDE = Var( bounds = (0.0,999999999999.0))                ## Acumula total compra de energia de demandas elasticas 'd'
-    model.allLOAD   = Var( model.T ,bounds = (0.0,999999999999.0))                ## Cuenta el total de demanda elástica asignada
+    model.total_cDE = Var( bounds = (0.0,999999999999.0))                ## Acumula total compra de ENERGIA de demandas elasticas 'd'
+    model.total_cRE = Var( bounds = (0.0,999999999999.0))                ## Acumula total compra de ENERGIA de demandas elasticas 'd'
+    model.total_cPR = Var( bounds = (0.0,999999999999.0))                ## Acumula total compra de RESERVAS de generadores 'd'
+    model.allLOAD   = Var( model.T ,bounds = (0.0,999999999999.0))       ## Cuenta el total de demanda elástica asignada
+    
     model.Pb     = Param(model.indexGLg, initialize = Pb,     within = Any)
     model.Cb     = Param(model.indexGLg, initialize = Cb,     within = Any)
     model.C      = Param(model.indexGLg, initialize = C,      within = Any)
@@ -219,7 +247,7 @@ def uc(instance,option='None',
                     + m.total_cMP \
                     + m.total_MPC \
                     + 0
-                    # + sum(m.sn[t]   * CLP                    for t in m.T) 
+                #   + sum(m.sn[t]   * CLP                    for t in m.T) 
                 #   + sum(m.sR[t]   * CRP                    for t in m.T) \
                 #   + m.total_cSD\
         model.obj = Objective(rule = obj_rule,sense=minimize)
@@ -231,8 +259,10 @@ def uc(instance,option='None',
                     + m.total_cMP \
                     + m.total_MPC \
                     - m.total_cDE \
+                    + m.total_cRE \
+                    - m.total_cPR \
                     + 0
-                    # + sum(m.sn[t]   * CLP                    for t in m.T) 
+                #   + sum(m.sn[t]   * CLP                    for t in m.T) 
                 #   + sum(m.sR[t]   * CRP                    for t in m.T) \
                 #   + m.total_cSD\
         model.obj = Objective(rule = obj_rule,sense=minimize)
@@ -253,21 +283,36 @@ def uc(instance,option='None',
     ## -----------------------------TOTAL MINIMUM PRODUCTION COST------------------------------------------  
     def total_MPC_rule(m):  ## to account minumum production cost
         return m.total_MPC == sum( m.mpc[g,t] * 1 for g in m.G for t in m.T)
-  
+    
+    
     def merge1():    
         model.total_cMP_ = Constraint(rule = total_cMP_rule)    
         model.total_cEN_ = Constraint(rule = total_cEN_rule)
         model.total_cSU_ = Constraint(rule = total_cSU_rule)        
         model.total_MPC_ = Constraint(rule = total_MPC_rule)   
-          
            
     ## --------------------------------------- TOTAL OFERTAS DE COMPRA ------------------------------------------------  
     if scope == 'market':
         if True:
             def total_cDE_rule(m):  ## to account purchase of energy of elastic loads
                 return m.total_cDE == sum( m.cd[d,t] for d in m.LOAD for t in m.T)
-            model.total_cDE_rule = Constraint(rule = total_cDE_rule)    
-
+            model.total_cDE_rule = Constraint(rule = total_cDE_rule)   
+        
+        ## --------------------------------------- TOTAL OFERTAS DE RESERVA ------------------------------------------------  
+        if True: 
+            def total_cRE_rule(m):  ## to account sales of reserve of generators
+                return m.total_cRE == sum((  m.rre[g,t] * m.Crr[g]   + 
+                                           m.rro10[g,t] * m.Cs10[g]  + 
+                                           m.rro30[g,t] * m.Cs30[g]  + 
+                                           m.rnr10[g,t] * m.Cns10[g] + 
+                                           m.rnr30[g,t] * m.Cns30[g]) for g in m.G for t in m.T)
+            model.total_cRE_rule = Constraint(rule = total_cRE_rule)    
+            
+        ## --------------------------------------- TOTAL COMPRAS DE RESERVA (PURCHASE BID)------------------------------------------------  
+        if True: 
+            def total_PR_rule(m):  ## to account purchase RESERVE of the generators
+                return m.total_cPR == sum( m.Cordc[b]*m.rco[b,t] for b in m.ORDC for t in m.T)
+            model.total_PR_rule = Constraint(rule = total_PR_rule) 
        
     ## -----------------------------TOTAL COSTOS APAGADO------------------------------------------  
     # def total_cSD_rule(m):  ## to account for stoppages cost
@@ -377,8 +422,9 @@ def uc(instance,option='None',
             else:
                 return Constraint.Skip
         
-        ##40
-        ##41
+        #Trajectory pending 
+        ##40 pending
+        ##41 pending
     
     def merge4():
         model.su_sd_rule23a  = Constraint(model.G,model.T, rule = su_sd_rule23a)  
@@ -400,7 +446,7 @@ def uc(instance,option='None',
             return m.pc[g,t-1] - m.pc[g,t] <= (m.SD[g]-m.Pmin[g]-m.RD[g])*m.w[g,t] + m.RD[g]*m.u[g,t-1]
     
     def merge5():
-        model.up_ramp_rule35 = Constraint(model.G,model.T, rule = up_ramp_rule35)   
+        model.up_ramp_rule35   = Constraint(model.G,model.T, rule = up_ramp_rule35)   
         model.down_ramp_rule36 = Constraint(model.G,model.T, rule = down_ramp_rule36)
 
     ## -------------------------------DEMAND & RESERVE----------------------------------------   
@@ -428,8 +474,8 @@ def uc(instance,option='None',
     # model.demand_rule66a = Constraint(model.T, rule = demand_rule66a)
     
     def merge6():
-        model.demand_rule65 = Constraint(model.T, rule = demand_rule65)
-        model.demand_rule67 = Constraint(model.T, rule = demand_rule67)
+        model.demand_rule65  = Constraint(model.T, rule = demand_rule65)
+        model.demand_rule67  = Constraint(model.T, rule = demand_rule67)
         model.reserve_rule68 = Constraint(model.T, rule = reserve_rule68)
 
     ## --------------------------------MINIMUM UP/DOWN TIME---------------------------------------
@@ -464,14 +510,14 @@ def uc(instance,option='None',
     ## (Enforce) the initial Minimum Up/Down Times fixing the initial periods U[g] and D[g] 
     ## Tight and Compact MILP Formulation for the Thermal Unit Commitment Problem
     ## Germán Morales-España, Jesus M. Latorre, and Andrés Ramos
-    def cycle1():
+    def enforce():
         for g in model.G: 
             for t in model.T: 
                 if t <= U[g]+D[g]:
                     model.u[g,t].fix(model.u_0[g])
 
     def merge7():
-        cycle1()
+        enforce()
         model.mut = Constraint(model.G, model.T, rule = mut_rule)    
         model.mdt = Constraint(model.G, model.T, rule = mdt_rule)
         model.mdt2 = Constraint(model.G, rule = mdt_rule2)
@@ -654,10 +700,10 @@ def uc(instance,option='None',
                 return Constraint.Skip                            
     
     def merge8():        
-        model.Piecewise_offer42 = Constraint(model.indexGTLg,  rule = Piecewise_offer42)                                    
-        model.Piecewise_offer43 = Constraint(model.G,model.T,  rule = Piecewise_offer43)                                    
-        model.Piecewise_offer44 = Constraint(model.G,model.T,  rule = Piecewise_offer44)
-        model.Piecewise_offer46 = Constraint(model.indexGTLg,  rule = Piecewise_offer46)
+        model.Piecewise_offer42  = Constraint(model.indexGTLg, rule = Piecewise_offer42)                                    
+        model.Piecewise_offer43  = Constraint(model.G,model.T, rule = Piecewise_offer43)                                    
+        model.Piecewise_offer44  = Constraint(model.G,model.T, rule = Piecewise_offer44)
+        model.Piecewise_offer46  = Constraint(model.indexGTLg, rule = Piecewise_offer46)
         model.Piecewise_offer47a = Constraint(model.indexGTLg, rule = Piecewise_offer47a)
     
     def merge8b():   
@@ -665,7 +711,7 @@ def uc(instance,option='None',
         model.Piecewise_offer48a = Constraint(model.indexGTLg, rule = Piecewise_offer48a) 
         model.Piecewise_offer48b = Constraint(model.indexGTLg, rule = Piecewise_offer48b)    
         
-    ## ----------------------------SIMPLE COST PRODUCTION-------------------------------------------   
+    ## ----------------------------SIMPLE COST PRODUCTION (HYDRO)-------------------------------------------   
     
     if False:
         def simple_cost(m,g,t):   
@@ -698,10 +744,10 @@ def uc(instance,option='None',
         model.Start_up_cost58 = Constraint(model.G,model.T, rule = Start_up_cost58)   
         
     
-    ## Initial Startup (t=0)Type required by MLR and Knueven from
+    ## Initial Startup (t=0) Type required by MLR and Knueven from
     ## 'Tight and Compact MILP Formulation for the Thermal Unit Commitment Problem',
     ## Germán Morales-España, Jesus M. Latorre, and Andrés Ramos.  
-    def cycle2():   
+    def enforce2():   
         for g in range(1,len(G)+1): 
             for t in range(1,len(T)+1): 
                 for s in range(1,len(S[g])): 
@@ -712,7 +758,7 @@ def uc(instance,option='None',
                                 # print('fix delta:',g,t,s)  
                                 
     def merge9():
-        cycle2()
+        enforce2()
         model.Start_up_cost54 = Constraint(model.indexGTSg, rule = Start_up_cost54)
         model.Start_up_cost55 = Constraint(model.G,model.T, rule = Start_up_cost55)        
         model.Start_up_cost56 = Constraint(model.G,model.T, rule = Start_up_cost56)  
@@ -727,60 +773,88 @@ def uc(instance,option='None',
                     return m.ld[d,t,i-1] <= (m.Pd[d,i-1]-m.Pd[d,i] )
                 else:
                     return Constraint.Skip 
-            model.Piecewise_load_bid1 = Constraint(model.indexLoadTLd, rule = Piecewise_load_bid1)
             
             def Piecewise_load_bid2(m,d,t):   ## based on eq.(43)
-                return sum(m.ld[d,t,i] for i in range(1,value(len(m.Ld[d]))+1)) == m.l[d,t]                                        
-            model.Piecewise_load_bid2 = Constraint(model.LOAD,model.T, rule = Piecewise_load_bid2)
-            
+                return sum(m.ld[d,t,i] for i in range(1,value(len(m.Ld[d]))+1)) == m.l[d,t]           
             
             def Piecewise_load_bid3(m,d,t):   ## based on eq.(44)
-                return sum(m.Cd[d,i] * m.ld[d,t,i] for i in range(1,value(len(m.Ld[d]))+1)) == m.cd[d,t]                                       
-            model.Piecewise_load_bid3 = Constraint(model.LOAD,model.T, rule = Piecewise_load_bid3)
+                return sum(m.Cd[d,i] * m.ld[d,t,i] for i in range(1,value(len(m.Ld[d]))+1)) == m.cd[d,t]     
                     
             def Piecewise_load_bid4(m,t):   ## sub-total commited load
-                return sum( m.l[d,t]  for d in m.LOAD)  ==      m.allLOAD[t]                               
-            model.Piecewise_load_bid4 = Constraint(model.T, rule = Piecewise_load_bid4)
+                return sum( m.l[d,t]  for d in m.LOAD)  ==      m.allLOAD[t]               
             
             def load_bid_min(m,d,t):   
                 # print('Pd_min',m.Pd[d,len(m.Ld[d])]) 
-                return m.l[d,t] >= m.Pd[d,len(m.Ld[d])]                                      
-            model.load_bid_min = Constraint(model.LOAD, model.T, rule = load_bid_min)
+                return m.l[d,t] >= m.Pd[d,len(m.Ld[d])]                              
             
             def load_bid_max(m,d,t):  
                 # print('Pd_max',m.Pd[d,1]) 
                 return m.l[d,t] <= m.Pd[d,1]                                      
-            model.load_bid_max = Constraint(model.LOAD, model.T, rule = load_bid_max)
+            
+                                            
+            def merge10(): 
+                model.Piecewise_load_bid1 = Constraint(model.indexLoadTLd , rule = Piecewise_load_bid1)                                                                                                        
+                model.Piecewise_load_bid2 = Constraint(model.LOAD, model.T, rule = Piecewise_load_bid2)
+                model.Piecewise_load_bid3 = Constraint(model.LOAD, model.T, rule = Piecewise_load_bid3)
+                model.Piecewise_load_bid4 = Constraint(            model.T, rule = Piecewise_load_bid4)
+                model.load_bid_min        = Constraint(model.LOAD, model.T, rule = load_bid_min)                
+                model.load_bid_max        = Constraint(model.LOAD, model.T, rule = load_bid_max)
 
-            # def simple_purchase_bid(m,d,t):   
+            # def simple_purchase_bid(m,d,t):   ## DEPRECATED
             #     return m.cd[d,t] == m.Cd[d,len(m.Ld[d])] * m.l[d,t]                                           
             # model.simple_purchase_bid = Constraint(model.LOAD, model.T, rule = simple_purchase_bid)
         
         
-        ## ----------------------- PROHIBID OPERATIVE ZONES ----------------------------  
-        if False:
+        ## ----------------------- PROHIBID OPERATING ZONES ----------------------------  
+        if True:
             def prohibid_operative_zones_min(m,g,t,ro):  
                 return  m.pc_RO[g,t,ro]  >=  m.ROmin[g,ro] * m.u_RO[g,t,ro]                                
-            model.prohibid_operative_zones_min = Constraint(model.indexGRO_T_RO,rule=prohibid_operative_zones_min)
             
             def prohibid_operative_zones_max(m,g,t,ro):  
                 return  m.pc_RO[g,t,ro]  <=  m.ROmax[g,ro] * m.u_RO[g,t,ro]                                  
-            model.prohibid_operative_zones_max= Constraint(model.indexGRO_T_RO,rule=prohibid_operative_zones_max)
             
             def prohibid_operative_zones1(m,g,t):
                 return  sum( m.u_RO[g,t,ro] for ro in m.RO[g] ) == m.u[g,t]                             
-            model.prohibid_operative_zones1= Constraint(model.indexGRO_T,rule=prohibid_operative_zones1)
             
             def prohibid_operative_zones2(m,g,t):  
                 return  sum( m.pc_RO[g,t,ro] for ro in m.RO[g] ) == m.pc[g,t]                             
-            model.prohibid_operative_zones2= Constraint(model.indexGRO_T,rule=prohibid_operative_zones2)
+                             
+            def merge11(): 
+                model.prohibid_operative_zones_min = Constraint(model.indexGRO_T_RO,rule=prohibid_operative_zones_min)
+                model.prohibid_operative_zones_max = Constraint(model.indexGRO_T_RO,rule=prohibid_operative_zones_max)
+                model.prohibid_operative_zones1    = Constraint(model.indexGRO_T,   rule=prohibid_operative_zones1)
+                model.prohibid_operative_zones2    = Constraint(model.indexGRO_T,   rule=prohibid_operative_zones2)
+
 
         ## ----------------------- RESERVE OFFERS ----------------------------  
-        
-        # def simple_purchase_bid(m,d,t):   
-        #     return m.cd[d,t] == m.Cd[d,len(m.Ld[d])] * m.l[d,t]                                           
-        # model.simple_purchase_bid = Constraint(model.LOAD, model.T, rule = simple_purchase_bid)
-        
+        if True:        
+            def total_reg_rule(m,t):  ## to account the regulation reserve met
+                return sum( m.rre[g,t] 
+                           for g in m.G) >= sum( m.rco[b,t] for b in {1,2,3})
+            model.total_reg_rule = Constraint(model.T,rule = total_reg_rule)   
+            
+            def total_spin_rule(m,t):  ## to account the sppining reserve met
+                return sum( m.rre[g,t] + m.rro10[g,t]
+                           for g in m.G) >= sum( m.rco[b,t] for b in {1,2,3,4,5,6})
+            model.total_spin_rule = Constraint(model.T,rule = total_spin_rule)   
+               
+            def total_oper_rule(m,t):  ## to account the operative reserve met
+                return sum( m.rre[g,t] + m.rro10[g,t] + m.rnr10[g,t]
+                           for g in m.G) >= sum( m.rco[b,t] for b in {1,2,3,4,5,6,7,8,9})
+            model.total_oper_rule = Constraint(model.T,rule = total_oper_rule) 
+            
+            def total_sup_rule(m,t):  ## to account the supplementary reserve met
+                return sum((m.rre[g,t]+m.rro10[g,t]+m.rnr10[g,t]+m.rro30[g,t]+m.rnr30[g,t]) 
+                           for g in m.G) >= sum( m.rco[b,t] for b in m.ORDC)
+            model.total_supp_rule = Constraint(model.T,rule = total_sup_rule)   
+                     
+            def limit_rco_rule(m,b,t):  ## limits of reserve requirements
+                return m.rco[b,t] <= m.RCO[b] 
+            model.limit_rco_rule = Constraint(model.ORDC, model.T, rule = limit_rco_rule)
+            
+                       
+            def merge12(): 
+                aux=1
         
     ## ---------------------------- LOCAL BRANCHING CONSTRAINT LBC 1 (SOFT-FIXING)------------------------------------------    
     ## Define a neighbourhood with LBC1.    
@@ -885,7 +959,7 @@ def uc(instance,option='None',
             for cut in rightbranches:
                 expr = 0      
                 ## cut[1]=No_SB_Uu   cut[2]=lower_Pmin_Uu  cut[0]=SB_Uu   
-                for f in cut[0]:  ## NUNCA SE MUEVE         ## Cuenta los cambios de 1 --> 0  
+                for f in cut[0]:  ## NO MOVER NUNCA         ## Cuenta los cambios de 1 --> 0  
                     expr += 1 - model.u[f[0]+1,f[1]+1] 
                 for f in cut[2]:  # cut[1]                  ## Cuenta los cambios de 0 --> 1 
                     expr +=     model.u[f[0]+1,f[1]+1] 
@@ -985,11 +1059,19 @@ def uc(instance,option='None',
     t7  = threading.Thread(target=merge7)   
     t8  = threading.Thread(target=merge8)   
     t8b = threading.Thread(target=merge8b)   
-    t9  = threading.Thread(target=merge9)     
+    t9  = threading.Thread(target=merge9)  
+        
+
     t1.start(); t2.start(); t3.start(); t4.start(); t5.start(); t6.start(); t7.start(); t8.start(); t8b.start(); t9.start();  ## starting threads 
     t1.join();  t2.join();  t3.join();  t4.join();  t5.join();  t6.join();  t7.join();  t8.join();  t8b.join();  t9.join();   ## wait until thread 1 is completely executed     
-    print(option,"All threads completely executed!") # https://www.geeksforgeeks.org/multithreading-python-set-1/
+    #print(option,"All threads completely executed!") # https://www.geeksforgeeks.org/multithreading-python-set-1/
     
+    if  scope == 'market':   
+        t10 = threading.Thread(target=merge10)
+        t11 = threading.Thread(target=merge11)
+        t12 = threading.Thread(target=merge12)        
+        t10.start(); t11.start(); t12.start() 
+        t10.join();  t11.join();  t12.join()
 
     return model, inside90
 

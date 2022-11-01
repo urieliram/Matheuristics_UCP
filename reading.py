@@ -77,7 +77,7 @@ def reading(file):
     p_0_list             = []
     u_0_list             = []
     fixed_cost           = []
-    abajo_min =0
+    abajo_min            = 0
     
     ## To get the data from the generators
     i=1 ## Cuenta los generadores
@@ -101,6 +101,7 @@ def reading(file):
         except:
             fixed_cost.append(0)   
             
+           
         startup = (md['thermal_generators'][gen]["startup"]) # variable start-up cost
         piecewise_production = md['thermal_generators'][gen]["piecewise_production"] #piecewise cost
         
@@ -256,8 +257,61 @@ def reading(file):
         # print('Pd',Pd)
 
     except:
-        print('Sin información de cargas elásticas')    
-            
+        print('reading.py sin información de cargas elásticas')
+    
+    ## Prohibid operating zones
+    GRO   = []    
+    oz    = []
+    noz   = [] 
+    toz   = []
+    minoz = [] ## operating zones
+    maxoz = [] ## operating zones
+    romin = [] ## operating zones
+    romax = [] ## operating zones
+    try: 
+        ## Read generators with prohibid operative zones
+        for item in md['operative_zones']['GRO']:  
+            GRO.append(item)
+        
+        ## Read operative zones
+        i=0
+        for item in md['operative_zones']['oz']:
+            minoz.append(item['min'])
+            maxoz.append(item['max'])
+            i=i+1
+            noz.append(i)
+        for item in GRO:
+            oz.append(noz)
+        for i in GRO:
+            for j in noz:
+                toz.append((i,j))        
+        for item in toz:
+            #print(power_output_maximum[item[0]-1],minoz[item[1]-1],maxoz[item[1]-1])
+            romin.append( power_output_maximum[item[0]-1]*minoz[item[1]-1]*0.01 )
+            romax.append( power_output_maximum[item[0]-1]*maxoz[item[1]-1]*0.01  )                
+        
+    except:        
+        print('reading.py sin información de zonas prohibidas')
+
+
+    
+    # print('oz',oz)
+    # print('noz',noz) 
+    # print('toz',toz)  
+    # print('minoz',minoz)  
+    # print('maxoz',maxoz)  
+    # print('romin',romin)  
+    # print('romax',romax)  
+
+    
+    # GRO    = [1, 3]
+    # RO     = {1: [1, 2, 3], 3: [1, 2, 3]}
+    # ROmin  = {(1, 1):  0, (1, 2): 100, (1, 3): 230,    (3, 1):  0, (3, 2): 60, (3, 3): 95}   
+    # ROmax  = {(1, 1): 50, (1, 2): 150, (1, 3): 305,    (3, 1): 41, (3, 2): 91, (3, 3): 100}   
+    # print('GRO',GRO)
+    # print('RO',RO)  
+    # print('ROmin',ROmin)
+    # print('ROmax',ROmax)   
     
     ## Aqui se pasan de arreglos a diccionarios como los usa Pyomo
     Pmax   = dict(zip(G, power_output_maximum))
@@ -274,33 +328,14 @@ def reading(file):
     RD     = dict(zip(G, ramp_down_limit))
     p_0    = dict(zip(G, p_0_list))  
     names  = dict(zip(G, names_gens))  
-    CR     = dict(zip(G, fixed_cost))      
+    CR     = dict(zip(G, fixed_cost))
     
-    ## Prohibid zones
-    # GRO    = [1]
-    # RO     = {1: [1, 2, 3]}
-    # ROmin  = {(1, 1): 150, (1, 2): 250, (1, 3): 400}   
-    # ROmax  = {(1, 1): 200, (1, 2): 350, (1, 3): 450}   
+    RO     = dict(zip(GRO, oz))   
+    ROmin  = dict(zip(toz, romin))   
+    ROmax  = dict(zip(toz, romax))   
     
-    # GRO    = [1]
-    # RO     = {1: [1]}
-    # ROmin  = {(1, 1): 150}   
-    # ROmax  = {(1, 1): 450}  
-
-    # GRO    = [1]
-    # RO     = {1: [1, 2]}
-    # ROmin  = {(1, 1): 150, (1, 2): 152}   
-    # ROmax  = {(1, 1): 151, (1, 2): 450}  
-    
-        
-    # Prohibid zones
-    GRO    = [1,3]
-    RO     = {1: [1, 2, 3], 3: [1, 2, 3]}
-    ROmin  = {(1, 1):  0, (1, 2): 100, (1, 3): 230,  (3, 1): 0, (3, 2): 60, (3, 3): 95}   
-    ROmax  = {(1, 1): 50, (1, 2): 150, (1, 3): 305,  (3, 1): 41, (3, 2): 91, (3, 3): 100}   
     
 
-    
     ## -----------------  Caso de ejemplo de anjos.json  --------------------------
     #G        = [1, 2, 3]
     #T        = [1, 2, 3, 4, 5, 6]
@@ -331,14 +366,70 @@ def reading(file):
     #ambiente = 'localPC'
     ## ----------------------------------  o  -------------------------------------
 
-    ## Para obtener los Psu y los Psd
+    ## Para obtener los Psu y los Psd 
     for i in Pmin:
         if SU[1]<Pmin[i]:
             print('Pmin',Pmin[i],SU[1])
             
-
-    instance = [G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,Pb,Cb,C,CR,Cs,Tunder,names,LOAD,Ld,Pd,Cd, GRO,RO,ROmin,ROmax]
+    ## Artificialmente creamos ofertas de venta de reservas    
+    Crr   = []  
+    Cs10  = []   
+    Cs30  = []   
+    Cns10 = []   
+    Cns30 = []  
+    Cordc = []  
+    ORDC  = [] ## Segments of ORDC
+    RCO   = [] ## Limits of MW for each ORDC segment
     
-    return instance 
-          
-   
+    nORDC = 12
+        
+    RCO.append(24.0)   # 5 MW    
+    RCO.append(22.0)   # 5 MW       
+    RCO.append(20.0)   # 5 MW       
+    RCO.append(18.0)   # 5 MW       
+    RCO.append(16.0)   # 5 MW       
+    RCO.append(14.0)   # 5 MW       
+    RCO.append(12.0)   # 5 MW       
+    RCO.append(10.0)   # 5 MW       
+    RCO.append(8.0)    # 5 MW       
+    RCO.append(6.0)    # 5 MW       
+    RCO.append(4.0)    # 5 MW       
+    RCO.append(2.0)    # 5 MW       
+    
+    Cordc.append(15.0)   # 5 MW    
+    Cordc.append(14.0)   # 5 MW       
+    Cordc.append(13.0)   # 5 MW       
+    Cordc.append(12.0)   # 5 MW       
+    Cordc.append(11.0)   # 5 MW       
+    Cordc.append(10.0)   # 5 MW       
+    Cordc.append(9.0)    # 5 MW       
+    Cordc.append(8.0)    # 5 MW       
+    Cordc.append(7.0)    # 5 MW       
+    Cordc.append(6.0)    # 5 MW       
+    Cordc.append(5.0)    # 5 MW       
+    Cordc.append(4.0)    # 5 MW       
+     
+    for i in range(1,len(RCO)+1):
+        ORDC.append(i) 
+        
+    for i in G:
+        Crr.append(  1) # $ 1
+        Cs10.append( 1) # $ 1
+        Cs30.append( 1) # $ 1
+        Cns10.append(1) # $ 1
+        Cns30.append(1) # $ 1        
+    Crr      = dict(zip(G   , Crr))
+    Cs10     = dict(zip(G   , Cs10))
+    Cs30     = dict(zip(G   , Cs30))
+    Cns10    = dict(zip(G   , Cns10))
+    Cns30    = dict(zip(G   , Cns30))
+    Cordc    = dict(zip(ORDC, Cordc))
+    RCO      = dict(zip(ORDC, RCO))
+        
+        
+    instance = [G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,Pb,Cb,C,CR,Cs,Tunder,names,
+                LOAD,Ld,Pd,Cd, 
+                GRO,RO,ROmin,ROmax, 
+                Crr,Cs10,Cs30,Cns10,Cns30,Cordc,ORDC,RCO]
+            
+    return instance
