@@ -84,7 +84,7 @@ if ambiente == 'yalma':
 localtime = time.asctime(time.localtime(time.time()))
 
 scope = 'market'  
-scope = ''        ## Unit Commitment Model 
+scope = ''       ## Unit Commitment Model 
 
 print(localtime,'Solving <'+scope+'> model ---> ---> ---> --->',nameins)
 
@@ -559,7 +559,7 @@ if  True:
     model,__ = uc_Co.uc(instance,option='MilpTest',nameins=nameins[0:5],mode='Tight',scope=scope)
     sol_milp = Solution(model=model,nameins=nameins[0:5],env=ambiente,executable=executable,
                         gap=gap,cutoff=cutoff,symmetry=symmetrydefault,strategy=strategy,timelimit=timemilp,
-                        tee=False,tofiles=True,emphasize=emph,lbheur=lbheur,
+                        tee=False,tofiles=False,emphasize=emph,lbheur=lbheur,
                         exportLP=False,option='MilpTest',scope=scope)
     z_milp, g_milp = sol_milp.solve_problem()
     t_milp         = time.time() - t_o

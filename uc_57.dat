@@ -102,8 +102,8 @@ g,t,u,v,w,p
 3,4,1,0,0,25.0
 4,4,1,0,0,25.0
 5,4,1,0,0,25.0
-6,4,1,0,0,32.944
-7,4,1,0,0,79.6079
+6,4,1,0,0,32.9439
+7,4,1,0,0,79.608
 8,4,1,0,0,93.68
 9,4,1,0,0,91.6
 10,4,1,0,0,82.64
@@ -1341,7 +1341,7 @@ g,t,u,v,w,p
          (5, 4) :   0.0 :              0.0 : 9999999.0 : False : False :  Reals
          (5, 5) :   0.0 :              0.0 : 9999999.0 : False : False :  Reals
          (5, 6) :   0.0 :              0.0 : 9999999.0 : False : False :  Reals
-         (5, 7) :   0.0 :         156.4968 : 9999999.0 : False : False :  Reals
+         (5, 7) :   0.0 : 156.496799999999 : 9999999.0 : False : False :  Reals
          (5, 8) :   0.0 :        1075.7776 : 9999999.0 : False : False :  Reals
          (5, 9) :   0.0 :         1352.996 : 9999999.0 : False : False :  Reals
         (5, 10) :   0.0 :          1312.02 : 9999999.0 : False : False :  Reals
@@ -1604,10 +1604,10 @@ g,t,u,v,w,p
          (3, 9, 1) :     0 :  -0.0 :     1 : False : False : Binary
          (3, 9, 2) :     0 :   0.0 :     1 : False : False : Binary
          (3, 9, 3) :     0 :   0.0 :     1 : False : False : Binary
-        (3, 10, 1) :     0 :  -0.0 :     1 : False : False : Binary
+        (3, 10, 1) :     0 :   0.0 :     1 : False : False : Binary
         (3, 10, 2) :     0 :  -0.0 :     1 : False : False : Binary
         (3, 10, 3) :     0 :   0.0 :     1 : False : False : Binary
-        (3, 11, 1) :     0 :  -0.0 :     1 : False : False : Binary
+        (3, 11, 1) :     0 :   0.0 :     1 : False : False : Binary
         (3, 11, 2) :     0 :  -0.0 :     1 : False : False : Binary
         (3, 11, 3) :     0 :   0.0 :     1 : False : False : Binary
         (3, 12, 1) :     0 :  -0.0 :     1 : False : False : Binary
@@ -1622,10 +1622,10 @@ g,t,u,v,w,p
         (3, 15, 1) :     0 :   0.0 :     1 : False : False : Binary
         (3, 15, 2) :     0 :  -0.0 :     1 : False : False : Binary
         (3, 15, 3) :     0 :   0.0 :     1 : False : False : Binary
-        (3, 16, 1) :     0 :  -0.0 :     1 : False : False : Binary
+        (3, 16, 1) :     0 :   0.0 :     1 : False : False : Binary
         (3, 16, 2) :     0 :  -0.0 :     1 : False : False : Binary
         (3, 16, 3) :     0 :   0.0 :     1 : False : False : Binary
-        (3, 17, 1) :     0 :   0.0 :     1 : False : False : Binary
+        (3, 17, 1) :     0 :  -0.0 :     1 : False : False : Binary
         (3, 17, 2) :     0 :  -0.0 :     1 : False : False : Binary
         (3, 17, 3) :     0 :   0.0 :     1 : False : False : Binary
         (3, 18, 1) :     0 :   0.0 :     1 : False : False : Binary
@@ -1673,16 +1673,16 @@ g,t,u,v,w,p
          (4, 8, 1) :     0 :   1.0 :     1 : False : False : Binary
          (4, 8, 2) :     0 :   0.0 :     1 : False : False : Binary
          (4, 8, 3) :     0 :   0.0 :     1 : False : False : Binary
-         (4, 9, 1) :     0 :  -0.0 :     1 : False : False : Binary
+         (4, 9, 1) :     0 :   0.0 :     1 : False : False : Binary
          (4, 9, 2) :     0 :   0.0 :     1 : False : False : Binary
          (4, 9, 3) :     0 :   0.0 :     1 : False : False : Binary
-        (4, 10, 1) :     0 :  -0.0 :     1 : False : False : Binary
+        (4, 10, 1) :     0 :   0.0 :     1 : False : False : Binary
         (4, 10, 2) :     0 :  -0.0 :     1 : False : False : Binary
         (4, 10, 3) :     0 :   0.0 :     1 : False : False : Binary
         (4, 11, 1) :     0 :   0.0 :     1 : False : False : Binary
         (4, 11, 2) :     0 :  -0.0 :     1 : False : False : Binary
         (4, 11, 3) :     0 :   0.0 :     1 : False : False : Binary
-        (4, 12, 1) :     0 :   0.0 :     1 : False : False : Binary
+        (4, 12, 1) :     0 :  -0.0 :     1 : False : False : Binary
         (4, 12, 2) :     0 :  -0.0 :     1 : False : False : Binary
         (4, 12, 3) :     0 :   0.0 :     1 : False : False : Binary
         (4, 13, 1) :     0 :  -0.0 :     1 : False : False : Binary
@@ -1691,13 +1691,13 @@ g,t,u,v,w,p
         (4, 14, 1) :     0 :  -0.0 :     1 : False : False : Binary
         (4, 14, 2) :     0 :  -0.0 :     1 : False : False : Binary
         (4, 14, 3) :     0 :   0.0 :     1 : False : False : Binary
-        (4, 15, 1) :     0 :   0.0 :     1 : False : False : Binary
+        (4, 15, 1) :     0 :  -0.0 :     1 : False : False : Binary
         (4, 15, 2) :     0 :  -0.0 :     1 : False : False : Binary
         (4, 15, 3) :     0 :   0.0 :     1 : False : False : Binary
-        (4, 16, 1) :     0 :   0.0 :     1 : False : False : Binary
+        (4, 16, 1) :     0 :  -0.0 :     1 : False : False : Binary
         (4, 16, 2) :     0 :  -0.0 :     1 : False : False : Binary
         (4, 16, 3) :     0 :   0.0 :     1 : False : False : Binary
-        (4, 17, 1) :     0 :   0.0 :     1 : False : False : Binary
+        (4, 17, 1) :     0 :  -0.0 :     1 : False : False : Binary
         (4, 17, 2) :     0 :  -0.0 :     1 : False : False : Binary
         (4, 17, 3) :     0 :   0.0 :     1 : False : False : Binary
         (4, 18, 1) :     0 :   0.0 :     1 : False : False : Binary
@@ -1748,7 +1748,7 @@ g,t,u,v,w,p
          (5, 9, 1) :     0 :  -0.0 :     1 : False : False : Binary
          (5, 9, 2) :     0 :   0.0 :     1 : False : False : Binary
          (5, 9, 3) :     0 :   0.0 :     1 : False : False : Binary
-        (5, 10, 1) :     0 :  -0.0 :     1 : False : False : Binary
+        (5, 10, 1) :     0 :   0.0 :     1 : False : False : Binary
         (5, 10, 2) :     0 :   0.0 :     1 : False : False : Binary
         (5, 10, 3) :     0 :   0.0 :     1 : False : False : Binary
         (5, 11, 1) :     0 :   0.0 :     1 : False : False : Binary
@@ -1808,10 +1808,10 @@ g,t,u,v,w,p
          (6, 5, 1) :     0 :  -0.0 :     1 : False : False : Binary
          (6, 5, 2) :     0 :   0.0 :     1 : False : False : Binary
          (6, 5, 3) :     0 :   0.0 :     1 : False : False : Binary
-         (6, 6, 1) :     0 :   0.0 :     1 : False : False : Binary
+         (6, 6, 1) :     0 :  -0.0 :     1 : False : False : Binary
          (6, 6, 2) :     0 :   0.0 :     1 : False : False : Binary
          (6, 6, 3) :     0 :   0.0 :     1 : False : False : Binary
-         (6, 7, 1) :     0 :   0.0 :     1 : False : False : Binary
+         (6, 7, 1) :     0 :  -0.0 :     1 : False : False : Binary
          (6, 7, 2) :     0 :   0.0 :     1 : False : False : Binary
          (6, 7, 3) :     0 :   0.0 :     1 : False : False : Binary
          (6, 8, 1) :     0 :   0.0 :     1 : False : False : Binary
@@ -1829,7 +1829,7 @@ g,t,u,v,w,p
         (6, 12, 1) :     0 :  -0.0 :     1 : False : False : Binary
         (6, 12, 2) :     0 :  -0.0 :     1 : False : False : Binary
         (6, 12, 3) :     0 :   0.0 :     1 : False : False : Binary
-        (6, 13, 1) :     0 :  -0.0 :     1 : False : False : Binary
+        (6, 13, 1) :     0 :   0.0 :     1 : False : False : Binary
         (6, 13, 2) :     0 :  -0.0 :     1 : False : False : Binary
         (6, 13, 3) :     0 :   0.0 :     1 : False : False : Binary
         (6, 14, 1) :     0 :  -0.0 :     1 : False : False : Binary
@@ -1889,7 +1889,7 @@ g,t,u,v,w,p
          (7, 8, 1) :     0 :  -0.0 :     1 : False : False : Binary
          (7, 8, 2) :     0 :  -0.0 :     1 : False : False : Binary
          (7, 8, 3) :     0 :   0.0 :     1 : False : False : Binary
-         (7, 9, 1) :     0 :  -0.0 :     1 : False : False : Binary
+         (7, 9, 1) :     0 :   0.0 :     1 : False : False : Binary
          (7, 9, 2) :     0 :  -0.0 :     1 : False : False : Binary
          (7, 9, 3) :     0 :   0.0 :     1 : False : False : Binary
         (7, 10, 1) :     0 :  -0.0 :     1 : False : False : Binary
@@ -1901,13 +1901,13 @@ g,t,u,v,w,p
         (7, 12, 1) :     0 :  -0.0 :     1 : False : False : Binary
         (7, 12, 2) :     0 :  -0.0 :     1 : False : False : Binary
         (7, 12, 3) :     0 :   0.0 :     1 : False : False : Binary
-        (7, 13, 1) :     0 :  -0.0 :     1 : False : False : Binary
+        (7, 13, 1) :     0 :   0.0 :     1 : False : False : Binary
         (7, 13, 2) :     0 :  -0.0 :     1 : False : False : Binary
         (7, 13, 3) :     0 :   0.0 :     1 : False : False : Binary
         (7, 14, 1) :     0 :  -0.0 :     1 : False : False : Binary
         (7, 14, 2) :     0 :  -0.0 :     1 : False : False : Binary
         (7, 14, 3) :     0 :   0.0 :     1 : False : False : Binary
-        (7, 15, 1) :     0 :   0.0 :     1 : False : False : Binary
+        (7, 15, 1) :     0 :  -0.0 :     1 : False : False : Binary
         (7, 15, 2) :     0 :  -0.0 :     1 : False : False : Binary
         (7, 15, 3) :     0 :   0.0 :     1 : False : False : Binary
         (7, 16, 1) :     0 :  -0.0 :     1 : False : False : Binary
@@ -1916,7 +1916,7 @@ g,t,u,v,w,p
         (7, 17, 1) :     0 :   0.0 :     1 : False : False : Binary
         (7, 17, 2) :     0 :   1.0 :     1 : False : False : Binary
         (7, 17, 3) :     0 :   0.0 :     1 : False : False : Binary
-        (7, 18, 1) :     0 :  -0.0 :     1 : False : False : Binary
+        (7, 18, 1) :     0 :   0.0 :     1 : False : False : Binary
         (7, 18, 2) :     0 :  -0.0 :     1 : False : False : Binary
         (7, 18, 3) :     0 :   0.0 :     1 : False : False : Binary
         (7, 19, 1) :     0 :   0.0 :     1 : False : False : Binary
@@ -2134,9 +2134,9 @@ g,t,u,v,w,p
          (6, 1) :   0.0 :  445.2 : 9999999.0 : False : False :  Reals
          (6, 2) :   0.0 :  445.2 : 9999999.0 : False : False :  Reals
          (6, 3) :   0.0 :    0.0 : 9999999.0 : False : False :  Reals
-         (6, 4) :   0.0 :   -0.0 : 9999999.0 : False : False :  Reals
+         (6, 4) :   0.0 :    0.0 : 9999999.0 : False : False :  Reals
          (6, 5) :   0.0 :   -0.0 : 9999999.0 : False : False :  Reals
-         (6, 6) :   0.0 :    0.0 : 9999999.0 : False : False :  Reals
+         (6, 6) :   0.0 :   -0.0 : 9999999.0 : False : False :  Reals
          (6, 7) :   0.0 :    0.0 : 9999999.0 : False : False :  Reals
          (6, 8) :   0.0 :    0.0 : 9999999.0 : False : False :  Reals
          (6, 9) :   0.0 :    0.0 : 9999999.0 : False : False :  Reals
@@ -2162,13 +2162,13 @@ g,t,u,v,w,p
          (7, 5) :   0.0 :   -0.0 : 9999999.0 : False : False :  Reals
          (7, 6) :   0.0 :    0.0 : 9999999.0 : False : False :  Reals
          (7, 7) :   0.0 :   -0.0 : 9999999.0 : False : False :  Reals
-         (7, 8) :   0.0 :   -0.0 : 9999999.0 : False : False :  Reals
+         (7, 8) :   0.0 :    0.0 : 9999999.0 : False : False :  Reals
          (7, 9) :   0.0 :    0.0 : 9999999.0 : False : False :  Reals
-        (7, 10) :   0.0 :   -0.0 : 9999999.0 : False : False :  Reals
+        (7, 10) :   0.0 :    0.0 : 9999999.0 : False : False :  Reals
         (7, 11) :   0.0 :    0.0 : 9999999.0 : False : False :  Reals
         (7, 12) :   0.0 :    0.0 : 9999999.0 : False : False :  Reals
-        (7, 13) :   0.0 :   -0.0 : 9999999.0 : False : False :  Reals
-        (7, 14) :   0.0 :    0.0 : 9999999.0 : False : False :  Reals
+        (7, 13) :   0.0 :    0.0 : 9999999.0 : False : False :  Reals
+        (7, 14) :   0.0 :   -0.0 : 9999999.0 : False : False :  Reals
         (7, 15) :   0.0 :   -0.0 : 9999999.0 : False : False :  Reals
         (7, 16) :   0.0 :    0.0 : 9999999.0 : False : False :  Reals
         (7, 17) :   0.0 :  693.5 : 9999999.0 : False : False :  Reals
@@ -2176,8 +2176,8 @@ g,t,u,v,w,p
         (7, 19) :   0.0 :  693.5 : 9999999.0 : False : False :  Reals
         (7, 20) :   0.0 :  693.5 : 9999999.0 : False : False :  Reals
         (7, 21) :   0.0 :    0.0 : 9999999.0 : False : False :  Reals
-        (7, 22) :   0.0 :   -0.0 : 9999999.0 : False : False :  Reals
-        (7, 23) :   0.0 :    0.0 : 9999999.0 : False : False :  Reals
+        (7, 22) :   0.0 :    0.0 : 9999999.0 : False : False :  Reals
+        (7, 23) :   0.0 :   -0.0 : 9999999.0 : False : False :  Reals
         (7, 24) :   0.0 :   -0.0 : 9999999.0 : False : False :  Reals
          (8, 1) :   0.0 :  259.2 : 9999999.0 : False : False :  Reals
          (8, 2) :   0.0 :  259.2 : 9999999.0 : False : False :  Reals
@@ -2189,9 +2189,9 @@ g,t,u,v,w,p
          (8, 8) :   0.0 :   -0.0 : 9999999.0 : False : False :  Reals
          (8, 9) :   0.0 :   -0.0 : 9999999.0 : False : False :  Reals
         (8, 10) :   0.0 :    0.0 : 9999999.0 : False : False :  Reals
-        (8, 11) :   0.0 :   -0.0 : 9999999.0 : False : False :  Reals
+        (8, 11) :   0.0 :    0.0 : 9999999.0 : False : False :  Reals
         (8, 12) :   0.0 :    0.0 : 9999999.0 : False : False :  Reals
-        (8, 13) :   0.0 :   -0.0 : 9999999.0 : False : False :  Reals
+        (8, 13) :   0.0 :    0.0 : 9999999.0 : False : False :  Reals
         (8, 14) :   0.0 :   -0.0 : 9999999.0 : False : False :  Reals
         (8, 15) :   0.0 :   -0.0 : 9999999.0 : False : False :  Reals
         (8, 16) :   0.0 :   -0.0 : 9999999.0 : False : False :  Reals
@@ -2307,10 +2307,10 @@ g,t,u,v,w,p
          (5, 4) :   0.0 :             25.0 : 99999.0 : False : False :  Reals
          (5, 5) :   0.0 :             25.0 : 99999.0 : False : False :  Reals
          (5, 6) :   0.0 :             25.0 : 99999.0 : False : False :  Reals
-         (5, 7) :   0.0 :           32.944 : 99999.0 : False : False :  Reals
-         (5, 8) :   0.0 : 79.6079999999999 : 99999.0 : False : False :  Reals
-         (5, 9) :   0.0 :            93.68 : 99999.0 : False : False :  Reals
-        (5, 10) :   0.0 :             91.6 : 99999.0 : False : False :  Reals
+         (5, 7) :   0.0 : 32.9439999999999 : 99999.0 : False : False :  Reals
+         (5, 8) :   0.0 :           79.608 : 99999.0 : False : False :  Reals
+         (5, 9) :   0.0 : 93.6800000000001 : 99999.0 : False : False :  Reals
+        (5, 10) :   0.0 : 91.6000000000001 : 99999.0 : False : False :  Reals
         (5, 11) :   0.0 :            82.64 : 99999.0 : False : False :  Reals
         (5, 12) :   0.0 :            98.16 : 99999.0 : False : False :  Reals
         (5, 13) :   0.0 :            82.64 : 99999.0 : False : False :  Reals
@@ -2398,393 +2398,393 @@ g,t,u,v,w,p
         (8, 23) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
         (8, 24) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
     pb : Size=192, Index=pb_index
-        Key     : Lower : Value            : Upper   : Fixed : Stale : Domain
-         (1, 1) :   0.0 :            375.0 : 99999.0 : False : False :  Reals
-         (1, 2) :   0.0 :            455.0 : 99999.0 : False : False :  Reals
-         (1, 3) :   0.0 :            455.0 : 99999.0 : False : False :  Reals
-         (1, 4) :   0.0 :            455.0 : 99999.0 : False : False :  Reals
-         (1, 5) :   0.0 :            455.0 : 99999.0 : False : False :  Reals
-         (1, 6) :   0.0 :            455.0 : 99999.0 : False : False :  Reals
-         (1, 7) :   0.0 :            455.0 : 99999.0 : False : False :  Reals
-         (1, 8) :   0.0 :            455.0 : 99999.0 : False : False :  Reals
-         (1, 9) :   0.0 :            455.0 : 99999.0 : False : False :  Reals
-        (1, 10) :   0.0 :            455.0 : 99999.0 : False : False :  Reals
-        (1, 11) :   0.0 :            455.0 : 99999.0 : False : False :  Reals
-        (1, 12) :   0.0 :            455.0 : 99999.0 : False : False :  Reals
-        (1, 13) :   0.0 :            455.0 : 99999.0 : False : False :  Reals
-        (1, 14) :   0.0 :            455.0 : 99999.0 : False : False :  Reals
-        (1, 15) :   0.0 :            455.0 : 99999.0 : False : False :  Reals
-        (1, 16) :   0.0 :            455.0 : 99999.0 : False : False :  Reals
-        (1, 17) :   0.0 :            455.0 : 99999.0 : False : False :  Reals
-        (1, 18) :   0.0 :            455.0 : 99999.0 : False : False :  Reals
-        (1, 19) :   0.0 :            455.0 : 99999.0 : False : False :  Reals
-        (1, 20) :   0.0 :            455.0 : 99999.0 : False : False :  Reals
-        (1, 21) :   0.0 :            455.0 : 99999.0 : False : False :  Reals
-        (1, 22) :   0.0 :            455.0 : 99999.0 : False : False :  Reals
-        (1, 23) :   0.0 :            455.0 : 99999.0 : False : False :  Reals
-        (1, 24) :   0.0 :            680.0 : 99999.0 : False : False :  Reals
-         (2, 1) :   0.0 :            375.0 : 99999.0 : False : False :  Reals
-         (2, 2) :   0.0 :          418.448 : 99999.0 : False : False :  Reals
-         (2, 3) :   0.0 :            455.0 : 99999.0 : False : False :  Reals
-         (2, 4) :   0.0 :            455.0 : 99999.0 : False : False :  Reals
-         (2, 5) :   0.0 :            455.0 : 99999.0 : False : False :  Reals
-         (2, 6) :   0.0 :            455.0 : 99999.0 : False : False :  Reals
-         (2, 7) :   0.0 :            455.0 : 99999.0 : False : False :  Reals
-         (2, 8) :   0.0 :            455.0 : 99999.0 : False : False :  Reals
-         (2, 9) :   0.0 :            455.0 : 99999.0 : False : False :  Reals
-        (2, 10) :   0.0 :            455.0 : 99999.0 : False : False :  Reals
-        (2, 11) :   0.0 :            455.0 : 99999.0 : False : False :  Reals
-        (2, 12) :   0.0 :            455.0 : 99999.0 : False : False :  Reals
-        (2, 13) :   0.0 :            455.0 : 99999.0 : False : False :  Reals
-        (2, 14) :   0.0 :            455.0 : 99999.0 : False : False :  Reals
-        (2, 15) :   0.0 :            455.0 : 99999.0 : False : False :  Reals
-        (2, 16) :   0.0 :            455.0 : 99999.0 : False : False :  Reals
-        (2, 17) :   0.0 :            455.0 : 99999.0 : False : False :  Reals
-        (2, 18) :   0.0 :            455.0 : 99999.0 : False : False :  Reals
-        (2, 19) :   0.0 :            455.0 : 99999.0 : False : False :  Reals
-        (2, 20) :   0.0 :            455.0 : 99999.0 : False : False :  Reals
-        (2, 21) :   0.0 :            455.0 : 99999.0 : False : False :  Reals
-        (2, 22) :   0.0 :            455.0 : 99999.0 : False : False :  Reals
-        (2, 23) :   0.0 :            455.0 : 99999.0 : False : False :  Reals
-        (2, 24) :   0.0 :            662.4 : 99999.0 : False : False :  Reals
-         (3, 1) :   0.0 :             70.0 : 99999.0 : False : False :  Reals
-         (3, 2) :   0.0 :             20.0 : 99999.0 : False : False :  Reals
-         (3, 3) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-         (3, 4) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-         (3, 5) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-         (3, 6) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-         (3, 7) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-         (3, 8) :   0.0 :             20.0 : 99999.0 : False : False :  Reals
-         (3, 9) :   0.0 :             70.0 : 99999.0 : False : False :  Reals
-        (3, 10) :   0.0 :            120.0 : 99999.0 : False : False :  Reals
-        (3, 11) :   0.0 :            130.0 : 99999.0 : False : False :  Reals
-        (3, 12) :   0.0 :            130.0 : 99999.0 : False : False :  Reals
-        (3, 13) :   0.0 :            130.0 : 99999.0 : False : False :  Reals
-        (3, 14) :   0.0 :            130.0 : 99999.0 : False : False :  Reals
-        (3, 15) :   0.0 :            130.0 : 99999.0 : False : False :  Reals
-        (3, 16) :   0.0 :            130.0 : 99999.0 : False : False :  Reals
-        (3, 17) :   0.0 :            130.0 : 99999.0 : False : False :  Reals
-        (3, 18) :   0.0 :            130.0 : 99999.0 : False : False :  Reals
-        (3, 19) :   0.0 :            130.0 : 99999.0 : False : False :  Reals
-        (3, 20) :   0.0 :            130.0 : 99999.0 : False : False :  Reals
-        (3, 21) :   0.0 :            130.0 : 99999.0 : False : False :  Reals
-        (3, 22) :   0.0 :            130.0 : 99999.0 : False : False :  Reals
-        (3, 23) :   0.0 :            130.0 : 99999.0 : False : False :  Reals
-        (3, 24) :   0.0 :            180.0 : 99999.0 : False : False :  Reals
-         (4, 1) :   0.0 :             70.0 : 99999.0 : False : False :  Reals
-         (4, 2) :   0.0 :             20.0 : 99999.0 : False : False :  Reals
-         (4, 3) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-         (4, 4) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-         (4, 5) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-         (4, 6) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-         (4, 7) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-         (4, 8) :   0.0 :             20.0 : 99999.0 : False : False :  Reals
-         (4, 9) :   0.0 :             70.0 : 99999.0 : False : False :  Reals
-        (4, 10) :   0.0 :            120.0 : 99999.0 : False : False :  Reals
-        (4, 11) :   0.0 :            130.0 : 99999.0 : False : False :  Reals
-        (4, 12) :   0.0 :            130.0 : 99999.0 : False : False :  Reals
-        (4, 13) :   0.0 :            130.0 : 99999.0 : False : False :  Reals
-        (4, 14) :   0.0 :            130.0 : 99999.0 : False : False :  Reals
-        (4, 15) :   0.0 :            130.0 : 99999.0 : False : False :  Reals
-        (4, 16) :   0.0 :            130.0 : 99999.0 : False : False :  Reals
-        (4, 17) :   0.0 :            130.0 : 99999.0 : False : False :  Reals
-        (4, 18) :   0.0 :            130.0 : 99999.0 : False : False :  Reals
-        (4, 19) :   0.0 :            130.0 : 99999.0 : False : False :  Reals
-        (4, 20) :   0.0 :            130.0 : 99999.0 : False : False :  Reals
-        (4, 21) :   0.0 :            130.0 : 99999.0 : False : False :  Reals
-        (4, 22) :   0.0 :            130.0 : 99999.0 : False : False :  Reals
-        (4, 23) :   0.0 :            130.0 : 99999.0 : False : False :  Reals
-        (4, 24) :   0.0 :            180.0 : 99999.0 : False : False :  Reals
-         (5, 1) :   0.0 :             85.0 : 99999.0 : False : False :  Reals
-         (5, 2) :   0.0 :           90.792 : 99999.0 : False : False :  Reals
-         (5, 3) :   0.0 :          100.352 : 99999.0 : False : False :  Reals
-         (5, 4) :   0.0 :            67.76 : 99999.0 : False : False :  Reals
-         (5, 5) :   0.0 : 35.1680000000001 : 99999.0 : False : False :  Reals
-         (5, 6) :   0.0 : 35.1680000000001 : 99999.0 : False : False :  Reals
-         (5, 7) :   0.0 :            67.76 : 99999.0 : False : False :  Reals
-         (5, 8) :   0.0 :           92.944 : 99999.0 : False : False :  Reals
-         (5, 9) :   0.0 :          139.608 : 99999.0 : False : False :  Reals
-        (5, 10) :   0.0 :           153.68 : 99999.0 : False : False :  Reals
-        (5, 11) :   0.0 :          146.272 : 99999.0 : False : False :  Reals
-        (5, 12) :   0.0 :          102.568 : 99999.0 : False : False :  Reals
-        (5, 13) :   0.0 :          146.272 : 99999.0 : False : False :  Reals
-        (5, 14) :   0.0 :           133.68 : 99999.0 : False : False :  Reals
-        (5, 15) :   0.0 :            131.6 : 99999.0 : False : False :  Reals
-        (5, 16) :   0.0 :          117.384 : 99999.0 : False : False :  Reals
-        (5, 17) :   0.0 :          137.568 : 99999.0 : False : False :  Reals
-        (5, 18) :   0.0 :            162.0 : 99999.0 : False : False :  Reals
-        (5, 19) :   0.0 :            162.0 : 99999.0 : False : False :  Reals
-        (5, 20) :   0.0 :            162.0 : 99999.0 : False : False :  Reals
-        (5, 21) :   0.0 :           135.16 : 99999.0 : False : False :  Reals
-        (5, 22) :   0.0 :          118.864 : 99999.0 : False : False :  Reals
-        (5, 23) :   0.0 :           97.384 : 99999.0 : False : False :  Reals
-        (5, 24) :   0.0 :           113.68 : 99999.0 : False : False :  Reals
-         (6, 1) :   0.0 :             80.0 : 99999.0 : False : False :  Reals
-         (6, 2) :   0.0 :             20.0 : 99999.0 : False : False :  Reals
-         (6, 3) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-         (6, 4) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-         (6, 5) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-         (6, 6) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-         (6, 7) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-         (6, 8) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-         (6, 9) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-        (6, 10) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-        (6, 11) :   0.0 :             20.0 : 99999.0 : False : False :  Reals
-        (6, 12) :   0.0 :             80.0 : 99999.0 : False : False :  Reals
-        (6, 13) :   0.0 :             20.0 : 99999.0 : False : False :  Reals
-        (6, 14) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-        (6, 15) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-        (6, 16) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-        (6, 17) :   0.0 :             20.0 : 99999.0 : False : False :  Reals
-        (6, 18) :   0.0 :           65.936 : 99999.0 : False : False :  Reals
-        (6, 19) :   0.0 :             80.0 : 99999.0 : False : False :  Reals
-        (6, 20) :   0.0 :           77.048 : 99999.0 : False : False :  Reals
-        (6, 21) :   0.0 :             80.0 : 99999.0 : False : False :  Reals
-        (6, 22) :   0.0 :             80.0 : 99999.0 : False : False :  Reals
-        (6, 23) :   0.0 :             20.0 : 99999.0 : False : False :  Reals
-        (6, 24) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-         (7, 1) :   0.0 :             85.0 : 99999.0 : False : False :  Reals
-         (7, 2) :   0.0 :             25.0 : 99999.0 : False : False :  Reals
-         (7, 3) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-         (7, 4) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-         (7, 5) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-         (7, 6) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-         (7, 7) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-         (7, 8) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-         (7, 9) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-        (7, 10) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-        (7, 11) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-        (7, 12) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-        (7, 13) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-        (7, 14) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-        (7, 15) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-        (7, 16) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-        (7, 17) :   0.0 :             25.0 : 99999.0 : False : False :  Reals
-        (7, 18) :   0.0 :             85.0 : 99999.0 : False : False :  Reals
-        (7, 19) :   0.0 :            54.64 : 99999.0 : False : False :  Reals
-        (7, 20) :   0.0 :             25.0 : 99999.0 : False : False :  Reals
-        (7, 21) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-        (7, 22) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-        (7, 23) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-        (7, 24) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-         (8, 1) :   0.0 :             55.0 : 99999.0 : False : False :  Reals
-         (8, 2) :   0.0 :             10.0 : 99999.0 : False : False :  Reals
-         (8, 3) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-         (8, 4) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-         (8, 5) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-         (8, 6) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-         (8, 7) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-         (8, 8) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-         (8, 9) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-        (8, 10) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-        (8, 11) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-        (8, 12) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-        (8, 13) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-        (8, 14) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-        (8, 15) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-        (8, 16) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-        (8, 17) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-        (8, 18) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-        (8, 19) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-        (8, 20) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-        (8, 21) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-        (8, 22) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-        (8, 23) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-        (8, 24) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
+        Key     : Lower : Value                 : Upper   : Fixed : Stale : Domain
+         (1, 1) :   0.0 :                 375.0 : 99999.0 : False : False :  Reals
+         (1, 2) :   0.0 :                 455.0 : 99999.0 : False : False :  Reals
+         (1, 3) :   0.0 :                 455.0 : 99999.0 : False : False :  Reals
+         (1, 4) :   0.0 :                 455.0 : 99999.0 : False : False :  Reals
+         (1, 5) :   0.0 :                 455.0 : 99999.0 : False : False :  Reals
+         (1, 6) :   0.0 :                 455.0 : 99999.0 : False : False :  Reals
+         (1, 7) :   0.0 :                 455.0 : 99999.0 : False : False :  Reals
+         (1, 8) :   0.0 :                 455.0 : 99999.0 : False : False :  Reals
+         (1, 9) :   0.0 :                 455.0 : 99999.0 : False : False :  Reals
+        (1, 10) :   0.0 :                 455.0 : 99999.0 : False : False :  Reals
+        (1, 11) :   0.0 :                 455.0 : 99999.0 : False : False :  Reals
+        (1, 12) :   0.0 :                 455.0 : 99999.0 : False : False :  Reals
+        (1, 13) :   0.0 :                 455.0 : 99999.0 : False : False :  Reals
+        (1, 14) :   0.0 :                 455.0 : 99999.0 : False : False :  Reals
+        (1, 15) :   0.0 :                 455.0 : 99999.0 : False : False :  Reals
+        (1, 16) :   0.0 :                 455.0 : 99999.0 : False : False :  Reals
+        (1, 17) :   0.0 :                 455.0 : 99999.0 : False : False :  Reals
+        (1, 18) :   0.0 :                 455.0 : 99999.0 : False : False :  Reals
+        (1, 19) :   0.0 :                 455.0 : 99999.0 : False : False :  Reals
+        (1, 20) :   0.0 :                 455.0 : 99999.0 : False : False :  Reals
+        (1, 21) :   0.0 :                 455.0 : 99999.0 : False : False :  Reals
+        (1, 22) :   0.0 :                 455.0 : 99999.0 : False : False :  Reals
+        (1, 23) :   0.0 :                 455.0 : 99999.0 : False : False :  Reals
+        (1, 24) :   0.0 :                 680.0 : 99999.0 : False : False :  Reals
+         (2, 1) :   0.0 :                 375.0 : 99999.0 : False : False :  Reals
+         (2, 2) :   0.0 :               418.448 : 99999.0 : False : False :  Reals
+         (2, 3) :   0.0 :                 455.0 : 99999.0 : False : False :  Reals
+         (2, 4) :   0.0 :                 455.0 : 99999.0 : False : False :  Reals
+         (2, 5) :   0.0 :                 455.0 : 99999.0 : False : False :  Reals
+         (2, 6) :   0.0 :                 455.0 : 99999.0 : False : False :  Reals
+         (2, 7) :   0.0 :                 455.0 : 99999.0 : False : False :  Reals
+         (2, 8) :   0.0 :                 455.0 : 99999.0 : False : False :  Reals
+         (2, 9) :   0.0 :                 455.0 : 99999.0 : False : False :  Reals
+        (2, 10) :   0.0 :                 455.0 : 99999.0 : False : False :  Reals
+        (2, 11) :   0.0 :                 455.0 : 99999.0 : False : False :  Reals
+        (2, 12) :   0.0 :                 455.0 : 99999.0 : False : False :  Reals
+        (2, 13) :   0.0 :                 455.0 : 99999.0 : False : False :  Reals
+        (2, 14) :   0.0 :                 455.0 : 99999.0 : False : False :  Reals
+        (2, 15) :   0.0 :                 455.0 : 99999.0 : False : False :  Reals
+        (2, 16) :   0.0 :                 455.0 : 99999.0 : False : False :  Reals
+        (2, 17) :   0.0 :                 455.0 : 99999.0 : False : False :  Reals
+        (2, 18) :   0.0 :                 455.0 : 99999.0 : False : False :  Reals
+        (2, 19) :   0.0 :                 455.0 : 99999.0 : False : False :  Reals
+        (2, 20) :   0.0 :                 455.0 : 99999.0 : False : False :  Reals
+        (2, 21) :   0.0 :                 455.0 : 99999.0 : False : False :  Reals
+        (2, 22) :   0.0 :                 455.0 : 99999.0 : False : False :  Reals
+        (2, 23) :   0.0 :                 455.0 : 99999.0 : False : False :  Reals
+        (2, 24) :   0.0 :                 662.4 : 99999.0 : False : False :  Reals
+         (3, 1) :   0.0 :                  70.0 : 99999.0 : False : False :  Reals
+         (3, 2) :   0.0 :                  20.0 : 99999.0 : False : False :  Reals
+         (3, 3) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+         (3, 4) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+         (3, 5) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+         (3, 6) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+         (3, 7) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+         (3, 8) :   0.0 :                  20.0 : 99999.0 : False : False :  Reals
+         (3, 9) :   0.0 :                  70.0 : 99999.0 : False : False :  Reals
+        (3, 10) :   0.0 :                 120.0 : 99999.0 : False : False :  Reals
+        (3, 11) :   0.0 :                 130.0 : 99999.0 : False : False :  Reals
+        (3, 12) :   0.0 :                 130.0 : 99999.0 : False : False :  Reals
+        (3, 13) :   0.0 :                 130.0 : 99999.0 : False : False :  Reals
+        (3, 14) :   0.0 :                 130.0 : 99999.0 : False : False :  Reals
+        (3, 15) :   0.0 :                 130.0 : 99999.0 : False : False :  Reals
+        (3, 16) :   0.0 :                 130.0 : 99999.0 : False : False :  Reals
+        (3, 17) :   0.0 :                 130.0 : 99999.0 : False : False :  Reals
+        (3, 18) :   0.0 :                 130.0 : 99999.0 : False : False :  Reals
+        (3, 19) :   0.0 :                 130.0 : 99999.0 : False : False :  Reals
+        (3, 20) :   0.0 :                 130.0 : 99999.0 : False : False :  Reals
+        (3, 21) :   0.0 :                 130.0 : 99999.0 : False : False :  Reals
+        (3, 22) :   0.0 :                 130.0 : 99999.0 : False : False :  Reals
+        (3, 23) :   0.0 :                 130.0 : 99999.0 : False : False :  Reals
+        (3, 24) :   0.0 :                 180.0 : 99999.0 : False : False :  Reals
+         (4, 1) :   0.0 :                  70.0 : 99999.0 : False : False :  Reals
+         (4, 2) :   0.0 :                  20.0 : 99999.0 : False : False :  Reals
+         (4, 3) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+         (4, 4) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+         (4, 5) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+         (4, 6) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+         (4, 7) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+         (4, 8) :   0.0 :                  20.0 : 99999.0 : False : False :  Reals
+         (4, 9) :   0.0 :                  70.0 : 99999.0 : False : False :  Reals
+        (4, 10) :   0.0 :                 120.0 : 99999.0 : False : False :  Reals
+        (4, 11) :   0.0 :                 130.0 : 99999.0 : False : False :  Reals
+        (4, 12) :   0.0 :                 130.0 : 99999.0 : False : False :  Reals
+        (4, 13) :   0.0 :                 130.0 : 99999.0 : False : False :  Reals
+        (4, 14) :   0.0 :                 130.0 : 99999.0 : False : False :  Reals
+        (4, 15) :   0.0 :                 130.0 : 99999.0 : False : False :  Reals
+        (4, 16) :   0.0 :                 130.0 : 99999.0 : False : False :  Reals
+        (4, 17) :   0.0 :                 130.0 : 99999.0 : False : False :  Reals
+        (4, 18) :   0.0 :                 130.0 : 99999.0 : False : False :  Reals
+        (4, 19) :   0.0 :                 130.0 : 99999.0 : False : False :  Reals
+        (4, 20) :   0.0 :                 130.0 : 99999.0 : False : False :  Reals
+        (4, 21) :   0.0 :                 130.0 : 99999.0 : False : False :  Reals
+        (4, 22) :   0.0 :                 130.0 : 99999.0 : False : False :  Reals
+        (4, 23) :   0.0 :                 130.0 : 99999.0 : False : False :  Reals
+        (4, 24) :   0.0 :                 180.0 : 99999.0 : False : False :  Reals
+         (5, 1) :   0.0 :                  85.0 : 99999.0 : False : False :  Reals
+         (5, 2) :   0.0 :                90.792 : 99999.0 : False : False :  Reals
+         (5, 3) :   0.0 :               100.352 : 99999.0 : False : False :  Reals
+         (5, 4) :   0.0 :                 67.76 : 99999.0 : False : False :  Reals
+         (5, 5) :   0.0 :      35.1680000000001 : 99999.0 : False : False :  Reals
+         (5, 6) :   0.0 :      35.1680000000001 : 99999.0 : False : False :  Reals
+         (5, 7) :   0.0 :                 67.76 : 99999.0 : False : False :  Reals
+         (5, 8) :   0.0 :      92.9439999999999 : 99999.0 : False : False :  Reals
+         (5, 9) :   0.0 :               139.608 : 99999.0 : False : False :  Reals
+        (5, 10) :   0.0 :                153.68 : 99999.0 : False : False :  Reals
+        (5, 11) :   0.0 :               146.272 : 99999.0 : False : False :  Reals
+        (5, 12) :   0.0 :               102.568 : 99999.0 : False : False :  Reals
+        (5, 13) :   0.0 :               146.272 : 99999.0 : False : False :  Reals
+        (5, 14) :   0.0 :                133.68 : 99999.0 : False : False :  Reals
+        (5, 15) :   0.0 :                 131.6 : 99999.0 : False : False :  Reals
+        (5, 16) :   0.0 :               117.384 : 99999.0 : False : False :  Reals
+        (5, 17) :   0.0 :               137.568 : 99999.0 : False : False :  Reals
+        (5, 18) :   0.0 :                 162.0 : 99999.0 : False : False :  Reals
+        (5, 19) :   0.0 :                 162.0 : 99999.0 : False : False :  Reals
+        (5, 20) :   0.0 :                 162.0 : 99999.0 : False : False :  Reals
+        (5, 21) :   0.0 :                 162.0 : 99999.0 : False : False :  Reals
+        (5, 22) :   0.0 :               118.864 : 99999.0 : False : False :  Reals
+        (5, 23) :   0.0 :                97.384 : 99999.0 : False : False :  Reals
+        (5, 24) :   0.0 :                113.68 : 99999.0 : False : False :  Reals
+         (6, 1) :   0.0 :                  80.0 : 99999.0 : False : False :  Reals
+         (6, 2) :   0.0 :                  20.0 : 99999.0 : False : False :  Reals
+         (6, 3) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+         (6, 4) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+         (6, 5) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+         (6, 6) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+         (6, 7) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+         (6, 8) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+         (6, 9) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+        (6, 10) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+        (6, 11) :   0.0 :                  20.0 : 99999.0 : False : False :  Reals
+        (6, 12) :   0.0 :                  80.0 : 99999.0 : False : False :  Reals
+        (6, 13) :   0.0 :                  20.0 : 99999.0 : False : False :  Reals
+        (6, 14) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+        (6, 15) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+        (6, 16) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+        (6, 17) :   0.0 :                  20.0 : 99999.0 : False : False :  Reals
+        (6, 18) :   0.0 :                  80.0 : 99999.0 : False : False :  Reals
+        (6, 19) :   0.0 :      49.6399999999995 : 99999.0 : False : False :  Reals
+        (6, 20) :   0.0 :                77.048 : 99999.0 : False : False :  Reals
+        (6, 21) :   0.0 :      53.1600000000001 : 99999.0 : False : False :  Reals
+        (6, 22) :   0.0 :                  80.0 : 99999.0 : False : False :  Reals
+        (6, 23) :   0.0 :                  20.0 : 99999.0 : False : False :  Reals
+        (6, 24) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+         (7, 1) :   0.0 :                  85.0 : 99999.0 : False : False :  Reals
+         (7, 2) :   0.0 :                  25.0 : 99999.0 : False : False :  Reals
+         (7, 3) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+         (7, 4) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+         (7, 5) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+         (7, 6) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+         (7, 7) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+         (7, 8) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+         (7, 9) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+        (7, 10) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+        (7, 11) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+        (7, 12) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+        (7, 13) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+        (7, 14) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+        (7, 15) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+        (7, 16) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+        (7, 17) :   0.0 :                  25.0 : 99999.0 : False : False :  Reals
+        (7, 18) :   0.0 :                70.936 : 99999.0 : False : False :  Reals
+        (7, 19) :   0.0 :                  85.0 : 99999.0 : False : False :  Reals
+        (7, 20) :   0.0 :                  25.0 : 99999.0 : False : False :  Reals
+        (7, 21) :   0.0 : -1.06581410364015e-13 : 99999.0 : False : False :  Reals
+        (7, 22) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+        (7, 23) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+        (7, 24) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+         (8, 1) :   0.0 :                  55.0 : 99999.0 : False : False :  Reals
+         (8, 2) :   0.0 :                  10.0 : 99999.0 : False : False :  Reals
+         (8, 3) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+         (8, 4) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+         (8, 5) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+         (8, 6) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+         (8, 7) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+         (8, 8) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+         (8, 9) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+        (8, 10) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+        (8, 11) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+        (8, 12) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+        (8, 13) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+        (8, 14) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+        (8, 15) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+        (8, 16) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+        (8, 17) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+        (8, 18) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+        (8, 19) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+        (8, 20) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+        (8, 21) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+        (8, 22) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+        (8, 23) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+        (8, 24) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
     pbc : Size=192, Index=pbc_index
-        Key     : Lower : Value            : Upper   : Fixed : Stale : Domain
-         (1, 1) :   0.0 :            225.0 : 99999.0 : False : False :  Reals
-         (1, 2) :   0.0 :            305.0 : 99999.0 : False : False :  Reals
-         (1, 3) :   0.0 :            305.0 : 99999.0 : False : False :  Reals
-         (1, 4) :   0.0 :            305.0 : 99999.0 : False : False :  Reals
-         (1, 5) :   0.0 :            305.0 : 99999.0 : False : False :  Reals
-         (1, 6) :   0.0 :            305.0 : 99999.0 : False : False :  Reals
-         (1, 7) :   0.0 :            305.0 : 99999.0 : False : False :  Reals
-         (1, 8) :   0.0 :            305.0 : 99999.0 : False : False :  Reals
-         (1, 9) :   0.0 :            305.0 : 99999.0 : False : False :  Reals
-        (1, 10) :   0.0 :            305.0 : 99999.0 : False : False :  Reals
-        (1, 11) :   0.0 :            305.0 : 99999.0 : False : False :  Reals
-        (1, 12) :   0.0 :            305.0 : 99999.0 : False : False :  Reals
-        (1, 13) :   0.0 :            305.0 : 99999.0 : False : False :  Reals
-        (1, 14) :   0.0 :            305.0 : 99999.0 : False : False :  Reals
-        (1, 15) :   0.0 :            305.0 : 99999.0 : False : False :  Reals
-        (1, 16) :   0.0 :            305.0 : 99999.0 : False : False :  Reals
-        (1, 17) :   0.0 :            305.0 : 99999.0 : False : False :  Reals
-        (1, 18) :   0.0 :            305.0 : 99999.0 : False : False :  Reals
-        (1, 19) :   0.0 :            305.0 : 99999.0 : False : False :  Reals
-        (1, 20) :   0.0 :            305.0 : 99999.0 : False : False :  Reals
-        (1, 21) :   0.0 :            305.0 : 99999.0 : False : False :  Reals
-        (1, 22) :   0.0 :            305.0 : 99999.0 : False : False :  Reals
-        (1, 23) :   0.0 :            305.0 : 99999.0 : False : False :  Reals
-        (1, 24) :   0.0 :            530.0 : 99999.0 : False : False :  Reals
-         (2, 1) :   0.0 :            225.0 : 99999.0 : False : False :  Reals
-         (2, 2) :   0.0 :          268.448 : 99999.0 : False : False :  Reals
-         (2, 3) :   0.0 :            305.0 : 99999.0 : False : False :  Reals
-         (2, 4) :   0.0 :            305.0 : 99999.0 : False : False :  Reals
-         (2, 5) :   0.0 :            305.0 : 99999.0 : False : False :  Reals
-         (2, 6) :   0.0 :            305.0 : 99999.0 : False : False :  Reals
-         (2, 7) :   0.0 :            305.0 : 99999.0 : False : False :  Reals
-         (2, 8) :   0.0 :            305.0 : 99999.0 : False : False :  Reals
-         (2, 9) :   0.0 :            305.0 : 99999.0 : False : False :  Reals
-        (2, 10) :   0.0 :            305.0 : 99999.0 : False : False :  Reals
-        (2, 11) :   0.0 :            305.0 : 99999.0 : False : False :  Reals
-        (2, 12) :   0.0 :            305.0 : 99999.0 : False : False :  Reals
-        (2, 13) :   0.0 :            305.0 : 99999.0 : False : False :  Reals
-        (2, 14) :   0.0 :            305.0 : 99999.0 : False : False :  Reals
-        (2, 15) :   0.0 :            305.0 : 99999.0 : False : False :  Reals
-        (2, 16) :   0.0 :            305.0 : 99999.0 : False : False :  Reals
-        (2, 17) :   0.0 :            305.0 : 99999.0 : False : False :  Reals
-        (2, 18) :   0.0 :            305.0 : 99999.0 : False : False :  Reals
-        (2, 19) :   0.0 :            305.0 : 99999.0 : False : False :  Reals
-        (2, 20) :   0.0 :            305.0 : 99999.0 : False : False :  Reals
-        (2, 21) :   0.0 :            305.0 : 99999.0 : False : False :  Reals
-        (2, 22) :   0.0 :            305.0 : 99999.0 : False : False :  Reals
-        (2, 23) :   0.0 :            305.0 : 99999.0 : False : False :  Reals
-        (2, 24) :   0.0 :            512.4 : 99999.0 : False : False :  Reals
-         (3, 1) :   0.0 :             50.0 : 99999.0 : False : False :  Reals
-         (3, 2) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-         (3, 3) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-         (3, 4) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-         (3, 5) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-         (3, 6) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-         (3, 7) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-         (3, 8) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-         (3, 9) :   0.0 :             50.0 : 99999.0 : False : False :  Reals
-        (3, 10) :   0.0 :            100.0 : 99999.0 : False : False :  Reals
-        (3, 11) :   0.0 :            110.0 : 99999.0 : False : False :  Reals
-        (3, 12) :   0.0 :            110.0 : 99999.0 : False : False :  Reals
-        (3, 13) :   0.0 :            110.0 : 99999.0 : False : False :  Reals
-        (3, 14) :   0.0 :            110.0 : 99999.0 : False : False :  Reals
-        (3, 15) :   0.0 :            110.0 : 99999.0 : False : False :  Reals
-        (3, 16) :   0.0 :            110.0 : 99999.0 : False : False :  Reals
-        (3, 17) :   0.0 :            110.0 : 99999.0 : False : False :  Reals
-        (3, 18) :   0.0 :            110.0 : 99999.0 : False : False :  Reals
-        (3, 19) :   0.0 :            110.0 : 99999.0 : False : False :  Reals
-        (3, 20) :   0.0 :            110.0 : 99999.0 : False : False :  Reals
-        (3, 21) :   0.0 :            110.0 : 99999.0 : False : False :  Reals
-        (3, 22) :   0.0 :            110.0 : 99999.0 : False : False :  Reals
-        (3, 23) :   0.0 :            110.0 : 99999.0 : False : False :  Reals
-        (3, 24) :   0.0 :            160.0 : 99999.0 : False : False :  Reals
-         (4, 1) :   0.0 :             50.0 : 99999.0 : False : False :  Reals
-         (4, 2) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-         (4, 3) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-         (4, 4) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-         (4, 5) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-         (4, 6) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-         (4, 7) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-         (4, 8) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-         (4, 9) :   0.0 :             50.0 : 99999.0 : False : False :  Reals
-        (4, 10) :   0.0 :            100.0 : 99999.0 : False : False :  Reals
-        (4, 11) :   0.0 :            110.0 : 99999.0 : False : False :  Reals
-        (4, 12) :   0.0 :            110.0 : 99999.0 : False : False :  Reals
-        (4, 13) :   0.0 :            110.0 : 99999.0 : False : False :  Reals
-        (4, 14) :   0.0 :            110.0 : 99999.0 : False : False :  Reals
-        (4, 15) :   0.0 :            110.0 : 99999.0 : False : False :  Reals
-        (4, 16) :   0.0 :            110.0 : 99999.0 : False : False :  Reals
-        (4, 17) :   0.0 :            110.0 : 99999.0 : False : False :  Reals
-        (4, 18) :   0.0 :            110.0 : 99999.0 : False : False :  Reals
-        (4, 19) :   0.0 :            110.0 : 99999.0 : False : False :  Reals
-        (4, 20) :   0.0 :            110.0 : 99999.0 : False : False :  Reals
-        (4, 21) :   0.0 :            110.0 : 99999.0 : False : False :  Reals
-        (4, 22) :   0.0 :            110.0 : 99999.0 : False : False :  Reals
-        (4, 23) :   0.0 :            110.0 : 99999.0 : False : False :  Reals
-        (4, 24) :   0.0 :            160.0 : 99999.0 : False : False :  Reals
-         (5, 1) :   0.0 :             60.0 : 99999.0 : False : False :  Reals
-         (5, 2) :   0.0 :           65.792 : 99999.0 : False : False :  Reals
-         (5, 3) :   0.0 :           75.352 : 99999.0 : False : False :  Reals
-         (5, 4) :   0.0 :            42.76 : 99999.0 : False : False :  Reals
-         (5, 5) :   0.0 : 10.1680000000001 : 99999.0 : False : False :  Reals
-         (5, 6) :   0.0 : 10.1680000000001 : 99999.0 : False : False :  Reals
-         (5, 7) :   0.0 :            42.76 : 99999.0 : False : False :  Reals
-         (5, 8) :   0.0 :           67.944 : 99999.0 : False : False :  Reals
-         (5, 9) :   0.0 :          114.608 : 99999.0 : False : False :  Reals
-        (5, 10) :   0.0 :           128.68 : 99999.0 : False : False :  Reals
-        (5, 11) :   0.0 :          121.272 : 99999.0 : False : False :  Reals
-        (5, 12) :   0.0 :           77.568 : 99999.0 : False : False :  Reals
-        (5, 13) :   0.0 :          121.272 : 99999.0 : False : False :  Reals
-        (5, 14) :   0.0 :           108.68 : 99999.0 : False : False :  Reals
-        (5, 15) :   0.0 :            106.6 : 99999.0 : False : False :  Reals
-        (5, 16) :   0.0 :           92.384 : 99999.0 : False : False :  Reals
-        (5, 17) :   0.0 :          112.568 : 99999.0 : False : False :  Reals
-        (5, 18) :   0.0 :            137.0 : 99999.0 : False : False :  Reals
-        (5, 19) :   0.0 :            137.0 : 99999.0 : False : False :  Reals
-        (5, 20) :   0.0 :            137.0 : 99999.0 : False : False :  Reals
-        (5, 21) :   0.0 :           110.16 : 99999.0 : False : False :  Reals
-        (5, 22) :   0.0 : 93.8639999999999 : 99999.0 : False : False :  Reals
-        (5, 23) :   0.0 :           72.384 : 99999.0 : False : False :  Reals
-        (5, 24) :   0.0 : 88.6799999999999 : 99999.0 : False : False :  Reals
-         (6, 1) :   0.0 :             60.0 : 99999.0 : False : False :  Reals
-         (6, 2) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-         (6, 3) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-         (6, 4) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-         (6, 5) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-         (6, 6) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-         (6, 7) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-         (6, 8) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-         (6, 9) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-        (6, 10) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-        (6, 11) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-        (6, 12) :   0.0 :             60.0 : 99999.0 : False : False :  Reals
-        (6, 13) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-        (6, 14) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-        (6, 15) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-        (6, 16) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-        (6, 17) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-        (6, 18) :   0.0 :           45.936 : 99999.0 : False : False :  Reals
-        (6, 19) :   0.0 :             60.0 : 99999.0 : False : False :  Reals
-        (6, 20) :   0.0 :           57.048 : 99999.0 : False : False :  Reals
-        (6, 21) :   0.0 :             60.0 : 99999.0 : False : False :  Reals
-        (6, 22) :   0.0 :             60.0 : 99999.0 : False : False :  Reals
-        (6, 23) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-        (6, 24) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-         (7, 1) :   0.0 :             60.0 : 99999.0 : False : False :  Reals
-         (7, 2) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-         (7, 3) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-         (7, 4) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-         (7, 5) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-         (7, 6) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-         (7, 7) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-         (7, 8) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-         (7, 9) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-        (7, 10) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-        (7, 11) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-        (7, 12) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-        (7, 13) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-        (7, 14) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-        (7, 15) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-        (7, 16) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-        (7, 17) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-        (7, 18) :   0.0 :             60.0 : 99999.0 : False : False :  Reals
-        (7, 19) :   0.0 :            29.64 : 99999.0 : False : False :  Reals
-        (7, 20) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-        (7, 21) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-        (7, 22) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-        (7, 23) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-        (7, 24) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-         (8, 1) :   0.0 :             45.0 : 99999.0 : False : False :  Reals
-         (8, 2) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-         (8, 3) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-         (8, 4) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-         (8, 5) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-         (8, 6) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-         (8, 7) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-         (8, 8) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-         (8, 9) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-        (8, 10) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-        (8, 11) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-        (8, 12) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-        (8, 13) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-        (8, 14) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-        (8, 15) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-        (8, 16) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-        (8, 17) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-        (8, 18) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-        (8, 19) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-        (8, 20) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-        (8, 21) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-        (8, 22) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-        (8, 23) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-        (8, 24) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
+        Key     : Lower : Value                 : Upper   : Fixed : Stale : Domain
+         (1, 1) :   0.0 :                 225.0 : 99999.0 : False : False :  Reals
+         (1, 2) :   0.0 :                 305.0 : 99999.0 : False : False :  Reals
+         (1, 3) :   0.0 :                 305.0 : 99999.0 : False : False :  Reals
+         (1, 4) :   0.0 :                 305.0 : 99999.0 : False : False :  Reals
+         (1, 5) :   0.0 :                 305.0 : 99999.0 : False : False :  Reals
+         (1, 6) :   0.0 :                 305.0 : 99999.0 : False : False :  Reals
+         (1, 7) :   0.0 :                 305.0 : 99999.0 : False : False :  Reals
+         (1, 8) :   0.0 :                 305.0 : 99999.0 : False : False :  Reals
+         (1, 9) :   0.0 :                 305.0 : 99999.0 : False : False :  Reals
+        (1, 10) :   0.0 :                 305.0 : 99999.0 : False : False :  Reals
+        (1, 11) :   0.0 :                 305.0 : 99999.0 : False : False :  Reals
+        (1, 12) :   0.0 :                 305.0 : 99999.0 : False : False :  Reals
+        (1, 13) :   0.0 :                 305.0 : 99999.0 : False : False :  Reals
+        (1, 14) :   0.0 :                 305.0 : 99999.0 : False : False :  Reals
+        (1, 15) :   0.0 :                 305.0 : 99999.0 : False : False :  Reals
+        (1, 16) :   0.0 :                 305.0 : 99999.0 : False : False :  Reals
+        (1, 17) :   0.0 :                 305.0 : 99999.0 : False : False :  Reals
+        (1, 18) :   0.0 :                 305.0 : 99999.0 : False : False :  Reals
+        (1, 19) :   0.0 :                 305.0 : 99999.0 : False : False :  Reals
+        (1, 20) :   0.0 :                 305.0 : 99999.0 : False : False :  Reals
+        (1, 21) :   0.0 :                 305.0 : 99999.0 : False : False :  Reals
+        (1, 22) :   0.0 :                 305.0 : 99999.0 : False : False :  Reals
+        (1, 23) :   0.0 :                 305.0 : 99999.0 : False : False :  Reals
+        (1, 24) :   0.0 :                 530.0 : 99999.0 : False : False :  Reals
+         (2, 1) :   0.0 :                 225.0 : 99999.0 : False : False :  Reals
+         (2, 2) :   0.0 :               268.448 : 99999.0 : False : False :  Reals
+         (2, 3) :   0.0 :                 305.0 : 99999.0 : False : False :  Reals
+         (2, 4) :   0.0 :                 305.0 : 99999.0 : False : False :  Reals
+         (2, 5) :   0.0 :                 305.0 : 99999.0 : False : False :  Reals
+         (2, 6) :   0.0 :                 305.0 : 99999.0 : False : False :  Reals
+         (2, 7) :   0.0 :                 305.0 : 99999.0 : False : False :  Reals
+         (2, 8) :   0.0 :                 305.0 : 99999.0 : False : False :  Reals
+         (2, 9) :   0.0 :                 305.0 : 99999.0 : False : False :  Reals
+        (2, 10) :   0.0 :                 305.0 : 99999.0 : False : False :  Reals
+        (2, 11) :   0.0 :                 305.0 : 99999.0 : False : False :  Reals
+        (2, 12) :   0.0 :                 305.0 : 99999.0 : False : False :  Reals
+        (2, 13) :   0.0 :                 305.0 : 99999.0 : False : False :  Reals
+        (2, 14) :   0.0 :                 305.0 : 99999.0 : False : False :  Reals
+        (2, 15) :   0.0 :                 305.0 : 99999.0 : False : False :  Reals
+        (2, 16) :   0.0 :                 305.0 : 99999.0 : False : False :  Reals
+        (2, 17) :   0.0 :                 305.0 : 99999.0 : False : False :  Reals
+        (2, 18) :   0.0 :                 305.0 : 99999.0 : False : False :  Reals
+        (2, 19) :   0.0 :                 305.0 : 99999.0 : False : False :  Reals
+        (2, 20) :   0.0 :                 305.0 : 99999.0 : False : False :  Reals
+        (2, 21) :   0.0 :                 305.0 : 99999.0 : False : False :  Reals
+        (2, 22) :   0.0 :                 305.0 : 99999.0 : False : False :  Reals
+        (2, 23) :   0.0 :                 305.0 : 99999.0 : False : False :  Reals
+        (2, 24) :   0.0 :                 512.4 : 99999.0 : False : False :  Reals
+         (3, 1) :   0.0 :                  50.0 : 99999.0 : False : False :  Reals
+         (3, 2) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+         (3, 3) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+         (3, 4) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+         (3, 5) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+         (3, 6) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+         (3, 7) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+         (3, 8) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+         (3, 9) :   0.0 :                  50.0 : 99999.0 : False : False :  Reals
+        (3, 10) :   0.0 :                 100.0 : 99999.0 : False : False :  Reals
+        (3, 11) :   0.0 :                 110.0 : 99999.0 : False : False :  Reals
+        (3, 12) :   0.0 :                 110.0 : 99999.0 : False : False :  Reals
+        (3, 13) :   0.0 :                 110.0 : 99999.0 : False : False :  Reals
+        (3, 14) :   0.0 :                 110.0 : 99999.0 : False : False :  Reals
+        (3, 15) :   0.0 :                 110.0 : 99999.0 : False : False :  Reals
+        (3, 16) :   0.0 :                 110.0 : 99999.0 : False : False :  Reals
+        (3, 17) :   0.0 :                 110.0 : 99999.0 : False : False :  Reals
+        (3, 18) :   0.0 :                 110.0 : 99999.0 : False : False :  Reals
+        (3, 19) :   0.0 :                 110.0 : 99999.0 : False : False :  Reals
+        (3, 20) :   0.0 :                 110.0 : 99999.0 : False : False :  Reals
+        (3, 21) :   0.0 :                 110.0 : 99999.0 : False : False :  Reals
+        (3, 22) :   0.0 :                 110.0 : 99999.0 : False : False :  Reals
+        (3, 23) :   0.0 :                 110.0 : 99999.0 : False : False :  Reals
+        (3, 24) :   0.0 :                 160.0 : 99999.0 : False : False :  Reals
+         (4, 1) :   0.0 :                  50.0 : 99999.0 : False : False :  Reals
+         (4, 2) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+         (4, 3) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+         (4, 4) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+         (4, 5) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+         (4, 6) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+         (4, 7) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+         (4, 8) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+         (4, 9) :   0.0 :                  50.0 : 99999.0 : False : False :  Reals
+        (4, 10) :   0.0 :                 100.0 : 99999.0 : False : False :  Reals
+        (4, 11) :   0.0 :                 110.0 : 99999.0 : False : False :  Reals
+        (4, 12) :   0.0 :                 110.0 : 99999.0 : False : False :  Reals
+        (4, 13) :   0.0 :                 110.0 : 99999.0 : False : False :  Reals
+        (4, 14) :   0.0 :                 110.0 : 99999.0 : False : False :  Reals
+        (4, 15) :   0.0 :                 110.0 : 99999.0 : False : False :  Reals
+        (4, 16) :   0.0 :                 110.0 : 99999.0 : False : False :  Reals
+        (4, 17) :   0.0 :                 110.0 : 99999.0 : False : False :  Reals
+        (4, 18) :   0.0 :                 110.0 : 99999.0 : False : False :  Reals
+        (4, 19) :   0.0 :                 110.0 : 99999.0 : False : False :  Reals
+        (4, 20) :   0.0 :                 110.0 : 99999.0 : False : False :  Reals
+        (4, 21) :   0.0 :                 110.0 : 99999.0 : False : False :  Reals
+        (4, 22) :   0.0 :                 110.0 : 99999.0 : False : False :  Reals
+        (4, 23) :   0.0 :                 110.0 : 99999.0 : False : False :  Reals
+        (4, 24) :   0.0 :                 160.0 : 99999.0 : False : False :  Reals
+         (5, 1) :   0.0 :                  60.0 : 99999.0 : False : False :  Reals
+         (5, 2) :   0.0 :                65.792 : 99999.0 : False : False :  Reals
+         (5, 3) :   0.0 :                75.352 : 99999.0 : False : False :  Reals
+         (5, 4) :   0.0 :                 42.76 : 99999.0 : False : False :  Reals
+         (5, 5) :   0.0 :      10.1680000000001 : 99999.0 : False : False :  Reals
+         (5, 6) :   0.0 :      10.1680000000001 : 99999.0 : False : False :  Reals
+         (5, 7) :   0.0 :                 42.76 : 99999.0 : False : False :  Reals
+         (5, 8) :   0.0 :      67.9439999999999 : 99999.0 : False : False :  Reals
+         (5, 9) :   0.0 :               114.608 : 99999.0 : False : False :  Reals
+        (5, 10) :   0.0 :                128.68 : 99999.0 : False : False :  Reals
+        (5, 11) :   0.0 :               121.272 : 99999.0 : False : False :  Reals
+        (5, 12) :   0.0 :                77.568 : 99999.0 : False : False :  Reals
+        (5, 13) :   0.0 :               121.272 : 99999.0 : False : False :  Reals
+        (5, 14) :   0.0 :                108.68 : 99999.0 : False : False :  Reals
+        (5, 15) :   0.0 :                 106.6 : 99999.0 : False : False :  Reals
+        (5, 16) :   0.0 :                92.384 : 99999.0 : False : False :  Reals
+        (5, 17) :   0.0 :               112.568 : 99999.0 : False : False :  Reals
+        (5, 18) :   0.0 :                 137.0 : 99999.0 : False : False :  Reals
+        (5, 19) :   0.0 :                 137.0 : 99999.0 : False : False :  Reals
+        (5, 20) :   0.0 :                 137.0 : 99999.0 : False : False :  Reals
+        (5, 21) :   0.0 :                 137.0 : 99999.0 : False : False :  Reals
+        (5, 22) :   0.0 :      93.8639999999999 : 99999.0 : False : False :  Reals
+        (5, 23) :   0.0 :                72.384 : 99999.0 : False : False :  Reals
+        (5, 24) :   0.0 :      88.6799999999999 : 99999.0 : False : False :  Reals
+         (6, 1) :   0.0 :                  60.0 : 99999.0 : False : False :  Reals
+         (6, 2) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+         (6, 3) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+         (6, 4) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+         (6, 5) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+         (6, 6) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+         (6, 7) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+         (6, 8) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+         (6, 9) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+        (6, 10) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+        (6, 11) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+        (6, 12) :   0.0 :                  60.0 : 99999.0 : False : False :  Reals
+        (6, 13) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+        (6, 14) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+        (6, 15) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+        (6, 16) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+        (6, 17) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+        (6, 18) :   0.0 :                  60.0 : 99999.0 : False : False :  Reals
+        (6, 19) :   0.0 :      29.6399999999995 : 99999.0 : False : False :  Reals
+        (6, 20) :   0.0 :                57.048 : 99999.0 : False : False :  Reals
+        (6, 21) :   0.0 :      33.1600000000001 : 99999.0 : False : False :  Reals
+        (6, 22) :   0.0 :                  60.0 : 99999.0 : False : False :  Reals
+        (6, 23) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+        (6, 24) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+         (7, 1) :   0.0 :                  60.0 : 99999.0 : False : False :  Reals
+         (7, 2) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+         (7, 3) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+         (7, 4) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+         (7, 5) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+         (7, 6) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+         (7, 7) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+         (7, 8) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+         (7, 9) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+        (7, 10) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+        (7, 11) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+        (7, 12) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+        (7, 13) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+        (7, 14) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+        (7, 15) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+        (7, 16) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+        (7, 17) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+        (7, 18) :   0.0 :                45.936 : 99999.0 : False : False :  Reals
+        (7, 19) :   0.0 :                  60.0 : 99999.0 : False : False :  Reals
+        (7, 20) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+        (7, 21) :   0.0 : -1.06581410364015e-13 : 99999.0 : False : False :  Reals
+        (7, 22) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+        (7, 23) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+        (7, 24) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+         (8, 1) :   0.0 :                  45.0 : 99999.0 : False : False :  Reals
+         (8, 2) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+         (8, 3) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+         (8, 4) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+         (8, 5) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+         (8, 6) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+         (8, 7) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+         (8, 8) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+         (8, 9) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+        (8, 10) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+        (8, 11) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+        (8, 12) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+        (8, 13) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+        (8, 14) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+        (8, 15) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+        (8, 16) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+        (8, 17) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+        (8, 18) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+        (8, 19) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+        (8, 20) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+        (8, 21) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+        (8, 22) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+        (8, 23) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+        (8, 24) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
     pc : Size=192, Index=pc_index
         Key     : Lower : Value            : Upper   : Fixed : Stale : Domain
          (1, 1) :   0.0 :            225.0 : 99999.0 : False : False :  Reals
@@ -2889,10 +2889,10 @@ g,t,u,v,w,p
          (5, 4) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
          (5, 5) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
          (5, 6) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-         (5, 7) :   0.0 : 7.94399999999999 : 99999.0 : False : False :  Reals
-         (5, 8) :   0.0 : 54.6079999999999 : 99999.0 : False : False :  Reals
-         (5, 9) :   0.0 :            68.68 : 99999.0 : False : False :  Reals
-        (5, 10) :   0.0 :             66.6 : 99999.0 : False : False :  Reals
+         (5, 7) :   0.0 : 7.94399999999995 : 99999.0 : False : False :  Reals
+         (5, 8) :   0.0 :           54.608 : 99999.0 : False : False :  Reals
+         (5, 9) :   0.0 : 68.6800000000001 : 99999.0 : False : False :  Reals
+        (5, 10) :   0.0 : 66.6000000000001 : 99999.0 : False : False :  Reals
         (5, 11) :   0.0 :            57.64 : 99999.0 : False : False :  Reals
         (5, 12) :   0.0 :            73.16 : 99999.0 : False : False :  Reals
         (5, 13) :   0.0 :            57.64 : 99999.0 : False : False :  Reals
@@ -3324,7 +3324,7 @@ g,t,u,v,w,p
           (2, 8, 7) :   0.0 :           27.72727273 : 99999.0 : False : False :  Reals
           (2, 8, 8) :   0.0 :           27.72727273 : 99999.0 : False : False :  Reals
           (2, 8, 9) :   0.0 :           27.72727273 : 99999.0 : False : False :  Reals
-         (2, 8, 10) :   0.0 :           19.12654543 : 99999.0 : False : False :  Reals
+         (2, 8, 10) :   0.0 :      19.1265454299999 : 99999.0 : False : False :  Reals
           (2, 9, 1) :   0.0 :           27.72727273 : 99999.0 : False : False :  Reals
           (2, 9, 2) :   0.0 :           27.72727273 : 99999.0 : False : False :  Reals
           (2, 9, 3) :   0.0 :           27.72727273 : 99999.0 : False : False :  Reals
@@ -3566,11 +3566,11 @@ g,t,u,v,w,p
           (3, 8, 9) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
          (3, 8, 10) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
           (3, 9, 1) :   0.0 :                  10.0 : 99999.0 : False : False :  Reals
-          (3, 9, 2) :   0.0 :                  10.0 : 99999.0 : False : False :  Reals
+          (3, 9, 2) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
           (3, 9, 3) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
           (3, 9, 4) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
           (3, 9, 5) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
-          (3, 9, 6) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+          (3, 9, 6) :   0.0 :                  10.0 : 99999.0 : False : False :  Reals
           (3, 9, 7) :   0.0 :                  10.0 : 99999.0 : False : False :  Reals
           (3, 9, 8) :   0.0 :                  10.0 : 99999.0 : False : False :  Reals
           (3, 9, 9) :   0.0 :                  10.0 : 99999.0 : False : False :  Reals
@@ -3584,7 +3584,7 @@ g,t,u,v,w,p
          (3, 10, 7) :   0.0 :                  10.0 : 99999.0 : False : False :  Reals
          (3, 10, 8) :   0.0 :                  10.0 : 99999.0 : False : False :  Reals
          (3, 10, 9) :   0.0 :                  10.0 : 99999.0 : False : False :  Reals
-        (3, 10, 10) :   0.0 :                  10.0 : 99999.0 : False : False :  Reals
+        (3, 10, 10) :   0.0 :      9.99999999999996 : 99999.0 : False : False :  Reals
          (3, 11, 1) :   0.0 :                  10.0 : 99999.0 : False : False :  Reals
          (3, 11, 2) :   0.0 :                  10.0 : 99999.0 : False : False :  Reals
          (3, 11, 3) :   0.0 :                  10.0 : 99999.0 : False : False :  Reals
@@ -3809,14 +3809,14 @@ g,t,u,v,w,p
           (4, 9, 2) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
           (4, 9, 3) :   0.0 :                  10.0 : 99999.0 : False : False :  Reals
           (4, 9, 4) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
-          (4, 9, 5) :   0.0 :                  10.0 : 99999.0 : False : False :  Reals
+          (4, 9, 5) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
           (4, 9, 6) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
-          (4, 9, 7) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+          (4, 9, 7) :   0.0 :                  10.0 : 99999.0 : False : False :  Reals
           (4, 9, 8) :   0.0 :                  10.0 : 99999.0 : False : False :  Reals
           (4, 9, 9) :   0.0 :                  10.0 : 99999.0 : False : False :  Reals
          (4, 9, 10) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
          (4, 10, 1) :   0.0 :                  10.0 : 99999.0 : False : False :  Reals
-         (4, 10, 2) :   0.0 :                  10.0 : 99999.0 : False : False :  Reals
+         (4, 10, 2) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
          (4, 10, 3) :   0.0 :                  10.0 : 99999.0 : False : False :  Reals
          (4, 10, 4) :   0.0 :                  10.0 : 99999.0 : False : False :  Reals
          (4, 10, 5) :   0.0 :                  10.0 : 99999.0 : False : False :  Reals
@@ -3824,7 +3824,7 @@ g,t,u,v,w,p
          (4, 10, 7) :   0.0 :                  10.0 : 99999.0 : False : False :  Reals
          (4, 10, 8) :   0.0 :                  10.0 : 99999.0 : False : False :  Reals
          (4, 10, 9) :   0.0 :                  10.0 : 99999.0 : False : False :  Reals
-        (4, 10, 10) :   0.0 :                  10.0 : 99999.0 : False : False :  Reals
+        (4, 10, 10) :   0.0 :                  20.0 : 99999.0 : False : False :  Reals
          (4, 11, 1) :   0.0 :                  10.0 : 99999.0 : False : False :  Reals
          (4, 11, 2) :   0.0 :                  10.0 : 99999.0 : False : False :  Reals
          (4, 11, 3) :   0.0 :                  10.0 : 99999.0 : False : False :  Reals
@@ -3848,7 +3848,7 @@ g,t,u,v,w,p
          (4, 13, 1) :   0.0 :                  10.0 : 99999.0 : False : False :  Reals
          (4, 13, 2) :   0.0 :                  10.0 : 99999.0 : False : False :  Reals
          (4, 13, 3) :   0.0 :                  10.0 : 99999.0 : False : False :  Reals
-         (4, 13, 4) :   0.0 :      9.99999999999997 : 99999.0 : False : False :  Reals
+         (4, 13, 4) :   0.0 :                  10.0 : 99999.0 : False : False :  Reals
          (4, 13, 5) :   0.0 :                  10.0 : 99999.0 : False : False :  Reals
          (4, 13, 6) :   0.0 :                  10.0 : 99999.0 : False : False :  Reals
          (4, 13, 7) :   0.0 :                  10.0 : 99999.0 : False : False :  Reals
@@ -3975,26 +3975,26 @@ g,t,u,v,w,p
           (5, 1, 8) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
           (5, 1, 9) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
          (5, 1, 10) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
-          (5, 2, 1) :   0.0 :      2.89745455000001 : 99999.0 : False : False :  Reals
+          (5, 2, 1) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
           (5, 2, 2) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
           (5, 2, 3) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
           (5, 2, 4) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
           (5, 2, 5) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
           (5, 2, 6) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
-          (5, 2, 7) :   0.0 :           12.45454545 : 99999.0 : False : False :  Reals
-          (5, 2, 8) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
-          (5, 2, 9) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+          (5, 2, 7) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+          (5, 2, 8) :   0.0 :           12.45454545 : 99999.0 : False : False :  Reals
+          (5, 2, 9) :   0.0 :      2.89745455000001 : 99999.0 : False : False :  Reals
          (5, 2, 10) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
-          (5, 3, 1) :   0.0 :           12.45454545 : 99999.0 : False : False :  Reals
-          (5, 3, 2) :   0.0 :      2.33090910000001 : 99999.0 : False : False :  Reals
+          (5, 3, 1) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+          (5, 3, 2) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
           (5, 3, 3) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
-          (5, 3, 4) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
-          (5, 3, 5) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+          (5, 3, 4) :   0.0 :           12.45454545 : 99999.0 : False : False :  Reals
+          (5, 3, 5) :   0.0 :           12.45454545 : 99999.0 : False : False :  Reals
           (5, 3, 6) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
-          (5, 3, 7) :   0.0 :           12.45454545 : 99999.0 : False : False :  Reals
+          (5, 3, 7) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
           (5, 3, 8) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
           (5, 3, 9) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
-         (5, 3, 10) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+         (5, 3, 10) :   0.0 :      2.33090910000001 : 99999.0 : False : False :  Reals
           (5, 4, 1) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
           (5, 4, 2) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
           (5, 4, 3) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
@@ -4030,101 +4030,101 @@ g,t,u,v,w,p
           (5, 7, 3) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
           (5, 7, 4) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
           (5, 7, 5) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
-          (5, 7, 6) :   0.0 :      7.94399999999999 : 99999.0 : False : False :  Reals
+          (5, 7, 6) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
           (5, 7, 7) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
           (5, 7, 8) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
-          (5, 7, 9) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+          (5, 7, 9) :   0.0 :      7.94399999999995 : 99999.0 : False : False :  Reals
          (5, 7, 10) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
           (5, 8, 1) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
           (5, 8, 2) :   0.0 :           12.45454545 : 99999.0 : False : False :  Reals
           (5, 8, 3) :   0.0 :           12.45454545 : 99999.0 : False : False :  Reals
-          (5, 8, 4) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
-          (5, 8, 5) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+          (5, 8, 4) :   0.0 :           12.45454545 : 99999.0 : False : False :  Reals
+          (5, 8, 5) :   0.0 :           12.45454545 : 99999.0 : False : False :  Reals
           (5, 8, 6) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
-          (5, 8, 7) :   0.0 :           12.45454545 : 99999.0 : False : False :  Reals
-          (5, 8, 8) :   0.0 :           12.45454545 : 99999.0 : False : False :  Reals
-          (5, 8, 9) :   0.0 :      4.78981819999996 : 99999.0 : False : False :  Reals
-         (5, 8, 10) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
-          (5, 9, 1) :   0.0 :           12.45454545 : 99999.0 : False : False :  Reals
+          (5, 8, 7) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+          (5, 8, 8) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+          (5, 8, 9) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+         (5, 8, 10) :   0.0 :      4.78981820000004 : 99999.0 : False : False :  Reals
+          (5, 9, 1) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
           (5, 9, 2) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
           (5, 9, 3) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
-          (5, 9, 4) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+          (5, 9, 4) :   0.0 :           12.45454545 : 99999.0 : False : False :  Reals
           (5, 9, 5) :   0.0 :           12.45454545 : 99999.0 : False : False :  Reals
           (5, 9, 6) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
           (5, 9, 7) :   0.0 :           12.45454545 : 99999.0 : False : False :  Reals
-          (5, 9, 8) :   0.0 :           12.45454545 : 99999.0 : False : False :  Reals
-          (5, 9, 9) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
-         (5, 9, 10) :   0.0 :            18.8618182 : 99999.0 : False : False :  Reals
+          (5, 9, 8) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+          (5, 9, 9) :   0.0 :           12.45454545 : 99999.0 : False : False :  Reals
+         (5, 9, 10) :   0.0 :      18.8618182000001 : 99999.0 : False : False :  Reals
          (5, 10, 1) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
-         (5, 10, 2) :   0.0 :           12.45454545 : 99999.0 : False : False :  Reals
+         (5, 10, 2) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
          (5, 10, 3) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
          (5, 10, 4) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
-         (5, 10, 5) :   0.0 :           12.45454545 : 99999.0 : False : False :  Reals
+         (5, 10, 5) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
          (5, 10, 6) :   0.0 :           12.45454545 : 99999.0 : False : False :  Reals
-         (5, 10, 7) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
-         (5, 10, 8) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+         (5, 10, 7) :   0.0 :           12.45454545 : 99999.0 : False : False :  Reals
+         (5, 10, 8) :   0.0 :           12.45454545 : 99999.0 : False : False :  Reals
          (5, 10, 9) :   0.0 :           12.45454545 : 99999.0 : False : False :  Reals
-        (5, 10, 10) :   0.0 :            16.7818182 : 99999.0 : False : False :  Reals
-         (5, 11, 1) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+        (5, 10, 10) :   0.0 :      16.7818182000001 : 99999.0 : False : False :  Reals
+         (5, 11, 1) :   0.0 :      7.82181820000002 : 99999.0 : False : False :  Reals
          (5, 11, 2) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
          (5, 11, 3) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
          (5, 11, 4) :   0.0 :           12.45454545 : 99999.0 : False : False :  Reals
-         (5, 11, 5) :   0.0 :           12.45454545 : 99999.0 : False : False :  Reals
-         (5, 11, 6) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
-         (5, 11, 7) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+         (5, 11, 5) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+         (5, 11, 6) :   0.0 :           12.45454545 : 99999.0 : False : False :  Reals
+         (5, 11, 7) :   0.0 :           12.45454545 : 99999.0 : False : False :  Reals
          (5, 11, 8) :   0.0 :           12.45454545 : 99999.0 : False : False :  Reals
          (5, 11, 9) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
-        (5, 11, 10) :   0.0 :           20.27636365 : 99999.0 : False : False :  Reals
-         (5, 12, 1) :   0.0 :           12.45454545 : 99999.0 : False : False :  Reals
-         (5, 12, 2) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
-         (5, 12, 3) :   0.0 : -1.13686837721616e-13 : 99999.0 : False : False :  Reals
-         (5, 12, 4) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
-         (5, 12, 5) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+        (5, 11, 10) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+         (5, 12, 1) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+         (5, 12, 2) :   0.0 :           12.45454545 : 99999.0 : False : False :  Reals
+         (5, 12, 3) :   0.0 :           12.45454545 : 99999.0 : False : False :  Reals
+         (5, 12, 4) :   0.0 :           12.45454545 : 99999.0 : False : False :  Reals
+         (5, 12, 5) :   0.0 :           12.45454545 : 99999.0 : False : False :  Reals
          (5, 12, 6) :   0.0 :           12.45454545 : 99999.0 : False : False :  Reals
-         (5, 12, 7) :   0.0 :           12.45454545 : 99999.0 : False : False :  Reals
-         (5, 12, 8) :   0.0 :           12.45454545 : 99999.0 : False : False :  Reals
-         (5, 12, 9) :   0.0 :           12.45454545 : 99999.0 : False : False :  Reals
-        (5, 12, 10) :   0.0 :      10.8872727500001 : 99999.0 : False : False :  Reals
-         (5, 13, 1) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+         (5, 12, 7) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+         (5, 12, 8) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+         (5, 12, 9) :   0.0 :           10.88727275 : 99999.0 : False : False :  Reals
+        (5, 12, 10) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+         (5, 13, 1) :   0.0 :             7.8218182 : 99999.0 : False : False :  Reals
          (5, 13, 2) :   0.0 :           12.45454545 : 99999.0 : False : False :  Reals
-         (5, 13, 3) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+         (5, 13, 3) :   0.0 :           12.45454545 : 99999.0 : False : False :  Reals
          (5, 13, 4) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
          (5, 13, 5) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
-         (5, 13, 6) :   0.0 :           12.45454545 : 99999.0 : False : False :  Reals
+         (5, 13, 6) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
          (5, 13, 7) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
-         (5, 13, 8) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+         (5, 13, 8) :   0.0 :           12.45454545 : 99999.0 : False : False :  Reals
          (5, 13, 9) :   0.0 :           12.45454545 : 99999.0 : False : False :  Reals
-        (5, 13, 10) :   0.0 :      20.2763636500001 : 99999.0 : False : False :  Reals
+        (5, 13, 10) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
          (5, 14, 1) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
          (5, 14, 2) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
          (5, 14, 3) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
-         (5, 14, 4) :   0.0 :           12.45454545 : 99999.0 : False : False :  Reals
+         (5, 14, 4) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
          (5, 14, 5) :   0.0 :           12.45454545 : 99999.0 : False : False :  Reals
          (5, 14, 6) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
-         (5, 14, 7) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+         (5, 14, 7) :   0.0 :           12.45454545 : 99999.0 : False : False :  Reals
          (5, 14, 8) :   0.0 :           12.45454545 : 99999.0 : False : False :  Reals
-         (5, 14, 9) :   0.0 :      9.23636365000003 : 99999.0 : False : False :  Reals
-        (5, 14, 10) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
-         (5, 15, 1) :   0.0 :      7.47490910000003 : 99999.0 : False : False :  Reals
+         (5, 14, 9) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+        (5, 14, 10) :   0.0 :      9.23636365000003 : 99999.0 : False : False :  Reals
+         (5, 15, 1) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
          (5, 15, 2) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
          (5, 15, 3) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
          (5, 15, 4) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
          (5, 15, 5) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
-         (5, 15, 6) :   0.0 :           12.45454545 : 99999.0 : False : False :  Reals
-         (5, 15, 7) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
-         (5, 15, 8) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
-         (5, 15, 9) :   0.0 :           12.45454545 : 99999.0 : False : False :  Reals
-        (5, 15, 10) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
-         (5, 16, 1) :   0.0 :           12.45454545 : 99999.0 : False : False :  Reals
+         (5, 15, 6) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+         (5, 15, 7) :   0.0 :           12.45454545 : 99999.0 : False : False :  Reals
+         (5, 15, 8) :   0.0 :           12.45454545 : 99999.0 : False : False :  Reals
+         (5, 15, 9) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+        (5, 15, 10) :   0.0 :      7.47490910000004 : 99999.0 : False : False :  Reals
+         (5, 16, 1) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
          (5, 16, 2) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
-         (5, 16, 3) :   0.0 :           12.45454545 : 99999.0 : False : False :  Reals
-         (5, 16, 4) :   0.0 :      2.74981819999996 : 99999.0 : False : False :  Reals
-         (5, 16, 5) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
-         (5, 16, 6) :   0.0 :           12.45454545 : 99999.0 : False : False :  Reals
+         (5, 16, 3) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+         (5, 16, 4) :   0.0 :           12.45454545 : 99999.0 : False : False :  Reals
+         (5, 16, 5) :   0.0 :      2.74981814999995 : 99999.0 : False : False :  Reals
+         (5, 16, 6) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
          (5, 16, 7) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
          (5, 16, 8) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
          (5, 16, 9) :   0.0 :           12.45454545 : 99999.0 : False : False :  Reals
-        (5, 16, 10) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+        (5, 16, 10) :   0.0 :           24.90909095 : 99999.0 : False : False :  Reals
          (5, 17, 1) :   0.0 :           12.45454545 : 99999.0 : False : False :  Reals
          (5, 17, 2) :   0.0 :           12.45454545 : 99999.0 : False : False :  Reals
          (5, 17, 3) :   0.0 :           12.45454545 : 99999.0 : False : False :  Reals
@@ -4168,15 +4168,15 @@ g,t,u,v,w,p
          (5, 21, 1) :   0.0 :           12.45454545 : 99999.0 : False : False :  Reals
          (5, 21, 2) :   0.0 :           12.45454545 : 99999.0 : False : False :  Reals
          (5, 21, 3) :   0.0 :           12.45454545 : 99999.0 : False : False :  Reals
-         (5, 21, 4) :   0.0 :           12.45454545 : 99999.0 : False : False :  Reals
+         (5, 21, 4) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
          (5, 21, 5) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
-         (5, 21, 6) :   0.0 :      4.56363635000002 : 99999.0 : False : False :  Reals
-         (5, 21, 7) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+         (5, 21, 6) :   0.0 :           12.45454545 : 99999.0 : False : False :  Reals
+         (5, 21, 7) :   0.0 :           12.45454545 : 99999.0 : False : False :  Reals
          (5, 21, 8) :   0.0 :           12.45454545 : 99999.0 : False : False :  Reals
          (5, 21, 9) :   0.0 :           12.45454545 : 99999.0 : False : False :  Reals
-        (5, 21, 10) :   0.0 :           24.90909095 : 99999.0 : False : False :  Reals
+        (5, 21, 10) :   0.0 :           17.01818185 : 99999.0 : False : False :  Reals
          (5, 22, 1) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
-         (5, 22, 2) :   0.0 :      1.49818184999995 : 99999.0 : False : False :  Reals
+         (5, 22, 2) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
          (5, 22, 3) :   0.0 :           12.45454545 : 99999.0 : False : False :  Reals
          (5, 22, 4) :   0.0 :           12.45454545 : 99999.0 : False : False :  Reals
          (5, 22, 5) :   0.0 :           12.45454545 : 99999.0 : False : False :  Reals
@@ -4184,16 +4184,16 @@ g,t,u,v,w,p
          (5, 22, 7) :   0.0 :           12.45454545 : 99999.0 : False : False :  Reals
          (5, 22, 8) :   0.0 :           12.45454545 : 99999.0 : False : False :  Reals
          (5, 22, 9) :   0.0 :           12.45454545 : 99999.0 : False : False :  Reals
-        (5, 22, 10) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+        (5, 22, 10) :   0.0 :      1.49818184999995 : 99999.0 : False : False :  Reals
          (5, 23, 1) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
          (5, 23, 2) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
-         (5, 23, 3) :   0.0 :           12.45454545 : 99999.0 : False : False :  Reals
-         (5, 23, 4) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
-         (5, 23, 5) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+         (5, 23, 3) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+         (5, 23, 4) :   0.0 :           12.45454545 : 99999.0 : False : False :  Reals
+         (5, 23, 5) :   0.0 :      3.77090909999995 : 99999.0 : False : False :  Reals
          (5, 23, 6) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
          (5, 23, 7) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
-         (5, 23, 8) :   0.0 :      3.77090909999994 : 99999.0 : False : False :  Reals
-         (5, 23, 9) :   0.0 :           12.45454545 : 99999.0 : False : False :  Reals
+         (5, 23, 8) :   0.0 :           12.45454545 : 99999.0 : False : False :  Reals
+         (5, 23, 9) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
         (5, 23, 10) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
          (5, 24, 1) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
          (5, 24, 2) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
@@ -4375,27 +4375,27 @@ g,t,u,v,w,p
          (6, 17, 8) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
          (6, 17, 9) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
         (6, 17, 10) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
-         (6, 18, 1) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
-         (6, 18, 2) :   0.0 :      2.59272727000004 : 99999.0 : False : False :  Reals
+         (6, 18, 1) :   0.0 :           5.454545455 : 99999.0 : False : False :  Reals
+         (6, 18, 2) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
          (6, 18, 3) :   0.0 :           5.454545455 : 99999.0 : False : False :  Reals
-         (6, 18, 4) :   0.0 :           5.454545455 : 99999.0 : False : False :  Reals
+         (6, 18, 4) :   0.0 :      2.59272727000004 : 99999.0 : False : False :  Reals
          (6, 18, 5) :   0.0 :           5.454545455 : 99999.0 : False : False :  Reals
-         (6, 18, 6) :   0.0 :           5.454545455 : 99999.0 : False : False :  Reals
+         (6, 18, 6) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
          (6, 18, 7) :   0.0 :           5.454545455 : 99999.0 : False : False :  Reals
-         (6, 18, 8) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+         (6, 18, 8) :   0.0 :           5.454545455 : 99999.0 : False : False :  Reals
          (6, 18, 9) :   0.0 :           5.454545455 : 99999.0 : False : False :  Reals
         (6, 18, 10) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
          (6, 19, 1) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
-         (6, 19, 2) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+         (6, 19, 2) :   0.0 :      3.43636363499995 : 99999.0 : False : False :  Reals
          (6, 19, 3) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
          (6, 19, 4) :   0.0 :           5.454545455 : 99999.0 : False : False :  Reals
-         (6, 19, 5) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+         (6, 19, 5) :   0.0 :           5.454545455 : 99999.0 : False : False :  Reals
          (6, 19, 6) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
-         (6, 19, 7) :   0.0 :      3.43636363499995 : 99999.0 : False : False :  Reals
+         (6, 19, 7) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
          (6, 19, 8) :   0.0 :           5.454545455 : 99999.0 : False : False :  Reals
-         (6, 19, 9) :   0.0 :           5.454545455 : 99999.0 : False : False :  Reals
+         (6, 19, 9) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
         (6, 19, 10) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
-         (6, 20, 1) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+         (6, 20, 1) :   0.0 :  1.39641934369521e-13 : 99999.0 : False : False :  Reals
          (6, 20, 2) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
          (6, 20, 3) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
          (6, 20, 4) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
@@ -4403,7 +4403,7 @@ g,t,u,v,w,p
          (6, 20, 6) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
          (6, 20, 7) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
          (6, 20, 8) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
-         (6, 20, 9) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+         (6, 20, 9) :   0.0 : -1.39641934369521e-13 : 99999.0 : False : False :  Reals
         (6, 20, 10) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
          (6, 21, 1) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
          (6, 21, 2) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
@@ -4926,199 +4926,199 @@ g,t,u,v,w,p
          (8, 24, 9) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
         (8, 24, 10) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
     r : Size=192, Index=r_index
-        Key     : Lower : Value            : Upper   : Fixed : Stale : Domain
-         (1, 1) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-         (1, 2) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-         (1, 3) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-         (1, 4) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-         (1, 5) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-         (1, 6) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-         (1, 7) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-         (1, 8) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-         (1, 9) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-        (1, 10) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-        (1, 11) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-        (1, 12) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-        (1, 13) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-        (1, 14) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-        (1, 15) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-        (1, 16) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-        (1, 17) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-        (1, 18) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-        (1, 19) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-        (1, 20) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-        (1, 21) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-        (1, 22) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-        (1, 23) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-        (1, 24) :   0.0 :            225.0 : 99999.0 : False : False :  Reals
-         (2, 1) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-         (2, 2) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-         (2, 3) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-         (2, 4) :   0.0 : 3.79999999999995 : 99999.0 : False : False :  Reals
-         (2, 5) :   0.0 :            34.84 : 99999.0 : False : False :  Reals
-         (2, 6) :   0.0 :            34.84 : 99999.0 : False : False :  Reals
-         (2, 7) :   0.0 : 11.7439999999999 : 99999.0 : False : False :  Reals
-         (2, 8) :   0.0 :           36.328 : 99999.0 : False : False :  Reals
-         (2, 9) :   0.0 :            10.72 : 99999.0 : False : False :  Reals
-        (2, 10) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-        (2, 11) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-        (2, 12) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-        (2, 13) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-        (2, 14) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-        (2, 15) :   0.0 : 1.30399999999997 : 99999.0 : False : False :  Reals
-        (2, 16) :   0.0 : 21.4879999999999 : 99999.0 : False : False :  Reals
-        (2, 17) :   0.0 :            28.84 : 99999.0 : False : False :  Reals
-        (2, 18) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-        (2, 19) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-        (2, 20) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-        (2, 21) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-        (2, 22) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-        (2, 23) :   0.0 : 17.5999999999999 : 99999.0 : False : False :  Reals
-        (2, 24) :   0.0 :           253.92 : 99999.0 : False : False :  Reals
-         (3, 1) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-         (3, 2) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-         (3, 3) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-         (3, 4) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-         (3, 5) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-         (3, 6) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-         (3, 7) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-         (3, 8) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-         (3, 9) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-        (3, 10) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-        (3, 11) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-        (3, 12) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-        (3, 13) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-        (3, 14) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-        (3, 15) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-        (3, 16) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-        (3, 17) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-        (3, 18) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-        (3, 19) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-        (3, 20) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-        (3, 21) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-        (3, 22) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-        (3, 23) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-        (3, 24) :   0.0 :             50.0 : 99999.0 : False : False :  Reals
-         (4, 1) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-         (4, 2) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-         (4, 3) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-         (4, 4) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-         (4, 5) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-         (4, 6) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-         (4, 7) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-         (4, 8) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-         (4, 9) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-        (4, 10) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-        (4, 11) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-        (4, 12) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-        (4, 13) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-        (4, 14) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-        (4, 15) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-        (4, 16) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-        (4, 17) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-        (4, 18) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-        (4, 19) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-        (4, 20) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-        (4, 21) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-        (4, 22) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-        (4, 23) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-        (4, 24) :   0.0 :             50.0 : 99999.0 : False : False :  Reals
-         (5, 1) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-         (5, 2) :   0.0 :            50.44 : 99999.0 : False : False :  Reals
-         (5, 3) :   0.0 :           48.112 : 99999.0 : False : False :  Reals
-         (5, 4) :   0.0 :            42.76 : 99999.0 : False : False :  Reals
-         (5, 5) :   0.0 : 10.1680000000001 : 99999.0 : False : False :  Reals
-         (5, 6) :   0.0 : 10.1680000000001 : 99999.0 : False : False :  Reals
-         (5, 7) :   0.0 :           34.816 : 99999.0 : False : False :  Reals
-         (5, 8) :   0.0 :           13.336 : 99999.0 : False : False :  Reals
-         (5, 9) :   0.0 : 45.9279999999999 : 99999.0 : False : False :  Reals
-        (5, 10) :   0.0 :            62.08 : 99999.0 : False : False :  Reals
-        (5, 11) :   0.0 :           63.632 : 99999.0 : False : False :  Reals
-        (5, 12) :   0.0 :            4.408 : 99999.0 : False : False :  Reals
-        (5, 13) :   0.0 :           63.632 : 99999.0 : False : False :  Reals
-        (5, 14) :   0.0 :            62.08 : 99999.0 : False : False :  Reals
-        (5, 15) :   0.0 :           74.216 : 99999.0 : False : False :  Reals
-        (5, 16) :   0.0 : 39.8160000000001 : 99999.0 : False : False :  Reals
-        (5, 17) :   0.0 :           35.568 : 99999.0 : False : False :  Reals
-        (5, 18) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-        (5, 19) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-        (5, 20) :   0.0 :            11.24 : 99999.0 : False : False :  Reals
-        (5, 21) :   0.0 : 5.95999999999999 : 99999.0 : False : False :  Reals
-        (5, 22) :   0.0 :            5.184 : 99999.0 : False : False :  Reals
-        (5, 23) :   0.0 : 43.7040000000001 : 99999.0 : False : False :  Reals
-        (5, 24) :   0.0 : 88.6799999999999 : 99999.0 : False : False :  Reals
-         (6, 1) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-         (6, 2) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-         (6, 3) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-         (6, 4) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-         (6, 5) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-         (6, 6) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-         (6, 7) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-         (6, 8) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-         (6, 9) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-        (6, 10) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-        (6, 11) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-        (6, 12) :   0.0 :             60.0 : 99999.0 : False : False :  Reals
-        (6, 13) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-        (6, 14) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-        (6, 15) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-        (6, 16) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-        (6, 17) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-        (6, 18) :   0.0 :           10.616 : 99999.0 : False : False :  Reals
-        (6, 19) :   0.0 :             40.2 : 99999.0 : False : False :  Reals
-        (6, 20) :   0.0 :           57.048 : 99999.0 : False : False :  Reals
-        (6, 21) :   0.0 :             60.0 : 99999.0 : False : False :  Reals
-        (6, 22) :   0.0 :             60.0 : 99999.0 : False : False :  Reals
-        (6, 23) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-        (6, 24) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-         (7, 1) :   0.0 :             60.0 : 99999.0 : False : False :  Reals
-         (7, 2) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-         (7, 3) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-         (7, 4) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-         (7, 5) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-         (7, 6) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-         (7, 7) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-         (7, 8) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-         (7, 9) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-        (7, 10) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-        (7, 11) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-        (7, 12) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-        (7, 13) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-        (7, 14) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-        (7, 15) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-        (7, 16) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-        (7, 17) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-        (7, 18) :   0.0 :             60.0 : 99999.0 : False : False :  Reals
-        (7, 19) :   0.0 :            29.64 : 99999.0 : False : False :  Reals
-        (7, 20) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-        (7, 21) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-        (7, 22) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-        (7, 23) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-        (7, 24) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-         (8, 1) :   0.0 :            33.08 : 99999.0 : False : False :  Reals
-         (8, 2) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-         (8, 3) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-         (8, 4) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-         (8, 5) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-         (8, 6) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-         (8, 7) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-         (8, 8) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-         (8, 9) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-        (8, 10) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-        (8, 11) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-        (8, 12) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-        (8, 13) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-        (8, 14) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-        (8, 15) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-        (8, 16) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-        (8, 17) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-        (8, 18) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-        (8, 19) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-        (8, 20) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-        (8, 21) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-        (8, 22) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-        (8, 23) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
-        (8, 24) :   0.0 :              0.0 : 99999.0 : False : False :  Reals
+        Key     : Lower : Value                 : Upper   : Fixed : Stale : Domain
+         (1, 1) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+         (1, 2) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+         (1, 3) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+         (1, 4) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+         (1, 5) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+         (1, 6) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+         (1, 7) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+         (1, 8) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+         (1, 9) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+        (1, 10) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+        (1, 11) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+        (1, 12) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+        (1, 13) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+        (1, 14) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+        (1, 15) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+        (1, 16) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+        (1, 17) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+        (1, 18) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+        (1, 19) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+        (1, 20) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+        (1, 21) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+        (1, 22) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+        (1, 23) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+        (1, 24) :   0.0 :                 225.0 : 99999.0 : False : False :  Reals
+         (2, 1) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+         (2, 2) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+         (2, 3) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+         (2, 4) :   0.0 :      3.79999999999995 : 99999.0 : False : False :  Reals
+         (2, 5) :   0.0 :                 34.84 : 99999.0 : False : False :  Reals
+         (2, 6) :   0.0 :                 34.84 : 99999.0 : False : False :  Reals
+         (2, 7) :   0.0 :      11.7439999999999 : 99999.0 : False : False :  Reals
+         (2, 8) :   0.0 :      36.3280000000001 : 99999.0 : False : False :  Reals
+         (2, 9) :   0.0 :                 10.72 : 99999.0 : False : False :  Reals
+        (2, 10) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+        (2, 11) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+        (2, 12) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+        (2, 13) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+        (2, 14) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+        (2, 15) :   0.0 :      1.30399999999997 : 99999.0 : False : False :  Reals
+        (2, 16) :   0.0 :      21.4879999999999 : 99999.0 : False : False :  Reals
+        (2, 17) :   0.0 :                 28.84 : 99999.0 : False : False :  Reals
+        (2, 18) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+        (2, 19) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+        (2, 20) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+        (2, 21) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+        (2, 22) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+        (2, 23) :   0.0 :      17.5999999999999 : 99999.0 : False : False :  Reals
+        (2, 24) :   0.0 :                253.92 : 99999.0 : False : False :  Reals
+         (3, 1) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+         (3, 2) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+         (3, 3) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+         (3, 4) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+         (3, 5) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+         (3, 6) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+         (3, 7) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+         (3, 8) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+         (3, 9) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+        (3, 10) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+        (3, 11) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+        (3, 12) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+        (3, 13) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+        (3, 14) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+        (3, 15) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+        (3, 16) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+        (3, 17) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+        (3, 18) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+        (3, 19) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+        (3, 20) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+        (3, 21) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+        (3, 22) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+        (3, 23) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+        (3, 24) :   0.0 :                  50.0 : 99999.0 : False : False :  Reals
+         (4, 1) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+         (4, 2) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+         (4, 3) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+         (4, 4) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+         (4, 5) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+         (4, 6) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+         (4, 7) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+         (4, 8) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+         (4, 9) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+        (4, 10) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+        (4, 11) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+        (4, 12) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+        (4, 13) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+        (4, 14) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+        (4, 15) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+        (4, 16) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+        (4, 17) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+        (4, 18) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+        (4, 19) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+        (4, 20) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+        (4, 21) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+        (4, 22) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+        (4, 23) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+        (4, 24) :   0.0 :                  50.0 : 99999.0 : False : False :  Reals
+         (5, 1) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+         (5, 2) :   0.0 :                 50.44 : 99999.0 : False : False :  Reals
+         (5, 3) :   0.0 :                48.112 : 99999.0 : False : False :  Reals
+         (5, 4) :   0.0 :                 42.76 : 99999.0 : False : False :  Reals
+         (5, 5) :   0.0 :      10.1680000000001 : 99999.0 : False : False :  Reals
+         (5, 6) :   0.0 :      10.1680000000001 : 99999.0 : False : False :  Reals
+         (5, 7) :   0.0 :                34.816 : 99999.0 : False : False :  Reals
+         (5, 8) :   0.0 :      13.3359999999999 : 99999.0 : False : False :  Reals
+         (5, 9) :   0.0 :                45.928 : 99999.0 : False : False :  Reals
+        (5, 10) :   0.0 :                 62.08 : 99999.0 : False : False :  Reals
+        (5, 11) :   0.0 :                63.632 : 99999.0 : False : False :  Reals
+        (5, 12) :   0.0 :                 4.408 : 99999.0 : False : False :  Reals
+        (5, 13) :   0.0 :                63.632 : 99999.0 : False : False :  Reals
+        (5, 14) :   0.0 :                 62.08 : 99999.0 : False : False :  Reals
+        (5, 15) :   0.0 :                74.216 : 99999.0 : False : False :  Reals
+        (5, 16) :   0.0 :      39.8160000000001 : 99999.0 : False : False :  Reals
+        (5, 17) :   0.0 :                35.568 : 99999.0 : False : False :  Reals
+        (5, 18) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+        (5, 19) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+        (5, 20) :   0.0 :                 11.24 : 99999.0 : False : False :  Reals
+        (5, 21) :   0.0 :                  32.8 : 99999.0 : False : False :  Reals
+        (5, 22) :   0.0 :                 5.184 : 99999.0 : False : False :  Reals
+        (5, 23) :   0.0 :      43.7040000000001 : 99999.0 : False : False :  Reals
+        (5, 24) :   0.0 :      88.6799999999999 : 99999.0 : False : False :  Reals
+         (6, 1) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+         (6, 2) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+         (6, 3) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+         (6, 4) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+         (6, 5) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+         (6, 6) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+         (6, 7) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+         (6, 8) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+         (6, 9) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+        (6, 10) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+        (6, 11) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+        (6, 12) :   0.0 :                  60.0 : 99999.0 : False : False :  Reals
+        (6, 13) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+        (6, 14) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+        (6, 15) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+        (6, 16) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+        (6, 17) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+        (6, 18) :   0.0 :      24.6799999999999 : 99999.0 : False : False :  Reals
+        (6, 19) :   0.0 :      9.83999999999953 : 99999.0 : False : False :  Reals
+        (6, 20) :   0.0 :                57.048 : 99999.0 : False : False :  Reals
+        (6, 21) :   0.0 :      33.1600000000001 : 99999.0 : False : False :  Reals
+        (6, 22) :   0.0 :                  60.0 : 99999.0 : False : False :  Reals
+        (6, 23) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+        (6, 24) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+         (7, 1) :   0.0 :                  60.0 : 99999.0 : False : False :  Reals
+         (7, 2) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+         (7, 3) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+         (7, 4) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+         (7, 5) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+         (7, 6) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+         (7, 7) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+         (7, 8) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+         (7, 9) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+        (7, 10) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+        (7, 11) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+        (7, 12) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+        (7, 13) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+        (7, 14) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+        (7, 15) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+        (7, 16) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+        (7, 17) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+        (7, 18) :   0.0 :                45.936 : 99999.0 : False : False :  Reals
+        (7, 19) :   0.0 :                  60.0 : 99999.0 : False : False :  Reals
+        (7, 20) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+        (7, 21) :   0.0 : -1.06581410364015e-13 : 99999.0 : False : False :  Reals
+        (7, 22) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+        (7, 23) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+        (7, 24) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+         (8, 1) :   0.0 :                 33.08 : 99999.0 : False : False :  Reals
+         (8, 2) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+         (8, 3) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+         (8, 4) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+         (8, 5) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+         (8, 6) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+         (8, 7) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+         (8, 8) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+         (8, 9) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+        (8, 10) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+        (8, 11) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+        (8, 12) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+        (8, 13) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+        (8, 14) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+        (8, 15) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+        (8, 16) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+        (8, 17) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+        (8, 18) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+        (8, 19) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+        (8, 20) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+        (8, 21) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+        (8, 22) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+        (8, 23) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
+        (8, 24) :   0.0 :                   0.0 : 99999.0 : False : False :  Reals
     sR : Size=24, Index=T
         Key : Lower : Value : Upper     : Fixed : Stale : Domain
           1 :   0.0 :  None : 9999999.0 : False :  True :  Reals
@@ -5317,9 +5317,9 @@ g,t,u,v,w,p
          (6, 1) :     0 :   1.0 :     1 : False : False : Binary
          (6, 2) :     0 :   1.0 :     1 : False : False : Binary
          (6, 3) :     0 :   0.0 :     1 : False : False : Binary
-         (6, 4) :     0 :  -0.0 :     1 : False : False : Binary
+         (6, 4) :     0 :   0.0 :     1 : False : False : Binary
          (6, 5) :     0 :  -0.0 :     1 : False : False : Binary
-         (6, 6) :     0 :   0.0 :     1 : False : False : Binary
+         (6, 6) :     0 :  -0.0 :     1 : False : False : Binary
          (6, 7) :     0 :   0.0 :     1 : False : False : Binary
          (6, 8) :     0 :   0.0 :     1 : False : False : Binary
          (6, 9) :     0 :   0.0 :     1 : False : False : Binary
@@ -5345,13 +5345,13 @@ g,t,u,v,w,p
          (7, 5) :     0 :  -0.0 :     1 : False : False : Binary
          (7, 6) :     0 :   0.0 :     1 : False : False : Binary
          (7, 7) :     0 :  -0.0 :     1 : False : False : Binary
-         (7, 8) :     0 :  -0.0 :     1 : False : False : Binary
+         (7, 8) :     0 :   0.0 :     1 : False : False : Binary
          (7, 9) :     0 :   0.0 :     1 : False : False : Binary
-        (7, 10) :     0 :  -0.0 :     1 : False : False : Binary
+        (7, 10) :     0 :   0.0 :     1 : False : False : Binary
         (7, 11) :     0 :   0.0 :     1 : False : False : Binary
         (7, 12) :     0 :   0.0 :     1 : False : False : Binary
-        (7, 13) :     0 :  -0.0 :     1 : False : False : Binary
-        (7, 14) :     0 :   0.0 :     1 : False : False : Binary
+        (7, 13) :     0 :   0.0 :     1 : False : False : Binary
+        (7, 14) :     0 :  -0.0 :     1 : False : False : Binary
         (7, 15) :     0 :  -0.0 :     1 : False : False : Binary
         (7, 16) :     0 :   0.0 :     1 : False : False : Binary
         (7, 17) :     0 :   1.0 :     1 : False : False : Binary
@@ -5359,8 +5359,8 @@ g,t,u,v,w,p
         (7, 19) :     0 :   1.0 :     1 : False : False : Binary
         (7, 20) :     0 :   1.0 :     1 : False : False : Binary
         (7, 21) :     0 :   0.0 :     1 : False : False : Binary
-        (7, 22) :     0 :  -0.0 :     1 : False : False : Binary
-        (7, 23) :     0 :   0.0 :     1 : False : False : Binary
+        (7, 22) :     0 :   0.0 :     1 : False : False : Binary
+        (7, 23) :     0 :  -0.0 :     1 : False : False : Binary
         (7, 24) :     0 :  -0.0 :     1 : False : False : Binary
          (8, 1) :     0 :   1.0 :     1 : False : False : Binary
          (8, 2) :     0 :   1.0 :     1 : False : False : Binary
@@ -5372,9 +5372,9 @@ g,t,u,v,w,p
          (8, 8) :     0 :  -0.0 :     1 : False : False : Binary
          (8, 9) :     0 :  -0.0 :     1 : False : False : Binary
         (8, 10) :     0 :   0.0 :     1 : False : False : Binary
-        (8, 11) :     0 :  -0.0 :     1 : False : False : Binary
+        (8, 11) :     0 :   0.0 :     1 : False : False : Binary
         (8, 12) :     0 :   0.0 :     1 : False : False : Binary
-        (8, 13) :     0 :  -0.0 :     1 : False : False : Binary
+        (8, 13) :     0 :   0.0 :     1 : False : False : Binary
         (8, 14) :     0 :  -0.0 :     1 : False : False : Binary
         (8, 15) :     0 :  -0.0 :     1 : False : False : Binary
         (8, 16) :     0 :  -0.0 :     1 : False : False : Binary
@@ -5450,7 +5450,7 @@ g,t,u,v,w,p
         (3, 12) :     0 :   0.0 :     1 : False : False : Binary
         (3, 13) :     0 :   0.0 :     1 : False : False : Binary
         (3, 14) :     0 :  -0.0 :     1 : False : False : Binary
-        (3, 15) :     0 :  -0.0 :     1 : False : False : Binary
+        (3, 15) :     0 :   0.0 :     1 : False : False : Binary
         (3, 16) :     0 :   0.0 :     1 : False : False : Binary
         (3, 17) :     0 :   0.0 :     1 : False : False : Binary
         (3, 18) :     0 :   0.0 :     1 : False : False : Binary
@@ -5468,7 +5468,7 @@ g,t,u,v,w,p
          (4, 6) :     0 :  -0.0 :     1 : False : False : Binary
          (4, 7) :     0 :  -0.0 :     1 : False : False : Binary
          (4, 8) :     0 :   1.0 :     1 : False : False : Binary
-         (4, 9) :     0 :  -0.0 :     1 : False : False : Binary
+         (4, 9) :     0 :   0.0 :     1 : False : False : Binary
         (4, 10) :     0 :   0.0 :     1 : False : False : Binary
         (4, 11) :     0 :   0.0 :     1 : False : False : Binary
         (4, 12) :     0 :   0.0 :     1 : False : False : Binary
@@ -5493,8 +5493,8 @@ g,t,u,v,w,p
          (5, 7) :     0 :  -0.0 :     1 : False : False : Binary
          (5, 8) :     0 :  -0.0 :     1 : False : False : Binary
          (5, 9) :     0 :  -0.0 :     1 : False : False : Binary
-        (5, 10) :     0 :  -0.0 :     1 : False : False : Binary
-        (5, 11) :     0 :   0.0 :     1 : False : False : Binary
+        (5, 10) :     0 :   0.0 :     1 : False : False : Binary
+        (5, 11) :     0 :  -0.0 :     1 : False : False : Binary
         (5, 12) :     0 :   0.0 :     1 : False : False : Binary
         (5, 13) :     0 :   0.0 :     1 : False : False : Binary
         (5, 14) :     0 :   0.0 :     1 : False : False : Binary
@@ -5513,14 +5513,14 @@ g,t,u,v,w,p
          (6, 3) :     0 :   0.0 :     1 : False : False : Binary
          (6, 4) :     0 :   0.0 :     1 : False : False : Binary
          (6, 5) :     0 :  -0.0 :     1 : False : False : Binary
-         (6, 6) :     0 :   0.0 :     1 : False : False : Binary
-         (6, 7) :     0 :   0.0 :     1 : False : False : Binary
-         (6, 8) :     0 :  -0.0 :     1 : False : False : Binary
+         (6, 6) :     0 :  -0.0 :     1 : False : False : Binary
+         (6, 7) :     0 :  -0.0 :     1 : False : False : Binary
+         (6, 8) :     0 :   0.0 :     1 : False : False : Binary
          (6, 9) :     0 :   0.0 :     1 : False : False : Binary
         (6, 10) :     0 :  -0.0 :     1 : False : False : Binary
         (6, 11) :     0 :   1.0 :     1 : False : False : Binary
         (6, 12) :     0 :   0.0 :     1 : False : False : Binary
-        (6, 13) :     0 :   0.0 :     1 : False : False : Binary
+        (6, 13) :     0 :  -0.0 :     1 : False : False : Binary
         (6, 14) :     0 :  -0.0 :     1 : False : False : Binary
         (6, 15) :     0 :   0.0 :     1 : False : False : Binary
         (6, 16) :     0 :   0.0 :     1 : False : False : Binary
@@ -5537,14 +5537,14 @@ g,t,u,v,w,p
          (7, 3) :     0 :   0.0 :     1 : False : False : Binary
          (7, 4) :     0 :   0.0 :     1 : False : False : Binary
          (7, 5) :     0 :  -0.0 :     1 : False : False : Binary
-         (7, 6) :     0 :   0.0 :     1 : False : False : Binary
+         (7, 6) :     0 :  -0.0 :     1 : False : False : Binary
          (7, 7) :     0 :   0.0 :     1 : False : False : Binary
          (7, 8) :     0 :   0.0 :     1 : False : False : Binary
          (7, 9) :     0 :   0.0 :     1 : False : False : Binary
-        (7, 10) :     0 :   0.0 :     1 : False : False : Binary
+        (7, 10) :     0 :  -0.0 :     1 : False : False : Binary
         (7, 11) :     0 :   0.0 :     1 : False : False : Binary
         (7, 12) :     0 :   0.0 :     1 : False : False : Binary
-        (7, 13) :     0 :  -0.0 :     1 : False : False : Binary
+        (7, 13) :     0 :   0.0 :     1 : False : False : Binary
         (7, 14) :     0 :   0.0 :     1 : False : False : Binary
         (7, 15) :     0 :   0.0 :     1 : False : False : Binary
         (7, 16) :     0 :   0.0 :     1 : False : False : Binary
@@ -5568,7 +5568,7 @@ g,t,u,v,w,p
         (8, 10) :     0 :   0.0 :     1 : False : False : Binary
         (8, 11) :     0 :   0.0 :     1 : False : False : Binary
         (8, 12) :     0 :   0.0 :     1 : False : False : Binary
-        (8, 13) :     0 :   0.0 :     1 : False : False : Binary
+        (8, 13) :     0 :  -0.0 :     1 : False : False : Binary
         (8, 14) :     0 :   0.0 :     1 : False : False : Binary
         (8, 15) :     0 :   0.0 :     1 : False : False : Binary
         (8, 16) :     0 :   0.0 :     1 : False : False : Binary
@@ -5576,10 +5576,10 @@ g,t,u,v,w,p
         (8, 18) :     0 :   0.0 :     1 : False : False : Binary
         (8, 19) :     0 :  -0.0 :     1 : False : False : Binary
         (8, 20) :     0 :   0.0 :     1 : False : False : Binary
-        (8, 21) :     0 :  -0.0 :     1 : False : False : Binary
+        (8, 21) :     0 :   0.0 :     1 : False : False : Binary
         (8, 22) :     0 :   0.0 :     1 : False : False : Binary
         (8, 23) :     0 :  -0.0 :     1 : False : False : Binary
-        (8, 24) :     0 :  -0.0 :     1 : False : False : Binary
+        (8, 24) :     0 :   0.0 :     1 : False : False : Binary
     w : Size=192, Index=w_index
         Key     : Lower : Value : Upper : Fixed : Stale : Domain
          (1, 1) :     0 :   0.0 :     1 : False : False : Binary
@@ -5637,7 +5637,7 @@ g,t,u,v,w,p
          (3, 5) :     0 :  -0.0 :     1 : False : False : Binary
          (3, 6) :     0 :  -0.0 :     1 : False : False : Binary
          (3, 7) :     0 :  -0.0 :     1 : False : False : Binary
-         (3, 8) :     0 :   0.0 :     1 : False : False : Binary
+         (3, 8) :     0 :  -0.0 :     1 : False : False : Binary
          (3, 9) :     0 :  -0.0 :     1 : False : False : Binary
         (3, 10) :     0 :  -0.0 :     1 : False : False : Binary
         (3, 11) :     0 :  -0.0 :     1 : False : False : Binary
@@ -5652,7 +5652,7 @@ g,t,u,v,w,p
         (3, 20) :     0 :   0.0 :     1 : False : False : Binary
         (3, 21) :     0 :   0.0 :     1 : False : False : Binary
         (3, 22) :     0 :  -0.0 :     1 : False : False : Binary
-        (3, 23) :     0 :   0.0 :     1 : False : False : Binary
+        (3, 23) :     0 :  -0.0 :     1 : False : False : Binary
         (3, 24) :     0 :  -0.0 :     1 : False : False : Binary
          (4, 1) :     0 :   0.0 :     1 : False : False : Binary
          (4, 2) :     0 :   0.0 :     1 : False : False : Binary
@@ -5660,7 +5660,7 @@ g,t,u,v,w,p
          (4, 4) :     0 :  -0.0 :     1 : False : False : Binary
          (4, 5) :     0 :  -0.0 :     1 : False : False : Binary
          (4, 6) :     0 :  -0.0 :     1 : False : False : Binary
-         (4, 7) :     0 :  -0.0 :     1 : False : False : Binary
+         (4, 7) :     0 :   0.0 :     1 : False : False : Binary
          (4, 8) :     0 :  -0.0 :     1 : False : False : Binary
          (4, 9) :     0 :  -0.0 :     1 : False : False : Binary
         (4, 10) :     0 :  -0.0 :     1 : False : False : Binary
@@ -5677,11 +5677,11 @@ g,t,u,v,w,p
         (4, 21) :     0 :   0.0 :     1 : False : False : Binary
         (4, 22) :     0 :  -0.0 :     1 : False : False : Binary
         (4, 23) :     0 :   0.0 :     1 : False : False : Binary
-        (4, 24) :     0 :  -0.0 :     1 : False : False : Binary
+        (4, 24) :     0 :   0.0 :     1 : False : False : Binary
          (5, 1) :     0 :   0.0 :     1 : False : False : Binary
          (5, 2) :     0 :   0.0 :     1 : False : False : Binary
          (5, 3) :     0 :   0.0 :     1 : False : False : Binary
-         (5, 4) :     0 :   0.0 :     1 : False : False : Binary
+         (5, 4) :     0 :  -0.0 :     1 : False : False : Binary
          (5, 5) :     0 :  -0.0 :     1 : False : False : Binary
          (5, 6) :     0 :  -0.0 :     1 : False : False : Binary
          (5, 7) :     0 :  -0.0 :     1 : False : False : Binary
@@ -5707,23 +5707,23 @@ g,t,u,v,w,p
          (6, 3) :     0 :   1.0 :     1 : False : False : Binary
          (6, 4) :     0 :  -0.0 :     1 : False : False : Binary
          (6, 5) :     0 :   0.0 :     1 : False : False : Binary
-         (6, 6) :     0 :  -0.0 :     1 : False : False : Binary
-         (6, 7) :     0 :  -0.0 :     1 : False : False : Binary
-         (6, 8) :     0 :   0.0 :     1 : False : False : Binary
+         (6, 6) :     0 :   0.0 :     1 : False : False : Binary
+         (6, 7) :     0 :   0.0 :     1 : False : False : Binary
+         (6, 8) :     0 :  -0.0 :     1 : False : False : Binary
          (6, 9) :     0 :  -0.0 :     1 : False : False : Binary
         (6, 10) :     0 :  -0.0 :     1 : False : False : Binary
         (6, 11) :     0 :  -0.0 :     1 : False : False : Binary
-        (6, 12) :     0 :  -0.0 :     1 : False : False : Binary
+        (6, 12) :     0 :   0.0 :     1 : False : False : Binary
         (6, 13) :     0 :   0.0 :     1 : False : False : Binary
         (6, 14) :     0 :   1.0 :     1 : False : False : Binary
         (6, 15) :     0 :  -0.0 :     1 : False : False : Binary
         (6, 16) :     0 :   0.0 :     1 : False : False : Binary
         (6, 17) :     0 :   0.0 :     1 : False : False : Binary
         (6, 18) :     0 :   0.0 :     1 : False : False : Binary
-        (6, 19) :     0 :   0.0 :     1 : False : False : Binary
+        (6, 19) :     0 :  -0.0 :     1 : False : False : Binary
         (6, 20) :     0 :   0.0 :     1 : False : False : Binary
         (6, 21) :     0 :   0.0 :     1 : False : False : Binary
-        (6, 22) :     0 :  -0.0 :     1 : False : False : Binary
+        (6, 22) :     0 :   0.0 :     1 : False : False : Binary
         (6, 23) :     0 :   0.0 :     1 : False : False : Binary
         (6, 24) :     0 :   1.0 :     1 : False : False : Binary
          (7, 1) :     0 :   0.0 :     1 : False : False : Binary
@@ -5731,16 +5731,16 @@ g,t,u,v,w,p
          (7, 3) :     0 :   1.0 :     1 : False : False : Binary
          (7, 4) :     0 :  -0.0 :     1 : False : False : Binary
          (7, 5) :     0 :   0.0 :     1 : False : False : Binary
-         (7, 6) :     0 :  -0.0 :     1 : False : False : Binary
+         (7, 6) :     0 :   0.0 :     1 : False : False : Binary
          (7, 7) :     0 :  -0.0 :     1 : False : False : Binary
-         (7, 8) :     0 :   0.0 :     1 : False : False : Binary
+         (7, 8) :     0 :  -0.0 :     1 : False : False : Binary
          (7, 9) :     0 :  -0.0 :     1 : False : False : Binary
         (7, 10) :     0 :  -0.0 :     1 : False : False : Binary
         (7, 11) :     0 :  -0.0 :     1 : False : False : Binary
         (7, 12) :     0 :  -0.0 :     1 : False : False : Binary
-        (7, 13) :     0 :  -0.0 :     1 : False : False : Binary
+        (7, 13) :     0 :   0.0 :     1 : False : False : Binary
         (7, 14) :     0 :   0.0 :     1 : False : False : Binary
-        (7, 15) :     0 :  -0.0 :     1 : False : False : Binary
+        (7, 15) :     0 :   0.0 :     1 : False : False : Binary
         (7, 16) :     0 :   0.0 :     1 : False : False : Binary
         (7, 17) :     0 :   0.0 :     1 : False : False : Binary
         (7, 18) :     0 :   0.0 :     1 : False : False : Binary
@@ -5755,7 +5755,7 @@ g,t,u,v,w,p
          (8, 3) :     0 :   1.0 :     1 : False : False : Binary
          (8, 4) :     0 :  -0.0 :     1 : False : False : Binary
          (8, 5) :     0 :  -0.0 :     1 : False : False : Binary
-         (8, 6) :     0 :  -0.0 :     1 : False : False : Binary
+         (8, 6) :     0 :   0.0 :     1 : False : False : Binary
          (8, 7) :     0 :  -0.0 :     1 : False : False : Binary
          (8, 8) :     0 :  -0.0 :     1 : False : False : Binary
          (8, 9) :     0 :  -0.0 :     1 : False : False : Binary
@@ -5768,11 +5768,11 @@ g,t,u,v,w,p
         (8, 16) :     0 :  -0.0 :     1 : False : False : Binary
         (8, 17) :     0 :  -0.0 :     1 : False : False : Binary
         (8, 18) :     0 :  -0.0 :     1 : False : False : Binary
-        (8, 19) :     0 :  -0.0 :     1 : False : False : Binary
-        (8, 20) :     0 :  -0.0 :     1 : False : False : Binary
-        (8, 21) :     0 :   0.0 :     1 : False : False : Binary
+        (8, 19) :     0 :   0.0 :     1 : False : False : Binary
+        (8, 20) :     0 :   0.0 :     1 : False : False : Binary
+        (8, 21) :     0 :  -0.0 :     1 : False : False : Binary
         (8, 22) :     0 :  -0.0 :     1 : False : False : Binary
-        (8, 23) :     0 :  -0.0 :     1 : False : False : Binary
+        (8, 23) :     0 :   0.0 :     1 : False : False : Binary
         (8, 24) :     0 :   0.0 :     1 : False : False : Binary
 
 1 Objective Declarations
@@ -13791,4 +13791,4 @@ g,t,u,v,w,p
         (8, 22) :  -Inf :                                             pb[8,22] - (55*u[8,22] - 45*w[8,23]) :   0.0 :   True
         (8, 23) :  -Inf :                                             pb[8,23] - (55*u[8,23] - 45*w[8,24]) :   0.0 :   True
 
-127 Declarations: G T L S Pmax Pmin UT DT De R u_0 D U SU SD RU RD p_0 CR indexGTLg indexGLg indexGTSg indexGSg u_index u v_index v w_index w delta p_index p pb_index pb pbc_index pbc pc_index pc r_index r cp_index cp cSU_index cSU cSD_index cSD mpc_index mpc sn sR pl total_cSU total_cEN total_cMP total_MPC total_cDE total_cRE total_cPR allLOAD Pb Cb C Cs Tunder obj Piecewise_mpc_index Piecewise_mpc total_cMP_ total_cEN_ total_cSU_ total_MPC_ logical_index logical pow_igual_index pow_igual pow_igual2_index pow_igual2 pow_igual3_index pow_igual3 pow_igual4_index pow_igual4 sdsu_ramp_rule20_index sdsu_ramp_rule20 su_ramp_rule21a_index su_ramp_rule21a sd_ramp_rule21b_index sd_ramp_rule21b pow_igual5_index pow_igual5 pow_igual6_index pow_igual6 Piecewise_offer44b_index Piecewise_offer44b su_sd_rule23a_index su_sd_rule23a su_sd_rule23b_index su_sd_rule23b up_ramp_rule38_index up_ramp_rule38 up_ramp_rule35_index up_ramp_rule35 down_ramp_rule36_index down_ramp_rule36 demand_rule65 demand_rule67 reserve_rule68 mut_index mut mdt_index mdt mdt2 mut2 Piecewise_offer42 Piecewise_offer47b Piecewise_offer48a Piecewise_offer48b Piecewise_offer43_index Piecewise_offer43 Piecewise_offer44_index Piecewise_offer44 Start_up_cost54 Start_up_cost55_index Start_up_cost55 Start_up_cost56_index Start_up_cost56 Piecewise_offer46 Piecewise_offer47a
+127 Declarations: G T L S Pmax Pmin UT DT De R u_0 D U SU SD RU RD p_0 CR indexGTLg indexGLg indexGTSg indexGSg u_index u v_index v w_index w delta p_index p pb_index pb pbc_index pbc pc_index pc r_index r cp_index cp cSU_index cSU cSD_index cSD mpc_index mpc sn sR pl total_cSU total_cEN total_cMP total_MPC total_cDE total_cRE total_cPR allLOAD Pb Cb C Cs Tunder obj Piecewise_mpc_index Piecewise_mpc demand_rule65 demand_rule67 reserve_rule68 total_cMP_ total_cEN_ total_cSU_ total_MPC_ logical_index logical pow_igual_index pow_igual pow_igual2_index pow_igual2 pow_igual3_index pow_igual3 pow_igual4_index pow_igual4 pow_igual5_index pow_igual5 pow_igual6_index pow_igual6 Piecewise_offer44b_index Piecewise_offer44b sdsu_ramp_rule20_index sdsu_ramp_rule20 su_ramp_rule21a_index su_ramp_rule21a sd_ramp_rule21b_index sd_ramp_rule21b su_sd_rule23a_index su_sd_rule23a su_sd_rule23b_index su_sd_rule23b up_ramp_rule38_index up_ramp_rule38 up_ramp_rule35_index up_ramp_rule35 down_ramp_rule36_index down_ramp_rule36 mut_index mut mdt_index mdt mdt2 mut2 Piecewise_offer42 Piecewise_offer47b Piecewise_offer48a Piecewise_offer48b Piecewise_offer43_index Piecewise_offer43 Piecewise_offer44_index Piecewise_offer44 Start_up_cost54 Start_up_cost55_index Start_up_cost55 Start_up_cost56_index Start_up_cost56 Piecewise_offer46 Piecewise_offer47a
