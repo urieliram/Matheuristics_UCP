@@ -69,15 +69,20 @@ def uc(instance,option='None',
         Cs30    = instance[36]
         Cns10   = instance[37]
         Cns30   = instance[38]
-        Cordc   = instance[39]
-        ORDC    = instance[40]
-        RCO     = instance[41]
+        RRe     = instance[39]
+        RR10    = instance[40]
+        RR30    = instance[41]
+        RN10    = instance[42]
+        RN30    = instance[43]        
+        ORDC    = instance[44]
+        Cordc   = instance[45]
+        RCO     = instance[46]
     
     model      = ConcreteModel(nameins)    
-    model.G    = Set(            initialize = G)
-    model.T    = Set(            initialize = T)  
-    model.L    = Set(model.G ,   initialize = L) 
-    model.S    = Set(model.G ,   initialize = S) 
+    model.G    = Set(          initialize = G)
+    model.T    = Set(          initialize = T)  
+    model.L    = Set(model.G , initialize = L) 
+    model.S    = Set(model.G , initialize = S) 
     
     if scope == 'market':
         model.ORDC  = Set(               initialize = ORDC)
@@ -90,6 +95,11 @@ def uc(instance,option='None',
         model.Cs30  = Param(model.G    , initialize = Cs30  , within = Any) #
         model.Cns10 = Param(model.G    , initialize = Cns10 , within = Any) #
         model.Cns30 = Param(model.G    , initialize = Cns30 , within = Any) #
+        model.RRe   = Param(model.G    , initialize = RRe   , within = Any) #
+        model.RR10  = Param(model.G    , initialize = RR10  , within = Any) #
+        model.RR30  = Param(model.G    , initialize = RR30  , within = Any) #
+        model.RN10  = Param(model.G    , initialize = RN10  , within = Any) #
+        model.RN30  = Param(model.G    , initialize = RN30  , within = Any) #
         model.Cordc = Param(model.ORDC , initialize = Cordc , within = Any) #
         model.RCO   = Param(model.ORDC , initialize = RCO   , within = Any) #
     
@@ -451,32 +461,42 @@ def uc(instance,option='None',
 
     ## -------------------------------DEMAND & RESERVE----------------------------------------   
  
-    def demand_rule65(m,t):                      ## demand eq.(65)
-        ##return sum( m.p[g,t] for g in m.G ) +  m.sn[t]  == m.De[t] 
-        if scope == 'market':
+    if scope=='market':
+        a=1
+        def demand_rule_market1(m,t):                      ## demand eq.(65)
             return sum( m.p[g,t] for g in m.G )   == m.De[t] + sum( m.l[d,t] for d in m.LOAD )
-        else:
+        model.demand_rule_market1 = Constraint(model.T, rule = demand_rule_market1)
+            
+        def demand_rule_market2(m,t):                      ## demand + reserve eq.(67)
+            return sum( m.pb[g,t] for g in m.G )  >= m.De[t] + sum( m.l[d,t] for d in m.LOAD) + m.R[t]
+        model.demand_rule_market2 = Constraint(model.T, rule = demand_rule_market2)
+             
+        def reserve_rule_market3(m,t):                      ## reserve eq.(68)
+            return sum( m.r[g,t] for g in m.G)    + 0       >= m.R[t]
+        model.reserve_rule_market3 = Constraint(model.T, rule = reserve_rule_market3)
+            
+            
+    else:
+        def demand_rule65(m,t):                      ## demand eq.(65)
+            ##return sum( m.p[g,t] for g in m.G ) +  m.sn[t]  == m.De[t] 
             return sum( m.p[g,t] for g in m.G )   == m.De[t] 
 
-    def demand_rule67(m,t):                      ## demand + reserve eq.(67)
-        ##return sum( m.pb[g,t] for g in m.G ) +  m.sn[t] >= m.De[t] + m.R[t] 
-        if scope == 'market':
-            return sum( m.pb[g,t] for g in m.G )  >= m.De[t] + sum( m.l[d,t] for d in m.LOAD) + m.R[t] 
-        else: 
+        def demand_rule67(m,t):                      ## demand + reserve eq.(67)
+            ##return sum( m.pb[g,t] for g in m.G ) +  m.sn[t] >= m.De[t] + m.R[t] 
             return sum( m.pb[g,t] for g in m.G )  >= m.De[t] + m.R[t] 
 
-    def reserve_rule68(m,t):                      ## reserve eq.(68)
-        ## return sum( m.r[g,t] for g in m.G) + m.sR[t] >= m.R[t] 
-        return sum( m.r[g,t] for g in m.G)    + 0       >= m.R[t] 
+        def reserve_rule68(m,t):                      ## reserve eq.(68)
+            ## return sum( m.r[g,t] for g in m.G) + m.sR[t] >= m.R[t] 
+            return sum( m.r[g,t] for g in m.G)    + 0       >= m.R[t] 
 
-    # def demand_rule66a(m,t):                      ## holguras o excesos en la demanda eq.(66a)
-    #     return m.sn[t] == m.snplus[t] - m.snminus[t]  
-    # model.demand_rule66a = Constraint(model.T, rule = demand_rule66a)
-    
-    def merge6():
-        model.demand_rule65  = Constraint(model.T, rule = demand_rule65)
-        model.demand_rule67  = Constraint(model.T, rule = demand_rule67)
-        model.reserve_rule68 = Constraint(model.T, rule = reserve_rule68)
+        # def demand_rule66a(m,t):                      ## holguras o excesos en la demanda eq.(66a)
+        #     return m.sn[t] == m.snplus[t] - m.snminus[t]  
+        # model.demand_rule66a = Constraint(model.T, rule = demand_rule66a)
+        
+        def merge6():
+            model.demand_rule65  = Constraint(model.T, rule = demand_rule65)
+            model.demand_rule67  = Constraint(model.T, rule = demand_rule67)
+            model.reserve_rule68 = Constraint(model.T, rule = reserve_rule68)
 
     ## --------------------------------MINIMUM UP/DOWN TIME---------------------------------------
 
@@ -828,22 +848,22 @@ def uc(instance,option='None',
 
         ## ----------------------- RESERVE OFFERS ----------------------------  
         if True:        
-            def total_reg_rule(m,t):  ## to account the regulation reserve met
+            def total_reg_rule(m,t):     ## to account the regulation reserve met
                 return sum( m.rre[g,t] 
                            for g in m.G) >= sum( m.rco[b,t] for b in {1,2,3})
             model.total_reg_rule = Constraint(model.T,rule = total_reg_rule)   
             
-            def total_spin_rule(m,t):  ## to account the sppining reserve met
+            def total_spin_rule(m,t):    ## to account the sppining reserve met
                 return sum( m.rre[g,t] + m.rro10[g,t]
                            for g in m.G) >= sum( m.rco[b,t] for b in {1,2,3,4,5,6})
             model.total_spin_rule = Constraint(model.T,rule = total_spin_rule)   
                
-            def total_oper_rule(m,t):  ## to account the operative reserve met
+            def total_oper_rule(m,t):    ## to account the operative reserve met
                 return sum( m.rre[g,t] + m.rro10[g,t] + m.rnr10[g,t]
                            for g in m.G) >= sum( m.rco[b,t] for b in {1,2,3,4,5,6,7,8,9})
             model.total_oper_rule = Constraint(model.T,rule = total_oper_rule) 
             
-            def total_sup_rule(m,t):  ## to account the supplementary reserve met
+            def total_sup_rule(m,t):    ## to account the supplementary reserve met
                 return sum((m.rre[g,t]+m.rro10[g,t]+m.rnr10[g,t]+m.rro30[g,t]+m.rnr30[g,t]) 
                            for g in m.G) >= sum( m.rco[b,t] for b in m.ORDC)
             model.total_supp_rule = Constraint(model.T,rule = total_sup_rule)   
@@ -852,7 +872,27 @@ def uc(instance,option='None',
                 return m.rco[b,t] <= m.RCO[b] 
             model.limit_rco_rule = Constraint(model.ORDC, model.T, rule = limit_rco_rule)
             
-                       
+            def limit_rre_rule(m,g,t):  ## limits of regulation reserve
+                return m.rre[g,t] <= m.RRe[g] 
+            model.limit_rre_rule = Constraint(model.G, model.T, rule = limit_rre_rule)
+            
+            def limit_rro10_rule(m,g,t):  ## limits of spinning reserve 10
+                return m.rro10[g,t] <= m.RR10[g] * m.u[g,t]
+            model.limit_rro10_rule = Constraint(model.G, model.T, rule = limit_rro10_rule)
+            
+            def limit_rro30_rule(m,g,t):  ## limits of spinning reserve 30
+                return m.rro30[g,t] <= m.RR30[g] * m.u[g,t]
+            model.limit_rro30_rule = Constraint(model.G, model.T, rule = limit_rro30_rule)
+            
+            def limit_rnr10_rule(m,g,t):  ## limits of non-spinning reserve 10
+                return m.rnr10[g,t] <= m.RN10[g] * (1-m.u[g,t])
+            model.limit_rnr10_rule = Constraint(model.G, model.T, rule = limit_rnr10_rule)                        
+            
+            def limit_rnr30_rule(m,g,t):  ## limits of non-spinning reserve 30
+                return m.rnr30[g,t] <= m.RN30[g] * (1- m.u[g,t])
+            model.limit_rnr30_rule = Constraint(model.G, model.T, rule = limit_rnr30_rule)
+
+
             def merge12(): 
                 aux=1
         
@@ -1055,16 +1095,10 @@ def uc(instance,option='None',
     t3  = threading.Thread(target=merge3)    
     t4  = threading.Thread(target=merge4)    
     t5  = threading.Thread(target=merge5)    
-    t6  = threading.Thread(target=merge6)    
     t7  = threading.Thread(target=merge7)   
     t8  = threading.Thread(target=merge8)   
     t8b = threading.Thread(target=merge8b)   
     t9  = threading.Thread(target=merge9)  
-        
-
-    t1.start(); t2.start(); t3.start(); t4.start(); t5.start(); t6.start(); t7.start(); t8.start(); t8b.start(); t9.start();  ## starting threads 
-    t1.join();  t2.join();  t3.join();  t4.join();  t5.join();  t6.join();  t7.join();  t8.join();  t8b.join();  t9.join();   ## wait until thread 1 is completely executed     
-    #print(option,"All threads completely executed!") # https://www.geeksforgeeks.org/multithreading-python-set-1/
     
     if  scope == 'market':   
         t10 = threading.Thread(target=merge10)
@@ -1072,6 +1106,16 @@ def uc(instance,option='None',
         t12 = threading.Thread(target=merge12)        
         t10.start(); t11.start(); t12.start() 
         t10.join();  t11.join();  t12.join()
+    else:   
+        t6  = threading.Thread(target=merge6) 
+        t6.start(); 
+        t6.join(); 
+
+    t1.start(); t2.start(); t3.start(); t4.start(); t5.start(); t7.start(); t8.start(); t8b.start(); t9.start();  ## starting threads 
+    t1.join();  t2.join();  t3.join();  t4.join();  t5.join();  t7.join();  t8.join();  t8b.join();  t9.join();   ## wait until thread 1 is completely executed     
+    #print(option,"All threads completely executed!") # https://www.geeksforgeeks.org/multithreading-python-set-1/
+    
+
 
     return model, inside90
 

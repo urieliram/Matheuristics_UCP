@@ -377,11 +377,15 @@ def reading(file):
     Cs30  = []   
     Cns10 = []   
     Cns30 = []  
-    Cordc = []  
+    Cordc = []      
+    RRe   = []  
+    RR10  = []   
+    RR30  = []   
+    RN10  = []   
+    RN30  = []  
     ORDC  = [] ## Segments of ORDC
     RCO   = [] ## Limits of MW for each ORDC segment
     
-    nORDC = 12
         
     RCO.append(24.0)   # 5 MW    
     RCO.append(22.0)   # 5 MW       
@@ -409,27 +413,38 @@ def reading(file):
     Cordc.append(5.0)    # 5 MW       
     Cordc.append(4.0)    # 5 MW       
      
+    ## Crea segmentos ORDC
     for i in range(1,len(RCO)+1):
         ORDC.append(i) 
         
     for i in G:
-        Crr.append(  1) # $ 1
-        Cs10.append( 1) # $ 1
-        Cs30.append( 1) # $ 1
-        Cns10.append(1) # $ 1
-        Cns30.append(1) # $ 1        
-    Crr      = dict(zip(G   , Crr))
-    Cs10     = dict(zip(G   , Cs10))
-    Cs30     = dict(zip(G   , Cs30))
-    Cns10    = dict(zip(G   , Cns10))
-    Cns30    = dict(zip(G   , Cns30))
-    Cordc    = dict(zip(ORDC, Cordc))
-    RCO      = dict(zip(ORDC, RCO))
-        
+        Crr.append(  1.0) # $ 1
+        Cs10.append( 1.0) # $ 1
+        Cs30.append( 1.0) # $ 1
+        Cns10.append(1.0) # $ 1
+        Cns30.append(1.0) # $ 1
+        RRe.append(2.0) # $ 1
+        RR10.append(2.0) # $ 1
+        RR30.append(2.0) # $ 1
+        RN10.append(2.0) # $ 1
+        RN30.append(2.0) # $ 1
+           
+    Crr      = dict(zip(G    , Crr   ))
+    Cs10     = dict(zip(G    , Cs10  ))
+    Cs30     = dict(zip(G    , Cs30  ))
+    Cns10    = dict(zip(G    , Cns10 ))
+    Cns30    = dict(zip(G    , Cns30 ))    
+    RRe      = dict(zip(G    , RRe   ))
+    RR10     = dict(zip(G    , RR10  ))
+    RR30     = dict(zip(G    , RR30  ))
+    RN10     = dict(zip(G    , RN10  ))
+    RN30     = dict(zip(G    , RN30  ))
+    Cordc    = dict(zip(ORDC , Cordc ))
+    RCO      = dict(zip(ORDC , RCO   ))
         
     instance = [G,T,L,S,Pmax,Pmin,UT,DT,De,R,u_0,U,D,TD_0,SU,SD,RU,RD,p_0,Pb,Cb,C,CR,Cs,Tunder,names,
                 LOAD,Ld,Pd,Cd, 
                 GRO,RO,ROmin,ROmax, 
-                Crr,Cs10,Cs30,Cns10,Cns30,Cordc,ORDC,RCO]
+                Crr,Cs10,Cs30,Cns10,Cns30,RRe,RR10,RR30,RN10,RN30,ORDC,Cordc,RCO]
             
     return instance
