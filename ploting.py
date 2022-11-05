@@ -49,9 +49,9 @@ if ambiente == 'yalma':
 # bb3,vari = Extract().extract('logfile'+'Soft7'+instancia[0:5]+'.log')   
 # Extract().plot_four_in_one(bb1,bb2,bb3,'Milp','Hard','Soft7',instancia[0:5],id='a')
 
-bb1,vari = Extract().extract('logfile'+'Milp' +instancia[0:5]+'.log') 
-bb2      = Extract().read_LBC('iterLBC1'+instancia[0:5]+'.csv')
-bb3      = Extract().read_LBC('iterLBC2'+instancia[0:5]+'.csv')
+bb1,vari = Extract().extract('logfile'+'Milp' +instancia[0:6]+'.log') 
+bb2      = Extract().read_LBC('iterLBC1'+instancia[0:6]+'.csv')
+bb3      = Extract().read_LBC('iterLBC2'+instancia[0:6]+'.csv')
  
 print(bb2)
 print(bb3)
