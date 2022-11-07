@@ -36,7 +36,7 @@ instancia  = 'uc_80.json'
 ambiente, ruta, executable, timeheu, timemilp, emph, symmetry, gap, k, iterstop = util.config_env()
 if ambiente == 'yalma':
     if len(sys.argv) != 2:
-        print("!!! Something went wrong, try write something like: $python3 ploting.py uc_02")
+        print("!!! Something went wrong, try write something like: $python3 ploting.py uc_01")
         print("archivo :", sys.argv[1])
         sys.exit()
     instancia = sys.argv[1]

@@ -29,7 +29,7 @@ class Solution:
         self.exportLP   = exportLP    ## True si se exporta el modelo a formato LP y MPS
         self.gg         = len(model.G)
         self.tt         = len(model.T)
-        if scope == 'market':
+        if scope == 'POZ+EL':
             self.ll     = len(model.LOAD)
         self.S          = model.S
         self.gap_       = 1e+75       ## relative gap calculated with #|bestbound-bestinteger|/(1e-10+|bestinteger|)
@@ -176,7 +176,7 @@ class Solution:
                 self.R     = deepcopy(self.Uu)
                 self.delta = deepcopy(self.Uu)
                 
-                if self.scope == 'market':
+                if self.scope == 'POZ+EL':
                     self.L    = [[0 for i in range(self.tt)] for j in range(self.ll)]
                         
                 # self.snplus   = [0 for i in range(self.tt)]     
@@ -197,7 +197,7 @@ class Solution:
                         self.P [g][t] = round(self.model.p[(g+1, t+1)].value,5)
                         self.R [g][t] = round(self.model.r[(g+1, t+1)].value,5)
                         
-                if self.scope == 'market':
+                if self.scope == 'POZ+EL':
                     for t in range(0, self.tt):
                         for l in range(0, self.ll):
                             self.L [l][t] = round(self.model.l[(l+1, t+1)].value,5)
@@ -239,7 +239,7 @@ class Solution:
         # util.sendtofilesolution(self.P     ,'P_'   + self.nameins + letra +'.csv')
         # util.sendtofilesolution(self.R     ,'R_'   + self.nameins + letra +'.csv')
         # util.sendtofilesolution(self.delta ,'del_' + self.nameins + letra +'.csv')
-        # if self.scope == 'market':
+        # if self.scope == 'POZ+EL':
         #     util.sendtofilesolution(self.L     ,'l_'   + self.nameins + letra +'.csv')
         
         file = open(self.nameins + letra + '.dat', 'w')

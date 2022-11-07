@@ -20,59 +20,26 @@ from    copy     import deepcopy
 from    solution import Solution
 from    os       import path
 
-nameins = 'uc_03.json'       ## ejemplos dificiles 2,3,4  
-nameins = 'uc_06.json'       ## ejemplos regulares 5,6 
-nameins = 'uc_21.json'       ## ejemplos dificiles 2,3,4 
-nameins = 'uc_22.json'       ## ejemplo dificil  
-
-nameins = 'uc_42.json'       ## ejemplo dificil 
-nameins = 'uc_44.json'       ## ejemplo dificil 
-#nameins = 'uc_50.json'       ## ejemplo sencillo       [1 abajo,milp factible]   
-#nameins = 'uc_51.json'       ## ejemplo sencillo  
-#nameins = 'uc_53.json'       ## ejemplo de 'delta' relajado diferente de uno  
-#nameins = 'uc_54.json'       ## ejemplo sencillo  
-#nameins = 'uc_55.json'       ## ejemplo sencillo  
-#nameins = 'uc_56.json'       ## ejemplo sencillo 
-#nameins = 'uc_46.json'       ## ejemplo sencillo       [49 abajo,MILP infactible]
-
-nameins = 'uc_02.json'        ## ejemplos dificiles 2,3,4   
-nameins = 'mem_01.json'       ## MEM (PENDIENTE)
-nameins = 'anjos.json'        ## ejemplo de juguete
-nameins = 'morales_ejemplo_III_D.json'  ## 
-#nameins = 'dirdat_18.json'   ## analizar infactibilidad 
-#nameins = 'dirdat_21.json'   ## analizar infactibilidad 
-#nameins = 'dirdat_26.json'   ## analizar infactibilidad 
-#nameins = 'dirdat_2.json'    ## analizar infactibilidad
-#nameins = 'output.json'      ##     
-
-nameins = 'uc_97.json'        ## 
-
-nameins = 'uc_70.json'        ## 
-
-nameins = 'uc_47.json'        ## ejemplo sencillo  
-
+nameins = 'uc_57_copy.json'   ## prueba demostrativa excelente en mi PC (MOR un dia)
+nameins = 'uc_057.json'       ## prueba demostrativa excelente en mi PC (MOR un dia)
+nameins = 'uc_58_copy.json'   ## prueba demostrativa excelente en mi PC (MOR cinco dias)
 nameins = 'uc_58.json'        ## prueba demostrativa excelente en mi PC 
-nameins = 'uc_58_copy.json'   ## prueba demostrativa excelente en mi PC (cinco dias)
+nameins = 'uc_058.json'       ## prueba demostrativa excelente en mi PC (MOR tres dias)
 
+nameins = 'uc_060.json'       ## prueba demostrativa excelente en mi PC
+nameins = 'uc_061.json'       ## prueba demostrativa excelente en mi PC 
 
-nameins = 'uc_61.json'        ## prueba demostrativa excelente en mi PC 
-nameins = 'uc_60.json'        ## prueba demostrativa excelente en mi PC (siete dias)
-
-nameins = 'uc_57_copy.json'   ## prueba demostrativa excelente en mi PC (un dia)
-
-nameins = 'uc_100.json'   ## 
-
-nameins = 'uc_058.json'        ## prueba demostrativa excelente en mi PC 
-
+## symmetry breaking: Automatic =-1 Turn off=0 ; moderade=1 ; extremely aggressive=5
+## Emphasize balanced=0 (default); feasibility=1; optimality=2; symmetry automatic=-1; symmetry low level=1
 ## Cargamos parámetros de configuración desde archivo <config>
-## Emphasize balanced=0 (default); feasibility=1; optimality=2;
-## symmetry automatic=-1; symmetry low level=1
-ambiente, ruta, executable, timeheu, timemilp, emph, symmetry, gap, k, iterstop = util.config_env()
+ambiente,ruta,executable,timeheu,timemilp,emph,symmetry,lbheur,strategy,gap,k,iterstop = util.config_env()
+
 k_original = k  ## Almacenamos el parámetro k de local branching
 x          = 1e+75
-z_lp=x; z_milp=x; z_hard=x; z_hard3=x; z_ks=x; z_lbc1=x; z_lbc2=x; z_lbc3=x; z_check=x; z_lbc0=x; z_ks=0; z_rks=0; z_=0;
-t_lp=0; t_milp=0; t_hard=0; t_hard3=0; t_ks=0; t_lbc1=0; t_lbc2=0; t_lbc3=0; t_check=0; t_lbc0=0; t_ks=0; t_rks=0; t_=0;
-g_lp=x; g_milp=x; g_hard=x; g_hard3=x; g_ks=x; g_lbc1=x; g_lbc2=x; g_lbc3=x; g_check=x; g_lbc0=x; g_ks=x; g_rks=x; g_=x;
+
+z_lp=x; z_milp=x; z_harjk=x; z_hard3=x; z_ks=x; z_lbc1=x; z_lbc2=x; z_feas=x; z_check=x; z_lbc0=x; z_ks=0; z_rks=0; z_=0;
+t_lp=0; t_milp=0; t_harjk=0; t_hard3=0; t_ks=0; t_lbc1=0; t_lbc2=0; t_feas=0; t_check=0; t_lbc0=0; t_ks=0; t_rks=0; t_=0;
+g_lp=x; g_milp=x; g_harjk=x; g_hard3=x; g_ks=x; g_lbc1=x; g_lbc2=x; g_feas=x; g_check=x; g_lbc0=x; g_ks=x; g_rks=x; g_=x;
 ns=0; nU_no_int=0; n_Uu_no_int=0; n_Uu_1_0=0;
 SB_Uu =[]; No_SB_Uu =[]; lower_Pmin_Uu =[]; Vv =[]; Ww =[]; delta =[];
 SB_Uu3=[]; No_SB_Uu3=[]; lower_Pmin_Uu3=[]; Vv3=[]; Ww3=[]; delta3=[];
@@ -89,7 +56,7 @@ if ambiente == 'yalma':
 
 localtime = time.asctime(time.localtime(time.time()))
 
-scope = 'market'  
+scope = 'POZ+EL'  
 scope = ''       ## Unit Commitment Model 
 
 print(localtime,'Solving <'+scope+'> model ---> ---> ---> --->',nameins)
@@ -97,8 +64,7 @@ print(localtime,'Solving <'+scope+'> model ---> ---> ---> --->',nameins)
 ## Lee instancia de archivo .json con formato de [Knueven2020]
 instance = reading.reading(ruta+nameins)
 
-
-## ----------------------------------------- CHECK FEASIBILITY -----------------------------------------------
+## DEF CHECK SOLUTION
 def checkSol(option,z_,SB_Uux,No_SB_Uux,Vvx,Wwx,deltax,dual=False):
     print('Check the feasibility of solution z_'+option+'=', z_ )
     t_o       = time.time() 
@@ -111,8 +77,29 @@ def checkSol(option,z_,SB_Uux,No_SB_Uux,Vvx,Wwx,deltax,dual=False):
     print('t_check= ',round(t_check,1),'z_check= ',round(z_check,4),'g_check= ',round(g_check,4))
     return model
 
-if  False:
-    ## --------------------------------------- RECOVERED SOLUTION ---------------------------------------------
+## ---------------------------------------------- MILP ----------------------------------------------------------
+## Solve as a MILP
+
+if  True: 
+    strategy        = 3
+    symmetrydefault = 0 ## symmetry breaking: Automatic =-1 Turn off=0 ; moderade=1 ; extremely aggressive=5
+    lbheur          = 'yes'  
+    emphMILP        = 1          ## feasibility=1 ; balanced=0
+    
+    cutoff          = 1e+75 
+    t_o      = time.time() 
+    model,__ = uc_Co.uc(instance,option='MilpTest',nameins=nameins[0:6],mode='Tight',scope=scope)
+    sol_milp = Solution(model=model,nameins=nameins[0:6],env=ambiente,executable=executable,
+                        gap=gap,cutoff=cutoff,symmetry=symmetrydefault,strategy=strategy,timelimit=timemilp,
+                        tee=False,tofiles=False,emphasize=emphMILP,lbheur=lbheur,
+                        exportLP=False,option='MilpTest',scope=scope)
+    z_milp, g_milp = sol_milp.solve_problem()
+    t_milp         = time.time() - t_o
+    print('t_milp= ',round(t_milp,1),'z_milp= ',round(z_milp,1),'g_milp= ',round(g_milp,5))
+    
+
+if  True:
+    ## ----------------------------------------------- RECOVERED SOLUTION ---------------------------------------------
     ## Load LR and Hard3 storaged solutions
     if path.exists('solHard3_a_'+nameins[0:6]+'.csv') == True and path.exists('solHard3_b_'+nameins[0:6]+'.csv') == True:
         t_lp,z_lp,t_hard3,z_hard3,SB_Uu3,No_SB_Uu3,lower_Pmin_Uu3,Vv3,Ww3,delta3 = util.loadSolution('Hard3',nameins[0:6]) 
@@ -120,8 +107,7 @@ if  False:
         print('Recovered solution ---> ','t_hard3= ',round(t_hard3,1),'z_hard3= ',round(z_hard3,1))
         checkSol('Hard3 (recovered)',z_hard3,SB_Uu3,No_SB_Uu3,Vv3,Ww3,delta3) ## Check feasibility
 
-
-    ## --------------------------------------- LINEAR RELAXATION ---------------------------------------------
+    ## ----------------------------------------------- LINEAR RELAXATION ---------------------------------------------
     ## Relax as LP and solve it
     else:
         t_o        = time.time() 
@@ -132,8 +118,7 @@ if  False:
         t_lp       = time.time() - t_o
         print('t_lp= ',round(t_lp,1),'z_lp= ',round(z_lp,1))
 
-
-    ## ------------------------------------ SELECTION VARIABLES TO FIX ---------------------------------------
+    ## -------------------------------------------- SELECTION VARIABLES TO FIX ---------------------------------------
     ## Seleccionamos las variables que serán fijadas. Es requisito correr antes <linear relaxation>
     ## SB_Uu         variables que SI serán fijadas a 1. (Soporte binario)
     ## No_SB_Uu      variables que NO serán fijadas.
@@ -142,19 +127,17 @@ if  False:
         SB_Uu, No_SB_Uu, lower_Pmin_Uu, Vv, Ww, delta = sol_lp.select_binary_support_Uu('LR')
         del sol_lp
         gc.collect()
-
-    ## ----------------------------------- HARD-FIXING 3 (only Uu) ---------------------------------------------
+        
+    ## ------------------------------------------- HARD-FIXING 3 (only Uu) ---------------------------------------------
     ## HARD-FIXING 3 (only Uu) solution and solve the sub-MILP. (Require run the LP)
         t_o       = time.time()
-        lbheur    = 'no'
         model,__  = uc_Co.uc(instance,option='Hard3',SB_Uu=SB_Uu,No_SB_Uu=No_SB_Uu,lower_Pmin_Uu=lower_Pmin_Uu,
                             nameins=nameins[0:6],mode='Tight',scope=scope)
         sol_hard3 = Solution(model=model,env=ambiente,executable=executable,nameins=nameins[0:6],gap=gap,timelimit=timeheu,
-                            tee=False,emphasize=emph,lbheur=lbheur,symmetry=symmetry,tofiles=False,option='Hard3',scope=scope)
+                            tee=False,emphasize=emph,symmetry=symmetry,tofiles=False,option='Hard3',scope=scope)
         z_hard3, g_hard3 = sol_hard3.solve_problem()
         t_hard3  = time.time() - t_o + t_lp   ## <<< --- t_hard3 ** INCLUYE EL TIEMPO DE LP **
         g_hard3  = util.igap(z_lp,z_hard3) 
-        print('t_hard3= ',round(t_hard3,1),'z_hard3= ',round(z_hard3,1))
         
         ## ES MUY IMPORTANTE GUARDAR LAS VARIABLES 'Uu=1'(SB_Uu3) DE LA PRIMERA SOLUCIÓN FACTIBLE 'Hard3'.
         ## ASI COMO LAS VARIABLES 'Uu=0' (No_SB_Uu3) 
@@ -167,13 +150,33 @@ if  False:
         del sol_hard3
         gc.collect()
         util.saveSolution(t_lp,z_lp,t_hard3,z_hard3,SB_Uu3,No_SB_Uu3,lower_Pmin_Uu3,Vv3,Ww3,delta3,'Hard3',nameins[0:6])
-            
+        
+
+    ## ------------------------------------------- HARJUNKOSKI ---------------------------------------------
+    ## HARJUNKOSKI's rule solution and solve the sub-MILP. (Require run the LP)
+    
+if  True:    
+    t_o       = time.time()
+    model,__  = uc_Co.uc(instance,option='Harjk',SB_Uu=SB_Uu,No_SB_Uu=No_SB_Uu,lower_Pmin_Uu=lower_Pmin_Uu,
+                         nameins=nameins[0:6],mode='Tight',scope=scope)
+    sol_harjk = Solution(model=model,env=ambiente,executable=executable,nameins=nameins[0:6],gap=gap,timelimit=timeheu,
+                        tee=False,emphasize=emph,symmetry=symmetry,tofiles=False,option='Harjk',scope=scope)
+    z_harjk, g_harjk = sol_harjk.solve_problem()
+    t_harjk  = time.time() - t_o + t_lp   ## <<< --- t_harjk ** INCLUYE EL TIEMPO DE LP **
+    g_harjk  = util.igap(z_lp,z_harjk) 
+        
+    print('t_harjk= ',round(t_harjk,1),'z_harjk= ',round(z_harjk,1),'g_harjk= ',round(g_harjk,5) )
+    del sol_harjk
+    gc.collect()
+    
+## Actualizamos el tiempo de las heurísticas al que ocupó el MILP (si es que encontró un óptimo o terminó por tiempo)
+timeheu = t_milp
 
 ## --------------------------------------- LOCAL BRANCHING 1 ------------------------------------------
 ## LBC COUNTINOUS VERSION without soft-fixing
 ## Include the LOCAL BRANCHING CUT to the solution and solve the sub-MILP (it is using cutoff=z_hard).
 
-if  False:    
+if  True:    
     t_o            = time.time() 
     Vv             = deepcopy(Vv3)
     Ww             = deepcopy(Ww3)
@@ -200,7 +203,6 @@ if  False:
     while True:
         if (iter==iterstop) or (time.time() - t_o >= t_net):
             break
-        lbheur   = 'no'
         char     = ''
         
         if improve == False:
@@ -210,7 +212,7 @@ if  False:
         model, __ = uc_Co.uc(instance,option='lbc1',SB_Uu=SB_Uu,No_SB_Uu=No_SB_Uu,lower_Pmin_Uu=lower_Pmin_Uu,V=Vv,W=Ww,delta=delta,
                             percent_soft=90,k=k,nameins=nameins[0:6],mode='Tight',scope=scope,improve=improve,timeover=timeover,rightbranches=rightbranches)
         sol_lbc1  = Solution(model=model,env=ambiente,executable=executable,nameins=nameins[0:6],letter=util.getLetter(iter-1),gap=gap,cutoff=cutoff,timelimit=timeheu1,
-                            tee=False,emphasize=emph,lbheur=lbheur,symmetry=symmetry,tofiles=False,option='lbc1',scope=scope)
+                            tee=False,emphasize=emph,symmetry=symmetry,tofiles=False,option='lbc1',scope=scope)
         z_lbc1,g_lbc1 = sol_lbc1.solve_problem()
         
         #sol_lbc1.cuenta_ceros_a_unos(SB_Uu, No_SB_Uu, lower_Pmin_Uu,'lbc1') ## Compara contra la última solución
@@ -277,7 +279,7 @@ if  False:
 ## LBC COUNTINOUS VERSION without soft-fixing
 ## Include the LOCAL BRANCHING CUT to the solution and solve the sub-MILP (it is using cutoff=z_hard).
 
-if  False:    
+if  True:    
     t_o            = time.time() 
     Vv             = deepcopy(Vv3)
     Ww             = deepcopy(Ww3)
@@ -304,7 +306,6 @@ if  False:
     while True:
         if (iter==iterstop) or (time.time()-t_o >= t_net):
             break
-        lbheur   = 'no'
         char     = ''
         
         if improve == False:
@@ -314,7 +315,7 @@ if  False:
         model, __ = uc_Co.uc(instance,option='lbc2',SB_Uu=SB_Uu,No_SB_Uu=No_SB_Uu,lower_Pmin_Uu=lower_Pmin_Uu,V=Vv,W=Ww,delta=delta,
                             percent_soft=90,k=k,nameins=nameins[0:6],mode='Tight',scope=scope,improve=improve,timeover=timeover,rightbranches=rightbranches)
         sol_lbc2  = Solution(model=model,env=ambiente,executable=executable,nameins=nameins[0:6],letter=util.getLetter(iter-1),gap=gap,cutoff=cutoff,timelimit=timeheu1,
-                            tee=False,emphasize=emph,lbheur=lbheur,symmetry=symmetry,tofiles=False,option='lbc2',scope=scope)
+                            tee=False,emphasize=emph,symmetry=symmetry,tofiles=False,option='lbc2',scope=scope)
         z_lbc2,g_lbc2 = sol_lbc2.solve_problem()
         
         #sol_lbc2.cuenta_ceros_a_unos(SB_Uu, No_SB_Uu, lower_Pmin_Uu,'lbc2') ## Compara contra la última solución
@@ -386,7 +387,7 @@ if  False:
 ## Use 'Soft+pmin' (lower subset of Uu-Pmin)  as the first and unique bucket to consider
 ## Use relax the integrality variable Uu.
 
-if  False:
+if  True:
     Vv          = deepcopy(Vv3)
     Ww          = deepcopy(Ww3)
     delta       = deepcopy(delta3)
@@ -439,7 +440,7 @@ if  False:
             k_[-1] = len(No_SB_Uu)
             print( k_ )
             
-            cutoff      = incumbent # 1e+75 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            cutoff      = incumbent # 1e+75 !!!
             iter_bk     = 0
             iterstop    = K - 2
             char        = ''
@@ -461,11 +462,10 @@ if  False:
                 
                 try:
                     ##  Resolvemos el kernel con cada uno de los buckets
-                    lbheur     = 'yes'
                     emph       = 0     ## feasibility =1
                     model,__   = uc_Co.uc(instance,option='KS',kernel=kernel,bucket=bucket,nameins=nameins[0:6],mode='Tight',scope=scope)
                     sol_ks     = Solution(model=model,env=ambiente,executable=executable,nameins=nameins[0:6],letter=util.getLetter(iter),gap=gap,cutoff=cutoff,timelimit=timeheu1,
-                                        tee=False,emphasize=emph,lbheur=lbheur,symmetry=symmetry,tofiles=False,option='KS',scope=scope)
+                                        tee=False,emphasize=emph,symmetry=symmetry,tofiles=False,option='KS',scope=scope)
                     z_ks, g_ks = sol_ks.solve_problem()
                     t_ks       = time.time() - t_o + t_hard3
                     kernel, No_SB_Uu, __, Vv, Ww, delta = sol_ks.select_binary_support_Uu('KS') 
@@ -547,45 +547,24 @@ if  False:
     # \todo{Verificar que las restricciones de arranque que usan delta en la formulación, se encontraron variables con valor None en la solución}
     # \todo{Fijar la solución entera y probar factibilidad} 
     # \todo{Crear instancias sintéticas a partir de morales-españa2013} 
+
+    # ## ----------------------------- DUAL COST ----------------------------------------------
+    
+    # SB_Uu, No_SB_Uu, __, Vv, Ww, delta = sol_milp.select_binary_support_Uu('Milp0') 
+    # model,__  = uc_Co.uc(instance,option='FixSol',SB_Uu=SB_Uu,No_SB_Uu=No_SB_Uu,V=Vv,W=Ww,delta=delta,
+    #                      nameins=nameins[0:6],mode='Tight',scope=scope)
+    # sol_fix   = Solution(model=model,env=ambiente,executable=executable,nameins=nameins[0:6],gap=gap,timelimit=timeheu,
+    #                       tee=False,tofiles=False,emphasize=emph,exportLP=False,option='FixSol',scope=scope,dual=True)
+    # z_fix, g_fix = sol_fix.solve_problem() 
+    # print('z_fix= ',round(z_fix,4))
+    
+    # # for t in model.T:
+    # #     print(model.dual[ model.demand_rule65[t] ],model.dual[ model.demand_rule67[t] ])
+
+g_milp  = util.igap(z_lp,z_milp) 
     
 ## NO OLVIDES COMENTAR TUS PRUEBAS ¸.·´¯`·.´¯`·.¸¸.·´¯`·.¸><(((º>
-comment    = 'Leyendo zonas prohibidas'
-
-  
-## ---------------------------------------------- MILP ----------------------------------------------------------
-## Solve as a MILP
-
-if  True: 
-    strategy = 3
-    symmetrydefault = 0 ## symmetry breaking: Automatic =-1 Turn off=0 ; moderade=1 ; extremely aggressive=5
-    cutoff   = 1e+75 
-    lbheur   = 'yes'  
-    emph     = 1          ## feasibility=1 ; balanced=0
-    t_o      = time.time() 
-    model,__ = uc_Co.uc(instance,option='MilpTest',nameins=nameins[0:6],mode='Tight',scope=scope)
-    sol_milp = Solution(model=model,nameins=nameins[0:6],env=ambiente,executable=executable,
-                        gap=gap,cutoff=cutoff,symmetry=symmetrydefault,strategy=strategy,timelimit=timemilp,
-                        tee=False,tofiles=True,emphasize=emph,lbheur=lbheur,
-                        exportLP=False,option='MilpTest',scope=scope)
-    z_milp, g_milp = sol_milp.solve_problem()
-    t_milp         = time.time() - t_o
-    print('t_milp= ',round(t_milp,1),'z_milp= ',round(z_milp,1),'g_milp= ',round(g_milp,5))
-    
-    
-    
-    ## ----------------------------- DUAL COST ----------------------------------------------
-    
-    SB_Uu, No_SB_Uu, __, Vv, Ww, delta = sol_milp.select_binary_support_Uu('Milp0') 
-    model,__  = uc_Co.uc(instance,option='FixSol',SB_Uu=SB_Uu,No_SB_Uu=No_SB_Uu,V=Vv,W=Ww,delta=delta,
-                         nameins=nameins[0:6],mode='Tight',scope=scope)
-    sol_fix   = Solution(model=model,env=ambiente,executable=executable,nameins=nameins[0:6],gap=gap,timelimit=timeheu,
-                          tee=False,tofiles=False,emphasize=emph,exportLP=False,option='FixSol',scope=scope,dual=True)
-    z_fix, g_fix = sol_fix.solve_problem() 
-    print('z_fix= ',round(z_fix,4))
-    
-    # for t in model.T:
-    #     print(model.dual[ model.demand_rule65[t] ],model.dual[ model.demand_rule67[t] ])
-
+comment    = 'Pruebas completas TC&UC'
 
 ## --------------------------------- RESULTS -------------------------------------------
 ## Append a list as new line to an old csv file using as log, the first line of the file as shown.
@@ -593,11 +572,11 @@ if  True:
 #                                                       t_lp,t_hard,t_milp,t_milp2,t_soft,t_softpmin,t_softcut,t_softcut2,t_softcut3,t_lbc,
 #                                                       n_fixU,nU_no_int,n_Uu_no_int,n_Uu_1_0,k,bin_sup,comment'
 
-#ambiente,localtime,nameins,instance[1],instance[0],gap,emph,timeheu,timemilp,z_lp,z_milp,z_hard,z_hard3,z_lbc1,z_lbc2,z_lbc3,z_ks,z_rks,t_lp,t_milp,t_hard,t_hard3,t_lbc1,t_lbc2,t_lbc3,t_ks,t_rks,g_milp,g_hard,g_hard3,g_lbc1,g_lbc2,g_lbc3,g_ks,g_rks,k,ns,comment
+## ambiente,localtime,nameins,T,G,gap,emph,timeheu,timemilp,z_lp,z_milp,z_feas,z_harjk,z_hard3,z_lbc1,z_lbc2,z_ks,t_lp,t_milp,t_feas,t_harjk,t_hard3,t_lbc1,t_lbc2,t_ks,g_milp,g_feas,g_harjk,g_hard3,g_lbc1,g_lbc2,g_ks,k,ns,comment
 row = [ambiente,localtime,nameins,instance[1],instance[0],gap,emph,timeheu,timemilp,
-    round(z_lp,1),round(z_milp,1),round(z_hard,1),round(z_hard3,1),round(z_lbc1,1),round(z_lbc2,1),round(z_lbc3,1),round(z_ks,1),round(z_rks,1),
-    round(t_lp,1),round(t_milp,1),round(t_hard,1),round(t_hard3,1),round(t_lbc1,1),round(t_lbc2,1),round(t_lbc3,1),round(t_ks,1),round(t_rks,1),
-                  round(g_milp,8),round(g_hard,8),round(g_hard3,8),round(g_lbc1,8),round(g_lbc2,8),round(g_lbc3,8),round(g_ks,8),round(g_rks,8),
+    round(z_lp,1),round(z_milp,1),round(z_feas,1),round(z_harjk,1),round(z_hard3,1),round(z_lbc1,1),round(z_lbc2,1),round(z_ks,1),
+    round(t_lp,1),round(t_milp,1),round(t_feas,1),round(t_harjk,1),round(t_hard3,1),round(t_lbc1,1),round(t_lbc2,1),round(t_ks,1),
+                  round(g_milp,8),round(g_feas,1),round(g_harjk,8),round(g_hard3,8),round(g_lbc1,8),round(g_lbc2,8),round(g_ks,8),
                   k,ns,comment] #round(((z_milp-z_milp2)/z_milp)*100,6)
 util.append_list_as_row('stat.csv',row)
 
