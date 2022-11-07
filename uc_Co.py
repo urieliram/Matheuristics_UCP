@@ -55,7 +55,7 @@ def uc(instance,option='None',
     Tunder  = instance[24]
     names   = instance[25]
     
-    if scope == 'market':
+    if scope == 'POZ+EL':
         LOAD    = instance[26]
         Ld      = instance[27]
         Pd      = instance[28]
@@ -84,7 +84,7 @@ def uc(instance,option='None',
     model.L    = Set(model.G , initialize = L) 
     model.S    = Set(model.G , initialize = S) 
     
-    if scope == 'market':
+    if scope == 'POZ+EL':
         model.ORDC  = Set(               initialize = ORDC)
         model.LOAD  = Set(               initialize = LOAD)  
         model.Ld    = Set(  model.LOAD , initialize = Ld) ## Set of segments of purchase bid of elastic load
@@ -149,7 +149,7 @@ def uc(instance,option='None',
     
 
     
-    if scope == 'market':
+    if scope == 'POZ+EL':
         
         ##  Defined index to compute the per-load, and segment energy purchase.
         def index_LOAD_Ld(m):
@@ -193,7 +193,7 @@ def uc(instance,option='None',
     model.r         = Var( model.G , model.T , bounds = (0.0,99999.0))  ## reserve in general without specific timing
     model.cp        = Var( model.G , model.T , bounds = (0.0,9999999.0))
     
-    if scope == 'market':
+    if scope == 'POZ+EL':
         model.rco   = Var( model.ORDC , model.T  , bounds = (0.0,9999999.0))  ## reserva comprada del sistema
         model.rre   = Var( model.G    , model.T  , bounds = (0.0,9999999.0))  ## reserva de regulacion
         model.rro10 = Var( model.G    , model.T  , bounds = (0.0,9999999.0))  ## reserva rodante de 10
@@ -225,7 +225,7 @@ def uc(instance,option='None',
     model.Tunder = Param(model.indexGSg, initialize = Tunder, within = Any)
     
     
-    if scope == 'market':
+    if scope == 'POZ+EL':
         model.l  = Var(  model.LOAD,     model.T, bounds = (0.0,9999999999.0))   ## elastic demand commit
         model.cd = Var(  model.LOAD,     model.T, bounds = (0.0,9999999999.0))   ## partial load cost        
         model.ld = Var(  model.indexLoadTLd,      bounds = (0.0,99999.0))        ## Stairwise segments
@@ -262,7 +262,7 @@ def uc(instance,option='None',
                 #   + m.total_cSD\
         model.obj = Objective(rule = obj_rule,sense=minimize)
         
-    if scope == 'market':
+    if scope == 'POZ+EL':
         def obj_rule(m): 
             return  + m.total_cSU \
                     + m.total_cEN \
@@ -302,7 +302,7 @@ def uc(instance,option='None',
         model.total_MPC_ = Constraint(rule = total_MPC_rule)   
            
     ## --------------------------------------- TOTAL OFERTAS DE COMPRA ------------------------------------------------  
-    if scope == 'market':
+    if scope == 'POZ+EL':
         if True:
             def total_cDE_rule(m):  ## to account purchase of energy of elastic loads
                 return m.total_cDE == sum( m.cd[d,t] for d in m.LOAD for t in m.T)
@@ -461,19 +461,19 @@ def uc(instance,option='None',
 
     ## -------------------------------DEMAND & RESERVE----------------------------------------   
  
-    if scope=='market':
+    if scope=='POZ+EL':
         a=1
-        def demand_rule_market1(m,t):                      ## demand eq.(65)
+        def demand_rule_b1(m,t):                      ## demand eq.(65)
             return sum( m.p[g,t] for g in m.G )   == m.De[t] + sum( m.l[d,t] for d in m.LOAD )
-        model.demand_rule_market1 = Constraint(model.T, rule = demand_rule_market1)
+        model.demand_rule_b1 = Constraint(model.T, rule = demand_rule_b1)
             
-        def demand_rule_market2(m,t):                      ## demand + reserve eq.(67)
+        def demand_rule_b2(m,t):                      ## demand + reserve eq.(67)
             return sum( m.pb[g,t] for g in m.G )  >= m.De[t] + sum( m.l[d,t] for d in m.LOAD) + m.R[t]
-        model.demand_rule_market2 = Constraint(model.T, rule = demand_rule_market2)
+        model.demand_rule_b2 = Constraint(model.T, rule = demand_rule_b2)
              
-        def reserve_rule_market3(m,t):                      ## reserve eq.(68)
+        def reserve_rule_b3(m,t):                      ## reserve eq.(68)
             return sum( m.r[g,t] for g in m.G)    + 0       >= m.R[t]
-        model.reserve_rule_market3 = Constraint(model.T, rule = reserve_rule_market3)
+        model.reserve_rule_b3 = Constraint(model.T, rule = reserve_rule_b3)
             
             
     else:
@@ -783,7 +783,7 @@ def uc(instance,option='None',
         model.Start_up_cost55 = Constraint(model.G,model.T, rule = Start_up_cost55)        
         model.Start_up_cost56 = Constraint(model.G,model.T, rule = Start_up_cost56)  
                                 
-    if  scope == 'market':        
+    if  scope == 'POZ+EL':        
         
         if True:        
             ## ----------------------- ELASTIC LOADS (PURCHASE BID) ----------------------------   
@@ -898,7 +898,7 @@ def uc(instance,option='None',
         
     ## ---------------------------- LOCAL BRANCHING CONSTRAINT LBC 1 (SOFT-FIXING)------------------------------------------    
     ## Define a neighbourhood with LBC1.    
-    if(option == 'lbc1'):
+    if option == 'lbc1':
                   
         for f in No_SB_Uu:   
             model.u[f[0]+1,f[1]+1].domain = UnitInterval    ## We remove the integrality constraint of the Binary Support 
@@ -960,7 +960,7 @@ def uc(instance,option='None',
                
     ## ---------------------------- LOCAL BRANCHING CONSTRAINT LBC2 (INTEGER VERSION)------------------------------------------    
     ## Define a neighbourhood with LBC2.       
-    if(option == 'lbc2'):
+    if option == 'lbc2':
                   
         for f in No_SB_Uu:   
             model.u[f[0]+1,f[1]+1].domain = Binary    ## We remove the integrality constraint of the Binary Support 
@@ -1008,7 +1008,7 @@ def uc(instance,option='None',
 
     ## ---------------------------- HARD VARIABLE FIXING I  ------------------------------------------
     ##     
-    if option == 'Hard':
+    if option == 'Harjk':
         for f in SB_Uu:
             model.u[f[0]+1,f[1]+1].fix(1)                   ## Hard fixing
         for f in No_SB_Uu: 
@@ -1100,7 +1100,7 @@ def uc(instance,option='None',
     t8b = threading.Thread(target=merge8b)   
     t9  = threading.Thread(target=merge9)  
     
-    if  scope == 'market':   
+    if  scope == 'POZ+EL':   
         t10 = threading.Thread(target=merge10)
         t11 = threading.Thread(target=merge11)
         t12 = threading.Thread(target=merge12)        
@@ -1114,8 +1114,7 @@ def uc(instance,option='None',
     t1.start(); t2.start(); t3.start(); t4.start(); t5.start(); t7.start(); t8.start(); t8b.start(); t9.start();  ## starting threads 
     t1.join();  t2.join();  t3.join();  t4.join();  t5.join();  t7.join();  t8.join();  t8b.join();  t9.join();   ## wait until thread 1 is completely executed     
     #print(option,"All threads completely executed!") # https://www.geeksforgeeks.org/multithreading-python-set-1/
-    
-
+   
 
     return model, inside90
 

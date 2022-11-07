@@ -33,13 +33,28 @@ def reading(file):
     C       = {}   ## 
     Cs      = {}   ## Costo de cada escalón del conjunto S de la función de costo variable de arranque.
     Tunder  = {}   ## lag de cada escalón del conjunto S de la función de costo variable de arranque.
-    Startup = {}   ## start-up cost
-  
+    Startup = {}   ## start-up cost 
+           
+    factor_demand = 1
+    demand        = []
+    reserves      = []
     
-        
     time_periods = int(md['time_periods'])
-    demand       = md['demand']  
-    reserves     = md['reserves']  
+    demand       =     md['demand']  
+    reserves     =     md['reserves']  
+        
+    time_periods  = int(md['time_periods'])
+    demand1       =     md['demand']  
+    reserves1     =     md['reserves']  
+    try: 
+        factor_demand = md['factor_demand'] 
+        print('factor_demand=',factor_demand) 
+    except:
+        demand        = demand1
+        reserves      = reserves1
+    for i in range(len(demand1)):
+        demand.append(     demand[i] * factor_demand)
+        reserves.append(reserves1[i] * factor_demand)
 
     for t in range(1, time_periods+1):
         T.append(t)    
