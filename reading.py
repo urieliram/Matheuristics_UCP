@@ -48,7 +48,7 @@ def reading(file):
     reserves1     =     md['reserves']  
     try: 
         factor_demand = md['factor_demand'] 
-        print('factor_demand=',factor_demand) 
+        #print('factor_demand=',factor_demand) 
     except:
         demand        = demand1
         reserves      = reserves1

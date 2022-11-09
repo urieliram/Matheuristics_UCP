@@ -49,26 +49,34 @@ def imprime_sol(model,sol):
 def config_env():
     #ambiente='localPC',ruta='instances/',executable='/home/uriel/cplex1210/cplex/bin/x86-64_linux/cplex3'
     df = pd.read_csv('config')    
-    if len(df.index) == 1:
-        ambiente     = df['ambiente'  ].values[0]
-        ruta         = df['ruta'      ].values[0]
-        executable   = df['executable'].values[0]
-        timeheu      = df['timeheu'   ].values[0]
-        timemilp     = df['timemilp'  ].values[0]
-        emph         = df['emphasys'  ].values[0]
-        symmetry     = df['symmetry'  ].values[0]
-        lbheur       = df['lbheur'    ].values[0]
-        strategy     = df['strategy'  ].values[0]
-        gap          = df['gap'       ].values[0]
-        k            = df['k'         ].values[0]
-        iterpar      = df['iter'      ].values[0]
+    if len(df.index)  == 1:
+        ambiente      = df['ambiente'      ].values[0]
+        ruta          = df['ruta'          ].values[0]
+        executable    = df['executable'    ].values[0]
+        timeconst     = df['timeconst'     ].values[0]
+        timefull      = df['timefull'      ].values[0]
+        
+        emphasizeMILP = df['emphasysmilp'  ].values[0]
+        symmetryMILP  = df['symmetrymilp'  ].values[0]
+        lbheurMILP    = df['lbheurmilp'    ].values[0]
+        strategyMILP  = df['strategymilp'  ].values[0]
+        
+        emphasizeHEUR = df['emphasysheur'  ].values[0]
+        symmetryHEUR  = df['symmetryheur'  ].values[0]
+        lbheurHEUR    = df['lbheurheur'    ].values[0]
+        strategyHEUR  = df['strategyheur'  ].values[0]
+        
+        gap           = df['gap'           ].values[0]
+        k             = df['k'             ].values[0]
+        iterstop      = df['iterstop'      ].values[0]
     else:
         print('!!! Problema al cargar la configuración. Verifique el ')
         print('formato y rutas del archivo <config>, algo como esto:')
-        print('ambiente,ruta,executable,emphasys,symmetry,lbheur,strategy,timeheu,timemilp,gap,k,iter,')
-        print('localPC,instances/,/home/uriel/cplex1210/cplex/bin/x86-64_linux/cplex,0,-1,yes,3,500,1000,0.0001,20,30')
-                
-    return ambiente, ruta, executable, timeheu, timemilp, emph,symmetry,lbheur,strategy, gap, k, iterpar
+        print('ambiente,ruta,executable,timeconst,timefull, emphasysmilp,symmetrymilp,lbheurmilp,strategymilp, emphasysheur,symmetryheur,lbheurheur,strategyheur, gap,k,iterstop,')
+        print('yalma,instances/,/home/uriel/cplex1210/cplex/bin/x86-64_linux/cplex,1200,7200,1,1,yes,3, 1,0,no,3, 0.0001,20,30')
+        print('localPC,instances/,/home/uriel/cplex1210/cplex/bin/x86-64_linux/cplex,400,1000,1,1,yes,3, 1,0,no,3, 0.0001,20,30')
+
+    return ambiente,ruta,executable,timeconst,timefull, emphasizeMILP,symmetryMILP,lbheurMILP,strategyMILP, emphasizeHEUR,symmetryHEUR,lbheurHEUR,strategyHEUR, gap,k,iterstop
 
 
 def trunc(values, decs=1):

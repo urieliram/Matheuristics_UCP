@@ -127,10 +127,10 @@ class Solution:
         # except Exception as e:
         #     print(e)
                             
-        # model.obj.pprint()     # Print the objetive function
-        # model.demand.pprint()  # Print constraint
-        # model.reserve.pprint() # Print constraint
-        # model.display()        # Print the optimal solution
+        # self.model.obj.pprint()     # Print the objetive function
+        # self.model.demand.pprint()  # Print constraint
+        # self.model.reserve.pprint() # Print constraint
+        ##self.model.display()        # 
         
         # np_rc = np.array((1,2,3,4,5)) 
         # if self.option == 'RC':
@@ -223,10 +223,10 @@ class Solution:
             self.z_exact = self.model.obj.expr()   
             
             ## |bestbound-bestinteger|/(1e-10+|bestinteger|)
-            __data = result.Problem._list
-            LB = __data[0].lower_bound
-            UB = __data[0].upper_bound
-            self.gap_ = util.igap(LB,UB)
+            __data    = result.Problem._list
+            self.LB   = __data[0].lower_bound
+            self.UB   = __data[0].upper_bound
+            self.gap_ = util.igap(self.LB,self.UB)
             # self.gap_ = abs(LB - UB) /(1e-10 + abs(UB))    
                 
         return self.z_exact, self.gap_
