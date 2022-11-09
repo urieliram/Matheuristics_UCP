@@ -20,26 +20,30 @@ from    copy     import deepcopy
 from    solution import Solution
 from    os       import path
 
+nameins = 'uc_060.json'       ## prueba demostrativa excelente en mi PC
+nameins = 'uc_062.json'       ## prueba demostrativa excelente en mi PC 
+
 nameins = 'uc_57_copy.json'   ## prueba demostrativa excelente en mi PC (MOR un dia)
 nameins = 'uc_057.json'       ## prueba demostrativa excelente en mi PC (MOR un dia)
-nameins = 'uc_58_copy.json'   ## prueba demostrativa excelente en mi PC (MOR cinco dias)
-nameins = 'uc_58.json'        ## prueba demostrativa excelente en mi PC 
-nameins = 'uc_058.json'       ## prueba demostrativa excelente en mi PC (MOR tres dias)
-
-nameins = 'uc_060.json'       ## prueba demostrativa excelente en mi PC
-nameins = 'uc_061.json'       ## prueba demostrativa excelente en mi PC 
+nameins = 'uc_58.json'       ## prueba demostrativa excelente en mi PC (MOR tres dias)
+nameins = 'uc_059.json'       ## prueba demostrativa excelente en mi PC (MOR cinco dias)
 
 ## symmetry breaking: Automatic =-1 Turn off=0 ; moderade=1 ; extremely aggressive=5
-## Emphasize balanced=0 (default); feasibility=1; optimality=2; symmetry automatic=-1; symmetry low level=1
+## Emphasize balanced=0; feasibility=1; optimality=2; symmetry automatic=-1; symmetry low level=1
+    
 ## Cargamos parámetros de configuración desde archivo <config>
-ambiente,ruta,executable,timeheu,timemilp,emph,symmetry,lbheur,strategy,gap,k,iterstop = util.config_env()
+ambiente,ruta,executable,timeconst,timefull,         \
+emphasizeMILP,symmetryMILP,lbheurMILP,strategyMILP,  \
+emphasizeHEUR,symmetryHEUR,lbheurHEUR,strategyHEUR,  \
+gap,k,iterstop = util.config_env()
 
-k_original = k  ## Almacenamos el parámetro k de local branching
+k_original = k     ## Almacenamos el parámetro k de local branching
 x          = 1e+75
 
 z_lp=x; z_milp=x; z_harjk=x; z_hard3=x; z_ks=x; z_lbc1=x; z_lbc2=x; z_feas=x; z_check=x; z_lbc0=x; z_ks=0; z_rks=0; z_=0;
 t_lp=0; t_milp=0; t_harjk=0; t_hard3=0; t_ks=0; t_lbc1=0; t_lbc2=0; t_feas=0; t_check=0; t_lbc0=0; t_ks=0; t_rks=0; t_=0;
 g_lp=x; g_milp=x; g_harjk=x; g_hard3=x; g_ks=x; g_lbc1=x; g_lbc2=x; g_feas=x; g_check=x; g_lbc0=x; g_ks=x; g_rks=x; g_=x;
+lb_milp=0; lb_best=0;
 ns=0; nU_no_int=0; n_Uu_no_int=0; n_Uu_1_0=0;
 SB_Uu =[]; No_SB_Uu =[]; lower_Pmin_Uu =[]; Vv =[]; Ww =[]; delta =[];
 SB_Uu3=[]; No_SB_Uu3=[]; lower_Pmin_Uu3=[]; Vv3=[]; Ww3=[]; delta3=[];
@@ -65,39 +69,41 @@ print(localtime,'Solving <'+scope+'> model ---> ---> ---> --->',nameins)
 instance = reading.reading(ruta+nameins)
 
 ## DEF CHECK SOLUTION
-def checkSol(option,z_,SB_Uux,No_SB_Uux,Vvx,Wwx,deltax,dual=False):
-    print('Check the feasibility of solution z_'+option+'=', z_ )
+def checkSol(option,z_,SB_Uux,No_SB_Uux,Vvx,Wwx,deltax,dual=False,label=''):
+    print('Check the feasibility of solution '+option+'_'+label+'=', z_ )
     t_o       = time.time() 
     model,__  = uc_Co.uc(instance,option='Check',SB_Uu=SB_Uux,No_SB_Uu=No_SB_Uux,V=Vvx,W=Wwx,delta=deltax,
                          nameins=nameins[0:6],mode='Tight',scope=scope)
-    sol_check = Solution(model=model,nameins=nameins[0:6],env=ambiente,executable=executable,gap=gap,timelimit=timemilp,
-                         tee=False,tofiles=False,emphasize=emph,symmetry=symmetry,exportLP=False,option='Check',scope=scope,dual=dual)
+    sol_check = Solution(model=model,nameins=nameins[0:6],env=ambiente,executable=executable,gap=gap,timelimit=timefull,
+                         tee=False,tofiles=False,exportLP=False,option='Check',scope=scope,dual=dual)
     z_check, g_check = sol_check.solve_problem()
     t_check          = time.time() - t_o
-    print('t_check= ',round(t_check,1),'z_check= ',round(z_check,4),'g_check= ',round(g_check,4))
+    print(label,'t_check= ',round(t_check,1),'z_check= ',round(z_check,4),'g_check= ',round(g_check,8))
     return model
 
 ## ---------------------------------------------- MILP ----------------------------------------------------------
 ## Solve as a MILP
 
-if  True: 
-    strategy        = 3
-    symmetrydefault = 0 ## symmetry breaking: Automatic =-1 Turn off=0 ; moderade=1 ; extremely aggressive=5
-    lbheur          = 'yes'  
-    emphMILP        = 1          ## feasibility=1 ; balanced=0
-    
-    cutoff          = 1e+75 
+if  True:  
+    cutoff   = 1e+75 
     t_o      = time.time() 
-    model,__ = uc_Co.uc(instance,option='MilpTest',nameins=nameins[0:6],mode='Tight',scope=scope)
+    model,__ = uc_Co.uc(instance,option='Milp',nameins=nameins[0:6],mode='Tight',scope=scope)
     sol_milp = Solution(model=model,nameins=nameins[0:6],env=ambiente,executable=executable,
-                        gap=gap,cutoff=cutoff,symmetry=symmetrydefault,strategy=strategy,timelimit=timemilp,
-                        tee=False,tofiles=False,emphasize=emphMILP,lbheur=lbheur,
-                        exportLP=False,option='MilpTest',scope=scope)
+                        gap=gap,cutoff=cutoff,timelimit=timefull,tee=False,tofiles=False,
+                        emphasize=emphasizeMILP,symmetry=symmetryMILP,lbheur=lbheurMILP,strategy=strategyMILP,                        
+                        exportLP=False,option='Milp',scope=scope)
     z_milp, g_milp = sol_milp.solve_problem()
     t_milp         = time.time() - t_o
-    print('t_milp= ',round(t_milp,1),'z_milp= ',round(z_milp,1),'g_milp= ',round(g_milp,5))
     
-
+    print('g_milp*= ',round(g_milp,8))
+    ## Actualizamos el tiempo de las heurísticas al que ocupó el MILP (si es que encontró un óptimo o terminó por tiempo)
+    timefull = t_milp
+    
+    lb_milp  = sol_milp.LB  ## lower bound
+    lb_best  = max(0,lb_milp)
+    g_milp   = util.igap(lb_best,z_milp)
+    print('t_milp= ',round(t_milp,1),'z_milp= ',round(z_milp,1),'g_milp= ',round(g_milp,8))
+      
 if  True:
     ## ----------------------------------------------- RECOVERED SOLUTION ---------------------------------------------
     ## Load LR and Hard3 storaged solutions
@@ -105,19 +111,23 @@ if  True:
         t_lp,z_lp,t_hard3,z_hard3,SB_Uu3,No_SB_Uu3,lower_Pmin_Uu3,Vv3,Ww3,delta3 = util.loadSolution('Hard3',nameins[0:6]) 
         g_hard3  = util.igap(z_lp,z_hard3) 
         print('Recovered solution ---> ','t_hard3= ',round(t_hard3,1),'z_hard3= ',round(z_hard3,1))
-        checkSol('Hard3 (recovered)',z_hard3,SB_Uu3,No_SB_Uu3,Vv3,Ww3,delta3) ## Check feasibility
-
+        checkSol('Hard3 (recovered)',z_hard3,SB_Uu3,No_SB_Uu3,Vv3,Ww3,delta3,'hard3(rec)') ## Check feasibility
+        
+        lb_best = max(z_lp,lb_best)
+    
     ## ----------------------------------------------- LINEAR RELAXATION ---------------------------------------------
     ## Relax as LP and solve it
     else:
         t_o        = time.time() 
         model,__   = uc_Co.uc(instance,option='LR',nameins=nameins[0:6],mode='Tight',scope=scope)
-        sol_lp     = Solution(model=model,env=ambiente,executable=executable,nameins=nameins[0:6],gap=gap,timelimit=timeheu,
-                            tee=False,tofiles=False,emphasize=emph,exportLP=False,option='LR',scope=scope)
+        sol_lp     = Solution(model=model,env=ambiente,executable=executable,nameins=nameins[0:6],gap=gap,timelimit=timeconst,
+                              tee=False,tofiles=False,exportLP=False,option='LR',scope=scope)
         z_lp, g_lp = sol_lp.solve_problem() 
         t_lp       = time.time() - t_o
         print('t_lp= ',round(t_lp,1),'z_lp= ',round(z_lp,1))
-
+        
+        lb_best = max(z_lp,lb_best)
+        
     ## -------------------------------------------- SELECTION VARIABLES TO FIX ---------------------------------------
     ## Seleccionamos las variables que serán fijadas. Es requisito correr antes <linear relaxation>
     ## SB_Uu         variables que SI serán fijadas a 1. (Soporte binario)
@@ -133,20 +143,22 @@ if  True:
         t_o       = time.time()
         model,__  = uc_Co.uc(instance,option='Hard3',SB_Uu=SB_Uu,No_SB_Uu=No_SB_Uu,lower_Pmin_Uu=lower_Pmin_Uu,
                             nameins=nameins[0:6],mode='Tight',scope=scope)
-        sol_hard3 = Solution(model=model,env=ambiente,executable=executable,nameins=nameins[0:6],gap=gap,timelimit=timeheu,
-                            tee=False,emphasize=emph,symmetry=symmetry,tofiles=False,option='Hard3',scope=scope)
+        sol_hard3 = Solution(model=model,env=ambiente,executable=executable,nameins=nameins[0:6],gap=gap,timelimit=timeconst,
+                            tee=False,tofiles=False,option='Hard3',scope=scope,
+                            emphasize=emphasizeHEUR,symmetry=symmetryHEUR,lbheur=lbheurHEUR,strategy=strategyHEUR)
         z_hard3, g_hard3 = sol_hard3.solve_problem()
         t_hard3  = time.time() - t_o + t_lp   ## <<< --- t_hard3 ** INCLUYE EL TIEMPO DE LP **
-        g_hard3  = util.igap(z_lp,z_hard3) 
+        g_hard3  = util.igap(lb_best,z_hard3) 
         
         ## ES MUY IMPORTANTE GUARDAR LAS VARIABLES 'Uu=1'(SB_Uu3) DE LA PRIMERA SOLUCIÓN FACTIBLE 'Hard3'.
         ## ASI COMO LAS VARIABLES 'Uu=0' (No_SB_Uu3) 
         ## Este es el primer - Soporte Binario Entero Factible-
         SB_Uu3, No_SB_Uu3, __, Vv3, Ww3, delta3 = sol_hard3.select_binary_support_Uu('Hard3')    
         lower_Pmin_Uu3 = sol_hard3.update_lower_Pmin_Uu(lower_Pmin_Uu,'Hard3')
-        #sol_hard3.cuenta_ceros_a_unos( SB_Uu, No_SB_Uu, lower_Pmin_Uu,'Hard3')    
+        #sol_hard3.cuenta_ceros_a_unos( SB_Uu, No_SB_Uu, lower_Pmin_Uu,'Hard3') 
+        checkSol('Hard3',z_hard3,SB_Uu3,No_SB_Uu3,Vv3,Ww3,delta3,'hard3') ## Check feasibility
 
-        print('t_hard3= ',round(t_hard3,1),'z_hard3= ',round(z_hard3,1),'g_hard3= ',round(g_hard3,5) )
+        print('t_hard3= ',round(t_hard3,1),'z_hard3= ',round(z_hard3,1),'g_hard3= ',round(g_hard3,8) )
         del sol_hard3
         gc.collect()
         util.saveSolution(t_lp,z_lp,t_hard3,z_hard3,SB_Uu3,No_SB_Uu3,lower_Pmin_Uu3,Vv3,Ww3,delta3,'Hard3',nameins[0:6])
@@ -159,18 +171,21 @@ if  True:
     t_o       = time.time()
     model,__  = uc_Co.uc(instance,option='Harjk',SB_Uu=SB_Uu,No_SB_Uu=No_SB_Uu,lower_Pmin_Uu=lower_Pmin_Uu,
                          nameins=nameins[0:6],mode='Tight',scope=scope)
-    sol_harjk = Solution(model=model,env=ambiente,executable=executable,nameins=nameins[0:6],gap=gap,timelimit=timeheu,
-                        tee=False,emphasize=emph,symmetry=symmetry,tofiles=False,option='Harjk',scope=scope)
+    sol_harjk = Solution(model=model,env=ambiente,executable=executable,nameins=nameins[0:6],gap=gap,timelimit=timeconst,
+                        emphasize=emphasizeHEUR,symmetry=symmetryHEUR,lbheur=lbheurHEUR,strategy=strategyHEUR,
+                        tee=False,tofiles=False,option='Harjk',scope=scope)
     z_harjk, g_harjk = sol_harjk.solve_problem()
     t_harjk  = time.time() - t_o + t_lp   ## <<< --- t_harjk ** INCLUYE EL TIEMPO DE LP **
-    g_harjk  = util.igap(z_lp,z_harjk) 
-        
-    print('t_harjk= ',round(t_harjk,1),'z_harjk= ',round(z_harjk,1),'g_harjk= ',round(g_harjk,5) )
+    g_harjk  = util.igap(lb_best,z_harjk)         
+    
+    SB_Uujk, No_SB_Uujk, __, Vvjk, Wwjk, deltajk = sol_harjk.select_binary_support_Uu('Harjk')    
+    checkSol('Harjk',z_harjk,SB_Uujk,No_SB_Uujk,Vvjk,Wwjk,deltajk,'harjk') ## Check feasibility
+    del SB_Uujk,No_SB_Uujk,Vvjk,Wwjk,deltajk
+    print('t_harjk= ',round(t_harjk,1),'z_harjk= ',round(z_harjk,1),'g_harjk= ',round(g_harjk,8) )
     del sol_harjk
     gc.collect()
     
-## Actualizamos el tiempo de las heurísticas al que ocupó el MILP (si es que encontró un óptimo o terminó por tiempo)
-timeheu = t_milp
+
 
 ## --------------------------------------- LOCAL BRANCHING 1 ------------------------------------------
 ## LBC COUNTINOUS VERSION without soft-fixing
@@ -184,8 +199,8 @@ if  True:
     SB_Uu          = deepcopy(SB_Uu3)
     No_SB_Uu       = deepcopy(No_SB_Uu3)
     lower_Pmin_Uu  = deepcopy(lower_Pmin_Uu3)
-    t_net          = timemilp - t_hard3
-    t_res          = timemilp - t_hard3
+    t_net          = timefull - t_hard3
+    t_res          = timefull - t_hard3
     cutoff         = z_hard3
     incumbent      = z_hard3
     z_old          = z_hard3
@@ -208,11 +223,12 @@ if  True:
         if improve == False:
             cutoff=1e+75
                  
-        timeheu1  = min(t_res,timeheu)
+        timeres1  = min(t_res,timeconst)
         model, __ = uc_Co.uc(instance,option='lbc1',SB_Uu=SB_Uu,No_SB_Uu=No_SB_Uu,lower_Pmin_Uu=lower_Pmin_Uu,V=Vv,W=Ww,delta=delta,
                             percent_soft=90,k=k,nameins=nameins[0:6],mode='Tight',scope=scope,improve=improve,timeover=timeover,rightbranches=rightbranches)
-        sol_lbc1  = Solution(model=model,env=ambiente,executable=executable,nameins=nameins[0:6],letter=util.getLetter(iter-1),gap=gap,cutoff=cutoff,timelimit=timeheu1,
-                            tee=False,emphasize=emph,symmetry=symmetry,tofiles=False,option='lbc1',scope=scope)
+        sol_lbc1  = Solution(model=model,env=ambiente,executable=executable,nameins=nameins[0:6],letter=util.getLetter(iter-1),gap=gap,cutoff=cutoff,timelimit=timeres1,
+                            emphasize=emphasizeHEUR,symmetry=symmetryHEUR,lbheur=lbheurHEUR,strategy=strategyHEUR,
+                            tee=False,tofiles=False,option='lbc1',scope=scope)
         z_lbc1,g_lbc1 = sol_lbc1.solve_problem()
         
         #sol_lbc1.cuenta_ceros_a_unos(SB_Uu, No_SB_Uu, lower_Pmin_Uu,'lbc1') ## Compara contra la última solución
@@ -224,14 +240,14 @@ if  True:
             cutoff     = z_lbc1
             # saved      = [SB_Uu,No_SB_Uu,Vv,Ww,delta]
             char       = '***'
-            g_lbc1     = util.igap(z_lp,z_lbc1)
+            g_lbc1     = util.igap(lb_best,z_lbc1)
             if gap_iter > gap:
                 improve = True
 
         result_iter.append((round(time.time() - t_o + t_hard3,1),z_lbc1))
         z_old = z_lbc1 ## Guardamos la z de la solución anterior
           
-        print('<°|'+fish+'>< iter:'+str(iter)+' t_lbc1= ',round(time.time()-t_o+t_hard3,1),'z_lbc1= ',round(z_lbc1,1),char ) #,'g_lbc1= ',round(g_lbc1,5)
+        print('<°|'+fish+'>< iter:'+str(iter)+' t_lbc1= ',round(time.time()-t_o+t_hard3,1),'z_lbc1= ',round(z_lbc1,1),char,'g_lbc1= ',round(g_lbc1,8) ) #
         print('\t')       
         fish = fish + ')'  
         
@@ -270,7 +286,7 @@ if  True:
     result_iter = np.array(result_iter)
     np.savetxt('iterLBC1'+nameins[0:6]+'.csv', result_iter, delimiter=',')
     
-    checkSol('z_lbc1',z_lbc1,SB_Uu,No_SB_Uu,Vv,Ww,delta) ## Check feasibility (LB1)
+    checkSol('z_lbc1',z_lbc1,SB_Uu,No_SB_Uu,Vv,Ww,delta,'lbc1') ## Check feasibility (LB1)
         
     k = k_original  ## Si es que LBC cambió el parámetro k
 
@@ -287,8 +303,8 @@ if  True:
     SB_Uu          = deepcopy(SB_Uu3)
     No_SB_Uu       = deepcopy(No_SB_Uu3)
     lower_Pmin_Uu  = deepcopy(lower_Pmin_Uu3)
-    t_net          = timemilp - t_hard3
-    t_res          = timemilp - t_hard3
+    t_net          = timefull - t_hard3
+    t_res          = timefull - t_hard3
     cutoff         = z_hard3
     incumbent      = z_hard3
     z_old          = z_hard3
@@ -311,11 +327,12 @@ if  True:
         if improve == False:
             cutoff=1e+75
         
-        timeheu1  = min(t_res,timeheu)      
+        timeres1  = min(t_res,timeconst)      
         model, __ = uc_Co.uc(instance,option='lbc2',SB_Uu=SB_Uu,No_SB_Uu=No_SB_Uu,lower_Pmin_Uu=lower_Pmin_Uu,V=Vv,W=Ww,delta=delta,
                             percent_soft=90,k=k,nameins=nameins[0:6],mode='Tight',scope=scope,improve=improve,timeover=timeover,rightbranches=rightbranches)
-        sol_lbc2  = Solution(model=model,env=ambiente,executable=executable,nameins=nameins[0:6],letter=util.getLetter(iter-1),gap=gap,cutoff=cutoff,timelimit=timeheu1,
-                            tee=False,emphasize=emph,symmetry=symmetry,tofiles=False,option='lbc2',scope=scope)
+        sol_lbc2  = Solution(model=model,env=ambiente,executable=executable,nameins=nameins[0:6],letter=util.getLetter(iter-1),gap=gap,cutoff=cutoff,timelimit=timeres1,
+                            emphasize=emphasizeHEUR,symmetry=symmetryHEUR,lbheur=lbheurHEUR,strategy=strategyHEUR,
+                            tee=False,tofiles=False,option='lbc2',scope=scope)
         z_lbc2,g_lbc2 = sol_lbc2.solve_problem()
         
         #sol_lbc2.cuenta_ceros_a_unos(SB_Uu, No_SB_Uu, lower_Pmin_Uu,'lbc2') ## Compara contra la última solución
@@ -327,14 +344,14 @@ if  True:
             cutoff     = z_lbc2
             #saved      = [SB_Uu,No_SB_Uu,Vv,Ww,delta]
             char       = '***'
-            g_lbc2     = util.igap(z_lp,z_lbc2)
+            g_lbc2     = util.igap(lb_best,z_lbc2)
             if gap_iter > gap:
                 improve = True
             
         result_iter.append((round(time.time()-t_o+t_hard3,1),z_lbc2))
         z_old = z_lbc2 ## Guardamos la solución anterior
           
-        print('<°|'+fish+'>< iter:'+str(iter)+' t_lbc2= ',round(time.time()-t_o+t_hard3,1),'z_lbc2= ',round(z_lbc2,1),char ) #,'g_lbc2= ',round(g_lbc2,5)
+        print('<°|'+fish+'>< iter:'+str(iter)+' t_lbc2= ',round(time.time()-t_o+t_hard3,1),'z_lbc2= ',round(z_lbc2,1),char,'g_lbc2= ',round(g_lbc2,8) ) #
         print('\t')       
         fish = fish + ')'  
         
@@ -373,7 +390,7 @@ if  True:
     result_iter = np.array(result_iter)
     np.savetxt('iterLBC2'+nameins[0:6]+'.csv', result_iter, delimiter=',')
     
-    checkSol('z_lbc2',z_lbc2,SB_Uu,No_SB_Uu,Vv,Ww,delta) ## Check feasibility (LBC2)
+    checkSol('z_lbc2',z_lbc2,SB_Uu,No_SB_Uu,Vv,Ww,delta,'lbc2') ## Check feasibility (LBC2)
     
     k = k_original  ## Si es que LBC cambió el parámetro k
 
@@ -405,7 +422,7 @@ if  True:
 
     while True:
         ## --------------------------------------- CALCULATE REDUCED COSTS Uu ------------------------------------
-        t_res = max(0,( timemilp - t_hard3 ) - (time.time() - t_o))
+        t_res = max(0,( timefull - t_hard3 ) - (time.time() - t_o))
         if t_res <= 0:
             print('KS Salí ciclo externo')
             break
@@ -414,8 +431,9 @@ if  True:
             t_1 = time.time()
             model,__  = uc_Co.uc(instance,option='RC',SB_Uu=saved[0],No_SB_Uu=saved[1],V=saved[2],W=saved[3],delta=saved[4],
                                  nameins=nameins[0:6],mode='Tight',scope=scope)
-            sol_rc    = Solution(model=model,nameins=nameins[0:6],env=ambiente,executable=executable,gap=gap,timelimit=timemilp,
-                                tee=False,tofiles=False,emphasize=emph,symmetry=symmetry,exportLP=False,rc=True,option='RC',scope=scope)
+            sol_rc    = Solution(model=model,nameins=nameins[0:6],env=ambiente,executable=executable,gap=gap,timelimit=timefull,
+                                emphasize=emphasizeHEUR,symmetry=symmetryHEUR,lbheur=lbheurHEUR,strategy=strategyHEUR,
+                                tee=False,tofiles=False,exportLP=False,rc=True,option='RC',scope=scope)
             z_rc,g_rc = sol_rc.solve_problem() 
             t_rc      = time.time() - t_1
             print('KS t_rc= ',round(t_rc,1),'z_rc= ',round(z_rc,4))      
@@ -447,25 +465,25 @@ if  True:
             kernel      = deepcopy(SB_Uu)
             
             ## Recontabilizamos el tiempo
-            t_res   = max(0,( timemilp - t_hard3) - (time.time() - t_o))
-            timeheu = t_res / K
+            t_res   = max(0,( timefull - t_hard3) - (time.time() - t_o))
+            timeconst = t_res / K
             
             while True: 
-                t_res = max(0,( timemilp - t_hard3 ) - (time.time() - t_o))
+                t_res = max(0,( timefull - t_hard3 ) - (time.time() - t_o))
                 if iter_bk >= iterstop or t_res <= 0:
                     print('KS Salí ciclo interno')
                     break
 
-                timeheu1  = min(t_res,timeheu)      
+                timeconst1  = min(t_res,timeconst)      
                 bucket    = rc[k_[iter_bk]:k_[iter_bk + 1]] 
                 print('bucket',util.getLetter(iter),'[',k_[iter_bk],':',k_[iter_bk + 1],']' )      
                 
                 try:
                     ##  Resolvemos el kernel con cada uno de los buckets
-                    emph       = 0     ## feasibility =1
                     model,__   = uc_Co.uc(instance,option='KS',kernel=kernel,bucket=bucket,nameins=nameins[0:6],mode='Tight',scope=scope)
-                    sol_ks     = Solution(model=model,env=ambiente,executable=executable,nameins=nameins[0:6],letter=util.getLetter(iter),gap=gap,cutoff=cutoff,timelimit=timeheu1,
-                                        tee=False,emphasize=emph,symmetry=symmetry,tofiles=False,option='KS',scope=scope)
+                    sol_ks     = Solution(model=model,env=ambiente,executable=executable,nameins=nameins[0:6],letter=util.getLetter(iter),gap=gap,cutoff=cutoff,timelimit=timeconst1,
+                                          emphasize=emphasizeHEUR,symmetry=symmetryHEUR,lbheur=lbheurHEUR,strategy=strategyHEUR,
+                                          tee=False,tofiles=False,option='KS',scope=scope)
                     z_ks, g_ks = sol_ks.solve_problem()
                     t_ks       = time.time() - t_o + t_hard3
                     kernel, No_SB_Uu, __, Vv, Ww, delta = sol_ks.select_binary_support_Uu('KS') 
@@ -474,11 +492,13 @@ if  True:
                         incumbent  = z_ks
                         cutoff     = z_ks
                         saved      = [kernel,No_SB_Uu,Vv,Ww,delta]
-                        g_ks       = util.igap(z_lp,z_ks)
+                        g_ks       = util.igap(lb_best,z_ks)
                         char       = '***'
                         
                     result_iter.append((round(time.time()-t_o+t_hard3,1), z_ks))
-                    print('<°|>< iter:'+str(iter)+' t_ks= ',round(time.time()-t_o+t_hard3,1),'z_ks= ',round(z_ks,1),char) #,'g_ks= ',round(g_ks,5)
+                    
+                    g_ks    = util.igap(lb_best,z_ks) 
+                    print('<°|>< iter:'+str(iter)+' t_ks= ',round(time.time()-t_o+t_hard3,1),'z_ks= ',round(z_ks,1),char,'g_ks= ',round(g_ks,8)) #
                 except:
                     # print('>>> Iteración sin solución')
                     result_iter.append((round(time.time()-t_o+t_hard3,1), 1e+75))
@@ -487,7 +507,7 @@ if  True:
                     
                 print('\t')       
                     
-                t_res = max(0,( timemilp - t_hard3 ) - (time.time() - t_o))
+                t_res = max(0,( timefull - t_hard3 ) - (time.time() - t_o))
                 print('KS ','tiempo restante:',t_res)
                 
                 del sol_ks
@@ -507,38 +527,38 @@ if  True:
     result_iter = np.array(result_iter)
     np.savetxt('iterKS'+nameins[0:6]+'.csv', result_iter, delimiter=',')
     
-    checkSol('z_ks',z_ks,SB_Uu,No_SB_Uu,Vv,Ww,delta) ## Check feasibility (KS)
+    checkSol('z_ks',z_ks,SB_Uu,No_SB_Uu,Vv,Ww,delta,'ks') ## Check feasibility (KS)
             
         
     ## PENDIENTES    
     # \todo{Exportar los Costos reducidos ordenados de LR y comparar contra los lower_Pmin_Uu, se esperan coincidencias}
     # \todo{Curar instancias Morales y Knueven (cambiar limites pegados y agregar piecewise cost)}
-    # \todo{Incluir datos hidro de instancias en México} 
-    # \todo{Incluir restricciones de generadores hidro}  
-    # \todo{Verificar por qué la instancia mem_01.json es infactible}
     
     ## PRUEBAS                    
     # \todo{Probar experimentalmente que fijar otras variables enteras además de Uu no impacta mucho}         
-    # \todo{Probar modificar el tamaño de las variables soft-fix de 90% al 95%}
-    # \todo{Probar configuración enfasis feasibility vs optimality en el Solver )} 
+    # \todo{probar que SI conviene incluir los intentos de asignación en las variables soft-fix }
+    # \todo{Probar tamaños del n_kernel (!!! al parecer influye mucho en el tiempo de búsqueda)} 
 
     ## IDEAS    
-    # \todo{Un KS relajando y fijando grupos de variables a manera de buckets}
+    # \todo{Un KS relajando y fijando grupos de variables a manera de buckets}    
+    # \todo{Incluir datos hidro de instancias en México} 
+    # \todo{Incluir restricciones de generadores hidro}      
+    # \todo{Probar modificar el tamaño de las variables soft-fix de 90% al 95%}
+    # \todo{Probar cambiar el valor de k en nuevas iteraciones con una búsqueda local (un LBC completo de A.Lodi)}    
 
-    ## DESCARTES         
+    ## DESCARTES            
+    # \todo{Verificar por qué la instancia mem_01.json es infactible}    
     # \todo{Un movimiento en la búsqueda local puede ser cambiar la asignación del costo de arranque en un periodo adelante o atras para algunos generadores} 
     # \todo{Hacer un VNS o un VND con movimientos definidos con las variables}
     # \todo{Podrian fijarse todas las variables (u,v,w y delta) relacionadas con los generadores que se escogen para ser fijados}
     # \todo{Podríamos usar reglas parecidas al paper de Todosijevic para fijar V,W a partir de Uu}
-    # \todo{probar que SI conviene incluir los intentos de asignación en las variables soft-fix }
     # \todo{Calcular el tamaño del slack del subset Sbarra -Soporte binario-}
-    # \todo{Probar tamaños del n_kernel (!!! al parecer influye mucho en el tiempo de búsqueda)} 
     # \todo{Agregar must-run} 
     # \todo{Encontrar la primer solución factible del CPLEX}
     
     ## TERMINADAS
+    # \todo{Probar configuración enfasis feasibility vs optimality en el Solver )} 
     # \todo{Considerar no usar nada de Hard, ni cut-off, ni Soporte Binario.}
-    # \todo{Probar cambiar el valor de k en nuevas iteraciones con una búsqueda local (un LBC completo de A.Lodi)}    
     # \todo{Usar la solución factible hard como warm-start} 
     # \todo{Probar el efecto de la cota obtenida del hard-fix} 
     # \todo{Probar con diferentes calidades de primera solución factible,(podríamos usar Pure Variable-fixing)}
@@ -546,38 +566,35 @@ if  True:
     # \todo{Comparar soluciones entre si en variables u,v,w y delta}
     # \todo{Verificar que las restricciones de arranque que usan delta en la formulación, se encontraron variables con valor None en la solución}
     # \todo{Fijar la solución entera y probar factibilidad} 
-    # \todo{Crear instancias sintéticas a partir de morales-españa2013} 
+    # \todo{Crear instancias sintéticas a partir de kazarlis} 
 
     # ## ----------------------------- DUAL COST ----------------------------------------------
     
     # SB_Uu, No_SB_Uu, __, Vv, Ww, delta = sol_milp.select_binary_support_Uu('Milp0') 
     # model,__  = uc_Co.uc(instance,option='FixSol',SB_Uu=SB_Uu,No_SB_Uu=No_SB_Uu,V=Vv,W=Ww,delta=delta,
     #                      nameins=nameins[0:6],mode='Tight',scope=scope)
-    # sol_fix   = Solution(model=model,env=ambiente,executable=executable,nameins=nameins[0:6],gap=gap,timelimit=timeheu,
-    #                       tee=False,tofiles=False,emphasize=emph,exportLP=False,option='FixSol',scope=scope,dual=True)
+    # sol_fix   = Solution(model=model,env=ambiente,executable=executable,nameins=nameins[0:6],gap=gap,timelimit=timeconst,
+    #                       tee=False,tofiles=False,exportLP=False,option='FixSol',scope=scope,dual=True)
     # z_fix, g_fix = sol_fix.solve_problem() 
     # print('z_fix= ',round(z_fix,4))
     
-    # # for t in model.T:
-    # #     print(model.dual[ model.demand_rule65[t] ],model.dual[ model.demand_rule67[t] ])
+    # for t in model.T:
+    #     print(model.dual[ model.demand_rule65[t] ],model.dual[ model.demand_rule67[t] ])
 
-g_milp  = util.igap(z_lp,z_milp) 
+
     
 ## NO OLVIDES COMENTAR TUS PRUEBAS ¸.·´¯`·.´¯`·.¸¸.·´¯`·.¸><(((º>
 comment    = 'Pruebas completas TC&UC'
 
 ## --------------------------------- RESULTS -------------------------------------------
 ## Append a list as new line to an old csv file using as log, the first line of the file as shown.
-## 'ambiente,localtime,nameins,T,G,gap,emphasize,timelimit,z_lp,z_hard,z_milp,z_milp2,z_soft,z_softpmin,z_softcut,z_softcut2,z_softcut3,z_lbc,
-#                                                       t_lp,t_hard,t_milp,t_milp2,t_soft,t_softpmin,t_softcut,t_softcut2,t_softcut3,t_lbc,
-#                                                       n_fixU,nU_no_int,n_Uu_no_int,n_Uu_1_0,k,bin_sup,comment'
 
-## ambiente,localtime,nameins,T,G,gap,emph,timeheu,timemilp,z_lp,z_milp,z_feas,z_harjk,z_hard3,z_lbc1,z_lbc2,z_ks,t_lp,t_milp,t_feas,t_harjk,t_hard3,t_lbc1,t_lbc2,t_ks,g_milp,g_feas,g_harjk,g_hard3,g_lbc1,g_lbc2,g_ks,k,ns,comment
-row = [ambiente,localtime,nameins,instance[1],instance[0],gap,emph,timeheu,timemilp,
+## ambiente,localtime,nameins,T,G,gap,timeconst,timefull,z_lp,z_milp,z_feas,z_harjk,z_hard3,z_lbc1,z_lbc2,z_ks,t_lp,t_milp,t_feas,t_harjk,t_hard3,t_lbc1,t_lbc2,t_ks,g_milp,g_feas,g_harjk,g_hard3,g_lbc1,g_lbc2,g_ks,k,ns,emphasizeMILP,symmetryMILP,strategyMILP,lbheurMILP,emphasizeHEUR,symmetryHEUR,strategyHEUR,lbheurHEUR,comment
+row = [ambiente,localtime,nameins,len(instance[1]),len(instance[0]),gap,timeconst,timefull,
     round(z_lp,1),round(z_milp,1),round(z_feas,1),round(z_harjk,1),round(z_hard3,1),round(z_lbc1,1),round(z_lbc2,1),round(z_ks,1),
     round(t_lp,1),round(t_milp,1),round(t_feas,1),round(t_harjk,1),round(t_hard3,1),round(t_lbc1,1),round(t_lbc2,1),round(t_ks,1),
                   round(g_milp,8),round(g_feas,1),round(g_harjk,8),round(g_hard3,8),round(g_lbc1,8),round(g_lbc2,8),round(g_ks,8),
-                  k,ns,comment] #round(((z_milp-z_milp2)/z_milp)*100,6)
+                  k,ns,emphasizeMILP,symmetryMILP,strategyMILP,lbheurMILP,emphasizeHEUR,symmetryHEUR,strategyHEUR,lbheurHEUR,comment] 
 util.append_list_as_row('stat.csv',row)
 
 print(localtime,'terminé instancia ...´¯`·...·´¯`·.. ><(((º> ',nameins)

@@ -224,11 +224,10 @@ def uc(instance,option='None',
     model.Cs     = Param(model.indexGSg, initialize = Cs,     within = Any)
     model.Tunder = Param(model.indexGSg, initialize = Tunder, within = Any)
     
-    
     if scope == 'POZ+EL':
         model.l  = Var(  model.LOAD,     model.T, bounds = (0.0,9999999999.0))   ## elastic demand commit
         model.cd = Var(  model.LOAD,     model.T, bounds = (0.0,9999999999.0))   ## partial load cost        
-        model.ld = Var(  model.indexLoadTLd,      bounds = (0.0,99999.0))        ## Stairwise segments
+        model.ld = Var(  model.indexLoadTLd,      bounds = (0.0,9999999999.0))   ## Stairwise segments
         model.Pd = Param(model.indexLoadLd,   initialize = Pd, within = Any)     ## Stairwise energy
         model.Cd = Param(model.indexLoadLd,   initialize = Cd, within = Any)     ## Stairwise cost
         
