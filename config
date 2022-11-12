@@ -1,2 +1,0 @@
-ambiente,ruta,executable,timeconst,timefull,emphasysmilp,symmetrymilp,lbheurmilp,strategymilp,emphasysheur,symmetryheur,lbheurheur,strategyheur,gap,k,iterstop,
-localPC,instances/,/home/uriel/cplex1210/cplex/bin/x86-64_linux/cplex,500,300,1,1,yes,3,1,0,no,3,0.0001,20,30

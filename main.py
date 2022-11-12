@@ -32,17 +32,16 @@ nameins = 'uc_059.json'       ## prueba demostrativa excelente en mi PC (MOR cin
 ## Emphasize balanced=0; feasibility=1; optimality=2; symmetry automatic=-1; symmetry low level=1
     
 ## Cargamos parámetros de configuración desde archivo <config>
-ambiente,ruta,executable,timeconst,timefull,         \
-emphasizeMILP,symmetryMILP,lbheurMILP,strategyMILP,  \
-emphasizeHEUR,symmetryHEUR,lbheurHEUR,strategyHEUR,  \
-gap,k,iterstop = util.config_env()
+ambiente,ruta,executable,timeconst,timefull,emphasizeMILP,symmetryMILP,lbheurMILP,strategyMILP, \
+emphasizeHEUR,symmetryHEUR,lbheurHEUR,strategyHEUR,gap,k,iterstop, \
+MILP,Hard3,Harjk,FP,lbc1,lbc2,lbc3,KS = util.config_env() 
 
-k_original = k     ## Almacenamos el parámetro k de local branching
+k_original = k      ## Almacenamos el parámetro k de local branching
 x          = 1e+75
 
-z_lp=x; z_milp=x; z_harjk=x; z_hard3=x; z_ks=x; z_lbc1=x; z_lbc2=x; z_feas=x; z_check=x; z_lbc0=x; z_ks=0; z_rks=0; z_=0;
-t_lp=0; t_milp=0; t_harjk=0; t_hard3=0; t_ks=0; t_lbc1=0; t_lbc2=0; t_feas=0; t_check=0; t_lbc0=0; t_ks=0; t_rks=0; t_=0;
-g_lp=x; g_milp=x; g_harjk=x; g_hard3=x; g_ks=x; g_lbc1=x; g_lbc2=x; g_feas=x; g_check=x; g_lbc0=x; g_ks=x; g_rks=x; g_=x;
+z_lp=x; z_milp=x; z_harjk=x; z_hard3=x; z_ks=x; z_lbc1=x; z_lbc2=x; z_lbc3=x; z_feas=x; z_check=x; z_lbc0=x; z_ks=0; z_rks=0; z_=0;
+t_lp=0; t_milp=0; t_harjk=0; t_hard3=0; t_ks=0; t_lbc1=0; t_lbc2=0; t_lbc3=0; t_feas=0; t_check=0; t_lbc0=0; t_ks=0; t_rks=0; t_=0;
+g_lp=x; g_milp=x; g_harjk=x; g_hard3=x; g_ks=x; g_lbc1=x; g_lbc2=x; g_lbc3=x; g_feas=x; g_check=x; g_lbc0=x; g_ks=x; g_rks=x; g_=x;
 lb_milp=0; lb_best=0;
 ns=0; nU_no_int=0; n_Uu_no_int=0; n_Uu_1_0=0;
 SB_Uu =[]; No_SB_Uu =[]; lower_Pmin_Uu =[]; Vv =[]; Ww =[]; delta =[];
@@ -68,9 +67,9 @@ print(localtime,'Solving <'+scope+'> model ---> ---> ---> --->',nameins)
 ## Lee instancia de archivo .json con formato de [Knueven2020]
 instance = reading.reading(ruta+nameins)
 
-## DEF CHECK SOLUTION
+## DEF CHECK FEASIABILITY OF SOLUTION
 def checkSol(option,z_,SB_Uux,No_SB_Uux,Vvx,Wwx,deltax,dual=False,label=''):
-    print('Check the feasibility of solution '+option+'_'+label+'=', z_ )
+    print('Checking solution feasibility: '+option+'_'+label+'=', z_ )
     t_o       = time.time() 
     model,__  = uc_Co.uc(instance,option='Check',SB_Uu=SB_Uux,No_SB_Uu=No_SB_Uux,V=Vvx,W=Wwx,delta=deltax,
                          nameins=nameins[0:6],mode='Tight',scope=scope)
@@ -78,33 +77,35 @@ def checkSol(option,z_,SB_Uux,No_SB_Uux,Vvx,Wwx,deltax,dual=False,label=''):
                          tee=False,tofiles=False,exportLP=False,option='Check',scope=scope,dual=dual)
     z_check, g_check = sol_check.solve_problem()
     t_check          = time.time() - t_o
-    print(label,'t_check= ',round(t_check,1),'z_check= ',round(z_check,4),'g_check= ',round(g_check,8))
+    print(option,': t_check= ',round(t_check,1),'z_check= ',round(z_check,4),'g_check= ',round(g_check,8))
     return model
 
 ## ---------------------------------------------- MILP ----------------------------------------------------------
 ## Solve as a MILP
 
-if  True:  
+if  MILP:  
     cutoff   = 1e+75 
     t_o      = time.time() 
     model,__ = uc_Co.uc(instance,option='Milp',nameins=nameins[0:6],mode='Tight',scope=scope)
     sol_milp = Solution(model=model,nameins=nameins[0:6],env=ambiente,executable=executable,
                         gap=gap,cutoff=cutoff,timelimit=timefull,tee=False,tofiles=False,
-                        emphasize=emphasizeMILP,symmetry=symmetryMILP,lbheur=lbheurMILP,strategy=strategyMILP,                        
+                        emphasize=emphasizeMILP,symmetry=symmetryMILP,lbheur=lbheurMILP,strategy=strategyMILP,                     
                         exportLP=False,option='Milp',scope=scope)
     z_milp, g_milp = sol_milp.solve_problem()
     t_milp         = time.time() - t_o
     
-    print('g_milp*= ',round(g_milp,8))
     ## Actualizamos el tiempo de las heurísticas al que ocupó el MILP (si es que encontró un óptimo o terminó por tiempo)
     timefull = t_milp
-    
-    lb_milp  = sol_milp.LB  ## lower bound
+    try:
+        lb_milp  = sol_milp.lower_bound
+    except Exception as e:
+        print(e)
+        
     lb_best  = max(0,lb_milp)
     g_milp   = util.igap(lb_best,z_milp)
     print('t_milp= ',round(t_milp,1),'z_milp= ',round(z_milp,1),'g_milp= ',round(g_milp,8))
       
-if  True:
+if  Hard3:
     ## ----------------------------------------------- RECOVERED SOLUTION ---------------------------------------------
     ## Load LR and Hard3 storaged solutions
     if path.exists('solHard3_a_'+nameins[0:6]+'.csv') == True and path.exists('solHard3_b_'+nameins[0:6]+'.csv') == True:
@@ -143,7 +144,7 @@ if  True:
         t_o       = time.time()
         model,__  = uc_Co.uc(instance,option='Hard3',SB_Uu=SB_Uu,No_SB_Uu=No_SB_Uu,lower_Pmin_Uu=lower_Pmin_Uu,
                             nameins=nameins[0:6],mode='Tight',scope=scope)
-        sol_hard3 = Solution(model=model,env=ambiente,executable=executable,nameins=nameins[0:6],gap=gap,timelimit=timeconst,
+        sol_hard3 = Solution(model=model,env=ambiente,executable=executable,nameins=nameins[0:6],gap=gap,timelimit=timeconst-t_lp,
                             tee=False,tofiles=False,option='Hard3',scope=scope,
                             emphasize=emphasizeHEUR,symmetry=symmetryHEUR,lbheur=lbheurHEUR,strategy=strategyHEUR)
         z_hard3, g_hard3 = sol_hard3.solve_problem()
@@ -167,11 +168,11 @@ if  True:
     ## ------------------------------------------- HARJUNKOSKI ---------------------------------------------
     ## HARJUNKOSKI's rule solution and solve the sub-MILP. (Require run the LP)
     
-if  True:    
+if  Harjk:    
     t_o       = time.time()
     model,__  = uc_Co.uc(instance,option='Harjk',SB_Uu=SB_Uu,No_SB_Uu=No_SB_Uu,lower_Pmin_Uu=lower_Pmin_Uu,
                          nameins=nameins[0:6],mode='Tight',scope=scope)
-    sol_harjk = Solution(model=model,env=ambiente,executable=executable,nameins=nameins[0:6],gap=gap,timelimit=timeconst,
+    sol_harjk = Solution(model=model,env=ambiente,executable=executable,nameins=nameins[0:6],gap=gap,timelimit=timeconst-t_lp,
                         emphasize=emphasizeHEUR,symmetry=symmetryHEUR,lbheur=lbheurHEUR,strategy=strategyHEUR,
                         tee=False,tofiles=False,option='Harjk',scope=scope)
     z_harjk, g_harjk = sol_harjk.solve_problem()
@@ -184,14 +185,34 @@ if  True:
     print('t_harjk= ',round(t_harjk,1),'z_harjk= ',round(z_harjk,1),'g_harjk= ',round(g_harjk,8) )
     del sol_harjk
     gc.collect()
-    
+## ---------------------------------------------- FP ----------------------------------------------------------
+## Solve as a Feasiability Pump
+if  FP:  
+    cutoff    = 1e+75 
+    t_o       = time.time() 
+    fpheur    = 2     ## Do not generate flow path cuts=-1 ; Automatic=0(CPLEX choose); moderately =1; aggressively=2
+    rinsheur  = 0     ## Automatic=0 (CPLEX choose); None: do not apply RINS heuristic=-1;  Frequency to apply RINS heuristic=Any positive integer 
+    symmetry  = 0     ## symmetry breaking: Automatic =-1 Turn off=0 ; moderade=1 ; extremely aggressive=5
+    emphasize = 1     ## Emphasize feasibility=1;  Optimality=2 ; Balanced=0 https://www.ibm.com/docs/en/icos/20.1.0?topic=parameters-mip-emphasis-switch  
+    lbheur    = 'yes' ## Apply local branching heuristic to new incumbent='yes'; Local branching heuristic is off='no'
+    strategy  = 3     ## node storage file switch: No node file=0; node file in memory=1; node file on disk=2;node file on disk and compresed=3;
+    model,__ = uc_Co.uc(instance,option='FP',nameins=nameins[0:6],mode='Tight',scope=scope)
+    sol_fp = Solution(model=model,nameins=nameins[0:6],env=ambiente,executable=executable,
+                        gap=gap,cutoff=cutoff,timelimit=timeconst,tee=False,tofiles=False,
+                        emphasize=emphasize,symmetry=symmetry,lbheur=lbheur,strategy=strategyMILP, 
+                        fpheur=fpheur,                
+                        exportLP=False,option='FP',scope=scope)
+    z_fp, g_fp = sol_fp.solve_problem()
+    t_fp       = time.time() - t_o    
+    g_fp       = util.igap(lb_best,z_fp)
+    print('t_fp= ',round(t_fp,1),'z_fp= ',round(z_fp,1),'g_fp= ',round(g_fp,8))
 
 
 ## --------------------------------------- LOCAL BRANCHING 1 ------------------------------------------
 ## LBC COUNTINOUS VERSION without soft-fixing
 ## Include the LOCAL BRANCHING CUT to the solution and solve the sub-MILP (it is using cutoff=z_hard).
 
-if  True:    
+if  lbc1:    
     t_o            = time.time() 
     Vv             = deepcopy(Vv3)
     Ww             = deepcopy(Ww3)
@@ -211,8 +232,8 @@ if  True:
     rightbranches  = []
     char           = ''
     fish           = ')'
-    result_iter    = []
-    result_iter.append((t_hard3,z_hard3))
+    #result_iter    = []
+    #result_iter.append((t_hard3,z_hard3))
     print('\t')
         
     while True:
@@ -244,7 +265,7 @@ if  True:
             if gap_iter > gap:
                 improve = True
 
-        result_iter.append((round(time.time() - t_o + t_hard3,1),z_lbc1))
+        #result_iter.append((round(time.time() - t_o + t_hard3,1),z_lbc1))
         z_old = z_lbc1 ## Guardamos la z de la solución anterior
           
         print('<°|'+fish+'>< iter:'+str(iter)+' t_lbc1= ',round(time.time()-t_o+t_hard3,1),'z_lbc1= ',round(z_lbc1,1),char,'g_lbc1= ',round(g_lbc1,8) ) #
@@ -281,10 +302,10 @@ if  True:
          
     t_lbc1 = time.time() - t_o + t_hard3  
     z_lbc1 = incumbent    
-    for item in result_iter:
-        print(item[0],',',item[1])    
-    result_iter = np.array(result_iter)
-    np.savetxt('iterLBC1'+nameins[0:6]+'.csv', result_iter, delimiter=',')
+    # for item in result_iter:
+    #     print(item[0],',',item[1])    
+    # result_iter = np.array(result_iter)
+    #np.savetxt('iterLBC1'+nameins[0:6]+'.csv', result_iter, delimiter=',')
     
     checkSol('z_lbc1',z_lbc1,SB_Uu,No_SB_Uu,Vv,Ww,delta,'lbc1') ## Check feasibility (LB1)
         
@@ -292,10 +313,10 @@ if  True:
 
         
 ## --------------------------------------- LOCAL BRANCHING 2 ------------------------------------------
-## LBC COUNTINOUS VERSION without soft-fixing
+## LBC BINARY VERSION without soft-fixing
 ## Include the LOCAL BRANCHING CUT to the solution and solve the sub-MILP (it is using cutoff=z_hard).
 
-if  True:    
+if  lbc2:    
     t_o            = time.time() 
     Vv             = deepcopy(Vv3)
     Ww             = deepcopy(Ww3)
@@ -315,8 +336,8 @@ if  True:
     rightbranches  = []
     char           = ''
     fish           = ')'
-    result_iter    = []
-    result_iter.append((t_hard3,z_hard3))
+    #result_iter    = []
+    #result_iter.append((t_hard3,z_hard3))
     print('\t')
         
     while True:
@@ -348,7 +369,7 @@ if  True:
             if gap_iter > gap:
                 improve = True
             
-        result_iter.append((round(time.time()-t_o+t_hard3,1),z_lbc2))
+        #result_iter.append((round(time.time()-t_o+t_hard3,1),z_lbc2))
         z_old = z_lbc2 ## Guardamos la solución anterior
           
         print('<°|'+fish+'>< iter:'+str(iter)+' t_lbc2= ',round(time.time()-t_o+t_hard3,1),'z_lbc2= ',round(z_lbc2,1),char,'g_lbc2= ',round(g_lbc2,8) ) #
@@ -385,14 +406,121 @@ if  True:
 
     t_lbc2 = time.time() - t_o + t_hard3  
     z_lbc2 = incumbent    
-    for item in result_iter:
-        print(item[0],',',item[1])    
-    result_iter = np.array(result_iter)
-    np.savetxt('iterLBC2'+nameins[0:6]+'.csv', result_iter, delimiter=',')
+    #for item in result_iter:
+    #    print(item[0],',',item[1])    
+    #result_iter = np.array(result_iter)
+    #np.savetxt('iterLBC2'+nameins[0:6]+'.csv', result_iter, delimiter=',')
     
     checkSol('z_lbc2',z_lbc2,SB_Uu,No_SB_Uu,Vv,Ww,delta,'lbc2') ## Check feasibility (LBC2)
     
     k = k_original  ## Si es que LBC cambió el parámetro k
+
+
+        
+## --------------------------------------- LOCAL BRANCHING 3 ------------------------------------------
+## LBC COUNTINOUS VERSION without soft-fixing
+## Include the LOCAL BRANCHING CUT to the solution and solve the sub-MILP (it is using cutoff=z_hard).
+
+if  lbc3:    
+    t_o            = time.time() 
+    Vv             = deepcopy(Vv3)
+    Ww             = deepcopy(Ww3)
+    delta          = deepcopy(delta3)
+    SB_Uu          = deepcopy(SB_Uu3)
+    No_SB_Uu       = deepcopy(No_SB_Uu3)
+    lower_Pmin_Uu  = deepcopy(lower_Pmin_Uu3)
+    t_net          = timefull - t_hard3
+    t_res          = timefull - t_hard3
+    cutoff         = z_hard3
+    incumbent      = z_hard3
+    z_old          = z_hard3
+    improve        = True    
+    timeover       = False
+    iter           = 1
+    saved          = [SB_Uu,No_SB_Uu,Vv,Ww,delta]
+    rightbranches  = []
+    char           = ''
+    fish           = ')'
+    #result_iter    = []
+    #result_iter.append((t_hard3,z_hard3))
+    print('\t')
+        
+    while True:
+        if (iter==iterstop) or (time.time()-t_o >= t_net):
+            break
+        char     = ''
+        
+        if improve == False:
+            cutoff=1e+75
+        
+        timeres1  = min(t_res,timeconst)      
+        model, __ = uc_Co.uc(instance,option='lbc3',SB_Uu=SB_Uu,No_SB_Uu=No_SB_Uu,lower_Pmin_Uu=lower_Pmin_Uu,V=Vv,W=Ww,delta=delta,
+                            percent_soft=90,k=k,nameins=nameins[0:6],mode='Tight',scope=scope,improve=improve,timeover=timeover,rightbranches=rightbranches)
+        sol_lbc3  = Solution(model=model,env=ambiente,executable=executable,nameins=nameins[0:6],letter=util.getLetter(iter-1),gap=gap,cutoff=cutoff,timelimit=timeres1,
+                            emphasize=emphasizeHEUR,symmetry=symmetryHEUR,lbheur=lbheurHEUR,strategy=strategyHEUR,
+                            tee=False,tofiles=False,option='lbc3',scope=scope)
+        z_lbc3,g_lbc3 = sol_lbc3.solve_problem()
+        
+        #sol_lbc3.cuenta_ceros_a_unos(SB_Uu, No_SB_Uu, lower_Pmin_Uu,'lbc3') ## Compara contra la última solución
+        
+        gap_iter = abs((z_lbc3 - z_old)/z_old) * 100 ## Percentage
+        improve = False
+        if z_lbc3 < incumbent :                      ## Update solution
+            incumbent  = z_lbc3
+            cutoff     = z_lbc3
+            #saved      = [SB_Uu,No_SB_Uu,Vv,Ww,delta]
+            char       = '***'
+            g_lbc3     = util.igap(lb_best,z_lbc3)
+            if gap_iter > gap:
+                improve = True
+            
+        #result_iter.append((round(time.time()-t_o+t_hard3,1),z_lbc3))
+        z_old = z_lbc3 ## Guardamos la solución anterior
+          
+        print('<°|'+fish+'>< iter:'+str(iter)+' t_lbc3= ',round(time.time()-t_o+t_hard3,1),'z_lbc3= ',round(z_lbc3,1),char,'g_lbc3= ',round(g_lbc3,8) ) #
+        print('\t')       
+        fish = fish + ')'  
+        
+        ## Aquí se prepara la nueva iteracion ...  
+        timeover == False       
+        if improve == False:   
+            if sol_lbc3.timeover == True or sol_lbc3.nosoluti == True or sol_lbc3.infeasib == True:                     
+                if sol_lbc3.timeover == True:   
+                    print('k=[k/2] Time limit reach without improve: shrinking the neighborhood  ...  >(°> . o O')
+                else:
+                    print('k=[k/2] No solution/infeasible: shrinking the neighborhood  ...  >(°> . o O')
+                k = floor(k/2)  
+                timeover == True         
+            else:              
+                print('Leaving a local optimum     ...    >>+*+*+*+*+*+|°>')
+                SB_Uu, No_SB_Uu, __, Vv, Ww, delta = sol_lbc3.select_binary_support_Uu('lbc3')  
+                lower_Pmin_Uu = sol_lbc3.update_lower_Pmin_Uu(lower_Pmin_Uu,'lbc3') 
+                rightbranches.append([SB_Uu,No_SB_Uu,lower_Pmin_Uu])
+                fish = ')'
+        else: ## Mejora la solución
+            SB_Uu, No_SB_Uu, __, Vv, Ww, delta = sol_lbc3.select_binary_support_Uu('lbc3')  
+            lower_Pmin_Uu = sol_lbc3.update_lower_Pmin_Uu(lower_Pmin_Uu,'lbc3') 
+            saved         = [SB_Uu,No_SB_Uu,Vv,Ww,delta] ## Update solution
+
+        t_res = t_net - time.time() + t_o 
+        print('lbc3 ','tiempo restante:',t_res)
+        
+        del sol_lbc3
+        gc.collect()
+        iter = iter + 1
+
+    t_lbc3 = time.time() - t_o + t_hard3  
+    z_lbc3 = incumbent    
+    #for item in result_iter:
+    #    print(item[0],',',item[1])    
+    #result_iter = np.array(result_iter)
+    #np.savetxt('iterLBC2'+nameins[0:6]+'.csv', result_iter, delimiter=',')
+    
+    checkSol('z_lbc3',z_lbc3,SB_Uu,No_SB_Uu,Vv,Ww,delta,'lbc3') ## Check feasibility (LBC2)
+    
+    k = k_original  ## Si es que LBC cambió el parámetro k
+
+
 
 
 ## ---------------------------------  KERNEL SEARCH I ---------------------------------
@@ -404,7 +532,7 @@ if  True:
 ## Use 'Soft+pmin' (lower subset of Uu-Pmin)  as the first and unique bucket to consider
 ## Use relax the integrality variable Uu.
 
-if  True:
+if  KS:
     Vv          = deepcopy(Vv3)
     Ww          = deepcopy(Ww3)
     delta       = deepcopy(delta3)
@@ -417,8 +545,8 @@ if  True:
     cutoff      =  z_hard3 # 1e+75 
     iter        =  0  
     sol_ks      =  []
-    result_iter =  []
-    result_iter.append((t_hard3 + time.time() - t_o, z_hard3))
+    #result_iter =  []
+    #result_iter.append((t_hard3 + time.time() - t_o, z_hard3))
 
     while True:
         ## --------------------------------------- CALCULATE REDUCED COSTS Uu ------------------------------------
@@ -495,13 +623,13 @@ if  True:
                         g_ks       = util.igap(lb_best,z_ks)
                         char       = '***'
                         
-                    result_iter.append((round(time.time()-t_o+t_hard3,1), z_ks))
+                    #result_iter.append((round(time.time()-t_o+t_hard3,1), z_ks))
                     
                     g_ks    = util.igap(lb_best,z_ks) 
                     print('<°|>< iter:'+str(iter)+' t_ks= ',round(time.time()-t_o+t_hard3,1),'z_ks= ',round(z_ks,1),char,'g_ks= ',round(g_ks,8)) #
                 except:
-                    # print('>>> Iteración sin solución')
-                    result_iter.append((round(time.time()-t_o+t_hard3,1), 1e+75))
+                    print('>>> No solution found')
+                    #result_iter.append((round(time.time()-t_o+t_hard3,1), 1e+75))
                 finally:    
                     iter_bk = iter_bk + 1
                     
@@ -522,10 +650,10 @@ if  True:
 
     t_ks = (time.time() - t_o) + t_hard3  
     z_ks = incumbent    
-    for item in result_iter:
-        print(item[0],',',item[1])
-    result_iter = np.array(result_iter)
-    np.savetxt('iterKS'+nameins[0:6]+'.csv', result_iter, delimiter=',')
+    #for item in result_iter:
+    #    print(item[0],',',item[1])
+    #result_iter = np.array(result_iter)
+    #np.savetxt('iterKS'+nameins[0:6]+'.csv', result_iter, delimiter=',')
     
     checkSol('z_ks',z_ks,SB_Uu,No_SB_Uu,Vv,Ww,delta,'ks') ## Check feasibility (KS)
             
@@ -589,11 +717,11 @@ comment    = 'Pruebas completas TC&UC'
 ## --------------------------------- RESULTS -------------------------------------------
 ## Append a list as new line to an old csv file using as log, the first line of the file as shown.
 
-## ambiente,localtime,nameins,T,G,gap,timeconst,timefull,z_lp,z_milp,z_feas,z_harjk,z_hard3,z_lbc1,z_lbc2,z_ks,t_lp,t_milp,t_feas,t_harjk,t_hard3,t_lbc1,t_lbc2,t_ks,g_milp,g_feas,g_harjk,g_hard3,g_lbc1,g_lbc2,g_ks,k,ns,emphasizeMILP,symmetryMILP,strategyMILP,lbheurMILP,emphasizeHEUR,symmetryHEUR,strategyHEUR,lbheurHEUR,comment
+## ambiente,localtime,nameins,T,G,gap,timeconst,timefull,z_lp,z_milp,z_feas,z_harjk,z_hard3,z_lbc1,z_lbc2,z_ks,t_lp,t_milp,t_feas,t_harjk,t_hard3,t_lbc1,t_lbc2,t_ks,lb_milp,g_milp,g_feas,g_harjk,g_hard3,g_lbc1,g_lbc2,g_ks,k,ns,emphasizeMILP,symmetryMILP,strategyMILP,lbheurMILP,emphasizeHEUR,symmetryHEUR,strategyHEUR,lbheurHEUR,comment
 row = [ambiente,localtime,nameins,len(instance[1]),len(instance[0]),gap,timeconst,timefull,
-    round(z_lp,1),round(z_milp,1),round(z_feas,1),round(z_harjk,1),round(z_hard3,1),round(z_lbc1,1),round(z_lbc2,1),round(z_ks,1),
-    round(t_lp,1),round(t_milp,1),round(t_feas,1),round(t_harjk,1),round(t_hard3,1),round(t_lbc1,1),round(t_lbc2,1),round(t_ks,1),
-                  round(g_milp,8),round(g_feas,1),round(g_harjk,8),round(g_hard3,8),round(g_lbc1,8),round(g_lbc2,8),round(g_ks,8),
+    round(z_lp,   1),round(z_milp,1),round(z_feas,1),round(z_harjk,1),round(z_hard3,1),round(z_lbc1,1),round(z_lbc2,1),round(z_lbc3,1),round(z_ks,1),
+    round(t_lp,   1),round(t_milp,1),round(t_feas,1),round(t_harjk,1),round(t_hard3,1),round(t_lbc1,1),round(t_lbc2,1),round(t_lbc3,1),round(t_ks,1),
+    round(lb_milp,1),round(g_milp,8),round(g_feas,1),round(g_harjk,8),round(g_hard3,8),round(g_lbc1,8),round(g_lbc2,8),round(g_lbc3,8),round(g_ks,8),
                   k,ns,emphasizeMILP,symmetryMILP,strategyMILP,lbheurMILP,emphasizeHEUR,symmetryHEUR,strategyHEUR,lbheurHEUR,comment] 
 util.append_list_as_row('stat.csv',row)
 
