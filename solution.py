@@ -9,7 +9,9 @@ from   math import ceil
 
 class Solution:
     def __init__(self,model,env,executable,nameins='model',letter='',gap=0.0001,timelimit=300,tee=False,tofiles=False,lpmethod=0,
-                 cutoff=1e+75,emphasize=1,lbheur='no',symmetry=-1,strategy=1,fpheur=0,rinsheur=0,exportLP=False,option='',scope='',rc=False,dual=False):
+                 cutoff=1e+75,emphasize=1,lbheur='no',symmetry=-1,strategy=1,fpheur=0,rinsheur=0,
+                 dive=0,heuristicfreq=0,numerical='no',tolfeasibility=1e-06,toloptimality=1e-06, 
+                 exportLP=False,option='',scope='',rc=False,dual=False):
         self.model      = model
         self.nameins    = nameins     ## name of instance 
         self.letter     = letter      ## letter that enlisted the LBC iteration
@@ -26,6 +28,13 @@ class Solution:
         self.fpheur     = fpheur      ## Do not generate flow path cuts=-1 ; Automatic=0(CPLEX choose); moderately =1; aggressively=2
         self.rinsheur   = rinsheur    ## None: do not apply RINS heuristic=-1; Automatic=0 (CPLEX choose); Frequency to apply RINS heuristic=Any positive integer 
                                       ## i.e. setting rinsheur to 20 dictates that the RINS heuristic be called at node 0, 20, 40, 60, etc
+       
+        self.dive           = dive 
+        self.heuristicfreq  = heuristicfreq
+        self.numerical      = numerical
+        self.tolfeasibility = tolfeasibility
+        self.toloptimality  = toloptimality
+        
         self.rc         = rc          ## To calculate Suffix data (dual and reduced cost)
         self.symmetry   = symmetry    ## symmetry breaking: Automatic =-1 Turn off=0 ; moderade=1 ; extremely aggressive=5
         self.strategy   = strategy    ## node storage file switch: No node file=0; node file in memory=1; node file on disk=2;node file on disk and compresed=3; 
@@ -82,9 +91,11 @@ class Solution:
             solver.options['mip tolerances uppercutoff'] = self.cutoff
         
         ## https://www.ibm.com/docs/en/icos/12.8.0.0?topic=parameters-algorithm-continuous-linear-problems
-        ##https://www.ibm.com/docs/en/icos/12.8.0.0?topic=cplex-list-parameters
-        ##https://www.ibm.com/docs/en/cofz/12.8.0?topic=parameters-symmetry-breaking
-        ##https://www.ibm.com/docs/en/SSSA5P_12.8.0/ilog.odms.studio.help/pdf/paramcplex.pdf
+        ## https://www.ibm.com/docs/en/icos/12.8.0.0?topic=cplex-list-parameters
+        ## https://www.ibm.com/docs/en/cofz/12.8.0?topic=parameters-symmetry-breaking
+        ## https://www.ibm.com/docs/en/SSSA5P_12.8.0/ilog.odms.studio.help/pdf/paramcplex.pdf
+        ## https://www.ibm.com/docs/en/icos/20.1.0?topic=parameters-node-storage-file-switch
+        ## https://www.ibm.com/docs/pl/icos/12.10.0?topic=parameters-mip-dive-strategy
         solver.options['lpmethod'                      ] = self.lpmethod         
         solver.options['mip tolerances mipgap'         ] = self.gap  
         solver.options['timelimit'                     ] = self.timelimit 
@@ -92,8 +103,14 @@ class Solution:
         solver.options['mip strategy lbheur'           ] = self.lbheur
         solver.options['preprocessing symmetry'        ] = self.symmetry
         solver.options['mip strategy fpheur'           ] = self.fpheur
-        solver.options['mip strategy rinsheur'         ] = self.rinsheur     
-        
+        solver.options['mip strategy rinsheur'         ] = self.rinsheur        
+        solver.options['mip strategy file'             ] = self.strategy   
+        solver.options['mip strategy dive'             ] = self.dive           
+        solver.options['mip strategy heuristicfreq'    ] = self.heuristicfreq 
+        solver.options['emphasis numerical'            ] = self.numerical      
+        solver.options['simplex tolerances feasibility'] = self.tolfeasibility 
+        solver.options['simplex tolerances optimality' ] = self.toloptimality  
+
         # solver.options['mip cuts all'                ] = -1
         # solver.options['mip strategy presolvenode'   ] =  1        
         # solver.options['preprocessing numpass'       ] =  0

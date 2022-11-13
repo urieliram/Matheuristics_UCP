@@ -50,43 +50,53 @@ def config_env():
     #ambiente='localPC',ruta='instances/',executable='/home/uriel/cplex1210/cplex/bin/x86-64_linux/cplex3'
     df = pd.read_csv('config.csv')    
     if len(df.index)  == 1:
-        ambiente      = df['ambiente'      ].values[0]
-        ruta          = df['ruta'          ].values[0]
-        executable    = df['executable'    ].values[0]
-        timeconst     = df['timeconst'     ].values[0]
-        timefull      = df['timefull'      ].values[0]
+        ambiente           = df['ambiente'           ].values[0]
+        ruta               = df['ruta'               ].values[0]
+        executable         = df['executable'         ].values[0]
+        timeconst          = df['timeconst'          ].values[0]
+        timefull           = df['timefull'           ].values[0]
         
-        emphasizeMILP = df['emphasysmilp'  ].values[0]
-        symmetryMILP  = df['symmetrymilp'  ].values[0]
-        lbheurMILP    = df['lbheurmilp'    ].values[0]
-        strategyMILP  = df['strategymilp'  ].values[0]
+        emphasizeMILP      = df['emphasysmilp'       ].values[0]
+        symmetryMILP       = df['symmetrymilp'       ].values[0]
+        lbheurMILP         = df['lbheurmilp'         ].values[0]
+        strategyMILP       = df['strategymilp'       ].values[0]
         
-        emphasizeHEUR = df['emphasysheur'  ].values[0]
-        symmetryHEUR  = df['symmetryheur'  ].values[0]
-        lbheurHEUR    = df['lbheurheur'    ].values[0]
-        strategyHEUR  = df['strategyheur'  ].values[0]
+        diveMILP           = df['divemilp'           ].values[0]
+        heuristicfreqMILP  = df['heuristicfreqmilp'  ].values[0]
+        numericalMILP      = df['numericalmilp'      ].values[0]
+        tolfeasibilityMILP = df['tolfeasibilitymilp' ].values[0]
+        toloptimalityMILP  = df['toloptimalitymilp'  ].values[0]
         
-        gap           = df['gap'           ].values[0]
-        k             = df['k'             ].values[0]
-        iterstop      = df['iterstop'      ].values[0]
+        emphasizeHEUR      = df['emphasysheur'       ].values[0]
+        symmetryHEUR       = df['symmetryheur'       ].values[0]
+        lbheurHEUR         = df['lbheurheur'         ].values[0]
+        strategyHEUR       = df['strategyheur'       ].values[0]
         
-        MILP          = df['MILP'          ].values[0]
-        Hard3         = df['Hard3'         ].values[0]
-        Harjk         = df['Harjk'         ].values[0]
-        FP            = df['FP'            ].values[0]
-        lbc1          = df['lbc1'          ].values[0]
-        lbc2          = df['lbc2'          ].values[0]
-        lbc3          = df['lbc3'          ].values[0]
-        KS            = df['KS'            ].values[0]
+        gap                = df['gap'                ].values[0]
+        k                  = df['k'                  ].values[0]
+        iterstop           = df['iterstop'           ].values[0]
+        
+        MILP               = df['MILP'               ].values[0]
+        Hard3              = df['Hard3'              ].values[0]
+        Harjk              = df['Harjk'              ].values[0]
+        FP                 = df['FP'                 ].values[0]
+        lbc1               = df['lbc1'               ].values[0]
+        lbc2               = df['lbc2'               ].values[0]
+        lbc3               = df['lbc3'               ].values[0]
+        KS                 = df['KS'                 ].values[0]
         
     else:
         print('!!! Problema al cargar la configuración. Verifique el ')
         print('formato y rutas del archivo <config>, algo como esto:')
-        print('ambiente,ruta,executable,timeconst,timefull, emphasysmilp,symmetrymilp,lbheurmilp,strategymilp, emphasysheur,symmetryheur,lbheurheur,strategyheur, gap,k,iterstop, MILP,Hard3,Harjk,FP,lbc1,lbc2,lbc3,KS')
+        print('ambiente,ruta,executable,timeconst,timefull, emphasysmilp,symmetrymilp,lbheurmilp,strategymilp, divemilp,heuristicfreqmilp,numericalmilp,tolfeasibilitymilp,toloptimalitymilp, emphasysheur,symmetryheur,lbheurheur,strategyheur, gap,k,iterstop, MILP,Hard3,Harjk,FP,lbc1,lbc2,lbc3,KS')
         print('yalma,instances/,/home/uriel/cplex1210/cplex/bin/x86-64_linux/cplex,1200,7200,1,1,yes,3, 1,0,no,3, 0.0001,20,30')
         print('localPC,instances/,/home/uriel/cplex1210/cplex/bin/x86-64_linux/cplex,400,1000,1,1,yes,3, 1,0,no,3, 0.0001,20,30')
 
-    return ambiente,ruta,executable,timeconst,timefull, emphasizeMILP,symmetryMILP,lbheurMILP,strategyMILP, emphasizeHEUR,symmetryHEUR,lbheurHEUR,strategyHEUR, gap,k,iterstop,MILP,Hard3,Harjk,FP,lbc1,lbc2,lbc3,KS
+    return  ambiente,ruta,executable,timeconst,timefull,                                    \
+            emphasizeMILP,symmetryMILP,lbheurMILP,strategyMILP,                             \
+            diveMILP,heuristicfreqMILP,numericalMILP,tolfeasibilityMILP,toloptimalityMILP,  \
+            emphasizeHEUR,symmetryHEUR,lbheurHEUR,strategyHEUR,                             \
+            gap,k,iterstop,MILP,Hard3,Harjk,FP,lbc1,lbc2,lbc3,KS 
 
 def trunc(values, decs=1):
     return np.trunc(values*10**decs)/(10**decs)

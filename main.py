@@ -25,7 +25,7 @@ nameins = 'uc_062.json'       ## prueba demostrativa excelente en mi PC
 
 nameins = 'uc_57_copy.json'   ## prueba demostrativa excelente en mi PC (MOR un dia)
 nameins = 'uc_057.json'       ## prueba demostrativa excelente en mi PC (MOR un dia)
-nameins = 'uc_58.json'       ## prueba demostrativa excelente en mi PC (MOR tres dias)
+nameins = 'uc_58.json'        ## prueba demostrativa excelente en mi PC (MOR tres dias)
 nameins = 'uc_059.json'       ## prueba demostrativa excelente en mi PC (MOR cinco dias)
 
 ## symmetry breaking: Automatic =-1 Turn off=0 ; moderade=1 ; extremely aggressive=5
@@ -33,11 +33,14 @@ nameins = 'uc_059.json'       ## prueba demostrativa excelente en mi PC (MOR cin
     
 ## Cargamos parámetros de configuración desde archivo <config>
 ambiente,ruta,executable,timeconst,timefull,emphasizeMILP,symmetryMILP,lbheurMILP,strategyMILP, \
+diveMILP,heuristicfreqMILP,numericalMILP,tolfeasibilityMILP,toloptimalityMILP,     \
 emphasizeHEUR,symmetryHEUR,lbheurHEUR,strategyHEUR,gap,k,iterstop, \
 MILP,Hard3,Harjk,FP,lbc1,lbc2,lbc3,KS = util.config_env() 
+# diveMILP=2; heuristicfreqMILP=50;  numericalMILP='yes'; tolfeasibilityMILP=1.0000001e-09 ;toloptimalityMILP =1.0000001e-09
 
-k_original = k      ## Almacenamos el parámetro k de local branching
-x          = 1e+75
+k_original         = k          ## Almacenamos el parámetro k de local branching
+timeconst_original = timeconst
+x                  = 1e+75
 
 z_lp=x; z_milp=x; z_harjk=x; z_hard3=x; z_ks=x; z_lbc1=x; z_lbc2=x; z_lbc3=x; z_feas=x; z_check=x; z_lbc0=x; z_ks=0; z_rks=0; z_=0;
 t_lp=0; t_milp=0; t_harjk=0; t_hard3=0; t_ks=0; t_lbc1=0; t_lbc2=0; t_lbc3=0; t_feas=0; t_check=0; t_lbc0=0; t_ks=0; t_rks=0; t_=0;
@@ -89,7 +92,9 @@ if  MILP:
     model,__ = uc_Co.uc(instance,option='Milp',nameins=nameins[0:6],mode='Tight',scope=scope)
     sol_milp = Solution(model=model,nameins=nameins[0:6],env=ambiente,executable=executable,
                         gap=gap,cutoff=cutoff,timelimit=timefull,tee=False,tofiles=False,
-                        emphasize=emphasizeMILP,symmetry=symmetryMILP,lbheur=lbheurMILP,strategy=strategyMILP,                     
+                        emphasize=emphasizeMILP,symmetry=symmetryMILP,lbheur=lbheurMILP,strategy=strategyMILP,
+                        dive=diveMILP,heuristicfreq=heuristicfreqMILP,numerical=numericalMILP,
+                        tolfeasibility=tolfeasibilityMILP,toloptimality=toloptimalityMILP,                     
                         exportLP=False,option='Milp',scope=scope)
     z_milp, g_milp = sol_milp.solve_problem()
     t_milp         = time.time() - t_o
@@ -99,7 +104,7 @@ if  MILP:
     try:
         lb_milp  = sol_milp.lower_bound
     except Exception as e:
-        print(e)
+        temp = 0 #print(e)
         
     lb_best  = max(0,lb_milp)
     g_milp   = util.igap(lb_best,z_milp)
@@ -192,14 +197,15 @@ if  FP:
     t_o       = time.time() 
     fpheur    = 2     ## Do not generate flow path cuts=-1 ; Automatic=0(CPLEX choose); moderately =1; aggressively=2
     rinsheur  = 0     ## Automatic=0 (CPLEX choose); None: do not apply RINS heuristic=-1;  Frequency to apply RINS heuristic=Any positive integer 
-    symmetry  = 0     ## symmetry breaking: Automatic =-1 Turn off=0 ; moderade=1 ; extremely aggressive=5
+    symmetry  = 0     ## Symmetry breaking: Automatic =-1 Turn off=0 ; moderade=1 ; extremely aggressive=5
     emphasize = 1     ## Emphasize feasibility=1;  Optimality=2 ; Balanced=0 https://www.ibm.com/docs/en/icos/20.1.0?topic=parameters-mip-emphasis-switch  
     lbheur    = 'yes' ## Apply local branching heuristic to new incumbent='yes'; Local branching heuristic is off='no'
-    strategy  = 3     ## node storage file switch: No node file=0; node file in memory=1; node file on disk=2;node file on disk and compresed=3;
+    strategy  = 3     ## Node storage file switch: No node file=0; node file in memory=1; node file on disk=2;node file on disk and compresed=3;
     model,__ = uc_Co.uc(instance,option='FP',nameins=nameins[0:6],mode='Tight',scope=scope)
     sol_fp = Solution(model=model,nameins=nameins[0:6],env=ambiente,executable=executable,
                         gap=gap,cutoff=cutoff,timelimit=timeconst,tee=False,tofiles=False,
                         emphasize=emphasize,symmetry=symmetry,lbheur=lbheur,strategy=strategyMILP, 
+                        dive=diveMILP,heuristicfreq=heuristicfreqMILP,numerical=numericalMILP,
                         fpheur=fpheur,                
                         exportLP=False,option='FP',scope=scope)
     z_fp, g_fp = sol_fp.solve_problem()
@@ -232,8 +238,8 @@ if  lbc1:
     rightbranches  = []
     char           = ''
     fish           = ')'
-    #result_iter    = []
-    #result_iter.append((t_hard3,z_hard3))
+    result_iter    = []
+    result_iter.append((t_hard3,z_hard3))
     print('\t')
         
     while True:
@@ -265,7 +271,7 @@ if  lbc1:
             if gap_iter > gap:
                 improve = True
 
-        #result_iter.append((round(time.time() - t_o + t_hard3,1),z_lbc1))
+        result_iter.append((round(time.time() - t_o + t_hard3,1),z_lbc1))
         z_old = z_lbc1 ## Guardamos la z de la solución anterior
           
         print('<°|'+fish+'>< iter:'+str(iter)+' t_lbc1= ',round(time.time()-t_o+t_hard3,1),'z_lbc1= ',round(z_lbc1,1),char,'g_lbc1= ',round(g_lbc1,8) ) #
@@ -302,9 +308,9 @@ if  lbc1:
          
     t_lbc1 = time.time() - t_o + t_hard3  
     z_lbc1 = incumbent    
-    # for item in result_iter:
-    #     print(item[0],',',item[1])    
-    # result_iter = np.array(result_iter)
+    for item in result_iter:
+        print(item[0],',',item[1])    
+    result_iter = np.array(result_iter)
     #np.savetxt('iterLBC1'+nameins[0:6]+'.csv', result_iter, delimiter=',')
     
     checkSol('z_lbc1',z_lbc1,SB_Uu,No_SB_Uu,Vv,Ww,delta,'lbc1') ## Check feasibility (LB1)
@@ -336,8 +342,8 @@ if  lbc2:
     rightbranches  = []
     char           = ''
     fish           = ')'
-    #result_iter    = []
-    #result_iter.append((t_hard3,z_hard3))
+    result_iter    = []
+    result_iter.append((t_hard3,z_hard3))
     print('\t')
         
     while True:
@@ -369,7 +375,7 @@ if  lbc2:
             if gap_iter > gap:
                 improve = True
             
-        #result_iter.append((round(time.time()-t_o+t_hard3,1),z_lbc2))
+        result_iter.append((round(time.time()-t_o+t_hard3,1),z_lbc2))
         z_old = z_lbc2 ## Guardamos la solución anterior
           
         print('<°|'+fish+'>< iter:'+str(iter)+' t_lbc2= ',round(time.time()-t_o+t_hard3,1),'z_lbc2= ',round(z_lbc2,1),char,'g_lbc2= ',round(g_lbc2,8) ) #
@@ -406,9 +412,9 @@ if  lbc2:
 
     t_lbc2 = time.time() - t_o + t_hard3  
     z_lbc2 = incumbent    
-    #for item in result_iter:
-    #    print(item[0],',',item[1])    
-    #result_iter = np.array(result_iter)
+    for item in result_iter:
+        print(item[0],',',item[1])    
+    result_iter = np.array(result_iter)
     #np.savetxt('iterLBC2'+nameins[0:6]+'.csv', result_iter, delimiter=',')
     
     checkSol('z_lbc2',z_lbc2,SB_Uu,No_SB_Uu,Vv,Ww,delta,'lbc2') ## Check feasibility (LBC2)
@@ -441,8 +447,8 @@ if  lbc3:
     rightbranches  = []
     char           = ''
     fish           = ')'
-    #result_iter    = []
-    #result_iter.append((t_hard3,z_hard3))
+    result_iter    = []
+    result_iter.append((t_hard3,z_hard3))
     print('\t')
         
     while True:
@@ -474,7 +480,7 @@ if  lbc3:
             if gap_iter > gap:
                 improve = True
             
-        #result_iter.append((round(time.time()-t_o+t_hard3,1),z_lbc3))
+        result_iter.append((round(time.time()-t_o+t_hard3,1),z_lbc3))
         z_old = z_lbc3 ## Guardamos la solución anterior
           
         print('<°|'+fish+'>< iter:'+str(iter)+' t_lbc3= ',round(time.time()-t_o+t_hard3,1),'z_lbc3= ',round(z_lbc3,1),char,'g_lbc3= ',round(g_lbc3,8) ) #
@@ -511,9 +517,9 @@ if  lbc3:
 
     t_lbc3 = time.time() - t_o + t_hard3  
     z_lbc3 = incumbent    
-    #for item in result_iter:
-    #    print(item[0],',',item[1])    
-    #result_iter = np.array(result_iter)
+    for item in result_iter:
+        print(item[0],',',item[1])    
+    result_iter = np.array(result_iter)
     #np.savetxt('iterLBC2'+nameins[0:6]+'.csv', result_iter, delimiter=',')
     
     checkSol('z_lbc3',z_lbc3,SB_Uu,No_SB_Uu,Vv,Ww,delta,'lbc3') ## Check feasibility (LBC2)
@@ -545,8 +551,8 @@ if  KS:
     cutoff      =  z_hard3 # 1e+75 
     iter        =  0  
     sol_ks      =  []
-    #result_iter =  []
-    #result_iter.append((t_hard3 + time.time() - t_o, z_hard3))
+    result_iter =  []
+    result_iter.append((t_hard3 + time.time() - t_o, z_hard3))
 
     while True:
         ## --------------------------------------- CALCULATE REDUCED COSTS Uu ------------------------------------
@@ -584,7 +590,7 @@ if  KS:
             for i in range(len_i,len(No_SB_Uu),len_i+1):
                 k_.append( i )
             k_[-1] = len(No_SB_Uu)
-            print( k_ )
+            #print( k_ )
             
             cutoff      = incumbent # 1e+75 !!!
             iter_bk     = 0
@@ -623,13 +629,13 @@ if  KS:
                         g_ks       = util.igap(lb_best,z_ks)
                         char       = '***'
                         
-                    #result_iter.append((round(time.time()-t_o+t_hard3,1), z_ks))
+                    result_iter.append((round(time.time()-t_o+t_hard3,1), z_ks))
                     
                     g_ks    = util.igap(lb_best,z_ks) 
                     print('<°|>< iter:'+str(iter)+' t_ks= ',round(time.time()-t_o+t_hard3,1),'z_ks= ',round(z_ks,1),char,'g_ks= ',round(g_ks,8)) #
                 except:
                     print('>>> No solution found')
-                    #result_iter.append((round(time.time()-t_o+t_hard3,1), 1e+75))
+                    result_iter.append((round(time.time()-t_o+t_hard3,1), 1e+75))
                 finally:    
                     iter_bk = iter_bk + 1
                     
@@ -650,9 +656,9 @@ if  KS:
 
     t_ks = (time.time() - t_o) + t_hard3  
     z_ks = incumbent    
-    #for item in result_iter:
-    #    print(item[0],',',item[1])
-    #result_iter = np.array(result_iter)
+    for item in result_iter:
+        print(item[0],',',item[1])
+    result_iter = np.array(result_iter)
     #np.savetxt('iterKS'+nameins[0:6]+'.csv', result_iter, delimiter=',')
     
     checkSol('z_ks',z_ks,SB_Uu,No_SB_Uu,Vv,Ww,delta,'ks') ## Check feasibility (KS)
@@ -717,8 +723,8 @@ comment    = 'Pruebas completas TC&UC'
 ## --------------------------------- RESULTS -------------------------------------------
 ## Append a list as new line to an old csv file using as log, the first line of the file as shown.
 
-## ambiente,localtime,nameins,T,G,gap,timeconst,timefull,z_lp,z_milp,z_feas,z_harjk,z_hard3,z_lbc1,z_lbc2,z_ks,t_lp,t_milp,t_feas,t_harjk,t_hard3,t_lbc1,t_lbc2,t_ks,lb_milp,g_milp,g_feas,g_harjk,g_hard3,g_lbc1,g_lbc2,g_ks,k,ns,emphasizeMILP,symmetryMILP,strategyMILP,lbheurMILP,emphasizeHEUR,symmetryHEUR,strategyHEUR,lbheurHEUR,comment
-row = [ambiente,localtime,nameins,len(instance[1]),len(instance[0]),gap,timeconst,timefull,
+## ambiente,localtime,nameins,T,G,gap,timeconst,timefull,z_lp,z_milp,z_feas,z_harjk,z_hard3,z_lbc1,z_lbc2,z_lbc3,z_ks,t_lp,t_milp,t_feas,t_harjk,t_hard3,t_lbc1,t_lbc2,t_lbc3,t_ks,lb_milp,g_milp,g_feas,g_harjk,g_hard3,g_lbc1,g_lbc2,g_lbc3,g_ks,k,ns,emphasizeMILP,symmetryMILP,strategyMILP,lbheurMILP,emphasizeHEUR,symmetryHEUR,strategyHEUR,lbheurHEUR,comment
+row = [ambiente,localtime,nameins,len(instance[1]),len(instance[0]),gap,timeconst_original,timefull,
     round(z_lp,   1),round(z_milp,1),round(z_feas,1),round(z_harjk,1),round(z_hard3,1),round(z_lbc1,1),round(z_lbc2,1),round(z_lbc3,1),round(z_ks,1),
     round(t_lp,   1),round(t_milp,1),round(t_feas,1),round(t_harjk,1),round(t_hard3,1),round(t_lbc1,1),round(t_lbc2,1),round(t_lbc3,1),round(t_ks,1),
     round(lb_milp,1),round(g_milp,8),round(g_feas,1),round(g_harjk,8),round(g_hard3,8),round(g_lbc1,8),round(g_lbc2,8),round(g_lbc3,8),round(g_ks,8),
