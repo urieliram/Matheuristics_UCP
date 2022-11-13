@@ -929,7 +929,7 @@ def uc(instance,option='None',
             for f in SB_Uu:
                 expr += model.u[f[0]+1,f[1]+1]
             model.cuts.add(expr >= inside90)
-            print(option,'variables Uu that SB_Uu=1 <= inside90  =', inside90)
+            print(option,'soft-fixing Uu:  ∑SB=1 <= inside90 =['+str(inside90)+']')
             # outside90 = len(SB_Uu)-inside90
             # print(option,'variables Uu that SB_Uu=0 <= outside90 =', outside90)
             
@@ -938,7 +938,7 @@ def uc(instance,option='None',
         if True:            
             ## Adding a new restrictions LEFT-BRANCH  <°|((><
             if improve == True or (timeover==True and improve == False) : 
-                print('Adding  1  left-branch: ∑lower_Pmin['+len(lower_Pmin_Uu)+'] + ∑SB['+len(SB_Uu)+'] ≤',k)                
+                print('Adding  1  left-branch: ∑lower_Pmin['+str(len(lower_Pmin_Uu))+'] + ∑SB['+str(len(SB_Uu))+'] ≤',k)                
                 expr = 0      
                 for f in SB_Uu:                             ## count the changes  1 --> 0  
                     expr += 1 - model.u[f[0]+1,f[1]+1] 
@@ -947,7 +947,7 @@ def uc(instance,option='None',
                 model.cuts.add(expr <= k)      
         
             ## Adding a new restrictions RIGHT-BRANCH  >>++++++++|°> . o O
-            print('Adding ',len(rightbranches),' right-branches:  ∑lower_Pmin['+len(lower_Pmin_Uu)+'] + ∑SB['+len(SB_Uu)+'] ≥',k,'+ 1')
+            print('Adding ',len(rightbranches),' right-branches:  ∑lower_Pmin['+str(len(lower_Pmin_Uu))+'] + ∑SB['+str(len(SB_Uu))+'] ≥',k,'+ 1')
             for cut in rightbranches:
                 expr = 0      
                 ## cut[1]=No_SB_Uu   cut[2]=lower_Pmin_Uu  cut[0]=SB_Uu   
@@ -989,7 +989,7 @@ def uc(instance,option='None',
             ## Adding a new restrictions LEFT-BRANCH  <°|((><
             if improve == True or (timeover==True and improve == False) : 
                 #print('Adding  1  left-branch: ∑lower_Pmin_Uu  + ∑SB_Uu ≤',k)    
-                print('Adding  1  left-branch: ∑lower_Pmin['+len(lower_Pmin_Uu)+'] + ∑SB['+len(SB_Uu)+'] ≤',k)              
+                print('Adding  1  left-branch: ∑lower_Pmin['+str(len(lower_Pmin_Uu))+'] + ∑SB['+str(len(SB_Uu))+'] ≤',k)              
                 expr = 0      
                 for f in SB_Uu:                             ## count the changes  1 --> 0  
                     expr += 1 - model.u[f[0]+1,f[1]+1] 
@@ -998,7 +998,7 @@ def uc(instance,option='None',
                 model.cuts.add(expr <= k)      
         
             ## Adding a new restrictions RIGHT-BRANCH  >>++++++++|°> . o O
-            print('Adding ',len(rightbranches),' right-branches:  ∑lower_Pmin['+len(lower_Pmin_Uu)+'] + ∑SB['+len(SB_Uu)+'] ≥',k,'+ 1')
+            print('Adding ',len(rightbranches),' right-branches:  ∑lower_Pmin['+str(len(lower_Pmin_Uu))+'] + ∑SB['+str(len(SB_Uu))+'] ≥',k,'+ 1')
             for cut in rightbranches:
                 expr = 0      
                 ## cut[1]=No_SB_Uu   cut[2]=lower_Pmin_Uu  cut[0]=SB_Uu   
@@ -1011,7 +1011,7 @@ def uc(instance,option='None',
                 
                          
     ## ---------------------------- LOCAL BRANCHING CONSTRAINT LBC3 (ALL VARIABLES "U=0" in LBC)------------------------------------------    
-    
+    ## 
     if option == 'lbc3':
     ## Define a neighbourhood with LBC2.      
     ## Withot Soft-fixing and U.domain in Binary, without "restricted candidates"
@@ -1040,7 +1040,7 @@ def uc(instance,option='None',
         if True:            
             ## Adding a new restrictions LEFT-BRANCH  <°|((><
             if improve == True or (timeover==True and improve == False) : 
-                print('Adding  1  left-branch: ∑No_SB_Uu['+len(No_SB_Uu)+'] + ∑SB['+len(SB_Uu)+'] ≤',k)
+                print('Adding  1  left-branch: ∑No_SB['+str(len(No_SB_Uu))+'] + ∑SB['+str(len(SB_Uu))+'] ≤',k)
                 expr = 0      
                 for f in SB_Uu:                             ## count the changes  1 --> 0  
                     expr += 1 - model.u[f[0]+1,f[1]+1] 
@@ -1049,7 +1049,7 @@ def uc(instance,option='None',
                 model.cuts.add(expr <= k)      
         
             ## Adding a new restrictions RIGHT-BRANCH  >>++++++++|°> . o O
-            print('Adding ',len(rightbranches),' right-branches:  ∑No_SB_Uu['+len(No_SB_Uu)+'] + ∑SB['+len(SB_Uu)+'] ≥',k,'+ 1')
+            print('Adding ',len(rightbranches),' right-branches:  ∑No_SB['+str(len(No_SB_Uu))+'] + ∑SB['+str(len(SB_Uu))+'] ≥',k,'+ 1')
             for cut in rightbranches:
                 expr = 0      
                 ## cut[1]=No_SB_Uu   cut[2]=lower_Pmin_Uu  cut[0]=SB_Uu   
@@ -1058,7 +1058,6 @@ def uc(instance,option='None',
                 for f in cut[1]:                            ## count the changes  0 --> 1  ## LBC3!!!
                     expr +=     model.u[f[0]+1,f[1]+1]      
                 model.cuts.add(expr >= k + 1)
-                
 
     ## ---------------------------- HARD VARIABLE FIXING I  ------------------------------------------
     ##     
