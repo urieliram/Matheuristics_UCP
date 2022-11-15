@@ -272,7 +272,8 @@ def reading(file):
         # print('Pd',Pd)
 
     except:
-        print('reading.py sin información de cargas elásticas')
+        x=0
+        #print('reading.py sin información de cargas elásticas')
     
     ## Prohibid operating zones
     GRO   = []    
@@ -305,8 +306,9 @@ def reading(file):
             romin.append( power_output_maximum[item[0]-1]*minoz[item[1]-1]*0.01 )
             romax.append( power_output_maximum[item[0]-1]*maxoz[item[1]-1]*0.01  )                
         
-    except:        
-        print('reading.py sin información de zonas prohibidas')
+    except: 
+        x=0       
+        #print('reading.py sin información de zonas prohibidas')
 
 
     

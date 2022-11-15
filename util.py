@@ -79,11 +79,11 @@ def config_env():
         MILP               = df['MILP'               ].values[0]
         Hard3              = df['Hard3'              ].values[0]
         Harjk              = df['Harjk'              ].values[0]
-        FP                 = df['FP'                 ].values[0]
         lbc1               = df['lbc1'               ].values[0]
         lbc2               = df['lbc2'               ].values[0]
         lbc3               = df['lbc3'               ].values[0]
         KS                 = df['KS'                 ].values[0]
+        lbc4               = df['lbc4'               ].values[0]
         
     else:
         print('!!! Problema al cargar la configuración. Verifique el ')
@@ -96,7 +96,7 @@ def config_env():
             emphasizeMILP,symmetryMILP,lbheurMILP,strategyMILP,                             \
             diveMILP,heuristicfreqMILP,numericalMILP,tolfeasibilityMILP,toloptimalityMILP,  \
             emphasizeHEUR,symmetryHEUR,lbheurHEUR,strategyHEUR,                             \
-            gap,k,iterstop,MILP,Hard3,Harjk,FP,lbc1,lbc2,lbc3,KS 
+            gap,k,iterstop,MILP,Hard3,Harjk,lbc1,lbc2,lbc3,KS,lbc4
 
 def trunc(values, decs=1):
     return np.trunc(values*10**decs)/(10**decs)

@@ -669,7 +669,7 @@ if  lbc4:
     ## Calculating reduced cost
     model,__  = uc_Co.uc(instance,option='RC',SB_Uu=saved[0],No_SB_Uu=saved[1],V=saved[2],W=saved[3],delta=saved[4],
                          nameins=nameins[0:6],mode='Tight',scope=scope)
-    sol_rc    = Solution(model=model,nameins=nameins[0:6],env=ambiente,executable=executable,gap=gap,timelimit=t_net,
+    sol_rc    = Solution(model=model,nameins=nameins[0:6],env=ambiente,executable=executable,gap=gap,timelimit=timeres1,
                          emphasize=emphasizeHEUR,symmetry=symmetryHEUR,lbheur=lbheurHEUR,strategy=strategyHEUR,
                          tee=False,tofiles=False,exportLP=False,rc=True,option='RC',scope=scope)
     z_rc,g_rc = sol_rc.solve_problem() 
@@ -765,7 +765,7 @@ if  lbc4:
     ## PENDIENTES    
     # \todo{Exportar los Costos reducidos ordenados de LR y comparar contra los lower_Pmin_Uu, se esperan coincidencias}
     # \todo{Curar instancias Morales y Knueven (cambiar limites pegados y agregar piecewise cost)}
-
+    
     ## PRUEBAS                    
     # \todo{Probar experimentalmente que fijar otras variables enteras además de Uu no impacta mucho}         
     # \todo{probar que SI conviene incluir los intentos de asignación en las variables soft-fix }
