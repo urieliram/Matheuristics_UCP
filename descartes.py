@@ -1046,3 +1046,29 @@
     #         return sum(m.v[g,t] for t in m.T) == sum(m.delta[g,t,s] for s in range(1,value(len(m.S[g]))+1) for t in m.T)  
     #     model.Start_up_cost_desigualdad_Uriel = Constraint(model.G,rule = Start_up_cost_desigualdad_Uriel)
         
+        
+        
+## ---------------------------------------------- FP ----------------------------------------------------------
+## Solve as a Feasiability Pump
+# if  False:  
+#     cutoff    = 1e+75 
+#     t_o       = time.time() 
+#     fpheur    = 2     ## Do not generate flow path cuts=-1 ; Automatic=0(CPLEX choose); moderately =1; aggressively=2
+#     rinsheur  = 50    ## Automatic=0 (CPLEX choose); None: do not apply RINS heuristic=-1;  Frequency to apply RINS heuristic=Any positive integer 
+#     symmetry  = 0     ## Symmetry breaking: Automatic =-1 Turn off=0 ; moderade=1 ; extremely aggressive=5
+#     emphasize = 1     ## Emphasize feasibility=1;  Optimality=2 ; Balanced=0 https://www.ibm.com/docs/en/icos/20.1.0?topic=parameters-mip-emphasis-switch  
+#     lbheur    = 'yes' ## Apply local branching heuristic to new incumbent='yes'; Local branching heuristic is off='no'
+#     strategy  = 3     ## Node storage file switch: No node file=0; node file in memory=1; node file on disk=2;node file on disk and compresed=3;
+#     model,__ = uc_Co.uc(instance,option='FP',nameins=nameins[0:6],mode='Tight',scope=scope)
+#     sol_fp = Solution(model=model,nameins=nameins[0:6],env=ambiente,executable=executable,
+#                         gap=gap,cutoff=cutoff,timelimit=timeconst,tee=False,tofiles=False,
+#                         emphasize=emphasize,symmetry=symmetry,lbheur=lbheur,strategy=strategyMILP, 
+#                         dive=diveMILP,heuristicfreq=heuristicfreqMILP,numerical=numericalMILP,
+#                         fpheur=fpheur, rinsheur=rinsheur,           
+#                         exportLP=False,option='FP',scope=scope)
+#     z_fp, g_fp = sol_fp.solve_problem()
+#     t_fp       = time.time() - t_o    
+#     g_fp       = util.igap(lb_best,z_fp)
+#     print('t_fp= ',round(t_fp,1),'z_fp= ',round(z_fp,1),'g_fp= ',round(g_fp,8))
+
+

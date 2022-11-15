@@ -1,2 +1,2 @@
-ambiente,ruta,executable,timeconst,timefull,emphasysmilp,symmetrymilp,lbheurmilp,strategymilp,divemilp,heuristicfreqmilp,numericalmilp,tolfeasibilitymilp,toloptimalitymilp,emphasysheur,symmetryheur,lbheurheur,strategyheur,gap,k,iterstop,MILP,Hard3,Harjk,FP,lbc1,lbc2,lbc3,KS
-localPC,instances/,/home/uriel/cplex1210/cplex/bin/x86-64_linux/cplex,500,300,1,1,yes,3,2,50,yes,1.00E-09,1.00E-09,1,0,no,3,0.0001,20,30,True,True,True,True,True,True,True,True
+ambiente,ruta,executable,timeconst,timefull,emphasysmilp,symmetrymilp,lbheurmilp,strategymilp,divemilp,heuristicfreqmilp,numericalmilp,tolfeasibilitymilp,toloptimalitymilp,emphasysheur,symmetryheur,lbheurheur,strategyheur,gap,k,iterstop,MILP,Hard3,Harjk,lbc1,lbc2,lbc3,KS,lbc4
+localPC,instances/,/home/uriel/cplex1210/cplex/bin/x86-64_linux/cplex,500,300,1,1,yes,3,2,50,yes,1.00E-09,1.00E-09,1,0,no,3,0.0001,20,30,False,True,False,False,False,False,False,True
