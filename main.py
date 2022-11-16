@@ -42,9 +42,9 @@ k_original         = k          ## Almacenamos el parámetro k de local branchin
 timeconst_original = timeconst
 x                  = 1e+75
 
-z_lp=x; z_milp=x; z_harjk=x; z_hard3=x; z_ks=x; z_lbc1=x; z_lbc2=x; z_lbc3=x; z_feas=x; z_check=x; z_lbc0=x; z_ks=0; z_rks=0; z_=0;
-t_lp=0; t_milp=0; t_harjk=0; t_hard3=0; t_ks=0; t_lbc1=0; t_lbc2=0; t_lbc3=0; t_feas=0; t_check=0; t_lbc0=0; t_ks=0; t_rks=0; t_=0;
-g_lp=x; g_milp=x; g_harjk=x; g_hard3=x; g_ks=x; g_lbc1=x; g_lbc2=x; g_lbc3=x; g_feas=x; g_check=x; g_lbc0=x; g_ks=x; g_rks=x; g_=x;
+z_lp=x; z_milp=x; z_harjk=x; z_hard3=x; z_ks=x; z_lbc1=x; z_lbc2=x; z_lbc3=x; z_lbc4=x; z_feas=x; z_check=x; z_lbc0=x; z_ks=0; z_rks=0; z_=0;
+t_lp=0; t_milp=0; t_harjk=0; t_hard3=0; t_ks=0; t_lbc1=0; t_lbc2=0; t_lbc3=0; t_lbc4=0; t_feas=0; t_check=0; t_lbc0=0; t_ks=0; t_rks=0; t_=0;
+g_lp=x; g_milp=x; g_harjk=x; g_hard3=x; g_ks=x; g_lbc1=x; g_lbc2=x; g_lbc3=x; g_lbc4=x; g_feas=x; g_check=x; g_lbc0=x; g_ks=x; g_rks=x; g_=x;
 lb_milp=0; lb_best=0;
 ns=0; nU_no_int=0; n_Uu_no_int=0; n_Uu_1_0=0;
 SB_Uu =[]; No_SB_Uu =[]; lower_Pmin_Uu =[]; Vv =[]; Ww =[]; delta =[];
@@ -503,6 +503,131 @@ if  lbc3:
     k = k_original  ## Si es que LBC cambió el parámetro k
 
 
+## --------------------------------------- LOCAL BRANCHING 4 ------------------------------------------
+## LBC COUNTINOUS VERSION without soft-fixing
+## Include the LOCAL BRANCHING CUT to the solution and solve the sub-MILP (it is using cutoff=z_hard).
+
+if  lbc4:    
+    t_o            = time.time() 
+    Vv             = deepcopy(Vv3)
+    Ww             = deepcopy(Ww3)
+    delta          = deepcopy(delta3)
+    SB_Uu          = deepcopy(SB_Uu3)
+    No_SB_Uu       = deepcopy(No_SB_Uu3)
+    lower_Pmin_Uu  = deepcopy(lower_Pmin_Uu3)
+    t_net          = timefull - t_hard3
+    t_res          = timefull - t_hard3
+    cutoff         = z_hard3
+    incumbent      = z_hard3
+    z_old          = z_hard3
+    improve        = True    
+    timeover       = False
+    iter           = 1
+    saved          = [SB_Uu,No_SB_Uu,Vv,Ww,delta]
+    rightbranches  = []
+    char           = ''
+    fish           = ')'
+    result_iter    = []
+    result_iter.append((t_hard3,z_hard3))
+    print('\t')
+    
+    ## Calculating reduced cost
+    model,__  = uc_Co.uc(instance,option='RC',SB_Uu=saved[0],No_SB_Uu=saved[1],V=saved[2],W=saved[3],delta=saved[4],
+                         nameins=nameins[0:6],mode='Tight',scope=scope)
+    sol_rc    = Solution(model=model,nameins=nameins[0:6],env=ambiente,executable=executable,gap=gap,timelimit=t_net,
+                         emphasize=emphasizeHEUR,symmetry=symmetryHEUR,lbheur=lbheurHEUR,strategy=strategyHEUR,
+                         tee=False,tofiles=False,exportLP=False,rc=True,option='RC',scope=scope)
+    z_rc,g_rc = sol_rc.solve_problem() 
+    print('lb4 z_rc= ',round(z_rc,4))      
+    
+    ##  Colected candidates
+    rc   = []
+    i    = 0                    
+    for f in No_SB_Uu: 
+        ##        ( i , reduced_cost , g , t )
+        rc.append(( i , model.rc[model.u[f[0]+1,f[1]+1]] , f[0] , f[1] ))
+        i = i + 1    
+    rc.sort(key=lambda tup:tup[1], reverse=False) ## Ordenamos las variables No_SB_Uu de acuerdo a sus costos reducidos 
+
+    candidates = []
+    for f in rc: 
+        if f[1]<=0:
+            candidates.append((f[2],f[3])) ## (g , t) 
+    
+    while True:
+        if (iter==iterstop) or (time.time()-t_o >= t_net):
+            break
+        char     = ''
+        
+        if improve == False:
+            cutoff=1e+75
+        
+        timeres1  = min(t_res,timeconst)      
+        model, __ = uc_Co.uc(instance,option='lbc4',SB_Uu=SB_Uu,No_SB_Uu=No_SB_Uu,lower_Pmin_Uu=candidates,V=Vv,W=Ww,delta=delta,
+                            percent_soft=90,k=k,nameins=nameins[0:6],mode='Tight',scope=scope,improve=improve,timeover=timeover,rightbranches=rightbranches)
+        sol_lbc4  = Solution(model=model,env=ambiente,executable=executable,nameins=nameins[0:6],letter=util.getLetter(iter-1),gap=gap,cutoff=cutoff,timelimit=timeres1,
+                            emphasize=emphasizeHEUR,symmetry=symmetryHEUR,lbheur=lbheurHEUR,strategy=strategyHEUR,
+                            tee=False,tofiles=False,option='lbc4',scope=scope)
+        z_lbc4,g_lbc4 = sol_lbc4.solve_problem()
+                
+        gap_iter = abs((z_lbc4 - z_old)/z_old) * 100 ## Percentage
+        improve = False
+        if z_lbc4 < incumbent :                      ## Update solution
+            incumbent  = z_lbc4
+            cutoff     = z_lbc4
+            #saved      = [SB_Uu,No_SB_Uu,Vv,Ww,delta]
+            char       = '***'
+            g_lbc4     = util.igap(lb_best,z_lbc4)
+            if gap_iter > gap:
+                improve = True
+            
+        result_iter.append((round(time.time()-t_o+t_hard3,1),z_lbc4))
+        z_old = z_lbc4 ## Guardamos la solución anterior
+          
+        print('<°|'+fish+'>< iter:'+str(iter)+' t_lbc4= ',round(time.time()-t_o+t_hard3,1),'z_lbc4= ',round(z_lbc4,1),char,'g_lbc4= ',round(g_lbc4,8) ) #
+        print('\t')       
+        fish = fish + ')'  
+        
+        ## Aquí se prepara la nueva iteracion ...  
+        timeover == False       
+        if improve == False:   
+            if sol_lbc4.timeover == True or sol_lbc4.nosoluti == True or sol_lbc4.infeasib == True:                     
+                if sol_lbc4.timeover == True:   
+                    print('k=[k/2] Time limit reach without improve: shrinking the neighborhood  ...  >(°> . o O')
+                else:
+                    print('k=[k/2] No solution/infeasible: shrinking the neighborhood  ...  >(°> . o O')
+                k = floor(k/2)  
+                timeover == True         
+            else:              
+                print('Leaving a local optimum     ...    >>+*+*+*+*+*+|°>')
+                SB_Uu, No_SB_Uu, __, Vv, Ww, delta = sol_lbc4.select_binary_support_Uu('lbc4')  
+                lower_Pmin_Uu = sol_lbc4.update_lower_Pmin_Uu(lower_Pmin_Uu,'lbc4') 
+                rightbranches.append([SB_Uu,No_SB_Uu,lower_Pmin_Uu])
+                fish = ')'
+        else: ## Mejora la solución
+            SB_Uu, No_SB_Uu, __, Vv, Ww, delta = sol_lbc4.select_binary_support_Uu('lbc4')  
+            lower_Pmin_Uu = sol_lbc4.update_lower_Pmin_Uu(lower_Pmin_Uu,'lbc4') 
+            saved         = [SB_Uu,No_SB_Uu,Vv,Ww,delta] ## Update solution
+
+        t_res = t_net - time.time() + t_o 
+        print('lbc4 ','tiempo restante:',t_res)
+        
+        del sol_lbc4
+        gc.collect()
+        iter = iter + 1
+
+    t_lbc4 = time.time() - t_o + t_hard3  
+    z_lbc4 = incumbent    
+    for item in result_iter:
+        print(item[0],',',item[1])    
+    result_iter = np.array(result_iter)
+    #np.savetxt('iterLBC2'+nameins[0:6]+'.csv', result_iter, delimiter=',')
+    
+    checkSol('z_lbc4',z_lbc4,SB_Uu,No_SB_Uu,Vv,Ww,delta,'lbc4') ## Check feasibility (LBC2)
+    
+    k = k_original  ## Si es que LBC cambió el parámetro k
+    
+    
 ## ---------------------------------  KERNEL SEARCH I ---------------------------------
 ##
 ## La versión básica de KS consiste en relajar la formulacion y a partir de ello sacar 
@@ -637,130 +762,6 @@ if  KS:
     
     checkSol('z_ks',z_ks,SB_Uu,No_SB_Uu,Vv,Ww,delta,'ks') ## Check feasibility (KS)
  
-        
-## --------------------------------------- LOCAL BRANCHING 4 ------------------------------------------
-## LBC COUNTINOUS VERSION without soft-fixing
-## Include the LOCAL BRANCHING CUT to the solution and solve the sub-MILP (it is using cutoff=z_hard).
-
-if  lbc4:    
-    t_o            = time.time() 
-    Vv             = deepcopy(Vv3)
-    Ww             = deepcopy(Ww3)
-    delta          = deepcopy(delta3)
-    SB_Uu          = deepcopy(SB_Uu3)
-    No_SB_Uu       = deepcopy(No_SB_Uu3)
-    lower_Pmin_Uu  = deepcopy(lower_Pmin_Uu3)
-    t_net          = timefull - t_hard3
-    t_res          = timefull - t_hard3
-    cutoff         = z_hard3
-    incumbent      = z_hard3
-    z_old          = z_hard3
-    improve        = True    
-    timeover       = False
-    iter           = 1
-    saved          = [SB_Uu,No_SB_Uu,Vv,Ww,delta]
-    rightbranches  = []
-    char           = ''
-    fish           = ')'
-    result_iter    = []
-    result_iter.append((t_hard3,z_hard3))
-    print('\t')
-    
-    ## Calculating reduced cost
-    model,__  = uc_Co.uc(instance,option='RC',SB_Uu=saved[0],No_SB_Uu=saved[1],V=saved[2],W=saved[3],delta=saved[4],
-                         nameins=nameins[0:6],mode='Tight',scope=scope)
-    sol_rc    = Solution(model=model,nameins=nameins[0:6],env=ambiente,executable=executable,gap=gap,timelimit=t_net,
-                         emphasize=emphasizeHEUR,symmetry=symmetryHEUR,lbheur=lbheurHEUR,strategy=strategyHEUR,
-                         tee=False,tofiles=False,exportLP=False,rc=True,option='RC',scope=scope)
-    z_rc,g_rc = sol_rc.solve_problem() 
-    print('KS z_rc= ',round(z_rc,4))      
-    
-    ##  Colected candidates
-    rc   = []
-    i    = 0                    
-    for f in No_SB_Uu: 
-        ##        ( i , reduced_cost , g , t )
-        rc.append(( i , model.rc[model.u[f[0]+1,f[1]+1]] , f[0] , f[1] ))
-        i = i + 1    
-    rc.sort(key=lambda tup:tup[1], reverse=False) ## Ordenamos las variables No_SB_Uu de acuerdo a sus costos reducidos 
-
-    candidates = []
-    for f in rc: 
-        if f[1]<=0:
-            candidates.append((f[2],f[3])) ## (g , t) 
-    
-    while True:
-        if (iter==iterstop) or (time.time()-t_o >= t_net):
-            break
-        char     = ''
-        
-        if improve == False:
-            cutoff=1e+75
-        
-        timeres1  = min(t_res,timeconst)      
-        model, __ = uc_Co.uc(instance,option='lbc4',SB_Uu=SB_Uu,No_SB_Uu=No_SB_Uu,lower_Pmin_Uu=candidates,V=Vv,W=Ww,delta=delta,
-                            percent_soft=90,k=k,nameins=nameins[0:6],mode='Tight',scope=scope,improve=improve,timeover=timeover,rightbranches=rightbranches)
-        sol_lbc4  = Solution(model=model,env=ambiente,executable=executable,nameins=nameins[0:6],letter=util.getLetter(iter-1),gap=gap,cutoff=cutoff,timelimit=timeres1,
-                            emphasize=emphasizeHEUR,symmetry=symmetryHEUR,lbheur=lbheurHEUR,strategy=strategyHEUR,
-                            tee=False,tofiles=False,option='lbc4',scope=scope)
-        z_lbc4,g_lbc4 = sol_lbc4.solve_problem()
-                
-        gap_iter = abs((z_lbc4 - z_old)/z_old) * 100 ## Percentage
-        improve = False
-        if z_lbc4 < incumbent :                      ## Update solution
-            incumbent  = z_lbc4
-            cutoff     = z_lbc4
-            #saved      = [SB_Uu,No_SB_Uu,Vv,Ww,delta]
-            char       = '***'
-            g_lbc4     = util.igap(lb_best,z_lbc4)
-            if gap_iter > gap:
-                improve = True
-            
-        result_iter.append((round(time.time()-t_o+t_hard3,1),z_lbc4))
-        z_old = z_lbc4 ## Guardamos la solución anterior
-          
-        print('<°|'+fish+'>< iter:'+str(iter)+' t_lbc4= ',round(time.time()-t_o+t_hard3,1),'z_lbc4= ',round(z_lbc4,1),char,'g_lbc4= ',round(g_lbc4,8) ) #
-        print('\t')       
-        fish = fish + ')'  
-        
-        ## Aquí se prepara la nueva iteracion ...  
-        timeover == False       
-        if improve == False:   
-            if sol_lbc4.timeover == True or sol_lbc4.nosoluti == True or sol_lbc4.infeasib == True:                     
-                if sol_lbc4.timeover == True:   
-                    print('k=[k/2] Time limit reach without improve: shrinking the neighborhood  ...  >(°> . o O')
-                else:
-                    print('k=[k/2] No solution/infeasible: shrinking the neighborhood  ...  >(°> . o O')
-                k = floor(k/2)  
-                timeover == True         
-            else:              
-                print('Leaving a local optimum     ...    >>+*+*+*+*+*+|°>')
-                SB_Uu, No_SB_Uu, __, Vv, Ww, delta = sol_lbc4.select_binary_support_Uu('lbc4')  
-                lower_Pmin_Uu = sol_lbc4.update_lower_Pmin_Uu(lower_Pmin_Uu,'lbc4') 
-                rightbranches.append([SB_Uu,No_SB_Uu,lower_Pmin_Uu])
-                fish = ')'
-        else: ## Mejora la solución
-            SB_Uu, No_SB_Uu, __, Vv, Ww, delta = sol_lbc4.select_binary_support_Uu('lbc4')  
-            lower_Pmin_Uu = sol_lbc4.update_lower_Pmin_Uu(lower_Pmin_Uu,'lbc4') 
-            saved         = [SB_Uu,No_SB_Uu,Vv,Ww,delta] ## Update solution
-
-        t_res = t_net - time.time() + t_o 
-        print('lbc4 ','tiempo restante:',t_res)
-        
-        del sol_lbc4
-        gc.collect()
-        iter = iter + 1
-
-    t_lbc4 = time.time() - t_o + t_hard3  
-    z_lbc4 = incumbent    
-    for item in result_iter:
-        print(item[0],',',item[1])    
-    result_iter = np.array(result_iter)
-    #np.savetxt('iterLBC2'+nameins[0:6]+'.csv', result_iter, delimiter=',')
-    
-    checkSol('z_lbc4',z_lbc4,SB_Uu,No_SB_Uu,Vv,Ww,delta,'lbc4') ## Check feasibility (LBC2)
-    
-    k = k_original  ## Si es que LBC cambió el parámetro k
         
     ## PENDIENTES    
     # \todo{Exportar los Costos reducidos ordenados de LR y comparar contra los lower_Pmin_Uu, se esperan coincidencias}
