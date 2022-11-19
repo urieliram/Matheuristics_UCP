@@ -29,7 +29,7 @@ Características de las instancias Knueven2021 Datos obtenidos a partir de datos
 |ca              | 20             |  610           |  168*         | (1-20)         |
 |ferc            | 12             |  934           |  168*         | (21-24),(37-44)|
 |ferc(2)         | 12             |  978           |  168*         | (25-36)        |
-*El npumero de periodos fue modificado a 168 equivalente a 7 días, para calcular weekeen se usó un factor de 0.8
+*El número de periodos fue modificado a 168 equivalente a 7 días, para calcular weekeen se usó un factor de 0.8
 
 Características de las instancias Kazarlis
 Estas instancias tienen una alta simetría, por lo que tardan en resolverse un poco más que otras instancias mas cercanas a las de la realidad.
