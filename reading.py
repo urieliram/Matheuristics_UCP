@@ -35,29 +35,34 @@ def reading(file):
     Tunder  = {}   ## lag de cada escalón del conjunto S de la función de costo variable de arranque.
     Startup = {}   ## start-up cost 
            
-    factor_demand = 1
+    factor_demand = 1.0
     demand        = []
     reserves      = []
     
-    time_periods = int(md['time_periods'])
-    demand       =     md['demand']  
-    reserves     =     md['reserves']  
+    # time_periods = int(md['time_periods'])
+    # demand       =     md['demand']  
+    # reserves     =     md['reserves']  
         
     time_periods  = int(md['time_periods'])
     demand1       =     md['demand']  
     reserves1     =     md['reserves']  
+    
     try: 
         factor_demand = md['factor_demand'] 
-        #print('factor_demand=',factor_demand) 
     except:
         demand        = demand1
         reserves      = reserves1
+    
+    if factor_demand != 1:
+            print('factor_demand=',factor_demand)
+            
     for i in range(len(demand1)):
-        demand.append(     demand[i] * factor_demand)
+        demand.append(    demand1[i] * factor_demand)
         reserves.append(reserves1[i] * factor_demand)
 
     for t in range(1, time_periods+1):
-        T.append(t)    
+        T.append(t)
+          
     De   = dict(zip(T, demand))
     R    = dict(zip(T, reserves))
     
@@ -67,7 +72,7 @@ def reading(file):
     for gen in md['thermal_generators']:  
         names_gens.append(gen)
         G.append(i)
-        i+=1
+        i += 1
         
     must_run             = []
     power_output_minimum = []
@@ -95,22 +100,22 @@ def reading(file):
     abajo_min            = 0
     
     ## To get the data from the generators
-    i=1 ## Cuenta los generadores
+    i = 1 ## Cuenta los generadores
     for gen in names_gens:  
-        must_run.append(md['thermal_generators'][gen]["must_run"]) #0,
+        must_run.append(md[            'thermal_generators'][gen]["must_run"]) #0,
         power_output_minimum.append(md['thermal_generators'][gen]["power_output_minimum"])#80
         power_output_maximum.append(md['thermal_generators'][gen]["power_output_maximum"])#300.0
-        ramp_up_limit.append(md['thermal_generators'][gen]["ramp_up_limit"])#50
-        ramp_down_limit.append(md['thermal_generators'][gen]["ramp_down_limit"])#30
-        ramp_startup_limit.append(md['thermal_generators'][gen]["ramp_startup_limit"])#100
-        ramp_shutdown_limit.append(md['thermal_generators'][gen]["ramp_shutdown_limit"])#80
-        time_up_minimum.append(md['thermal_generators'][gen]["time_up_minimum"])#3
-        time_down_minimum.append(md['thermal_generators'][gen]["time_down_minimum"])#2
-        power_output_t0.append(md['thermal_generators'][gen]["power_output_t0"])#120
-        unit_on_t0.append(md['thermal_generators'][gen]["unit_on_t0"])#1
-        time_up_t0.append(md['thermal_generators'][gen]["time_up_t0"])#1
-        time_down_t0.append(md['thermal_generators'][gen]["time_down_t0"])#0        
-        try:
+        ramp_up_limit.append(md[       'thermal_generators'][gen]["ramp_up_limit"])#50
+        ramp_down_limit.append(md[     'thermal_generators'][gen]["ramp_down_limit"])#30
+        ramp_startup_limit.append(md[  'thermal_generators'][gen]["ramp_startup_limit"])#100
+        ramp_shutdown_limit.append(md[ 'thermal_generators'][gen]["ramp_shutdown_limit"])#80
+        time_up_minimum.append(md[     'thermal_generators'][gen]["time_up_minimum"])#3
+        time_down_minimum.append(md[   'thermal_generators'][gen]["time_down_minimum"])#2
+        power_output_t0.append(md[     'thermal_generators'][gen]["power_output_t0"])#120
+        unit_on_t0.append(md[          'thermal_generators'][gen]["unit_on_t0"])#1
+        time_up_t0.append(md[          'thermal_generators'][gen]["time_up_t0"])#1
+        time_down_t0.append(md[        'thermal_generators'][gen]["time_down_t0"])#0        
+        try: 
             fixed_cost.append(md['thermal_generators'][gen]["fixed_cost"] )        
             #print(md['thermal_generators'][gen]["fixed_cost"] )       
         except:
@@ -125,11 +130,13 @@ def reading(file):
         j = 0
         for piece in piecewise_production:
             lista_aux.append((piece['mw'],piece['cost']))
-            j+=1            
+            j += 1            
         Piecewise.append(lista_aux)
         
+
+        
         lista = []
-        jj=1
+        jj = 1
         for ii in range(j-1):
             lista.append(jj)
             jj= jj+1
@@ -137,13 +144,13 @@ def reading(file):
                 
         ## Obtiene segmentos del costo variable de arranque
         lista_aux2 = []
-        lista2 = []
+        lista2     = []
         j = 1        
         for segment in startup:
             if segment['lag']>=time_down_minimum[i-1]:
                 lista_aux2.append((segment['lag'],segment['cost']))
                 lista2.append(j)
-                j+=1         
+                j += 1         
             
         Startup.append(lista_aux2)
         S[i] = lista2
@@ -182,7 +189,7 @@ def reading(file):
         p_0_list.append(power_output_t0[i-1])
         ########################################################################
                                  
-        i+=1;  ## Se incrementa un generador  
+        i += 1;  ## Se incrementa un generador  
                             
        
        
@@ -247,27 +254,27 @@ def reading(file):
             j = 0
             for piece in piecewise_production_load:
                 lista_aux.append((piece['mw'],piece['cost']))
-                j+=1            
+                j += 1            
             Piecewise_load.append(lista_aux)
             lista = []
-            jj=1
+            jj = 1
             for ii in range(j):
                 lista.append(jj)
                 jj = jj + 1
             Ld[i] = lista
-            i+=1
+            i += 1
                     
-        k=0; n=0
+        k = 0; n = 0
         for i in Piecewise_load:
             # print(i)
-            k=k+1
-            n=1
+            k = k+1
+            n = 1
             for j in i:                
                 # print(j)
                 # print(k,",",n,",",j[0],",",j[1])
                 Pd[k,n] = j[0]
                 Cd[k,n] = j[1]               
-                n=n+1
+                n = n+1
         # print('Cd',Cd)
         # print('Pd',Pd)
 
@@ -440,11 +447,11 @@ def reading(file):
         Cs30.append( 1.0) # $ 1
         Cns10.append(1.0) # $ 1
         Cns30.append(1.0) # $ 1
-        RRe.append(2.0) # $ 1
-        RR10.append(2.0) # $ 1
-        RR30.append(2.0) # $ 1
-        RN10.append(2.0) # $ 1
-        RN30.append(2.0) # $ 1
+        RRe.append(2.0)   # $ 1
+        RR10.append(2.0)  # $ 1
+        RR30.append(2.0)  # $ 1
+        RN10.append(2.0)  # $ 1
+        RN30.append(2.0)  # $ 1
            
     Crr      = dict(zip(G    , Crr   ))
     Cs10     = dict(zip(G    , Cs10  ))

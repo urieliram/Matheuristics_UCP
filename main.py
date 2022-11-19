@@ -27,6 +27,7 @@ nameins = 'uc_57_copy.json'   ## prueba demostrativa excelente en mi PC (MOR un 
 nameins = 'uc_057.json'       ## prueba demostrativa excelente en mi PC (MOR un dia)
 nameins = 'uc_58.json'        ## prueba demostrativa excelente en mi PC (MOR tres dias)
 nameins = 'uc_059.json'       ## prueba demostrativa excelente en mi PC (MOR cinco dias)
+nameins = 'uc_082.json'       ## prueba demostrativa excelente en mi PC (MOR cinco dias)
 
 ## symmetry breaking: Automatic =-1 Turn off=0 ; moderade=1 ; extremely aggressive=5
 ## Emphasize balanced=0; feasibility=1; optimality=2; symmetry automatic=-1; symmetry low level=1
