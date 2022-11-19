@@ -61,5 +61,5 @@ Otras instancias que son usadas para validar el modelo son:
 
 [Matheuristics for Speeding Up the Solution of the Unit Commitment Problem, Harjunkoski2021](https://ieeexplore.ieee.org/document/9640029).
 
-[A genetic algorithm solution to the unit commitment problem](https://ieeexplore.ieee.org/document/485989)
+[A genetic algorithm solution to the unit commitment problem, Kazarlis1994](https://ieeexplore.ieee.org/document/485989)
 
