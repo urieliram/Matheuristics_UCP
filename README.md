@@ -35,10 +35,10 @@ Estas instancias tienen una alta simetría, por lo que tardan en resolverse un p
 
 |GROUP           |INST  (n)       |GEN   (G)       |PERIOD   (T)   |FILES (uc_XX)   |
 | :------------- | -------------: | -------------: |-------------: |-------------:  |
-|   x7day_small  | 10             |  28 to 54      | 168           | (61-70)        |90%
-|   x7day_large  | 10             |  132 to 187    | 168           | (71-80)        |90%
-|   x10gen_small | 10             |  280 to 540    | 24            | (81-90)        |
-|   x10gen_large | 10             |  1320 to 1870  | 24            | (91-100)       |
+|   x7day_small  | 10             |  28 to 54      | 168           | (061-070)        |90%
+|   x7day_large  | 10             |  132 to 187    | 168           | (071-080)        |90%
+|   x10gen_small | 10             |  280 to 540    | 24            | (081-090)        |
+|   x10gen_large | 10             |  1320 to 1870  | 24            | (091-0100)       |
 
 Otras instancias usadas para validar el modelo son:
 
