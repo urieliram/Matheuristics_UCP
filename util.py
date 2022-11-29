@@ -32,7 +32,6 @@ def sendtofileTUTD(TU,TD,name):
         file.write(str(TU[g])+","+str(TD[g])+ "\n")
     file.close()
     
-    
 def imprime_sol(model,sol):
     Uu = dict(zip(model.T, sol.getUu()))
     V  = dict(zip(model.T, sol.getV()))
@@ -44,7 +43,6 @@ def imprime_sol(model,sol):
     # print("w",W)
     # print("p",P)
     # print("r",R)
-    
 
 def config_env():
     #ambiente='localPC',ruta='instances/',executable='/home/uriel/cplex1210/cplex/bin/x86-64_linux/cplex3'
@@ -155,3 +153,18 @@ def loadSolution(option,instance):
 def igap(LB,UB):
     ## Calcula el integrality gap    
     return abs( LB - UB ) / ( 1e-10 + abs(UB) )    
+
+def compare(array1,array2):
+    npArray1 = np.array(array1)
+    npArray2 = np.array(array2)
+    print(npArray1) 
+    print(npArray2) 
+    # comparison = npArray1 == npArray2
+    # # equal_arrays = comparison.all() 
+    # print('comparison  =',comparison)        
+    # out_num = np.subtract(npArray1, npArray2) 
+    # print ('Uu Difference of two input number : ',type(out_num), out_num) 
+    result = np.array_equal(array1, array2)
+    
+    print('result  =',result)     
+    
