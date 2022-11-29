@@ -248,7 +248,7 @@
     57.424	
 
   ],
-  "factor_demand": 1,
+  "factor_demand": 1.0,
   "thermal_generators": {
     "G1_1": {
       "must_run": 0,

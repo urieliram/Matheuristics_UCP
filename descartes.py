@@ -1048,7 +1048,7 @@
         
         
         
-## ---------------------------------------------- FP ----------------------------------------------------------
+## ---------------------------------------------- FP .-(----------------------------------------------------------
 ## Solve as a Feasiability Pump
 # if  False:  
 #     cutoff    = 1e+75 
@@ -1072,3 +1072,46 @@
 #     print('t_fp= ',round(t_fp,1),'z_fp= ',round(z_fp,1),'g_fp= ',round(g_fp,8))
 
 
+## Aqui se prepara la nueva iteracion ...  
+        # if improve == False: 
+        #     if sol_lbc1.timeover == True or sol_lbc1.nosoluti == True or sol_lbc1.infeasib == True:  
+        #         if sol_lbc1.nosoluti == True or sol_lbc1.timeover == True:
+        #             print('Time limit reach without improve')
+        #             if diversify == True:
+        #                 rightbranches.append([SB_Uu,No_SB_Uu,lower_Pmin_Uu]) 
+        #                 k = k + ceil(k_original/2)         ## enhance 
+        #                 cutoff = 1e+75
+        #                 print('Time limit reach without improve + diversify: k=k+[k_original/2]=', k)
+        #             else:                     
+        #                 k = max(0,k - ceil(k_original/2))  ## reduce
+        #                 print('Time limit reach without improve: k=k-[k_original/2]=', k)
+        #         if sol_lbc1.infeasib == True:
+        #             k = k + ceil(k_original/2)               
+        #             rightbranches.append([SB_Uu,No_SB_Uu,lower_Pmin_Uu])   
+        #             print('Infeasible problem: k=k+[k_original/2]=', k)         
+        #             cutoff    = 1e+75 
+        #         diversify = True
+        #     else:
+        #         k = k + ceil(k_original/2)                ## enhance 
+        #         rightbranches.append([saved[0],saved[1],saved[5]])                    
+        #         print('Neighborhood completed :(   ∑candidates['+str(len(saved[5]))+'] + ∑SB['+str(len(saved[0]))+'] ≥',k,'+ 1')
+        #         print('Time limit reach without improve: k=k+[k_original/2]=', k)
+        #     if sol_lbc1.timeover == False:
+        #         timeover==False
+                        
+        # else: ## Si mejora la solución incumbente bestUB
+            
+        #     if sol_lbc1.timeover == False: ## Si encuentra un óptimo local con mejora del incumbente          
+        #         newsol = [SB_Uu,No_SB_Uu,Vv,Ww,delta]
+        #         if  newsol == saved:
+        #             print('>>> Equal solutions')
+        #             k = k_original
+        #         else:             
+        #             print('Neighborhood completed :)   ∑candidates['+str(len(saved[5]))+'] + ∑SB['+str(len(saved[0]))+'] ≥',k,'+ 1')
+        #             rightbranches.append([saved[0],saved[1],saved[5]])
+        #             k = k_original
+
+        #     SB_Uu, No_SB_Uu, __, Vv, Ww, delta = sol_lbc1.select_binary_support_Uu('lbc1')  
+        #     lower_Pmin_Uu = sol_lbc1.update_lower_Pmin_Uu(lower_Pmin_Uu,'lbc1')
+        #     saved         = [SB_Uu,No_SB_Uu,Vv,Ww,delta,lower_Pmin_Uu] ## Update solution*
+        #     diversify     = False

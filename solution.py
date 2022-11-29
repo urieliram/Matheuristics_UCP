@@ -10,7 +10,7 @@ from   math import ceil
 class Solution:
     def __init__(self,model,env,executable,nameins='model',letter='',gap=0.0001,timelimit=300,tee=False,tofiles=False,lpmethod=0,
                  cutoff=1e+75,emphasize=1,lbheur='no',symmetry=-1,strategy=1,fpheur=0,rinsheur=0,
-                 dive=0,heuristicfreq=0,numerical='no',tolfeasibility=1e-06,toloptimality=1e-06, 
+                 dive=0,heuristicfreq=0,numerical='no',tolfeasibility=1e-06,toloptimality=1e-06,
                  exportLP=False,option='',scope='',rc=False,dual=False):
         self.model      = model
         self.nameins    = nameins     ## name of instance 
@@ -28,13 +28,12 @@ class Solution:
         self.fpheur     = fpheur      ## Do not generate flow path cuts=-1 ; Automatic=0(CPLEX choose); moderately =1; aggressively=2
         self.rinsheur   = rinsheur    ## None: do not apply RINS heuristic=-1; Automatic=0 (CPLEX choose); Frequency to apply RINS heuristic=Any positive integer 
                                       ## i.e. setting rinsheur to 20 dictates that the RINS heuristic be called at node 0, 20, 40, 60, etc
-       
-        self.dive           = dive 
-        self.heuristicfreq  = heuristicfreq
-        self.numerical      = numerical
-        self.tolfeasibility = tolfeasibility
-        self.toloptimality  = toloptimality
-        
+        self.dive            = dive 
+        self.heuristicfreq   = heuristicfreq
+        self.numerical       = numerical
+        self.tolfeasibility  = tolfeasibility
+        self.toloptimality   = toloptimality
+
         self.rc         = rc          ## To calculate Suffix data (dual and reduced cost)
         self.symmetry   = symmetry    ## symmetry breaking: Automatic =-1 Turn off=0 ; moderade=1 ; extremely aggressive=5
         self.strategy   = strategy    ## node storage file switch: No node file=0; node file in memory=1; node file on disk=2;node file on disk and compresed=3; 
@@ -72,11 +71,6 @@ class Solution:
     def getLower_bound(self):
         return self.lower_bound
     
-    # def getSnminus(self):
-    #     return self.snminus
-    # def getSnplus(self):
-    #     return self.snplus
-       
     def solve_problem(self):  
                 
         exist = os.path.exists(self.executable)   
@@ -165,29 +159,24 @@ class Solution:
         #         print(self.model.rc[self.model.u[c[0],c[1]]])
         #     # self.model.rc.pprint()
 
+        ## http://www.pyomo.org/blog/2015/1/8/accessing-solver
         if (result.solver.status == SolverStatus.ok) and (result.solver.termination_condition == TerminationCondition.optimal):
-            self.optimal = True
-            
+            self.optimal = True            
         elif result.solver.termination_condition == TerminationCondition.infeasible:
             ##https://stackoverflow.com/questions/51044262/finding-out-reason-of-pyomo-model-infeasibility
-            print('>>> Infeasible solution  (╯︵╰,)')
-            self.infeasib = True
-            # print(log_infeasible_constraints(self.model, log_expression=True, log_variables=True))
-            # logging.basicConfig(filename='example.log', encoding='utf-8', level=logging.INFO)
-            #logging.basicConfig(filename='unfeasible.log', encoding='utf-8', level=logging.INFO)
-            #sys.exit('!!! Unfortunately, the program has stopped.') 
+            print('>>> Infeasible solution (✖╭╮✖)')
+            self.infeasib = True             
         elif (result.solver.termination_condition == TerminationCondition.maxTimeLimit):
             print ('Zzz... The maximum time limit has been reached')
-            self.timeover = True
-                    
+            self.timeover = True                                
         elif (result.solver.termination_condition == TerminationCondition.unknown):
-            print ('(✖╭╮✖) Time limit exceeded, no solution found')
+            print ('>>> Unknown error, please check the cplex-log file')
+            if result.solver.termination_condition == TerminationCondition.noSolution:
+                print ('(╯︵╰,) No feasible solution found but infeasibility')
             self.nosoluti = True
-            
         else:
             print ('!!! Something else is wrong, the program end.',str(result.solver)) 
             exit()
-            
              
         ##  ALMACENA la solución Uu, V, W, P, R, delta, del problema 
         if self.fail == False and self.infeasib == False and self.nosoluti == False:
@@ -403,7 +392,7 @@ class Solution:
         print(npArray2) 
         comparison = npArray1 == npArray2
         equal_arrays = comparison.all() 
-        print('Uu equal_arrays  =',equal_arrays)        
+        print('Uu equal_arrays  =',comparison)        
         out_num = np.subtract(npArray1, npArray2) 
         print ('Uu Difference of two input number : ',type(out_num), out_num) 
         
