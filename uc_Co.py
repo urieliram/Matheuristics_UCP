@@ -901,6 +901,7 @@ def uc(instance,option='None',
     if option == 'lbc1':
     ## Define a neighbourhood with LBC1.      
     ## With Soft-fixing and U.domain in UnitInterval
+    ## Use lowe_Pmin by Harjunkovsky
         for f in No_SB_Uu:   
             model.u[f[0]+1,f[1]+1].domain = UnitInterval    ## We remove the integrality constraint of the Binary Support 
             if improve == True:          
@@ -911,7 +912,6 @@ def uc(instance,option='None',
                 model.u[f[0]+1,f[1]+1] = 1                  ## Hints
             
         ## Hints para iniciar desde la última solución válida
-        #if improve ==True:
         for g in range(len(G)):
             for t in range(len(T)):
                 model.v[g+1,t+1] = V[g][t]                  ## Hints
@@ -938,134 +938,160 @@ def uc(instance,option='None',
         if True:            
             ## Adding a new restrictions LEFT-BRANCH  <°|((><                
             for cut in leftbranch:            
-                print('Adding  1  left-branch: ∑candidates['+str(len(cut[2]))+'] + ∑SB['+str(len(cut[0]))+'] ≤',k)                
+                print('Adding  1  left-branch: ∑candidates['+str(len(cut[2]))+'] + ∑SB['+str(len(cut[0]))+'] ≤',cut[3])                
                 expr = 0      
-                ## cut[1]=No_SB_Uu   cut[2]=lower_Pmin_Uu  cut[0]=SB_Uu   
+                ## cut[1]=No_SB_Uu   cut[2]=lower_Pmin_Uu  cut[0]=SB_Uu   cut[3]=rhs
                 for f in cut[0]:                             ## count the changes  1 --> 0  
                     expr += 1 - model.u[f[0]+1,f[1]+1] 
                 for f in cut[2] :  # cut[1]                  ## count the changes  0 --> 1 
                     expr +=     model.u[f[0]+1,f[1]+1]              
-                model.cuts.add(expr <= k)
-        
+                model.cuts.add(expr <= cut[3])
+                
             ## Adding a new restrictions RIGHT-BRANCH  >>++++++++|°> . o O
             # print('Adding ',len(rightbranches),' right-branches')
             for cut in rightbranches:
-                print('Adding the right-branch: ∑candidates['+str(len(cut[2]))+'] + ∑SB['+str(len(cut[0]))+'] ≥',k,'+ 1')  
+                print('Adding the right-branch: ∑candidates['+str(len(cut[2]))+'] + ∑SB['+str(len(cut[0]))+'] ≥',cut[3],'+ 1')  
                 expr = 0      
-                ## cut[1]=No_SB_Uu   cut[2]=lower_Pmin_Uu  cut[0]=SB_Uu   
+                ## cut[1]=No_SB_Uu   cut[2]=lower_Pmin_Uu  cut[0]=SB_Uu   cut[3]=rhs
                 for f in cut[0]:  ## NUNCA SE MUEVE         ## count the changes  1 --> 0  
                     expr += 1 - model.u[f[0]+1,f[1]+1] 
                 for f in cut[2]:  # cut[1]                  ## count the changes  0 --> 1 
                     expr +=     model.u[f[0]+1,f[1]+1] 
-                model.cuts.add(expr >= k + 1)
+                model.cuts.add(expr >= cut[3] + 1)
                 
                
     ## ---------------------------- LOCAL BRANCHING CONSTRAINT LBC2 (INTEGER VERSION)------------------------------------------    
     ## 
     if option == 'lbc2':
     ## Define a neighbourhood with LBC2.      
-    ## Withot Soft-fixing and U.domain in Binary
-                  
+    ## Without Soft-fixing and U.domain in Binary
         for f in No_SB_Uu:   
             model.u[f[0]+1,f[1]+1].domain = Binary    ## We remove the integrality constraint of the Binary Support 
             if improve == True:          
-                model.u[f[0]+1,f[1]+1] = 0            ## Hints
+                model.u[f[0]+1,f[1]+1] = 0                  ## Hints
         for f in SB_Uu:  
             model.u[f[0]+1,f[1]+1].domain = Binary    ## We remove the integrality constraint of the Binary Support 
             if improve == True:          
-                model.u[f[0]+1,f[1]+1] = 1            ## Hints
+                model.u[f[0]+1,f[1]+1] = 1                  ## Hints
             
         ## Hints para iniciar desde la última solución válida
-        #if improve == True:
         for g in range(len(G)):
             for t in range(len(T)):
                 model.v[g+1,t+1] = V[g][t]                  ## Hints
                 model.w[g+1,t+1] = W[g][t]                  ## Hints
                 if delta[g][t]  != 0:
                     model.delta[g+1,t+1,delta[g][t]] = 1    ## Hints
-        
+
         model.cuts = ConstraintList()
         
-        ## Local Branching Constraint (LBC) 
-        if True:            
-            ## Adding a new restrictions LEFT-BRANCH  <°|((><
-            if improve == True or (timeover==True and improve == False) or True : 
-                #print('Adding  1  left-branch: ∑lower_Pmin_Uu  + ∑SB_Uu ≤',k)    
-                print('Adding  1  left-branch: ∑candidates['+str(len(lower_Pmin_Uu))+'] + ∑SB['+str(len(SB_Uu))+'] ≤',k)              
-                expr = 0      
-                for f in SB_Uu:                             ## count the changes  1 --> 0  
-                    expr += 1 - model.u[f[0]+1,f[1]+1] 
-                for f in lower_Pmin_Uu :  # No_SB_Uu        ## count the changes  0 --> 1 
-                    expr +=     model.u[f[0]+1,f[1]+1]              
-                model.cuts.add(expr <= k)      
+        # Soft-fixing: adding a new restriction 
+        if softfix:
+            ## https://pyomo.readthedocs.io/en/stable/working_models.html
+            inside90   = ceil((percent_soft/100) * (len(SB_Uu))) #-len(lower_Pmin_Uu)
+            expr       = 0        
+            ## Se hace inside90 = 90% solo a el - Soporte Binario -  
+            for f in SB_Uu:
+                expr += model.u[f[0]+1,f[1]+1]
+            model.cuts.add(expr >= inside90)
+            print(option,'soft-fixing Uu:  ∑SB=1 <= inside90 =['+str(inside90)+']')
+            # outside90 = len(SB_Uu)-inside90
+            # print(option,'variables Uu that SB_Uu=0 <= outside90 =', outside90)
         
-            ## Adding a new restrictions RIGHT-BRANCH  >>++++++++|°> . o O
-            print('Adding ',len(rightbranches),' right-branches')
-            for cut in rightbranches:
+        ## Local Branching Constraint (LBC)     
+        if True:            
+            ## Adding a new restrictions LEFT-BRANCH  <°|((><                
+            for cut in leftbranch:            
+                print('Adding  1  left-branch: ∑candidates['+str(len(cut[2]))+'] + ∑SB['+str(len(cut[0]))+'] ≤',cut[3])                
                 expr = 0      
                 ## cut[1]=No_SB_Uu   cut[2]=lower_Pmin_Uu  cut[0]=SB_Uu   
-                for f in cut[0]:  ## PLEASE NEVER MOVE      ## count the changes  1 --> 0  
+                for f in cut[0]:                             ## count the changes  1 --> 0  
                     expr += 1 - model.u[f[0]+1,f[1]+1] 
-                for f in cut[2]:                            ## count the changes  0 --> 1 
+                for f in cut[2] :  # cut[1] *                 ## count the changes  0 --> 1 
+                    expr +=     model.u[f[0]+1,f[1]+1]              
+                model.cuts.add(expr <= cut[3])
+        
+            ## Adding a new restrictions RIGHT-BRANCH  >>++++++++|°> . o O
+            # print('Adding ',len(rightbranches),' right-branches')
+            for cut in rightbranches:
+                print('Adding the right-branch: ∑candidates['+str(len(cut[2]))+'] + ∑SB['+str(len(cut[0]))+'] ≥',cut[3],'+ 1')  
+                expr = 0      
+                ## cut[1]=No_SB_Uu   cut[2]=lower_Pmin_Uu  cut[0]=SB_Uu   
+                for f in cut[0]:  ## NUNCA SE MUEVE         ## count the changes  1 --> 0  
+                    expr += 1 - model.u[f[0]+1,f[1]+1] 
+                for f in cut[2]:  # cut[1]  *                ## count the changes  0 --> 1 
                     expr +=     model.u[f[0]+1,f[1]+1] 
-                model.cuts.add(expr >= k + 1)
-                
-                         
+                model.cuts.add(expr >= cut[3] + 1)
+
+            
     ## ---------------------------- LOCAL BRANCHING CONSTRAINT LBC3 (ALL VARIABLES "U=0" in LBC)------------------------------------------    
     ## 
     if option == 'lbc3':
-    ## Define a neighbourhood with LBC2.      
-    ## Withot Soft-fixing and U.domain in Binary, without "restricted candidates"
-                  
+    ## Define a neighbourhood with LBC3     
+    ## Without Soft-fixing and U.domain in Binary
+    ## More similar to Original Fischetti and Lodi version
         for f in No_SB_Uu:   
             model.u[f[0]+1,f[1]+1].domain = Binary    ## We remove the integrality constraint of the Binary Support 
             if improve == True:          
-                model.u[f[0]+1,f[1]+1] = 0            ## Hints
+                model.u[f[0]+1,f[1]+1] = 0                  ## Hints
         for f in SB_Uu:  
             model.u[f[0]+1,f[1]+1].domain = Binary    ## We remove the integrality constraint of the Binary Support 
             if improve == True:          
-                model.u[f[0]+1,f[1]+1] = 1            ## Hints
+                model.u[f[0]+1,f[1]+1] = 1                  ## Hints
             
         ## Hints para iniciar desde la última solución válida
-        #if improve == True:
         for g in range(len(G)):
             for t in range(len(T)):
                 model.v[g+1,t+1] = V[g][t]                  ## Hints
                 model.w[g+1,t+1] = W[g][t]                  ## Hints
                 if delta[g][t]  != 0:
                     model.delta[g+1,t+1,delta[g][t]] = 1    ## Hints
-        
+
         model.cuts = ConstraintList()
         
-        ## Local Branching Constraint (LBC) 
-        if True:            
-            ## Adding a new restrictions LEFT-BRANCH  <°|((><
-            if improve == True or (timeover==True and improve == False) or True: 
-                print('Adding  1  left-branch: ∑No_SB['+str(len(No_SB_Uu))+'] + ∑SB['+str(len(SB_Uu))+'] ≤',k)
-                expr = 0      
-                for f in SB_Uu:                             ## count the changes  1 --> 0  
-                    expr += 1 - model.u[f[0]+1,f[1]+1] 
-                for f in No_SB_Uu  :  #lower_Pmin_Uu         ## count the changes  0 --> 1  ## LBC3!!!
-                    expr +=     model.u[f[0]+1,f[1]+1]              
-                model.cuts.add(expr <= k)      
+        # Soft-fixing: adding a new restriction 
+        if softfix:
+            ## https://pyomo.readthedocs.io/en/stable/working_models.html
+            inside90   = ceil((percent_soft/100) * (len(SB_Uu))) #-len(lower_Pmin_Uu)
+            expr       = 0        
+            ## Se hace inside90 = 90% solo a el - Soporte Binario -  
+            for f in SB_Uu:
+                expr += model.u[f[0]+1,f[1]+1]
+            model.cuts.add(expr >= inside90)
+            print(option,'soft-fixing Uu:  ∑SB=1 <= inside90 =['+str(inside90)+']')
+            # outside90 = len(SB_Uu)-inside90
+            # print(option,'variables Uu that SB_Uu=0 <= outside90 =', outside90)
         
-            ## Adding a new restrictions RIGHT-BRANCH  >>++++++++|°> . o O
-            print('Adding ',len(rightbranches),' right-branches')
-            for cut in rightbranches:
+        ## Local Branching Constraint (LBC)     
+        if True:            
+            ## Adding a new restrictions LEFT-BRANCH  <°|((><                
+            for cut in leftbranch:            
+                print('Adding  1  left-branch: ∑candidates['+str(len(cut[2]))+'] + ∑SB['+str(len(cut[0]))+'] ≤',cut[3])                
                 expr = 0      
                 ## cut[1]=No_SB_Uu   cut[2]=lower_Pmin_Uu  cut[0]=SB_Uu   
-                for f in cut[0]:  ## PLEASE NEVER MOVE      ## count the changes  1 --> 0  
+                for f in cut[0]:                             ## count the changes  1 --> 0  
                     expr += 1 - model.u[f[0]+1,f[1]+1] 
-                for f in cut[1]:                            ## count the changes  0 --> 1  ## LBC3!!!
-                    expr +=     model.u[f[0]+1,f[1]+1]      
-                model.cuts.add(expr >= k + 1)
-
+                for f in cut[1] :  # cut[2]                  ## count the changes  0 --> 1 LBC3!!!
+                    expr +=     model.u[f[0]+1,f[1]+1]              
+                model.cuts.add(expr <= cut[3])
+        
+            ## Adding a new restrictions RIGHT-BRANCH  >>++++++++|°> . o O
+            # print('Adding ',len(rightbranches),' right-branches')
+            for cut in rightbranches:
+                print('Adding the right-branch: ∑candidates['+str(len(cut[2]))+'] + ∑SB['+str(len(cut[0]))+'] ≥',cut[3],'+ 1')  
+                expr = 0      
+                ## cut[1]=No_SB_Uu   cut[2]=lower_Pmin_Uu  cut[0]=SB_Uu   
+                for f in cut[0]:  ## NUNCA SE MUEVE         ## count the changes  1 --> 0  
+                    expr += 1 - model.u[f[0]+1,f[1]+1] 
+                for f in cut[1]:  # cut[2]                  ## count the changes  0 --> 1 LBC3!!!
+                    expr +=     model.u[f[0]+1,f[1]+1] 
+                model.cuts.add(expr >= cut[3] + 1)
+                
+                
     ## ---------------------------- LOCAL BRANCHING CONSTRAINT LBC 4 (SOFT-FIXING)------------------------------------------    
     ##
     if option == 'lbc4':
     ## Define a neighbourhood with LB4.      
     ## With Soft-fixing and U.domain in UnitInterval
-        candidate_Uu = lower_Pmin_Uu 
         for f in No_SB_Uu:   
             model.u[f[0]+1,f[1]+1].domain = UnitInterval    ## We remove the integrality constraint of the Binary Support 
             if improve == True:          
@@ -1076,18 +1102,17 @@ def uc(instance,option='None',
                 model.u[f[0]+1,f[1]+1] = 1                  ## Hints
             
         ## Hints para iniciar desde la última solución válida
-        #if improve ==True:
         for g in range(len(G)):
             for t in range(len(T)):
                 model.v[g+1,t+1] = V[g][t]                  ## Hints
                 model.w[g+1,t+1] = W[g][t]                  ## Hints
                 if delta[g][t]  != 0:
                     model.delta[g+1,t+1,delta[g][t]] = 1    ## Hints
-                    
+
         model.cuts = ConstraintList()
         
         # Soft-fixing: adding a new restriction 
-        if True:
+        if softfix:
             ## https://pyomo.readthedocs.io/en/stable/working_models.html
             inside90   = ceil((percent_soft/100) * (len(SB_Uu))) #-len(candidate_Uu)
             expr       = 0        
@@ -1101,26 +1126,29 @@ def uc(instance,option='None',
         
         ## Local Branching Constraint (LBC)     
         if True:            
-            ## Adding a new restrictions LEFT-BRANCH  <°|((><
-            if improve == True or (timeover==True and improve == False) or True : 
-                print('Adding  1  left-branch: ∑candidates['+str(len(candidate_Uu))+'] + ∑SB['+str(len(SB_Uu))+'] ≤',k)                
+            ## Adding a new restrictions LEFT-BRANCH  <°|((><                
+            for cut in leftbranch:            
+                print('Adding  1  left-branch: ∑candidates['+str(len(cut[2]))+'] + ∑SB['+str(len(cut[0]))+'] ≤',cut[3])                
                 expr = 0      
-                for f in SB_Uu:                             ## count the changes  1 --> 0  
+                ## cut[1]=No_SB_Uu   cut[2]=candidate_Uu  cut[0]=SB_Uu   
+                for f in cut[0]:                             ## count the changes  1 --> 0  
                     expr += 1 - model.u[f[0]+1,f[1]+1] 
-                for f in candidate_Uu :  # No_SB_Uu        ## count the changes  0 --> 1 
+                for f in cut[2] :  # cut[1]                  ## count the changes  0 --> 1 
                     expr +=     model.u[f[0]+1,f[1]+1]              
-                model.cuts.add(expr <= k)      
-        
+                model.cuts.add(expr <= cut[3])
+                
             ## Adding a new restrictions RIGHT-BRANCH  >>++++++++|°> . o O
-            print('Adding ',len(rightbranches),' right-branches')
+            # print('Adding ',len(rightbranches),' right-branches')
             for cut in rightbranches:
+                print('Adding the right-branch: ∑candidates['+str(len(cut[2]))+'] + ∑SB['+str(len(cut[0]))+'] ≥',cut[3],'+ 1')  
                 expr = 0      
                 ## cut[1]=No_SB_Uu   cut[2]=candidate_Uu  cut[0]=SB_Uu   
                 for f in cut[0]:  ## NUNCA SE MUEVE         ## count the changes  1 --> 0  
                     expr += 1 - model.u[f[0]+1,f[1]+1] 
                 for f in cut[2]:  # cut[1]                  ## count the changes  0 --> 1 
                     expr +=     model.u[f[0]+1,f[1]+1] 
-                model.cuts.add(expr >= k + 1)
+                model.cuts.add(expr >= cut[3] + 1)
+                
 
     ## ---------------------------- HARD VARIABLE FIXING I  ------------------------------------------
     ##     
