@@ -930,15 +930,15 @@ def uc(instance,option='None',
             for f in SB_Uu:
                 expr += model.u[f[0]+1,f[1]+1]
             model.cuts.add(expr >= inside90)
-            print(option,'soft-fixing Uu:  ∑SB=1 <= inside90 =['+str(inside90)+']')
+            print(    'Adding the soft-fixing Uu:  ∑SB=1 <= inside90 =['+str(inside90)+']')
             # outside90 = len(SB_Uu)-inside90
-            # print(option,'variables Uu that SB_Uu=0 <= outside90 =', outside90)
+            # print('variables Uu that SB_Uu=0 <= outside90 =', outside90)
         
         ## Local Branching Constraint (LBC)     
         if True:            
             ## Adding a new restrictions LEFT-BRANCH  <°|((><                
             for cut in leftbranch:            
-                print('Adding  1  left-branch: ∑candidates['+str(len(cut[2]))+'] + ∑SB['+str(len(cut[0]))+'] ≤',cut[3])                
+                print('Adding the left-branch:    ∑candidates['+str(len(cut[2]))+'] + ∑SB['+str(len(cut[0]))+'] ≤',cut[3])                
                 expr = 0      
                 ## cut[1]=No_SB_Uu   cut[2]=lower_Pmin_Uu  cut[0]=SB_Uu   cut[3]=rhs
                 for f in cut[0]:                             ## count the changes  1 --> 0  
@@ -950,7 +950,10 @@ def uc(instance,option='None',
             ## Adding a new restrictions RIGHT-BRANCH  >>++++++++|°> . o O
             # print('Adding ',len(rightbranches),' right-branches')
             for cut in rightbranches:
-                print('Adding the right-branch: ∑candidates['+str(len(cut[2]))+'] + ∑SB['+str(len(cut[0]))+'] ≥',cut[3],'+ 1')  
+                if cut[3] ==0:
+                    print('Adding the tabu-constraint: ∑candidates['+str(len(cut[2]))+'] + ∑SB['+str(len(cut[0]))+'] ≥ + 1')  
+                else:    
+                    print('Adding the right-branch:    ∑candidates['   +str(len(cut[2]))+'] + ∑SB['+str(len(cut[0]))+'] ≥',cut[3],'+ 1')  
                 expr = 0      
                 ## cut[1]=No_SB_Uu   cut[2]=lower_Pmin_Uu  cut[0]=SB_Uu   cut[3]=rhs
                 for f in cut[0]:  ## NUNCA SE MUEVE         ## count the changes  1 --> 0  
@@ -958,8 +961,7 @@ def uc(instance,option='None',
                 for f in cut[2]:  # cut[1]                  ## count the changes  0 --> 1 
                     expr +=     model.u[f[0]+1,f[1]+1] 
                 model.cuts.add(expr >= cut[3] + 1)
-                
-               
+  
     ## ---------------------------- LOCAL BRANCHING CONSTRAINT LBC2 (INTEGER VERSION)------------------------------------------    
     ## 
     if option == 'lbc2':
@@ -993,15 +995,15 @@ def uc(instance,option='None',
             for f in SB_Uu:
                 expr += model.u[f[0]+1,f[1]+1]
             model.cuts.add(expr >= inside90)
-            print(option,'soft-fixing Uu:  ∑SB=1 <= inside90 =['+str(inside90)+']')
+            print('Adding the soft-fixing Uu:  ∑SB=1 <= inside90 =['+str(inside90)+']')
             # outside90 = len(SB_Uu)-inside90
-            # print(option,'variables Uu that SB_Uu=0 <= outside90 =', outside90)
+            # print('variables Uu that SB_Uu=0 <= outside90 =', outside90)
         
         ## Local Branching Constraint (LBC)     
         if True:            
             ## Adding a new restrictions LEFT-BRANCH  <°|((><                
             for cut in leftbranch:            
-                print('Adding  1  left-branch: ∑candidates['+str(len(cut[2]))+'] + ∑SB['+str(len(cut[0]))+'] ≤',cut[3])                
+                print('Adding the left-branch:    ∑candidates['+str(len(cut[2]))+'] + ∑SB['+str(len(cut[0]))+'] ≤',cut[3])                
                 expr = 0      
                 ## cut[1]=No_SB_Uu   cut[2]=lower_Pmin_Uu  cut[0]=SB_Uu   
                 for f in cut[0]:                             ## count the changes  1 --> 0  
@@ -1013,7 +1015,10 @@ def uc(instance,option='None',
             ## Adding a new restrictions RIGHT-BRANCH  >>++++++++|°> . o O
             # print('Adding ',len(rightbranches),' right-branches')
             for cut in rightbranches:
-                print('Adding the right-branch: ∑candidates['+str(len(cut[2]))+'] + ∑SB['+str(len(cut[0]))+'] ≥',cut[3],'+ 1')  
+                if cut[3] ==0:
+                    print('Adding the tabu-constraint: ∑candidates['+str(len(cut[2]))+'] + ∑SB['+str(len(cut[0]))+'] ≥ + 1')  
+                else:    
+                    print('Adding the right-branch:    ∑candidates['   +str(len(cut[2]))+'] + ∑SB['+str(len(cut[0]))+'] ≥',cut[3],'+ 1')  
                 expr = 0      
                 ## cut[1]=No_SB_Uu   cut[2]=lower_Pmin_Uu  cut[0]=SB_Uu   
                 for f in cut[0]:  ## NUNCA SE MUEVE         ## count the changes  1 --> 0  
@@ -1021,8 +1026,7 @@ def uc(instance,option='None',
                 for f in cut[2]:  # cut[1]  *                ## count the changes  0 --> 1 
                     expr +=     model.u[f[0]+1,f[1]+1] 
                 model.cuts.add(expr >= cut[3] + 1)
-
-            
+ 
     ## ---------------------------- LOCAL BRANCHING CONSTRAINT LBC3 (ALL VARIABLES "U=0" in LBC)------------------------------------------    
     ## 
     if option == 'lbc3':
@@ -1057,15 +1061,15 @@ def uc(instance,option='None',
             for f in SB_Uu:
                 expr += model.u[f[0]+1,f[1]+1]
             model.cuts.add(expr >= inside90)
-            print(option,'soft-fixing Uu:  ∑SB=1 <= inside90 =['+str(inside90)+']')
+            print('Adding the soft-fixing Uu:  ∑SB=1 <= inside90 =['+str(inside90)+']')
             # outside90 = len(SB_Uu)-inside90
-            # print(option,'variables Uu that SB_Uu=0 <= outside90 =', outside90)
+            # print('variables Uu that SB_Uu=0 <= outside90 =', outside90)
         
         ## Local Branching Constraint (LBC)     
         if True:            
             ## Adding a new restrictions LEFT-BRANCH  <°|((><                
             for cut in leftbranch:            
-                print('Adding  1  left-branch: ∑candidates['+str(len(cut[2]))+'] + ∑SB['+str(len(cut[0]))+'] ≤',cut[3])                
+                print('Adding the left-branch:    ∑candidates['+str(len(cut[2]))+'] + ∑SB['+str(len(cut[0]))+'] ≤',cut[3])                
                 expr = 0      
                 ## cut[1]=No_SB_Uu   cut[2]=lower_Pmin_Uu  cut[0]=SB_Uu   
                 for f in cut[0]:                             ## count the changes  1 --> 0  
@@ -1077,7 +1081,10 @@ def uc(instance,option='None',
             ## Adding a new restrictions RIGHT-BRANCH  >>++++++++|°> . o O
             # print('Adding ',len(rightbranches),' right-branches')
             for cut in rightbranches:
-                print('Adding the right-branch: ∑candidates['+str(len(cut[2]))+'] + ∑SB['+str(len(cut[0]))+'] ≥',cut[3],'+ 1')  
+                if cut[3] ==0:
+                    print('Adding the tabu-constraint: ∑No_SB['+str(len(cut[2]))+'] + ∑SB['+str(len(cut[0]))+'] ≥ + 1')  
+                else:    
+                    print('Adding the right-branch:    ∑No_SB['   +str(len(cut[2]))+'] + ∑SB['+str(len(cut[0]))+'] ≥',cut[3],'+ 1')  
                 expr = 0      
                 ## cut[1]=No_SB_Uu   cut[2]=lower_Pmin_Uu  cut[0]=SB_Uu   
                 for f in cut[0]:  ## NUNCA SE MUEVE         ## count the changes  1 --> 0  
@@ -1085,8 +1092,7 @@ def uc(instance,option='None',
                 for f in cut[1]:  # cut[2]                  ## count the changes  0 --> 1 LBC3!!!
                     expr +=     model.u[f[0]+1,f[1]+1] 
                 model.cuts.add(expr >= cut[3] + 1)
-                
-                
+      
     ## ---------------------------- LOCAL BRANCHING CONSTRAINT LBC 4 (SOFT-FIXING)------------------------------------------    
     ##
     if option == 'lbc4':
@@ -1120,15 +1126,15 @@ def uc(instance,option='None',
             for f in SB_Uu:
                 expr += model.u[f[0]+1,f[1]+1]
             model.cuts.add(expr >= inside90)
-            print(option,'soft-fixing Uu:  ∑SB=1 <= inside90 =['+str(inside90)+']')
+            print('Adding the soft-fixing Uu:  ∑SB=1 <= inside90 =['+str(inside90)+']')
             # outside90 = len(SB_Uu)-inside90
-            # print(option,'variables Uu that SB_Uu=0 <= outside90 =', outside90)
+            # print('variables Uu that SB_Uu=0 <= outside90 =', outside90)
         
         ## Local Branching Constraint (LBC)     
         if True:            
             ## Adding a new restrictions LEFT-BRANCH  <°|((><                
             for cut in leftbranch:            
-                print('Adding  1  left-branch: ∑candidates['+str(len(cut[2]))+'] + ∑SB['+str(len(cut[0]))+'] ≤',cut[3])                
+                print('Adding the left-branch:    ∑candidates['+str(len(cut[2]))+'] + ∑SB['+str(len(cut[0]))+'] ≤',cut[3])                
                 expr = 0      
                 ## cut[1]=No_SB_Uu   cut[2]=candidate_Uu  cut[0]=SB_Uu   
                 for f in cut[0]:                             ## count the changes  1 --> 0  
@@ -1140,15 +1146,17 @@ def uc(instance,option='None',
             ## Adding a new restrictions RIGHT-BRANCH  >>++++++++|°> . o O
             # print('Adding ',len(rightbranches),' right-branches')
             for cut in rightbranches:
-                print('Adding the right-branch: ∑candidates['+str(len(cut[2]))+'] + ∑SB['+str(len(cut[0]))+'] ≥',cut[3],'+ 1')  
-                expr = 0      
+                if cut[3] ==0:
+                    print('Adding the tabu-constraint: ∑candidates['+str(len(cut[2]))+'] + ∑SB['+str(len(cut[0]))+'] ≥ + 1')  
+                else:    
+                    print('Adding the right-branch:    ∑candidates['   +str(len(cut[2]))+'] + ∑SB['+str(len(cut[0]))+'] ≥',cut[3],'+ 1')  
+                expr = 0   
                 ## cut[1]=No_SB_Uu   cut[2]=candidate_Uu  cut[0]=SB_Uu   
                 for f in cut[0]:  ## NUNCA SE MUEVE         ## count the changes  1 --> 0  
                     expr += 1 - model.u[f[0]+1,f[1]+1] 
                 for f in cut[2]:  # cut[1]                  ## count the changes  0 --> 1 
                     expr +=     model.u[f[0]+1,f[1]+1] 
                 model.cuts.add(expr >= cut[3] + 1)
-                
 
     ## ---------------------------- HARD VARIABLE FIXING I  ------------------------------------------
     ##     

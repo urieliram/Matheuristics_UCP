@@ -171,8 +171,7 @@ if  Hard3:
         del sol_hard3
         gc.collect()
         util.saveSolution(t_lp,z_lp,t_hard3,z_hard3,SB_Uu3,No_SB_Uu3,lower_Pmin_Uu3,Vv3,Ww3,delta3,'Hard3',nameins[0:6])
-        
-
+      
     ## ------------------------------------------- HARJUNKOSKI ---------------------------------------------
     ## HARJUNKOSKI's rule solution and solve the sub-MILP. (Require run the LP)
     
@@ -247,7 +246,9 @@ if  lbc1:
                              tee=False,tofiles=False,option='lbc1',scope=scope)
         z_lbc1,g_lbc1 = sol_lbc1.solve_problem()
         softfix       = True
-        
+
+        rightbranches = util.delete_tabu(rightbranches)
+
         if sol_lbc1.optimal:
             if rhs >= 1e+75:
                 opt = True
@@ -279,7 +280,7 @@ if  lbc1:
                 cutoff    = 1e+75
                 first     = True
             rhs = rhs + ceil(k/2)   
-            print('Infeasible problem: k = k+[k/2]=', k)             
+            print('Infeasible problem: k = k+[k/2]=', rhs)             
             diversify = True
             
         if sol_lbc1.timeover:
@@ -296,6 +297,9 @@ if  lbc1:
                 x_incumbent = [SB_Uu,No_SB_Uu,Vv,Ww,delta,lower_Pmin_Uu]
                 g_lbc1      = util.igap(lb_best,z_lbc1)
                 char        = '***'
+            else: 
+                timeconst = max(timeconst-timeconst/2,100)
+                print('Time per node reduced to:', timeconst)
             diversify     = False
             first         = False
             cutoff        = z_lbc1
@@ -311,11 +315,11 @@ if  lbc1:
                 first      = True
                 cutoff     = 1e+75  
                 rhs        = rhs + ceil(k/2)   
-                print('No solution found + diversify: k = k+[k/2]=', k)
+                print('No solution found + diversify: k = k+[k/2]=', rhs)
             else:
                 leftbranch = []
-                rhs = rhs - ceil(k/2)   
-                print('No solution found: k = k+[k/2]=', k)
+                rhs        = rhs - ceil(k/2)   
+                print('No solution found: k = k-[k/2]=', rhs)
             diversify = True
 
         result_iter.append((round(time.time() - t_o + t_hard3,1),z_lbc1))          
@@ -339,6 +343,7 @@ if  lbc1:
 
     checkSol('z_lbc1',z_lbc1,x_incumbent[0],x_incumbent[1],x_incumbent[2],x_incumbent[3],x_incumbent[4],'lbc1') ## Check feasibility (LB1)
 
+timeconst = timeconst_original
 
 ## --------------------------------------- LOCAL BRANCHING 2 ------------------------------------------
 ## LBC BINARY VERSION without soft-fixing and use P_min candidates
@@ -394,6 +399,8 @@ if  lbc2:
         z_lbc2,g_lbc2 = sol_lbc2.solve_problem()
         softfix       = False
         
+        rightbranches = util.delete_tabu(rightbranches)
+        
         if sol_lbc2.optimal:
             if rhs >= 1e+75:
                 opt = True
@@ -425,7 +432,7 @@ if  lbc2:
                 cutoff    = 1e+75
                 first     = True
             rhs = rhs + ceil(k/2)   
-            print('Infeasible problem: k = k+[k/2]=', k)             
+            print('Infeasible problem: k = k+[k/2]=', rhs)             
             diversify = True
             
         if sol_lbc2.timeover:
@@ -442,6 +449,9 @@ if  lbc2:
                 x_incumbent = [SB_Uu,No_SB_Uu,Vv,Ww,delta,lower_Pmin_Uu]
                 g_lbc2      = util.igap(lb_best,z_lbc2)
                 char        = '***'
+            else: 
+                timeconst = max(timeconst-timeconst/2,100)
+                print('Time per node reduced to:', timeconst)
             diversify     = False
             first         = False
             cutoff        = z_lbc2
@@ -457,11 +467,11 @@ if  lbc2:
                 first    = True
                 cutoff   = 1e+75  
                 rhs      = rhs + ceil(k/2)   
-                print('No solution found + diversify: k = k+[k/2]=', k)
+                print('No solution found + diversify: k = k+[k/2]=', rhs)
             else:
                 leftbranch = []
-                rhs = rhs - ceil(k/2)   
-                print('No solution found: k = k+[k/2]=', k)
+                rhs        = rhs - ceil(k/2)   
+                print('No solution found: k = k-[k/2]=', rhs)
             diversify = True
 
         result_iter.append((round(time.time() - t_o + t_hard3,1),z_lbc2))          
@@ -485,6 +495,7 @@ if  lbc2:
 
     checkSol('z_lbc2',z_lbc2,x_incumbent[0],x_incumbent[1],x_incumbent[2],x_incumbent[3],x_incumbent[4],'lbc2') ## Check feasibility (LB2)
 
+timeconst = timeconst_original
 
 ## --------------------------------------- LOCAL BRANCHING 3 ------------------------------------------
 ## LBC COUNTINOUS VERSION without soft-fixing and not use P_min candidates
@@ -539,7 +550,9 @@ if  lbc3:
                              tee=False,tofiles=False,option='lbc3',scope=scope)
         z_lbc3,g_lbc3 = sol_lbc3.solve_problem()
         softfix       = False
-        
+                
+        rightbranches = util.delete_tabu(rightbranches)
+                
         if sol_lbc3.optimal:
             if rhs >= 1e+75:
                 opt = True
@@ -571,7 +584,7 @@ if  lbc3:
                 cutoff    = 1e+75
                 first     = True
             rhs = rhs + ceil(k/2)   
-            print('Infeasible problem: k = k+[k/2]=', k)             
+            print('Infeasible problem: k = k+[k/2]=', rhs)             
             diversify = True
             
         if sol_lbc3.timeover:
@@ -588,6 +601,9 @@ if  lbc3:
                 x_incumbent = [SB_Uu,No_SB_Uu,Vv,Ww,delta,lower_Pmin_Uu]
                 g_lbc3      = util.igap(lb_best,z_lbc3)
                 char        = '***'
+            else: 
+                timeconst = max(timeconst-timeconst/2,100)
+                print('Time per node reduced to:', timeconst)
             diversify     = False
             first         = False
             cutoff        = z_lbc3
@@ -603,11 +619,11 @@ if  lbc3:
                 first    = True
                 cutoff   = 1e+75  
                 rhs      = rhs + ceil(k/2)   
-                print('No solution found + diversify: k = k+[k/2]=', k)
+                print('No solution found + diversify: k = k+[k/2]=', rhs)
             else:
                 leftbranch = []
-                rhs = rhs - ceil(k/2)   
-                print('No solution found: k = k+[k/2]=', k)
+                rhs        = rhs - ceil(k/2)   
+                print('No solution found: k = k-[k/2]=', rhs)
             diversify = True
 
         result_iter.append((round(time.time() - t_o + t_hard3,1),z_lbc3))          
@@ -631,6 +647,7 @@ if  lbc3:
 
     checkSol('z_lbc3',z_lbc3,x_incumbent[0],x_incumbent[1],x_incumbent[2],x_incumbent[3],x_incumbent[4],'lbc3') ## Check feasibility (LB3)
 
+timeconst = timeconst_original
 
 ## --------------------------------------- LOCAL BRANCHING 4 ------------------------------------------
 ## LBC COUNTINOUS VERSION without soft-fixing
@@ -708,7 +725,9 @@ if  lbc4:
                              tee=False,tofiles=False,option='lbc4',scope=scope)
         z_lbc4,g_lbc4 = sol_lbc4.solve_problem()
         softfix       = True
-        
+                
+        rightbranches = util.delete_tabu(rightbranches)
+                
         if sol_lbc4.optimal:
             if rhs >= 1e+75:
                 opt = True
@@ -757,6 +776,9 @@ if  lbc4:
                 x_incumbent = [SB_Uu,No_SB_Uu,Vv,Ww,delta,lower_Pmin_Uu]
                 g_lbc4      = util.igap(lb_best,z_lbc4)
                 char        = '***'
+            else: 
+                timeconst = max(timeconst-timeconst/2,100)
+                print('Time per node reduced to:', timeconst)
             diversify     = False
             first         = False
             cutoff        = z_lbc4
@@ -775,8 +797,8 @@ if  lbc4:
                 print('No solution found + diversify: k = k+[k/2]=', rhs)
             else:
                 leftbranch = []
-                rhs = rhs - ceil(k/2)   
-                print('No solution found: k = k+[k/2]=', k)
+                rhs        = rhs - ceil(k/2)   
+                print('No solution found: k = k+[k/2]=', rhs)
             diversify = True
 
         result_iter.append((round(time.time() - t_o + t_hard3,1),z_lbc4))          

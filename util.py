@@ -38,11 +38,6 @@ def imprime_sol(model,sol):
     W  = dict(zip(model.T, sol.getW()))
     P  = dict(zip(model.T, sol.getP()))
     R  = dict(zip(model.T, sol.getR()))    
-    # print("u",Uu)
-    # print("v",V)
-    # print("w",W)
-    # print("p",P)
-    # print("r",R)
 
 def config_env():
     #ambiente='localPC',ruta='instances/',executable='/home/uriel/cplex1210/cplex/bin/x86-64_linux/cplex3'
@@ -167,4 +162,26 @@ def compare(array1,array2):
     result = np.array_equal(array1, array2)
     
     print('result  =',result)     
-    
+
+def delete_tabu(rightbranches):
+    # x_=[[0,1,2],[3,4,5],[7,8,9]]
+    # rightbranches = []
+    # rightbranches.append([x_[0],x_[1],x_[2],0])
+    # rightbranches.append([x_[0],x_[1],x_[2],1])
+    # rightbranches.append([x_[0],x_[1],x_[2],2])
+    # rightbranches.append([x_[0],x_[1],x_[2],0])
+    # rightbranches.append([x_[0],x_[1],x_[2],3])
+    # rightbranches.append([x_[0],x_[1],x_[2],0])
+    # rightbranches.append([x_[0],x_[1],x_[2],4])
+    try:
+        i=0
+        for cut in rightbranches:
+            if cut[3] == 0:
+                #print(cut)
+                #print(i)
+                rightbranches.pop(i)
+            i=i+1
+    except:
+        print('>>> Fail deleting tabu coinstraints')
+        
+    return(rightbranches)
