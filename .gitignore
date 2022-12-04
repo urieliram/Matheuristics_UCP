@@ -11,6 +11,8 @@ __pycache__/
 *.lp
 *.txt
 *.log
+*.con
+*.sh
 
 # Distribution / packaging
 .Python
