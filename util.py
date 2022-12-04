@@ -70,6 +70,7 @@ def config_env():
         iterstop           = df['iterstop'           ].values[0]
         
         MILP               = df['MILP'               ].values[0]
+        MILP2              = df['MILP2'              ].values[0]
         Hard3              = df['Hard3'              ].values[0]
         Harjk              = df['Harjk'              ].values[0]
         lbc1               = df['lbc1'               ].values[0]
@@ -81,7 +82,7 @@ def config_env():
     else:
         print('!!! Problema al cargar la configuración. Verifique el ')
         print('formato y rutas del archivo <config>, algo como esto:')
-        print('ambiente,ruta,executable,timeconst,timefull, emphasysmilp,symmetrymilp,lbheurmilp,strategymilp, divemilp,heuristicfreqmilp,numericalmilp,tolfeasibilitymilp,toloptimalitymilp, emphasysheur,symmetryheur,lbheurheur,strategyheur, gap,k,iterstop, MILP,Hard3,Harjk,FP,lbc1,lbc2,lbc3,KS')
+        print('ambiente,ruta,executable,timeconst,timefull, emphasysmilp,symmetrymilp,lbheurmilp,strategymilp, divemilp,heuristicfreqmilp,numericalmilp,tolfeasibilitymilp,toloptimalitymilp, emphasysheur,symmetryheur,lbheurheur,strategyheur, gap,k,iterstop, MILP,MILP2,Hard3,Harjk,FP,lbc1,lbc2,lbc3,KS')
         print('yalma,instances/,/home/uriel/cplex1210/cplex/bin/x86-64_linux/cplex,1200,7200,1,1,yes,3, 1,0,no,3, 0.0001,20,30')
         print('localPC,instances/,/home/uriel/cplex1210/cplex/bin/x86-64_linux/cplex,400,1000,1,1,yes,3, 1,0,no,3, 0.0001,20,30')
 
@@ -89,7 +90,7 @@ def config_env():
             emphasizeMILP,symmetryMILP,lbheurMILP,strategyMILP,                             \
             diveMILP,heuristicfreqMILP,numericalMILP,tolfeasibilityMILP,toloptimalityMILP,  \
             emphasizeHEUR,symmetryHEUR,lbheurHEUR,strategyHEUR,                             \
-            gap,k,iterstop,MILP,Hard3,Harjk,lbc1,lbc2,lbc3,KS,lbc4
+            gap,k,iterstop,MILP,MILP2,Hard3,Harjk,lbc1,lbc2,lbc3,KS,lbc4
 
 def trunc(values, decs=1):
     return np.trunc(values*10**decs)/(10**decs)

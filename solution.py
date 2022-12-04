@@ -10,7 +10,7 @@ from   math import ceil
 class Solution:
     def __init__(self,model,env,executable,nameins='model',letter='',gap=0.0001,timelimit=300,tee=False,tofiles=False,lpmethod=0,
                  cutoff=1e+75,emphasize=1,lbheur='no',symmetry=-1,strategy=1,fpheur=0,rinsheur=0,
-                 dive=0,heuristicfreq=0,numerical='no',tolfeasibility=1e-06,toloptimality=1e-06,
+                 dive=0,heuristicfreq=0,numerical='no',tolfeasibility=1e-06,toloptimality=1e-06, limitssolutions=9999,
                  exportLP=False,option='',scope='',rc=False,dual=False):
         self.model      = model
         self.nameins    = nameins     ## name of instance 
@@ -33,6 +33,7 @@ class Solution:
         self.numerical       = numerical
         self.tolfeasibility  = tolfeasibility
         self.toloptimality   = toloptimality
+        self.limitssolutions = limitssolutions
 
         self.rc         = rc          ## To calculate Suffix data (dual and reduced cost)
         self.symmetry   = symmetry    ## symmetry breaking: Automatic =-1 Turn off=0 ; moderade=1 ; extremely aggressive=5
@@ -103,7 +104,8 @@ class Solution:
         solver.options['mip strategy heuristicfreq'    ] = self.heuristicfreq 
         solver.options['emphasis numerical'            ] = self.numerical      
         solver.options['simplex tolerances feasibility'] = self.tolfeasibility 
-        solver.options['simplex tolerances optimality' ] = self.toloptimality  
+        solver.options['simplex tolerances optimality' ] = self.toloptimality
+        solver.options['mip limits solutions'          ] = self.limitssolutions
 
         # solver.options['mip cuts all'                ] = -1
         # solver.options['mip strategy presolvenode'   ] =  1        
@@ -132,7 +134,7 @@ class Solution:
 
         ## Envía el problema de optimización al solver
         result = solver.solve(self.model,tee=self.tee,logfile='logfile'+self.option+self.nameins+self.letter+'.log',warmstart=True) #,suffixes='rc'
-        
+        ## https://www.ibm.com/docs/en/icos/20.1.0?topic=mip-starting-from-solution-starts 
         
         # ## Envía el problema de optimización al solver
         # if self.option=='Hard' or self.option=='Hard3' or self.option=='lbc1' or self.option=='Check' or self.option=='KS' :
