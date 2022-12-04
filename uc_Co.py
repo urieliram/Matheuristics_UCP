@@ -26,7 +26,7 @@ import threading
       
 def uc(instance,option='None',
        kernel=[],bucket=[],SB_Uu=[],No_SB_Uu=[],lower_Pmin_Uu=[],V=[],W=[],delta=[],
-       percent_soft=90,k=20,nameins='ml',mode='Tight',scope='',improve=True,timeover=False,
+       percent_soft=90,k=20,nameins='ml',mode='Tight',scope='',
        rightbranches=[],leftbranch=[],softfix=False):      
        
     G       = instance[0]
@@ -904,20 +904,18 @@ def uc(instance,option='None',
     ## Use lowe_Pmin by Harjunkovsky
         for f in No_SB_Uu:   
             model.u[f[0]+1,f[1]+1].domain = UnitInterval    ## We remove the integrality constraint of the Binary Support 
-            if improve == True:          
-                model.u[f[0]+1,f[1]+1] = 0                  ## Hints
+            model.u[f[0]+1,f[1]+1] = 0                  ## Hints
         for f in SB_Uu:  
             model.u[f[0]+1,f[1]+1].domain = UnitInterval    ## We remove the integrality constraint of the Binary Support 
-            if improve == True:          
-                model.u[f[0]+1,f[1]+1] = 1                  ## Hints
+            model.u[f[0]+1,f[1]+1] = 1                  ## Hints
             
         ## Hints para iniciar desde la última solución válida
-        for g in range(len(G)):
-            for t in range(len(T)):
-                model.v[g+1,t+1] = V[g][t]                  ## Hints
-                model.w[g+1,t+1] = W[g][t]                  ## Hints
-                if delta[g][t]  != 0:
-                    model.delta[g+1,t+1,delta[g][t]] = 1    ## Hints
+        # for g in range(len(G)):
+        #     for t in range(len(T)):
+        #         model.v[g+1,t+1] = V[g][t]                  ## Hints
+        #         model.w[g+1,t+1] = W[g][t]                  ## Hints
+        #         if delta[g][t]  != 0:
+        #             model.delta[g+1,t+1,delta[g][t]] = 1    ## Hints
 
         model.cuts = ConstraintList()
         
@@ -930,7 +928,7 @@ def uc(instance,option='None',
             for f in SB_Uu:
                 expr += model.u[f[0]+1,f[1]+1]
             model.cuts.add(expr >= inside90)
-            print(    'Adding the soft-fixing Uu:  ∑SB=1 <= inside90 =['+str(inside90)+']')
+            print(    'Adding the soft-fixing Uu:  ∑SB=1 <= inside90 = ['+str(inside90)+']')
             # outside90 = len(SB_Uu)-inside90
             # print('variables Uu that SB_Uu=0 <= outside90 =', outside90)
         
@@ -938,7 +936,7 @@ def uc(instance,option='None',
         if True:            
             ## Adding a new restrictions LEFT-BRANCH  <°|((><                
             for cut in leftbranch:            
-                print('Adding the left-branch:    ∑candidates['+str(len(cut[2]))+'] + ∑SB['+str(len(cut[0]))+'] ≤',cut[3])                
+                print('Adding the left-branch:     ∑candidates['+str(len(cut[2]))+'] + ∑SB['+str(len(cut[0]))+'] ≤',cut[3])                
                 expr = 0      
                 ## cut[1]=No_SB_Uu   cut[2]=lower_Pmin_Uu  cut[0]=SB_Uu   cut[3]=rhs
                 for f in cut[0]:                             ## count the changes  1 --> 0  
@@ -969,20 +967,18 @@ def uc(instance,option='None',
     ## Without Soft-fixing and U.domain in Binary
         for f in No_SB_Uu:   
             model.u[f[0]+1,f[1]+1].domain = Binary    ## We remove the integrality constraint of the Binary Support 
-            if improve == True:          
-                model.u[f[0]+1,f[1]+1] = 0                  ## Hints
+            model.u[f[0]+1,f[1]+1] = 0                  ## Hints
         for f in SB_Uu:  
             model.u[f[0]+1,f[1]+1].domain = Binary    ## We remove the integrality constraint of the Binary Support 
-            if improve == True:          
-                model.u[f[0]+1,f[1]+1] = 1                  ## Hints
+            model.u[f[0]+1,f[1]+1] = 1                  ## Hints
             
         ## Hints para iniciar desde la última solución válida
-        for g in range(len(G)):
-            for t in range(len(T)):
-                model.v[g+1,t+1] = V[g][t]                  ## Hints
-                model.w[g+1,t+1] = W[g][t]                  ## Hints
-                if delta[g][t]  != 0:
-                    model.delta[g+1,t+1,delta[g][t]] = 1    ## Hints
+        # for g in range(len(G)):
+        #     for t in range(len(T)):
+        #         model.v[g+1,t+1] = V[g][t]                  ## Hints
+        #         model.w[g+1,t+1] = W[g][t]                  ## Hints
+        #         if delta[g][t]  != 0:
+        #             model.delta[g+1,t+1,delta[g][t]] = 1    ## Hints
 
         model.cuts = ConstraintList()
         
@@ -995,7 +991,7 @@ def uc(instance,option='None',
             for f in SB_Uu:
                 expr += model.u[f[0]+1,f[1]+1]
             model.cuts.add(expr >= inside90)
-            print('Adding the soft-fixing Uu:  ∑SB=1 <= inside90 =['+str(inside90)+']')
+            print(    'Adding the soft-fixing Uu:  ∑SB=1 <= inside90 = ['+str(inside90)+']')
             # outside90 = len(SB_Uu)-inside90
             # print('variables Uu that SB_Uu=0 <= outside90 =', outside90)
         
@@ -1003,7 +999,7 @@ def uc(instance,option='None',
         if True:            
             ## Adding a new restrictions LEFT-BRANCH  <°|((><                
             for cut in leftbranch:            
-                print('Adding the left-branch:    ∑candidates['+str(len(cut[2]))+'] + ∑SB['+str(len(cut[0]))+'] ≤',cut[3])                
+                print('Adding the left-branch:     ∑candidates['+str(len(cut[2]))+'] + ∑SB['+str(len(cut[0]))+'] ≤',cut[3])                
                 expr = 0      
                 ## cut[1]=No_SB_Uu   cut[2]=lower_Pmin_Uu  cut[0]=SB_Uu   
                 for f in cut[0]:                             ## count the changes  1 --> 0  
@@ -1035,20 +1031,18 @@ def uc(instance,option='None',
     ## More similar to Original Fischetti and Lodi version
         for f in No_SB_Uu:   
             model.u[f[0]+1,f[1]+1].domain = Binary    ## We remove the integrality constraint of the Binary Support 
-            if improve == True:          
-                model.u[f[0]+1,f[1]+1] = 0                  ## Hints
+            model.u[f[0]+1,f[1]+1] = 0                  ## Hints
         for f in SB_Uu:  
             model.u[f[0]+1,f[1]+1].domain = Binary    ## We remove the integrality constraint of the Binary Support 
-            if improve == True:          
-                model.u[f[0]+1,f[1]+1] = 1                  ## Hints
+            model.u[f[0]+1,f[1]+1] = 1                  ## Hints
             
         ## Hints para iniciar desde la última solución válida
-        for g in range(len(G)):
-            for t in range(len(T)):
-                model.v[g+1,t+1] = V[g][t]                  ## Hints
-                model.w[g+1,t+1] = W[g][t]                  ## Hints
-                if delta[g][t]  != 0:
-                    model.delta[g+1,t+1,delta[g][t]] = 1    ## Hints
+        # for g in range(len(G)):
+        #     for t in range(len(T)):
+        #         model.v[g+1,t+1] = V[g][t]                  ## Hints
+        #         model.w[g+1,t+1] = W[g][t]                  ## Hints
+        #         if delta[g][t]  != 0:
+        #             model.delta[g+1,t+1,delta[g][t]] = 1    ## Hints
 
         model.cuts = ConstraintList()
         
@@ -1061,7 +1055,7 @@ def uc(instance,option='None',
             for f in SB_Uu:
                 expr += model.u[f[0]+1,f[1]+1]
             model.cuts.add(expr >= inside90)
-            print('Adding the soft-fixing Uu:  ∑SB=1 <= inside90 =['+str(inside90)+']')
+            print(    'Adding the soft-fixing Uu:  ∑SB=1 <= inside90 = ['+str(inside90)+']')
             # outside90 = len(SB_Uu)-inside90
             # print('variables Uu that SB_Uu=0 <= outside90 =', outside90)
         
@@ -1069,7 +1063,7 @@ def uc(instance,option='None',
         if True:            
             ## Adding a new restrictions LEFT-BRANCH  <°|((><                
             for cut in leftbranch:            
-                print('Adding the left-branch:    ∑candidates['+str(len(cut[2]))+'] + ∑SB['+str(len(cut[0]))+'] ≤',cut[3])                
+                print('Adding the left-branch:     ∑candidates['+str(len(cut[2]))+'] + ∑SB['+str(len(cut[0]))+'] ≤',cut[3])                
                 expr = 0      
                 ## cut[1]=No_SB_Uu   cut[2]=lower_Pmin_Uu  cut[0]=SB_Uu   
                 for f in cut[0]:                             ## count the changes  1 --> 0  
@@ -1100,20 +1094,18 @@ def uc(instance,option='None',
     ## With Soft-fixing and U.domain in UnitInterval
         for f in No_SB_Uu:   
             model.u[f[0]+1,f[1]+1].domain = UnitInterval    ## We remove the integrality constraint of the Binary Support 
-            if improve == True:          
-                model.u[f[0]+1,f[1]+1] = 0                  ## Hints
+            model.u[f[0]+1,f[1]+1] = 0                  ## Hints
         for f in SB_Uu:  
             model.u[f[0]+1,f[1]+1].domain = UnitInterval    ## We remove the integrality constraint of the Binary Support 
-            if improve == True:          
-                model.u[f[0]+1,f[1]+1] = 1                  ## Hints
+            model.u[f[0]+1,f[1]+1] = 1                  ## Hints
             
         ## Hints para iniciar desde la última solución válida
-        for g in range(len(G)):
-            for t in range(len(T)):
-                model.v[g+1,t+1] = V[g][t]                  ## Hints
-                model.w[g+1,t+1] = W[g][t]                  ## Hints
-                if delta[g][t]  != 0:
-                    model.delta[g+1,t+1,delta[g][t]] = 1    ## Hints
+        # for g in range(len(G)):
+        #     for t in range(len(T)):
+        #         model.v[g+1,t+1] = V[g][t]                  ## Hints
+        #         model.w[g+1,t+1] = W[g][t]                  ## Hints
+        #         if delta[g][t]  != 0:
+        #             model.delta[g+1,t+1,delta[g][t]] = 1    ## Hints
 
         model.cuts = ConstraintList()
         
@@ -1126,7 +1118,7 @@ def uc(instance,option='None',
             for f in SB_Uu:
                 expr += model.u[f[0]+1,f[1]+1]
             model.cuts.add(expr >= inside90)
-            print('Adding the soft-fixing Uu:  ∑SB=1 <= inside90 =['+str(inside90)+']')
+            print(    'Adding the soft-fixing Uu:  ∑SB=1 <= inside90 = ['+str(inside90)+']')
             # outside90 = len(SB_Uu)-inside90
             # print('variables Uu that SB_Uu=0 <= outside90 =', outside90)
         
@@ -1134,7 +1126,7 @@ def uc(instance,option='None',
         if True:            
             ## Adding a new restrictions LEFT-BRANCH  <°|((><                
             for cut in leftbranch:            
-                print('Adding the left-branch:    ∑candidates['+str(len(cut[2]))+'] + ∑SB['+str(len(cut[0]))+'] ≤',cut[3])                
+                print('Adding the left-branch:     ∑candidates['+str(len(cut[2]))+'] + ∑SB['+str(len(cut[0]))+'] ≤',cut[3])                
                 expr = 0      
                 ## cut[1]=No_SB_Uu   cut[2]=candidate_Uu  cut[0]=SB_Uu   
                 for f in cut[0]:                             ## count the changes  1 --> 0  
@@ -1238,6 +1230,27 @@ def uc(instance,option='None',
         for f in bucket:                                    ## Cuenta los elementos del bucket
             expr += model.u[f[2]+1,f[3]+1] 
         model.cuts.add(expr >= 1)            
+        
+    ## ---------------------------- MILP 2------------------------------------------    
+    ## Solve as a MILP2 from a initial solution (MILP2-Hard3)
+    if option == 'Milp2':
+        for f in SB_Uu:        
+            model.u[f[0]+1,f[1]+1].domain = Binary 
+            model.u[f[0]+1,f[1]+1] = 1                  ## Hints
+        for f in No_SB_Uu:   
+            model.u[f[0]+1,f[1]+1].domain = Binary 
+            model.u[f[0]+1,f[1]+1] = 0                  ## Hints
+            
+        # ## Hints para iniciar desde la última solución válida
+        # for g in range(len(G)):
+        #     for t in range(len(T)):
+        #         model.v[g+1,t+1].domain   = Binary 
+        #         model.v[g+1,t+1] = V[g][t]                  ## Hints
+        #         model.w[g+1,t+1].domain   = Binary 
+        #         model.w[g+1,t+1] = W[g][t]                  ## Hints
+        #         if delta[g][t]  != 0:
+        #             model.delta[g+1,t+1,delta[g][t]].domain = Binary 
+        #             model.delta[g+1,t+1,delta[g][t]] = 1    ## Hints
 
         
     ## Creating thread
