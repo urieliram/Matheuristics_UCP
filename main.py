@@ -192,24 +192,6 @@ if  Harjk:
     del sol_harjk
     gc.collect()
 
-## ---------------------------------------- MILP2 -----------------------------------------------------
-## Solve as a MILP2 from a initial solution (MILP2-Hard3)
-if  MILP2:  
-    cutoff         = 1e+75 #z_hard3
-    t_o            = time.time()
-    t_res          = timefull - t_hard3
-    print('\MILP2 starts')
-    model,__ = uc_Co.uc(instance,option='Milp2',SB_Uu=SB_Uu3,No_SB_Uu=No_SB_Uu3,V=Vv3,W=Ww3,delta=delta3,
-                        nameins=nameins[0:6],mode='Tight',scope=scope)
-    sol_milp2 = Solution(model=model,nameins=nameins[0:6],env=ambiente,executable=executable,
-                        emphasize=emphasizeHEUR,symmetry=symmetryHEUR,lbheur=lbheurHEUR,strategy=strategyHEUR,
-                        gap=gap,cutoff=cutoff,timelimit=t_res,tee=False,tofiles=False,
-                        exportLP=False,option='Milp2',scope=scope)
-    z_milp2, g_milp2 = sol_milp2.solve_problem()
-    t_milp2          = time.time() - t_o + t_hard3
-    g_milp2          = util.igap(lb_best,z_milp2)
-    print('t_milp2= ',round(t_milp2,1),'z_milp2= ',round(z_milp2,1),'g_milp2= ',round(g_milp2,8))
-
 ## --------------------------------------- LOCAL BRANCHING 1 ------------------------------------------
 ## LBC COUNTINOUS VERSION with soft-fixing and restricted candidates list 
 ## Include the LOCAL BRANCHING CUT to the solution and solve the sub-MILP (it is using cutoff=z_hard).
@@ -316,8 +298,9 @@ if  lbc1:
                 g_lbc1      = util.igap(lb_best,z_lbc1)
                 char        = '***'
             else: 
-                softfix    = False ####################################################################################
-                print('Disabled soft-fixing for no-improving') ########################################################            diversify     = False
+                temp = 0
+                # softfix    = False ####################################################################################
+                # print('Disabled soft-fixing for no-improving') ########################################################            diversify     = False
             first         = False
             cutoff        = z_lbc1
             rhs           = k 
@@ -450,7 +433,7 @@ if  lbc2:
                 cutoff    = 1e+75
                 first     = True
             rhs = rhs + ceil(k/2)   
-            print('Infeasible problem: k = k+[k/2]=', rhs)             
+            print('Infeasible problem: k = k+[k/2] =', rhs)             
             diversify = True
             
         if sol_lbc2.timeover:
@@ -488,7 +471,7 @@ if  lbc2:
             else:
                 leftbranch = []
                 rhs        = rhs - ceil(k/2)   
-                print('No solution found: k = k-[k/2]=', rhs)
+                print('No solution found: k = k-[k/2] =', rhs)
             diversify = True
 
         result_iter.append((round(time.time() - t_o + t_hard3,1),z_lbc2))          
@@ -792,8 +775,9 @@ if  lbc4:
                 g_lbc4      = util.igap(lb_best,z_lbc4)
                 char        = '***'
             else: 
-                softfix   = False ##################################################################################
-                print('Disabled soft-fixing for no-improving') #####################################################
+                temp = 0
+                # softfix   = False ##################################################################################
+                # print('Disabled soft-fixing for no-improving') #####################################################
             diversify     = False
             first         = False
             cutoff        = z_lbc4
@@ -973,6 +957,24 @@ if  KS:
     #np.savetxt('iterKS'+nameins[0:6]+'.csv', result_iter, delimiter=',')
     
     checkSol('z_ks',z_ks,SB_Uu,No_SB_Uu,Vv,Ww,delta,'ks') ## Check feasibility (KS)
+
+## ---------------------------------------- MILP2 -----------------------------------------------------
+## Solve as a MILP2 from a initial solution (MILP29+Hard3)
+if  MILP2:  
+    cutoff         = 1e+75 # z_hard3
+    t_o            = time.time()
+    t_res          = timefull - t_hard3
+    print('\MILP2 starts')
+    model,__ = uc_Co.uc(instance,option='Milp2',SB_Uu=SB_Uu3,No_SB_Uu=No_SB_Uu3,V=Vv3,W=Ww3,delta=delta3,
+                        nameins=nameins[0:6],mode='Tight',scope=scope)
+    sol_milp2 = Solution(model=model,nameins=nameins[0:6],env=ambiente,executable=executable,
+                        emphasize=emphasizeHEUR,symmetry=symmetryHEUR,lbheur=lbheurHEUR,strategy=strategyHEUR,
+                        gap=gap,cutoff=cutoff,timelimit=t_res,tee=False,tofiles=False,
+                        exportLP=False,option='Milp2',scope=scope)
+    z_milp2, g_milp2 = sol_milp2.solve_problem()
+    t_milp2          = time.time() - t_o + t_hard3
+    g_milp2          = util.igap(lb_best,z_milp2)
+    print('t_milp2= ',round(t_milp2,1),'z_milp2= ',round(z_milp2,1),'g_milp2= ',round(g_milp2,8))
 
     ## PENDIENTES        
     # \todo{probar estadísticamente que SI conviene incluir los intentos de asignación en las variables soft-fix }
