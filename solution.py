@@ -106,6 +106,7 @@ class Solution:
         solver.options['simplex tolerances feasibility'] = self.tolfeasibility 
         solver.options['simplex tolerances optimality' ] = self.toloptimality
         solver.options['mip limits solutions'          ] = self.limitssolutions
+        #solver.options['threads'                      ] = 15
 
         # solver.options['mip cuts all'                ] = -1
         # solver.options['mip strategy presolvenode'   ] =  1        

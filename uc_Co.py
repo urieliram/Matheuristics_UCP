@@ -896,7 +896,7 @@ def uc(instance,option='None',
             def merge12(): 
                 aux=1
         
-    ## ---------------------------- LOCAL BRANCHING CONSTRAINT LBC 1 (SOFT-FIXING)------------------------------------------    
+    ## ---------------------------- LOCAL BRANCHING CONSTRAINT LBC1 (SOFT-FIXING + RCL(Harjk))------------------------------------------    
     ##
     if option == 'lbc1':
     ## Define a neighbourhood with LBC1.      
@@ -909,13 +909,13 @@ def uc(instance,option='None',
             model.u[f[0]+1,f[1]+1].domain = UnitInterval    ## We remove the integrality constraint of the Binary Support 
             model.u[f[0]+1,f[1]+1] = 1                  ## Hints
             
-        ## Hints para iniciar desde la última solución válida
-        # for g in range(len(G)):
-        #     for t in range(len(T)):
-        #         model.v[g+1,t+1] = V[g][t]                  ## Hints
-        #         model.w[g+1,t+1] = W[g][t]                  ## Hints
-        #         if delta[g][t]  != 0:
-        #             model.delta[g+1,t+1,delta[g][t]] = 1    ## Hints
+        # Hints para iniciar desde la última solución válida
+        for g in range(len(G)):
+            for t in range(len(T)):
+                model.v[g+1,t+1] = V[g][t]                  ## Hints
+                model.w[g+1,t+1] = W[g][t]                  ## Hints
+                if delta[g][t]  != 0:
+                    model.delta[g+1,t+1,delta[g][t]] = 1    ## Hints
 
         model.cuts = ConstraintList()
         
@@ -972,13 +972,13 @@ def uc(instance,option='None',
             model.u[f[0]+1,f[1]+1].domain = Binary    ## We remove the integrality constraint of the Binary Support 
             model.u[f[0]+1,f[1]+1] = 1                  ## Hints
             
-        ## Hints para iniciar desde la última solución válida
-        # for g in range(len(G)):
-        #     for t in range(len(T)):
-        #         model.v[g+1,t+1] = V[g][t]                  ## Hints
-        #         model.w[g+1,t+1] = W[g][t]                  ## Hints
-        #         if delta[g][t]  != 0:
-        #             model.delta[g+1,t+1,delta[g][t]] = 1    ## Hints
+        # Hints para iniciar desde la última solución válida
+        for g in range(len(G)):
+            for t in range(len(T)):
+                model.v[g+1,t+1] = V[g][t]                  ## Hints
+                model.w[g+1,t+1] = W[g][t]                  ## Hints
+                if delta[g][t]  != 0:
+                    model.delta[g+1,t+1,delta[g][t]] = 1    ## Hints
 
         model.cuts = ConstraintList()
         
@@ -1037,12 +1037,12 @@ def uc(instance,option='None',
             model.u[f[0]+1,f[1]+1] = 1                  ## Hints
             
         ## Hints para iniciar desde la última solución válida
-        # for g in range(len(G)):
-        #     for t in range(len(T)):
-        #         model.v[g+1,t+1] = V[g][t]                  ## Hints
-        #         model.w[g+1,t+1] = W[g][t]                  ## Hints
-        #         if delta[g][t]  != 0:
-        #             model.delta[g+1,t+1,delta[g][t]] = 1    ## Hints
+        for g in range(len(G)):
+            for t in range(len(T)):
+                model.v[g+1,t+1] = V[g][t]                  ## Hints
+                model.w[g+1,t+1] = W[g][t]                  ## Hints
+                if delta[g][t]  != 0:
+                    model.delta[g+1,t+1,delta[g][t]] = 1    ## Hints
 
         model.cuts = ConstraintList()
         
@@ -1087,7 +1087,7 @@ def uc(instance,option='None',
                     expr +=     model.u[f[0]+1,f[1]+1] 
                 model.cuts.add(expr >= cut[3] + 1)
       
-    ## ---------------------------- LOCAL BRANCHING CONSTRAINT LBC 4 (SOFT-FIXING)------------------------------------------    
+    ## ---------------------------- LOCAL BRANCHING CONSTRAINT LBC 4 (SOFT-FIXING + RCL(RC) )------------------------------------------    
     ##
     if option == 'lbc4':
     ## Define a neighbourhood with LB4.      
@@ -1099,13 +1099,13 @@ def uc(instance,option='None',
             model.u[f[0]+1,f[1]+1].domain = UnitInterval    ## We remove the integrality constraint of the Binary Support 
             model.u[f[0]+1,f[1]+1] = 1                  ## Hints
             
-        ## Hints para iniciar desde la última solución válida
-        # for g in range(len(G)):
-        #     for t in range(len(T)):
-        #         model.v[g+1,t+1] = V[g][t]                  ## Hints
-        #         model.w[g+1,t+1] = W[g][t]                  ## Hints
-        #         if delta[g][t]  != 0:
-        #             model.delta[g+1,t+1,delta[g][t]] = 1    ## Hints
+        # Hints para iniciar desde la última solución válida
+        for g in range(len(G)):
+            for t in range(len(T)):
+                model.v[g+1,t+1] = V[g][t]                  ## Hints
+                model.w[g+1,t+1] = W[g][t]                  ## Hints
+                if delta[g][t]  != 0:
+                    model.delta[g+1,t+1,delta[g][t]] = 1    ## Hints
 
         model.cuts = ConstraintList()
         
@@ -1167,8 +1167,6 @@ def uc(instance,option='None',
         for f in SB_Uu:       
             model.u[f[0]+1,f[1]+1].unfix()                  ## Hard fixing
             model.u[f[0]+1,f[1]+1] = 1                      ## Hints   
-        # for f in No_SB_Uu: 
-        #     model.u[f[0]+1,f[1]+1].fix(0)                 ## Hard fixing
         for f in lower_Pmin_Uu:
             model.u[f[0]+1,f[1]+1].unfix()    
             model.u[f[0]+1,f[1]+1] = 0                      ## Hints
@@ -1176,7 +1174,6 @@ def uc(instance,option='None',
     ## ---------------------------- CHECK FEASIABILITY ------------------------------------------
     ## 
     if option == 'Check':  
-        
         for f in SB_Uu: 
             model.u[f[0]+1,f[1]+1].domain = Binary 
             model.u[f[0]+1,f[1]+1].fix(1)                   ## Hard fixing
@@ -1196,7 +1193,6 @@ def uc(instance,option='None',
     ## ---------------------------- FIX SOLUTION LINEAR ------------------------------------------
     ## 
     if option == 'FixSol':  
-        
         for f in SB_Uu: 
             model.u[f[0]+1,f[1]+1].fix(1)                   ## Hard fixing
         for f in No_SB_Uu: 
@@ -1241,16 +1237,16 @@ def uc(instance,option='None',
             model.u[f[0]+1,f[1]+1].domain = Binary 
             model.u[f[0]+1,f[1]+1] = 0                  ## Hints
             
-        # ## Hints para iniciar desde la última solución válida
-        # for g in range(len(G)):
-        #     for t in range(len(T)):
-        #         model.v[g+1,t+1].domain   = Binary 
-        #         model.v[g+1,t+1] = V[g][t]                  ## Hints
-        #         model.w[g+1,t+1].domain   = Binary 
-        #         model.w[g+1,t+1] = W[g][t]                  ## Hints
-        #         if delta[g][t]  != 0:
-        #             model.delta[g+1,t+1,delta[g][t]].domain = Binary 
-        #             model.delta[g+1,t+1,delta[g][t]] = 1    ## Hints
+        ## Hints para iniciar desde la última solución válida
+        for g in range(len(G)):
+            for t in range(len(T)):
+                model.v[g+1,t+1].domain   = Binary 
+                model.v[g+1,t+1] = V[g][t]                  ## Hints
+                model.w[g+1,t+1].domain   = Binary 
+                model.w[g+1,t+1] = W[g][t]                  ## Hints
+                if delta[g][t]  != 0:
+                    model.delta[g+1,t+1,delta[g][t]].domain = Binary 
+                    model.delta[g+1,t+1,delta[g][t]] = 1    ## Hints
 
         
     ## Creating thread
