@@ -280,8 +280,8 @@ if  lbc1:
             rhs = rhs + ceil(k/2)   
             print('Infeasible problem: k = k+[k/2]=', rhs)             
             diversify = True
-            softfix   = False ####################################################################################
-            print('Disabled soft-fixing for infeasibility') ######################################################
+            # softfix   = False ####################################################################################
+            # print('Disabled soft-fixing for infeasibility') ######################################################
             
         if sol_lbc1.timeover:
             if rhs < 1e+75:
@@ -320,8 +320,8 @@ if  lbc1:
                 leftbranch = []
                 rhs        = rhs - ceil(k/2)   
                 print('No solution found: k = k-[k/2]=', rhs)
-            softfix    = False ####################################################################################
-            print('Disabled soft-fixing for no-solution found') ###################################################
+            # softfix    = False ####################################################################################
+            # print('Disabled soft-fixing for no-solution found') ###################################################
             diversify = True
 
         result_iter.append((round(time.time() - t_o + t_hard3,1),z_lbc1))          
@@ -758,8 +758,8 @@ if  lbc4:
             rhs = rhs + ceil(k/2)   
             print('Infeasible problem: k = k+[k/2]=', rhs)             
             diversify = True
-            softfix   = False ###################################################################################
-            print('Disabled soft-fixing for infeasibility') #####################################################
+            # softfix   = False ###################################################################################
+            # print('Disabled soft-fixing for infeasibility') #####################################################
             
         if sol_lbc4.timeover:
             if rhs < 1e+75:
@@ -799,8 +799,8 @@ if  lbc4:
                 rhs        = rhs - ceil(k/2)   
                 print('No solution found: k = k+[k/2]=', rhs)
             diversify = True
-            softfix   = False ###################################################################################
-            print('Disabled soft-fixing for no-solution found') #################################################
+            # softfix   = False ###################################################################################
+            # print('Disabled soft-fixing for no-solution found') #################################################
 
         result_iter.append((round(time.time() - t_o + t_hard3,1),z_lbc4))          
         bestUB = z_lbc4
