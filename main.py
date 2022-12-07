@@ -83,8 +83,8 @@ def checkSol(option,z_,SB_Uux,No_SB_Uux,Vvx,Wwx,deltax,dual=False,label=''):
         t_check          = time.time() - t_o
         print(option,': t_check= ',round(t_check,1),'z_check= ',round(z_check,4),'g_check= ',round(g_check,8))
         # SB_Uu, No_SB_Uu, __, Vv, Ww, delta = sol_check.select_binary_support_Uu('g_check')
-    except Exception as e:
-        print('!!! Error in Check', e)
+    except Exception as err:
+        print('!!! Error in Check', err)
     return z_check
 
 ## ---------------------------------------- MILP -----------------------------------------------------
@@ -105,15 +105,15 @@ if  MILP:
                             fpheur=fpheurMILP, rinsheur=rinsheurMILP,                                           
                             exportLP=False,option='Milp',scope=scope)
         z_milp, g_milp = sol_milp.solve_problem()
-    except Exception as e:
-        print('!!! Error in MILP', e)
+    except Exception as err:
+        print('!!! Error in MILP', err)
     t_milp         = time.time() - t_o
     
     ## Actualizamos el tiempo de las heurísticas al que ocupó el MILP (si es que encontró un óptimo o terminó por tiempo)
     timefull = t_milp
     try:
         lb_milp  = sol_milp.lower_bound
-    except Exception as e:
+    except Exception as err:
         temp = 0 #print(e)
         
     lb_best  = max(0,lb_milp)
@@ -197,8 +197,8 @@ if  Harjk:
         checkSol('Harjk',z_harjk,SB_Uujk,No_SB_Uujk,Vvjk,Wwjk,deltajk,'harjk') ## Check feasibility
         del SB_Uujk,No_SB_Uujk,Vvjk,Wwjk,deltajk
         del sol_harjk; gc.collect()
-    except Exception as e:
-        print('!!! Error in Harjk', e)
+    except Exception as err:
+        print('!!! Error in Harjk', err)
 
     print('t_harjk= ',round(t_harjk,1),'z_harjk= ',round(z_harjk,1),'g_harjk= ',round(g_harjk,8) )
 ## --------------------------------------- LOCAL BRANCHING 1 ------------------------------------------
@@ -253,8 +253,8 @@ if  lbc1:
                                 lbheur=lbheurHEUR,strategy=strategyHEUR,
                                 tee=False,tofiles=False,option='lbc1',scope=scope)
             z_lbc1,g_lbc1 = sol_lbc1.solve_problem()
-        except Exception as e:
-            print('!!! Error0 in lbc1', e)
+        except Exception as err:
+            print('!!! Error0 in lbc1', err)
         softfix       = True
 
         rightbranches = util.delete_tabu(rightbranches)
@@ -270,8 +270,8 @@ if  lbc1:
                     x_incumbent   = [SB_Uu,No_SB_Uu,Vv,Ww,delta,lower_Pmin_Uu]
                     g_lbc1        = util.igap(lb_best,z_lbc1)
                     char          = '*+*+*'                
-                except Exception as e:
-                    print('!!! Error1 in lbc1', e)
+                except Exception as err:
+                    print('!!! Error1 in lbc1', err)
                 break            
             rightbranches.append([x_[0],x_[1],x_[2],rhs]) ## SB_Uu,No_SB_Uu,lower_Pmin_Uu,k
             leftbranch    = []            
@@ -282,8 +282,8 @@ if  lbc1:
             try:
                 SB_Uu, No_SB_Uu, __, Vv, Ww, delta = sol_lbc1.select_binary_support_Uu('lbc1')  
                 lower_Pmin_Uu = sol_lbc1.update_lower_Pmin_Uu(lower_Pmin_Uu,'lbc1')
-            except Exception as e:
-                print('!!! Error2 in lbc1', e)
+            except Exception as err:
+                print('!!! Error2 in lbc1', err)
             x_ = [SB_Uu,No_SB_Uu,lower_Pmin_Uu] 
                         
         if sol_lbc1.infeasib:
@@ -325,8 +325,8 @@ if  lbc1:
             try:
                 SB_Uu, No_SB_Uu, __, Vv, Ww, delta = sol_lbc1.select_binary_support_Uu('lbc1')  
                 lower_Pmin_Uu = sol_lbc1.update_lower_Pmin_Uu(lower_Pmin_Uu,'lbc1')
-            except Exception as e:
-                print('!!! Error3 in lbc1', e)
+            except Exception as err:
+                print('!!! Error3 in lbc1', err)
             x_ = [SB_Uu,No_SB_Uu,lower_Pmin_Uu]
             
         if sol_lbc1.nosoluti: 
@@ -423,8 +423,8 @@ try:
                                     lbheur=lbheurHEUR,strategy=strategyHEUR,
                                     tee=False,tofiles=False,option='lbc2',scope=scope)
                 z_lbc2,g_lbc2 = sol_lbc2.solve_problem()
-            except Exception as e:
-                print('!!! Error0 in lbc2', e)
+            except Exception as err:
+                print('!!! Error0 in lbc2', err)
             softfix       = False
             
             rightbranches = util.delete_tabu(rightbranches)
@@ -437,8 +437,8 @@ try:
                     try:
                         SB_Uu, No_SB_Uu, __, Vv, Ww, delta = sol_lbc2.select_binary_support_Uu('lbc2')  
                         lower_Pmin_Uu = sol_lbc2.update_lower_Pmin_Uu(lower_Pmin_Uu,'lbc2')
-                    except Exception as e:
-                        print('!!! Error1 in lbc2', e)
+                    except Exception as err:
+                        print('!!! Error1 in lbc2', err)
                     x_incumbent   = [SB_Uu,No_SB_Uu,Vv,Ww,delta,lower_Pmin_Uu]
                     g_lbc2        = util.igap(lb_best,z_lbc2)
                     char          = '*+*+*'
@@ -452,8 +452,8 @@ try:
                 try:
                     SB_Uu, No_SB_Uu, __, Vv, Ww, delta = sol_lbc2.select_binary_support_Uu('lbc2')  
                     lower_Pmin_Uu = sol_lbc2.update_lower_Pmin_Uu(lower_Pmin_Uu,'lbc2')
-                except Exception as e:
-                    print('!!! Error2 in lbc2', e)
+                except Exception as err:
+                    print('!!! Error2 in lbc2', err)
                 x_ = [SB_Uu,No_SB_Uu,lower_Pmin_Uu] 
                             
             if sol_lbc2.infeasib:
@@ -492,8 +492,8 @@ try:
                 try:
                     SB_Uu, No_SB_Uu, __, Vv, Ww, delta = sol_lbc2.select_binary_support_Uu('lbc2')  
                     lower_Pmin_Uu = sol_lbc2.update_lower_Pmin_Uu(lower_Pmin_Uu,'lbc2')
-                except Exception as e:
-                    print('!!! Error3 in lbc2', e)
+                except Exception as err:
+                    print('!!! Error3 in lbc2', err)
                 x_ = [SB_Uu,No_SB_Uu,lower_Pmin_Uu]
                 
             if sol_lbc2.nosoluti: 
@@ -534,8 +534,8 @@ try:
         ## Check feasibility (LB2)
         checkSol('z_lbc2',z_lbc2,x_incumbent[0],x_incumbent[1],x_incumbent[2],x_incumbent[3],x_incumbent[4],'lbc2') 
     timeconst = timeconst_original
-except Exception as e:
-    print('!!! Error in lbc2', e)
+except Exception as err:
+    print('!!! Error in lbc2', err)
 
 ## --------------------------------------- LOCAL BRANCHING 3 ------------------------------------------
 ## LBC COUNTINOUS VERSION without soft-fixing and not use P_min candidates
@@ -589,8 +589,8 @@ try:
                                     lbheur=lbheurHEUR,strategy=strategyHEUR,
                                     tee=False,tofiles=False,option='lbc3',scope=scope)
                 z_lbc3,g_lbc3   = sol_lbc3.solve_problem()
-            except Exception as e:
-                print('!!! Error0 in lbc3', e)
+            except Exception as err:
+                print('!!! Error0 in lbc3', err)
             softfix       = False
                     
             rightbranches = util.delete_tabu(rightbranches)
@@ -603,8 +603,8 @@ try:
                     try:
                         SB_Uu, No_SB_Uu, __, Vv, Ww, delta = sol_lbc3.select_binary_support_Uu('lbc3')  
                         lower_Pmin_Uu = sol_lbc3.update_lower_Pmin_Uu(lower_Pmin_Uu,'lbc3')
-                    except Exception as e:
-                        print('!!! Error1 in lbc3', e)
+                    except Exception as err:
+                        print('!!! Error1 in lbc3', err)
                     x_incumbent   = [SB_Uu,No_SB_Uu,Vv,Ww,delta,lower_Pmin_Uu]
                     g_lbc3        = util.igap(lb_best,z_lbc3)
                     char          = '*+*+*'
@@ -618,8 +618,8 @@ try:
                 try:
                     SB_Uu, No_SB_Uu, __, Vv, Ww, delta = sol_lbc3.select_binary_support_Uu('lbc3')  
                     lower_Pmin_Uu = sol_lbc3.update_lower_Pmin_Uu(lower_Pmin_Uu,'lbc3')
-                except Exception as e:
-                        print('!!! Error2 in lbc3', e)
+                except Exception as err:
+                        print('!!! Error2 in lbc3', err)
                 x_ = [SB_Uu,No_SB_Uu,lower_Pmin_Uu] 
                             
             if sol_lbc3.infeasib:
@@ -658,8 +658,8 @@ try:
                 try:
                     SB_Uu, No_SB_Uu, __, Vv, Ww, delta = sol_lbc3.select_binary_support_Uu('lbc3')  
                     lower_Pmin_Uu = sol_lbc3.update_lower_Pmin_Uu(lower_Pmin_Uu,'lbc3')
-                except Exception as e:
-                    print('!!! Error3 in lbc3', e)
+                except Exception as err:
+                    print('!!! Error3 in lbc3', err)
                 x_ = [SB_Uu,No_SB_Uu,lower_Pmin_Uu]
                 
             if sol_lbc3.nosoluti: 
@@ -700,8 +700,8 @@ try:
         ## Check feasibility (LB3)
         checkSol('z_lbc3',z_lbc3,x_incumbent[0],x_incumbent[1],x_incumbent[2],x_incumbent[3],x_incumbent[4],'lbc3') 
     timeconst = timeconst_original
-except Exception as e:
-    print('!!! Error in lbc3', e)
+except Exception as err:
+    print('!!! Error in lbc3', err)
 
 ## --------------------------------------- LOCAL BRANCHING 4 ------------------------------------------
 ## LBC COUNTINOUS VERSION without soft-fixing
@@ -743,8 +743,8 @@ try:
                                 emphasize=emphasizeHEUR,symmetry=symmetryHEUR,lbheur=lbheurHEUR,strategy=strategyHEUR,
                                 tee=False,tofiles=False,exportLP=False,rc=True,option='RC',scope=scope)
             z_rc,g_rc = sol_rc.solve_problem()
-        except Exception as e:
-            print('!!! Error0 in lbc4', e)
+        except Exception as err:
+            print('!!! Error0 in lbc4', err)
         print('lb4 z_rc= ',round(z_rc,4))      
         
         ##  Colected candidates
@@ -782,8 +782,8 @@ try:
                                     lbheur=lbheurHEUR,strategy=strategyHEUR,
                                     tee=False,tofiles=False,option='lbc4',scope=scope)
                 z_lbc4,g_lbc4 = sol_lbc4.solve_problem()
-            except Exception as e:
-                print('!!! Error1 in lbc4', e)
+            except Exception as err:
+                print('!!! Error1 in lbc4', err)
             softfix       = True
                     
             rightbranches = util.delete_tabu(rightbranches)
@@ -796,8 +796,8 @@ try:
                     try:
                         SB_Uu, No_SB_Uu, __, Vv, Ww, delta = sol_lbc4.select_binary_support_Uu('lbc4')  
                         lower_Pmin_Uu = sol_lbc4.update_lower_Pmin_Uu(lower_Pmin_Uu,'lbc4')
-                    except Exception as e:
-                        print('!!! Error2 in lbc4', e)
+                    except Exception as err:
+                        print('!!! Error2 in lbc4', err)
                     x_incumbent   = [SB_Uu,No_SB_Uu,Vv,Ww,delta,lower_Pmin_Uu]
                     g_lbc4        = util.igap(lb_best,z_lbc4)
                     char          = '*+*+*'
@@ -811,8 +811,8 @@ try:
                 try:
                     SB_Uu, No_SB_Uu, __, Vv, Ww, delta = sol_lbc4.select_binary_support_Uu('lbc4')  
                     lower_Pmin_Uu = sol_lbc4.update_lower_Pmin_Uu(lower_Pmin_Uu,'lbc4')
-                except Exception as e:
-                    print('!!! Error3 in lbc4', e)
+                except Exception as err:
+                    print('!!! Error3 in lbc4', err)
                 x_            = [SB_Uu,No_SB_Uu,lower_Pmin_Uu]
                             
             if sol_lbc4.infeasib:
@@ -854,8 +854,8 @@ try:
                 try: 
                     SB_Uu, No_SB_Uu, __, Vv, Ww, delta = sol_lbc4.select_binary_support_Uu('lbc4')  
                     lower_Pmin_Uu = sol_lbc4.update_lower_Pmin_Uu(lower_Pmin_Uu,'lbc4')
-                except Exception as e:
-                    print('!!! Error4 in lbc4', e)
+                except Exception as err:
+                    print('!!! Error4 in lbc4', err)
                 x_ = [SB_Uu,No_SB_Uu,lower_Pmin_Uu]
                 
             if sol_lbc4.nosoluti: 
@@ -898,8 +898,8 @@ try:
         ## Check feasibility (LB4)
         checkSol('z_lbc4',z_lbc4,x_incumbent[0],x_incumbent[1],x_incumbent[2],x_incumbent[3],x_incumbent[4],'lbc4')
     timeconst = timeconst_original
-except Exception as e:
-    print('!!! Error in lbc4', e)
+except Exception as err:
+    print('!!! Error in lbc4', err)
 
 ## -----------------------------------------  KERNEL SEARCH I -----------------------------------------
 ## La versión básica de KS consiste en relajar la formulacion y a partir de ello sacar 
@@ -941,8 +941,8 @@ if  KS:
                                     emphasize=emphasizeHEUR,symmetry=symmetryHEUR,lbheur=lbheurHEUR,strategy=strategyHEUR,
                                     tee=False,tofiles=False,exportLP=False,rc=True,option='RC',scope=scope)
                 z_rc,g_rc = sol_rc.solve_problem() 
-            except Exception as e:
-                print('!!! Error in KS', e)
+            except Exception as err:
+                print('!!! Error in KS', err)
             t_rc = time.time() - t_1
             print('KS t_rc= ',round(t_rc,1),'z_rc= ',round(z_rc,4))      
             
@@ -1008,9 +1008,9 @@ if  KS:
                     
                     g_ks    = util.igap(lb_best,z_ks) 
                     print('<°|>< iter:'+str(iter)+' t_ks= ',round(time.time()-t_o+t_hard3,1),'z_ks= ',round(z_ks,1),char,'g_ks= ',round(g_ks,8)) #
-                except Exception as e:
-                    print('!!! Error in KS', e)
-                    result_iter.append((round(time.time()-t_o+t_hard3,1), e))
+                except Exception as err:
+                    print('!!! Error in KS', err)
+                    result_iter.append((round(time.time()-t_o+t_hard3,1), err))
                 finally:    
                     iter_bk = iter_bk + 1
                     
@@ -1056,8 +1056,8 @@ if  MILP2:
                             gap=gap,cutoff=cutoff,timelimit=t_res,tee=False,tofiles=False,
                             exportLP=False,option='Milp2',scope=scope)
         z_milp2, g_milp2 = sol_milp2.solve_problem()
-    except Exception as e:
-        print('!!! Error in MILP2', e)
+    except Exception as err:
+        print('!!! Error in MILP2', err)
     t_milp2 = time.time() - t_o + t_hard3
     g_milp2 = util.igap(lb_best,z_milp2)
     print('t_milp2= ',round(t_milp2,1),'z_milp2= ',round(z_milp2,1),'g_milp2= ',round(g_milp2,8))
