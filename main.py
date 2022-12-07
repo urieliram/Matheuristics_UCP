@@ -25,9 +25,9 @@ nameins = 'uc_57_copy.json'   ## prueba demostrativa excelente en mi PC (MOR un 
 nameins = 'uc_057.json'       ## prueba demostrativa excelente en mi PC (MOR un dia)
 nameins = 'uc_082.json'       ## 
 nameins = 'uc_059.json'       ## prueba demostrativa excelente en mi PC (MOR cinco dias)
-nameins = 'uc_058.json'        ## prueba demostrativa excelente en mi PC (MOR tres dias)
+nameins = 'uc_058.json'       ## prueba demostrativa excelente en mi PC (MOR tres dias)
 
-nameins = 'uc_061.json'       ## prueba demostrativa excelente en mi PC 
+nameins = 'uc_071.json'       ## prueba demostrativa excelente en mi PC 
 
 ## symmetry breaking: Automatic =-1 Turn off=0 ; moderade=1 ; extremely aggressive=5
 ## Emphasize balanced=0; feasibility=1; optimality=2; symmetry automatic=-1; symmetry low level=1
@@ -36,20 +36,20 @@ nameins = 'uc_061.json'       ## prueba demostrativa excelente en mi PC
 ambiente,ruta,executable,timeconst,timefull,emphasizeMILP,symmetryMILP,lbheurMILP,strategyMILP, \
 diveMILP,heuristicfreqMILP,numericalMILP,tolfeasibilityMILP,toloptimalityMILP,     \
 emphasizeHEUR,symmetryHEUR,lbheurHEUR,strategyHEUR,gap,k,iterstop, \
-MILP,MILP2,Hard3,Harjk,lbc1,lbc2,lbc3,KS,lbc4 = util.config_env() 
+MILP,MILP2,Hard3,Harjk,lbc1,lbc2,lbc3,lbc4,KS = util.config_env() 
 # diveMILP=2; heuristicfreqMILP=50;  numericalMILP='yes'; tolfeasibilityMILP=1.0000001e-09 ;toloptimalityMILP =1.0000001e-09
 
 k_original         = k          ## Almacenamos el parámetro k de local branching
 timeconst_original = timeconst
-x                  = 1e+75
+e                  = 1E+75
 
-z_lp=x; z_milp=x; z_harjk=x; z_hard3=x; z_ks=x; z_lbc1=x; z_lbc2=x; z_lbc3=x; z_lbc4=x; z_feas=x; z_check=x; z_lbc0=x; z_ks=0; z_milp2=0; z_=0;
-t_lp=0; t_milp=0; t_harjk=0; t_hard3=0; t_ks=0; t_lbc1=0; t_lbc2=0; t_lbc3=0; t_lbc4=0; t_feas=0; t_check=0; t_lbc0=0; t_ks=0; t_milp2=0; t_=0;
-g_lp=x; g_milp=x; g_harjk=x; g_hard3=x; g_ks=x; g_lbc1=x; g_lbc2=x; g_lbc3=x; g_lbc4=x; g_feas=x; g_check=x; g_lbc0=x; g_ks=x; g_milp2=x; g_=x;
-lb_milp=0; lb_best=0;
-ns=0; nU_no_int=0; n_Uu_no_int=0; n_Uu_1_0=0;
-SB_Uu =[]; No_SB_Uu =[]; lower_Pmin_Uu =[]; Vv =[]; Ww =[]; delta =[];
-SB_Uu3=[]; No_SB_Uu3=[]; lower_Pmin_Uu3=[]; Vv3=[]; Ww3=[]; delta3=[];
+z_lp=e; z_milp=e; z_harjk=e; z_hard3=e; z_ks=e; z_lbc1=e; z_lbc2=e; z_lbc3=e; z_lbc4=e; z_feas=e; z_check=e; z_lbc0=e; z_ks=0; z_milp2=0; z_=0
+t_lp=0; t_milp=0; t_harjk=0; t_hard3=0; t_ks=0; t_lbc1=0; t_lbc2=0; t_lbc3=0; t_lbc4=0; t_feas=0; t_check=0; t_lbc0=0; t_ks=0; t_milp2=0; t_=0
+g_lp=e; g_milp=e; g_harjk=e; g_hard3=e; g_ks=e; g_lbc1=e; g_lbc2=e; g_lbc3=e; g_lbc4=e; g_feas=e; g_check=e; g_lbc0=e; g_ks=e; g_milp2=e; g_=e
+lb_milp=0; lb_best=0
+ns=0; nU_no_int=0; n_Uu_no_int=0; n_Uu_1_0=0
+SB_Uu =[]; No_SB_Uu =[]; lower_Pmin_Uu =[]; Vv =[]; Ww =[]; delta =[]
+SB_Uu3=[]; No_SB_Uu3=[]; lower_Pmin_Uu3=[]; Vv3=[]; Ww3=[]; delta3=[]
 comment = 'Here it writes a message to the stat.csv results file' 
 
 if ambiente == 'yalma':
@@ -73,15 +73,18 @@ instance = reading.reading(ruta+nameins)
 ## DEF CHECK FEASIABILITY OF SOLUTION
 def checkSol(option,z_,SB_Uux,No_SB_Uux,Vvx,Wwx,deltax,dual=False,label=''):
     print('Checking solution feasibility: '+option+'_'+label+'=', z_ )
-    t_o       = time.time() 
-    model,__  = uc_Co.uc(instance,option='Check',SB_Uu=SB_Uux,No_SB_Uu=No_SB_Uux,V=Vvx,W=Wwx,delta=deltax,
-                         nameins=nameins[0:6],mode='Tight',scope=scope)
-    sol_check = Solution(model=model,nameins=nameins[0:6],env=ambiente,executable=executable,gap=gap,timelimit=timefull,
-                         tee=False,tofiles=False,exportLP=False,option='Check',scope=scope,dual=dual)
-    z_check, g_check = sol_check.solve_problem()
-    t_check          = time.time() - t_o
-    print(option,': t_check= ',round(t_check,1),'z_check= ',round(z_check,4),'g_check= ',round(g_check,8))
-    # SB_Uu, No_SB_Uu, __, Vv, Ww, delta = sol_check.select_binary_support_Uu('g_check')        
+    try:
+        t_o       = time.time() 
+        model,__  = uc_Co.uc(instance,option='Check',SB_Uu=SB_Uux,No_SB_Uu=No_SB_Uux,V=Vvx,W=Wwx,delta=deltax,
+                            nameins=nameins[0:6],mode='Tight',scope=scope)
+        sol_check = Solution(model=model,nameins=nameins[0:6],env=ambiente,executable=executable,gap=gap,timelimit=timefull,
+                            tee=False,tofiles=False,exportLP=False,option='Check',scope=scope,dual=dual)
+        z_check, g_check = sol_check.solve_problem()
+        t_check          = time.time() - t_o
+        print(option,': t_check= ',round(t_check,1),'z_check= ',round(z_check,4),'g_check= ',round(g_check,8))
+        # SB_Uu, No_SB_Uu, __, Vv, Ww, delta = sol_check.select_binary_support_Uu('g_check')
+    except Exception as e:
+        print('!!! Error in Check', e)
     return z_check
 
 ## ---------------------------------------- MILP -----------------------------------------------------
@@ -90,17 +93,20 @@ if  MILP:
     print('\MILP starts')
     fpheurMILP   = 1     ## Do not generate flow path cuts=-1 ; Automatic=0(CPLEX choose); moderately =1; aggressively=2
     rinsheurMILP = 50    ## Automatic=0 (CPLEX choose); None: do not apply RINS heuristic=-1;  Frequency to apply RINS heuristic=Any positive integer 
-    cutoff   = 1e+75 
+    cutoff   = e 
     t_o      = time.time() 
-    model,__ = uc_Co.uc(instance,option='Milp',nameins=nameins[0:6],mode='Tight',scope=scope)
-    sol_milp = Solution(model=model,nameins=nameins[0:6],env=ambiente,executable=executable,
-                        gap=gap,cutoff=cutoff,timelimit=timefull,tee=False,tofiles=False,
-                        emphasize=emphasizeMILP,symmetry=symmetryMILP,lbheur=lbheurMILP,strategy=strategyMILP,
-                        dive=diveMILP,heuristicfreq=heuristicfreqMILP,numerical=numericalMILP,
-                        tolfeasibility=tolfeasibilityMILP,toloptimality=toloptimalityMILP,   
-                        fpheur=fpheurMILP, rinsheur=rinsheurMILP,                                           
-                        exportLP=False,option='Milp',scope=scope)
-    z_milp, g_milp = sol_milp.solve_problem()
+    try:
+        model,__ = uc_Co.uc(instance,option='Milp',nameins=nameins[0:6],mode='Tight',scope=scope)
+        sol_milp = Solution(model=model,nameins=nameins[0:6],env=ambiente,executable=executable,
+                            gap=gap,cutoff=cutoff,timelimit=timefull,tee=False,tofiles=False,
+                            emphasize=emphasizeMILP,symmetry=symmetryMILP,lbheur=lbheurMILP,strategy=strategyMILP,
+                            dive=diveMILP,heuristicfreq=heuristicfreqMILP,numerical=numericalMILP,
+                            tolfeasibility=tolfeasibilityMILP,toloptimality=toloptimalityMILP,   
+                            fpheur=fpheurMILP, rinsheur=rinsheurMILP,                                           
+                            exportLP=False,option='Milp',scope=scope)
+        z_milp, g_milp = sol_milp.solve_problem()
+    except Exception as e:
+        print('!!! Error in MILP', e)
     t_milp         = time.time() - t_o
     
     ## Actualizamos el tiempo de las heurísticas al que ocupó el MILP (si es que encontró un óptimo o terminó por tiempo)
@@ -149,6 +155,7 @@ if  Hard3:
         
     ## ------------------------------------------- HARD-FIXING 3 (only Uu) ---------------------------------------------
     ## HARD-FIXING 3 (only Uu) solution and solve the sub-MILP. (Require run the LP)
+        print('\nHard3 starts')
         t_o       = time.time()
         model,__  = uc_Co.uc(instance,option='Hard3',SB_Uu=SB_Uu,No_SB_Uu=No_SB_Uu,lower_Pmin_Uu=lower_Pmin_Uu,
                             nameins=nameins[0:6],mode='Tight',scope=scope)
@@ -175,27 +182,31 @@ if  Hard3:
     ## ------------------------------------- HARJUNKOSKI ---------------------------------------------
     ## HARJUNKOSKI's rule solution and solve the sub-MILP. (Require run the LP)
 if  Harjk:    
+    print('\nHarjk starts')
     t_o       = time.time()
-    model,__  = uc_Co.uc(instance,option='Harjk',SB_Uu=SB_Uu,No_SB_Uu=No_SB_Uu,lower_Pmin_Uu=lower_Pmin_Uu,
-                         nameins=nameins[0:6],mode='Tight',scope=scope)
-    sol_harjk = Solution(model=model,env=ambiente,executable=executable,nameins=nameins[0:6],gap=gap,timelimit=timeconst-t_lp,
-                        emphasize=emphasizeHEUR,symmetry=symmetryHEUR,lbheur=lbheurHEUR,strategy=strategyHEUR,
-                        tee=False,tofiles=False,option='Harjk',scope=scope)
-    z_harjk, g_harjk = sol_harjk.solve_problem()
-    t_harjk  = time.time() - t_o + t_lp   ## <<< --- t_harjk ** INCLUYE EL TIEMPO DE LP **
-    g_harjk  = util.igap(lb_best,z_harjk)         
-    
-    SB_Uujk, No_SB_Uujk, __, Vvjk, Wwjk, deltajk = sol_harjk.select_binary_support_Uu('Harjk')    
-    checkSol('Harjk',z_harjk,SB_Uujk,No_SB_Uujk,Vvjk,Wwjk,deltajk,'harjk') ## Check feasibility
-    del SB_Uujk,No_SB_Uujk,Vvjk,Wwjk,deltajk
-    print('t_harjk= ',round(t_harjk,1),'z_harjk= ',round(z_harjk,1),'g_harjk= ',round(g_harjk,8) )
-    del sol_harjk
-    gc.collect()
+    try:
+        model,__  = uc_Co.uc(instance,option='Harjk',SB_Uu=SB_Uu,No_SB_Uu=No_SB_Uu,lower_Pmin_Uu=lower_Pmin_Uu,
+                            nameins=nameins[0:6],mode='Tight',scope=scope)
+        sol_harjk = Solution(model=model,env=ambiente,executable=executable,nameins=nameins[0:6],gap=gap,timelimit=timeconst-t_lp,
+                            emphasize=emphasizeHEUR,symmetry=symmetryHEUR,lbheur=lbheurHEUR,strategy=strategyHEUR,
+                            tee=False,tofiles=False,option='Harjk',scope=scope)
+        z_harjk, g_harjk = sol_harjk.solve_problem()
+        t_harjk  = time.time() - t_o + t_lp   ## <<< --- t_harjk ** INCLUYE EL TIEMPO DE LP **
+        g_harjk  = util.igap(lb_best,z_harjk)
+        SB_Uujk, No_SB_Uujk, __, Vvjk, Wwjk, deltajk = sol_harjk.select_binary_support_Uu('Harjk')    
+        checkSol('Harjk',z_harjk,SB_Uujk,No_SB_Uujk,Vvjk,Wwjk,deltajk,'harjk') ## Check feasibility
+        del SB_Uujk,No_SB_Uujk,Vvjk,Wwjk,deltajk
+        del sol_harjk; gc.collect()
+    except Exception as e:
+        print('!!! Error in Harjk', e)
 
+    print('t_harjk= ',round(t_harjk,1),'z_harjk= ',round(z_harjk,1),'g_harjk= ',round(g_harjk,8) )
 ## --------------------------------------- LOCAL BRANCHING 1 ------------------------------------------
 ## LBC COUNTINOUS VERSION with soft-fixing and restricted candidates list 
 ## Include the LOCAL BRANCHING CUT to the solution and solve the sub-MILP (it is using cutoff=z_hard).
+
 if  lbc1:    
+    print('\nlbc1 starts')
     t_o            = time.time() 
     Vv             = deepcopy(Vv3)
     Ww             = deepcopy(Ww3)
@@ -205,14 +216,14 @@ if  lbc1:
     lower_Pmin_Uu  = deepcopy(lower_Pmin_Uu3)
     t_net          = timefull - t_hard3
     t_res          = timefull - t_hard3
-    cutoff         = 1e+75 # z_hard3
-    bestUB         = 1e+75
+    cutoff         = e # z_hard3
+    bestUB         = e
     z_old          = z_hard3
     diversify      = False
     first          = True
     softfix        = False
     opt            = True
-    rhs            = 1e+75 ## We started with a giant neighborhood size
+    rhs            = e ## We started with a giant neighborhood size
     iter           = 1
     x_             = [SB_Uu,No_SB_Uu,lower_Pmin_Uu] 
     x_incumbent    = [SB_Uu,No_SB_Uu,Vv,Ww,delta,lower_Pmin_Uu]
@@ -221,7 +232,6 @@ if  lbc1:
     result_iter    = []
     result_iter.append((t_hard3,z_hard3))
     char           = ''
-    print('\nlbc1 starts')
         
     while True:
         if (iter==iterstop) or (time.time()-t_o>=t_net):
@@ -230,33 +240,38 @@ if  lbc1:
         
         timeres1 = min(t_res,timeconst)        
         
-        if rhs < 1e+75:
+        if rhs < e:
             leftbranch=[[x_[0],x_[1],x_[2],rhs]]
         if first:
             timeres1 = 100
-                        
-        model, __ = uc_Co.uc(instance,option='lbc1',SB_Uu=SB_Uu,No_SB_Uu=No_SB_Uu,lower_Pmin_Uu=lower_Pmin_Uu,V=Vv,W=Ww,delta=delta,
-                             percent_soft=90,k=rhs,nameins=nameins[0:6],mode='Tight',scope=scope,
-                             rightbranches=rightbranches,leftbranch=leftbranch,softfix=softfix,)
-        sol_lbc1  = Solution(model=model,env=ambiente,executable=executable,nameins=nameins[0:6],letter=util.getLetter(iter-1),
-                             gap=gap,cutoff=cutoff,timelimit=timeres1,emphasize=emphasizeHEUR,symmetry=symmetryHEUR,
-                             lbheur=lbheurHEUR,strategy=strategyHEUR,
-                             tee=False,tofiles=False,option='lbc1',scope=scope)
-        z_lbc1,g_lbc1 = sol_lbc1.solve_problem()
+        try:
+            model, __ = uc_Co.uc(instance,option='lbc1',SB_Uu=SB_Uu,No_SB_Uu=No_SB_Uu,lower_Pmin_Uu=lower_Pmin_Uu,V=Vv,W=Ww,delta=delta,
+                                percent_soft=90,k=rhs,nameins=nameins[0:6],mode='Tight',scope=scope,
+                                rightbranches=rightbranches,leftbranch=leftbranch,softfix=softfix,)
+            sol_lbc1  = Solution(model=model,env=ambiente,executable=executable,nameins=nameins[0:6],letter=util.getLetter(iter-1),
+                                gap=gap,cutoff=cutoff,timelimit=timeres1,emphasize=emphasizeHEUR,symmetry=symmetryHEUR,
+                                lbheur=lbheurHEUR,strategy=strategyHEUR,
+                                tee=False,tofiles=False,option='lbc1',scope=scope)
+            z_lbc1,g_lbc1 = sol_lbc1.solve_problem()
+        except Exception as e:
+            print('!!! Error0 in lbc1', e)
         softfix       = True
 
         rightbranches = util.delete_tabu(rightbranches)
 
         if sol_lbc1.optimal:
-            if rhs >= 1e+75:
+            if rhs >= e:
                 opt = True
-                print('Optimal Solution :-)')
+                print('Global optimal solution :-)')
                 bestUB        = z_lbc1
-                SB_Uu, No_SB_Uu, __, Vv, Ww, delta = sol_lbc1.select_binary_support_Uu('lbc1')  
-                lower_Pmin_Uu = sol_lbc1.update_lower_Pmin_Uu(lower_Pmin_Uu,'lbc1')
-                x_incumbent   = [SB_Uu,No_SB_Uu,Vv,Ww,delta,lower_Pmin_Uu]
-                g_lbc1        = util.igap(lb_best,z_lbc1)
-                char          = '*+*+*'
+                try:
+                    SB_Uu, No_SB_Uu, __, Vv, Ww, delta = sol_lbc1.select_binary_support_Uu('lbc1')  
+                    lower_Pmin_Uu = sol_lbc1.update_lower_Pmin_Uu(lower_Pmin_Uu,'lbc1')
+                    x_incumbent   = [SB_Uu,No_SB_Uu,Vv,Ww,delta,lower_Pmin_Uu]
+                    g_lbc1        = util.igap(lb_best,z_lbc1)
+                    char          = '*+*+*'                
+                except Exception as e:
+                    print('!!! Error1 in lbc1', e)
                 break            
             rightbranches.append([x_[0],x_[1],x_[2],rhs]) ## SB_Uu,No_SB_Uu,lower_Pmin_Uu,k
             leftbranch    = []            
@@ -264,18 +279,21 @@ if  lbc1:
             first         = False     
             cuttoff       = z_lbc1
             rhs           = k
-            SB_Uu, No_SB_Uu, __, Vv, Ww, delta = sol_lbc1.select_binary_support_Uu('lbc1')  
-            lower_Pmin_Uu = sol_lbc1.update_lower_Pmin_Uu(lower_Pmin_Uu,'lbc1')
-            x_            = [SB_Uu,No_SB_Uu,lower_Pmin_Uu] 
+            try:
+                SB_Uu, No_SB_Uu, __, Vv, Ww, delta = sol_lbc1.select_binary_support_Uu('lbc1')  
+                lower_Pmin_Uu = sol_lbc1.update_lower_Pmin_Uu(lower_Pmin_Uu,'lbc1')
+            except Exception as e:
+                print('!!! Error2 in lbc1', e)
+            x_ = [SB_Uu,No_SB_Uu,lower_Pmin_Uu] 
                         
         if sol_lbc1.infeasib:
-            if rhs >= 1e+75:
+            if rhs >= e:
                 opt = True
                 break            
             rightbranches.append([x_[0],x_[1],x_[2],rhs]) ## SB_Uu,No_SB_Uu,lower_Pmin_Uu
             leftbranch = []            
             if diversify:
-                cutoff    = 1e+75
+                cutoff    = e
                 first     = True
             rhs = rhs + ceil(k/2)   
             print('Infeasible problem: k = k+[k/2]=', rhs)             
@@ -284,7 +302,7 @@ if  lbc1:
             # print('Disabled soft-fixing for infeasibility') ######################################################
             
         if sol_lbc1.timeover:
-            if rhs < 1e+75:
+            if rhs < e:
                 if first:
                     leftbranch = []
                 else:
@@ -303,17 +321,20 @@ if  lbc1:
                 # print('Disabled soft-fixing for no-improving') ########################################################            diversify     = False
             first         = False
             cutoff        = z_lbc1
-            rhs           = k 
-            SB_Uu, No_SB_Uu, __, Vv, Ww, delta = sol_lbc1.select_binary_support_Uu('lbc1')  
-            lower_Pmin_Uu = sol_lbc1.update_lower_Pmin_Uu(lower_Pmin_Uu,'lbc1')
-            x_            = [SB_Uu,No_SB_Uu,lower_Pmin_Uu]
+            rhs           = k
+            try:
+                SB_Uu, No_SB_Uu, __, Vv, Ww, delta = sol_lbc1.select_binary_support_Uu('lbc1')  
+                lower_Pmin_Uu = sol_lbc1.update_lower_Pmin_Uu(lower_Pmin_Uu,'lbc1')
+            except Exception as e:
+                print('!!! Error3 in lbc1', e)
+            x_ = [SB_Uu,No_SB_Uu,lower_Pmin_Uu]
             
         if sol_lbc1.nosoluti: 
             if diversify:
                 leftbranch = []
                 rightbranches.append([x_[0],x_[1],x_[2],0]) ## Δ(x_,x) ≥ 1 Tabú constraint
                 first      = True
-                cutoff     = 1e+75  
+                cutoff     = e  
                 rhs        = rhs + ceil(k/2)   
                 print('No solution found + diversify: k = k+[k/2]=', rhs)
             else:
@@ -339,491 +360,546 @@ if  lbc1:
 
     t_lbc1 = time.time() - t_o + t_hard3  
     z_lbc1 = bestUB    
+    print('lbc1 results')
     for item in result_iter:
-        print(item[0],',',item[1])    
+        print(item[0],',',item[1])
+    print('lbc1 end')
     result_iter = np.array(result_iter)
     
     ## Check feasibility (LB1)
     checkSol('z_lbc1',z_lbc1,x_incumbent[0],x_incumbent[1],x_incumbent[2],x_incumbent[3],x_incumbent[4],'lbc1')
 timeconst = timeconst_original
 
+
 ## --------------------------------------- LOCAL BRANCHING 2 ------------------------------------------
 ## LBC BINARY VERSION without soft-fixing and use P_min candidates
 ## Include the LOCAL BRANCHING CUT to the solution and solve the sub-MILP (it is using cutoff=z_hard).
-if  lbc2: 
-    t_o            = time.time() 
-    Vv             = deepcopy(Vv3)
-    Ww             = deepcopy(Ww3)
-    delta          = deepcopy(delta3)
-    SB_Uu          = deepcopy(SB_Uu3)
-    No_SB_Uu       = deepcopy(No_SB_Uu3)
-    lower_Pmin_Uu  = deepcopy(lower_Pmin_Uu3)
-    t_net          = timefull - t_hard3
-    t_res          = timefull - t_hard3
-    cutoff         = 1e+75 #z_hard3
-    bestUB         = 1e+75
-    z_old          = z_hard3
-    diversify      = False
-    first          = True
-    softfix        = False
-    opt            = True
-    rhs            = 1e+75 ## We started with a giant neighborhood size
-    iter           = 1
-    x_             = [SB_Uu,No_SB_Uu,lower_Pmin_Uu] 
-    x_incumbent    = [SB_Uu,No_SB_Uu,Vv,Ww,delta,lower_Pmin_Uu]
-    rightbranches  = []
-    leftbranch     = []
-    result_iter    = []
-    result_iter.append((t_hard3,z_hard3))
-    char           = ''
-    print('\nlbc2 starts')
-        
-    while True:
-        if (iter==iterstop) or (time.time()-t_o>=t_net):
-            break
-        char = ''
-        
-        timeres1 = min(t_res,timeconst)        
-        
-        if rhs < 1e+75:
-            leftbranch=[[x_[0],x_[1],x_[2],rhs]]
-        if first:
-            timeres1 = 100
-                        
-        model, __ = uc_Co.uc(instance,option='lbc2',SB_Uu=SB_Uu,No_SB_Uu=No_SB_Uu,lower_Pmin_Uu=lower_Pmin_Uu,V=Vv,W=Ww,delta=delta,
-                             percent_soft=90,k=rhs,nameins=nameins[0:6],mode='Tight',scope=scope,
-                             rightbranches=rightbranches,leftbranch=leftbranch,softfix=softfix,)
-        sol_lbc2  = Solution(model=model,env=ambiente,executable=executable,nameins=nameins[0:6],letter=util.getLetter(iter-1),
-                             gap=gap,cutoff=cutoff,timelimit=timeres1,emphasize=emphasizeHEUR,symmetry=symmetryHEUR,
-                             lbheur=lbheurHEUR,strategy=strategyHEUR,
-                             tee=False,tofiles=False,option='lbc2',scope=scope)
-        z_lbc2,g_lbc2 = sol_lbc2.solve_problem()
-        softfix       = False
-        
-        rightbranches = util.delete_tabu(rightbranches)
-        
-        if sol_lbc2.optimal:
-            if rhs >= 1e+75:
-                opt = True
-                print('Optimal Solution :-)')
-                bestUB        = z_lbc2
-                SB_Uu, No_SB_Uu, __, Vv, Ww, delta = sol_lbc2.select_binary_support_Uu('lbc2')  
-                lower_Pmin_Uu = sol_lbc2.update_lower_Pmin_Uu(lower_Pmin_Uu,'lbc2')
-                x_incumbent   = [SB_Uu,No_SB_Uu,Vv,Ww,delta,lower_Pmin_Uu]
-                g_lbc2        = util.igap(lb_best,z_lbc2)
-                char          = '*+*+*'
-                break            
-            rightbranches.append([x_[0],x_[1],x_[2],rhs]) ## SB_Uu,No_SB_Uu,lower_Pmin_Uu,rhs
-            leftbranch    = []            
-            diversify     = False
-            first         = False     
-            cuttoff       = z_lbc2
-            rhs           = k
-            SB_Uu, No_SB_Uu, __, Vv, Ww, delta = sol_lbc2.select_binary_support_Uu('lbc2')  
-            lower_Pmin_Uu = sol_lbc2.update_lower_Pmin_Uu(lower_Pmin_Uu,'lbc2')
-            x_            = [SB_Uu,No_SB_Uu,lower_Pmin_Uu] 
-                        
-        if sol_lbc2.infeasib:
-            if rhs >= 1e+75:
-                opt = True
-                break            
-            rightbranches.append([x_[0],x_[1],x_[2]]) ## SB_Uu,No_SB_Uu,lower_Pmin_Uu
-            leftbranch = []            
-            if diversify:
-                cutoff    = 1e+75
-                first     = True
-            rhs = rhs + ceil(k/2)   
-            print('Infeasible problem: k = k+[k/2] =', rhs)             
-            diversify = True
+try:
+    if  lbc2: 
+        print('\nlbc2 starts')
+        t_o            = time.time() 
+        Vv             = deepcopy(Vv3)
+        Ww             = deepcopy(Ww3)
+        delta          = deepcopy(delta3)
+        SB_Uu          = deepcopy(SB_Uu3)
+        No_SB_Uu       = deepcopy(No_SB_Uu3)
+        lower_Pmin_Uu  = deepcopy(lower_Pmin_Uu3)
+        t_net          = timefull - t_hard3
+        t_res          = timefull - t_hard3
+        cutoff         = e #z_hard3
+        bestUB         = e
+        z_old          = z_hard3
+        diversify      = False
+        first          = True
+        softfix        = False
+        opt            = True
+        rhs            = e ## We started with a giant neighborhood size
+        iter           = 1
+        x_             = [SB_Uu,No_SB_Uu,lower_Pmin_Uu] 
+        x_incumbent    = [SB_Uu,No_SB_Uu,Vv,Ww,delta,lower_Pmin_Uu]
+        rightbranches  = []
+        leftbranch     = []
+        result_iter    = []
+        result_iter.append((t_hard3,z_hard3))
+        char           = ''
             
-        if sol_lbc2.timeover:
-            if rhs < 1e+75:
-                if first:
+        while True:
+            if (iter==iterstop) or (time.time()-t_o>=t_net):
+                break
+            char = ''
+            
+            timeres1 = min(t_res,timeconst)        
+            
+            if rhs < e:
+                leftbranch=[[x_[0],x_[1],x_[2],rhs]]
+            if first:
+                timeres1 = 100
+            try:
+                model, __ = uc_Co.uc(instance,option='lbc2',SB_Uu=SB_Uu,No_SB_Uu=No_SB_Uu,lower_Pmin_Uu=lower_Pmin_Uu,V=Vv,W=Ww,delta=delta,
+                                    percent_soft=90,k=rhs,nameins=nameins[0:6],mode='Tight',scope=scope,
+                                    rightbranches=rightbranches,leftbranch=leftbranch,softfix=softfix,)
+                sol_lbc2  = Solution(model=model,env=ambiente,executable=executable,nameins=nameins[0:6],letter=util.getLetter(iter-1),
+                                    gap=gap,cutoff=cutoff,timelimit=timeres1,emphasize=emphasizeHEUR,symmetry=symmetryHEUR,
+                                    lbheur=lbheurHEUR,strategy=strategyHEUR,
+                                    tee=False,tofiles=False,option='lbc2',scope=scope)
+                z_lbc2,g_lbc2 = sol_lbc2.solve_problem()
+            except Exception as e:
+                print('!!! Error0 in lbc2', e)
+            softfix       = False
+            
+            rightbranches = util.delete_tabu(rightbranches)
+            
+            if sol_lbc2.optimal:
+                if rhs >= e:
+                    opt = True
+                    print('Global optimal solution :-)')
+                    bestUB        = z_lbc2
+                    try:
+                        SB_Uu, No_SB_Uu, __, Vv, Ww, delta = sol_lbc2.select_binary_support_Uu('lbc2')  
+                        lower_Pmin_Uu = sol_lbc2.update_lower_Pmin_Uu(lower_Pmin_Uu,'lbc2')
+                    except Exception as e:
+                        print('!!! Error1 in lbc2', e)
+                    x_incumbent   = [SB_Uu,No_SB_Uu,Vv,Ww,delta,lower_Pmin_Uu]
+                    g_lbc2        = util.igap(lb_best,z_lbc2)
+                    char          = '*+*+*'
+                    break            
+                rightbranches.append([x_[0],x_[1],x_[2],rhs]) ## SB_Uu,No_SB_Uu,lower_Pmin_Uu,rhs
+                leftbranch    = []            
+                diversify     = False
+                first         = False     
+                cuttoff       = z_lbc2
+                rhs           = k
+                try:
+                    SB_Uu, No_SB_Uu, __, Vv, Ww, delta = sol_lbc2.select_binary_support_Uu('lbc2')  
+                    lower_Pmin_Uu = sol_lbc2.update_lower_Pmin_Uu(lower_Pmin_Uu,'lbc2')
+                except Exception as e:
+                    print('!!! Error2 in lbc2', e)
+                x_ = [SB_Uu,No_SB_Uu,lower_Pmin_Uu] 
+                            
+            if sol_lbc2.infeasib:
+                if rhs >= e:
+                    opt = True
+                    break            
+                rightbranches.append([x_[0],x_[1],x_[2]]) ## SB_Uu,No_SB_Uu,lower_Pmin_Uu
+                leftbranch = []            
+                if diversify:
+                    cutoff    = e
+                    first     = True
+                rhs = rhs + ceil(k/2)   
+                print('Infeasible problem: k = k+[k/2] =', rhs)             
+                diversify = True
+                
+            if sol_lbc2.timeover:
+                if rhs < e:
+                    if first:
+                        leftbranch = []
+                    else:
+                        leftbranch = []
+                        rightbranches.append([x_[0],x_[1],x_[2],0])  ## Δ(x_,x) ≥ 1 Tabú constraint
+            
+                gap_iter = abs((z_lbc2 - bestUB) / bestUB) * 100    ## Percentage of improving
+                if z_lbc2 < bestUB and gap_iter > gap :             ## Update solution   
+                    bestUB      = z_lbc2
+                    x_incumbent = [SB_Uu,No_SB_Uu,Vv,Ww,delta,lower_Pmin_Uu]
+                    g_lbc2      = util.igap(lb_best,z_lbc2)
+                    char        = '***'
+                else: 
+                    temp=0
+                diversify     = False
+                first         = False
+                cutoff        = z_lbc2
+                rhs           = k 
+                try:
+                    SB_Uu, No_SB_Uu, __, Vv, Ww, delta = sol_lbc2.select_binary_support_Uu('lbc2')  
+                    lower_Pmin_Uu = sol_lbc2.update_lower_Pmin_Uu(lower_Pmin_Uu,'lbc2')
+                except Exception as e:
+                    print('!!! Error3 in lbc2', e)
+                x_ = [SB_Uu,No_SB_Uu,lower_Pmin_Uu]
+                
+            if sol_lbc2.nosoluti: 
+                if diversify:
                     leftbranch = []
+                    rightbranches.append([x_[0],x_[1],x_[2],0]) ## Δ(x_,x) ≥ 1 Tabú constraint
+                    first    = True
+                    cutoff   = e  
+                    rhs      = rhs + ceil(k/2)   
+                    print('No solution found + diversify: k = k+[k/2]=', rhs)
                 else:
                     leftbranch = []
-                    rightbranches.append([x_[0],x_[1],x_[2],0])  ## Δ(x_,x) ≥ 1 Tabú constraint
-        
-            gap_iter = abs((z_lbc2 - bestUB) / bestUB) * 100    ## Percentage of improving
-            if z_lbc2 < bestUB and gap_iter > gap :             ## Update solution   
-                bestUB      = z_lbc2
-                x_incumbent = [SB_Uu,No_SB_Uu,Vv,Ww,delta,lower_Pmin_Uu]
-                g_lbc2      = util.igap(lb_best,z_lbc2)
-                char        = '***'
-            else: 
-                temp=0
-            diversify     = False
-            first         = False
-            cutoff        = z_lbc2
-            rhs           = k 
-            SB_Uu, No_SB_Uu, __, Vv, Ww, delta = sol_lbc2.select_binary_support_Uu('lbc2')  
-            lower_Pmin_Uu = sol_lbc2.update_lower_Pmin_Uu(lower_Pmin_Uu,'lbc2')
-            x_            = [SB_Uu,No_SB_Uu,lower_Pmin_Uu]
+                    rhs        = rhs - ceil(k/2)   
+                    print('No solution found: k = k-[k/2] =', rhs)
+                diversify = True
+
+            result_iter.append((round(time.time() - t_o + t_hard3,1),z_lbc2))          
+            bestUB = z_lbc2
             
-        if sol_lbc2.nosoluti: 
-            if diversify:
-                leftbranch = []
-                rightbranches.append([x_[0],x_[1],x_[2],0]) ## Δ(x_,x) ≥ 1 Tabú constraint
-                first    = True
-                cutoff   = 1e+75  
-                rhs      = rhs + ceil(k/2)   
-                print('No solution found + diversify: k = k+[k/2]=', rhs)
-            else:
-                leftbranch = []
-                rhs        = rhs - ceil(k/2)   
-                print('No solution found: k = k-[k/2] =', rhs)
-            diversify = True
+            print('<°|--< iter:'+str(iter)+' t_lbc2= ',round(time.time()-t_o+t_hard3,1),'z_lbc2= ',round(z_lbc2,1),char,'g_lbc2= ',round(g_lbc2,8) ) #
+            print('\t')       
 
-        result_iter.append((round(time.time() - t_o + t_hard3,1),z_lbc2))          
-        bestUB = z_lbc2
+            t_res = t_net - time.time() + t_o 
+            print('lbc2:','remaining time:',t_res)
+            
+            del sol_lbc2
+            gc.collect()
+            iter = iter + 1
+
+        t_lbc2 = time.time() - t_o + t_hard3  
+        z_lbc2 = bestUB
+        print('lbc2 results')
+        for item in result_iter:
+            print(item[0],',',item[1])
+        print('lbc2 end')
+        result_iter = np.array(result_iter)
         
-        print('<°|--< iter:'+str(iter)+' t_lbc2= ',round(time.time()-t_o+t_hard3,1),'z_lbc2= ',round(z_lbc2,1),char,'g_lbc2= ',round(g_lbc2,8) ) #
-        print('\t')       
-
-        t_res = t_net - time.time() + t_o 
-        print('lbc2:','remaining time:',t_res)
-        
-        del sol_lbc2
-        gc.collect()
-        iter = iter + 1
-
-    t_lbc2 = time.time() - t_o + t_hard3  
-    z_lbc2 = bestUB    
-    for item in result_iter:
-        print(item[0],',',item[1])    
-    result_iter = np.array(result_iter)
-    
-    ## Check feasibility (LB2)
-    checkSol('z_lbc2',z_lbc2,x_incumbent[0],x_incumbent[1],x_incumbent[2],x_incumbent[3],x_incumbent[4],'lbc2') 
-timeconst = timeconst_original
+        ## Check feasibility (LB2)
+        checkSol('z_lbc2',z_lbc2,x_incumbent[0],x_incumbent[1],x_incumbent[2],x_incumbent[3],x_incumbent[4],'lbc2') 
+    timeconst = timeconst_original
+except Exception as e:
+    print('!!! Error in lbc2', e)
 
 ## --------------------------------------- LOCAL BRANCHING 3 ------------------------------------------
 ## LBC COUNTINOUS VERSION without soft-fixing and not use P_min candidates
 ## Include the LOCAL BRANCHING CUT to the solution and solve the sub-MILP (it is using cutoff=z_hard).
-if  lbc3:   
-    t_o             = time.time() 
-    Vv              = deepcopy(Vv3)
-    Ww              = deepcopy(Ww3)
-    delta           = deepcopy(delta3)
-    SB_Uu           = deepcopy(SB_Uu3)
-    No_SB_Uu        = deepcopy(No_SB_Uu3)
-    lower_Pmin_Uu   = deepcopy(lower_Pmin_Uu3)
-    t_net           = timefull - t_hard3
-    t_res           = timefull - t_hard3
-    cutoff          = 1e+75 #z_hard3
-    bestUB          = 1e+75
-    z_old           = z_hard3
-    diversify       = False
-    first           = True
-    softfix         = False
-    opt             = True
-    rhs             = 1e+75 ## We started with a giant neighborhood size
-    iter            = 1
-    x_              = [SB_Uu,No_SB_Uu,lower_Pmin_Uu] 
-    x_incumbent     = [SB_Uu,No_SB_Uu,Vv,Ww,delta,lower_Pmin_Uu]
-    rightbranches   = []
-    leftbranch      = []
-    result_iter     = []
-    result_iter.append((t_hard3,z_hard3))
-    char            = ''
-    print('\nlbc3 starts')
-        
-    while True:
-        if (iter==iterstop) or (time.time()-t_o>=t_net):
-            break
-        char = ''
-        
-        timeres1 = min(t_res,timeconst)   
-         
-        if rhs < 1e+75:
-            leftbranch=[[x_[0],x_[1],x_[2],rhs]]    
-        if first:
-            timeres1 = 100
-                        
-        model, __ = uc_Co.uc(instance,option='lbc3',SB_Uu=SB_Uu,No_SB_Uu=No_SB_Uu,lower_Pmin_Uu=lower_Pmin_Uu,V=Vv,W=Ww,delta=delta,
-                             percent_soft=90,k=rhs,nameins=nameins[0:6],mode='Tight',scope=scope,
-                             rightbranches=rightbranches,leftbranch=leftbranch,softfix=softfix,)
-        sol_lbc3  = Solution(model=model,env=ambiente,executable=executable,nameins=nameins[0:6],letter=util.getLetter(iter-1),
-                             gap=gap,cutoff=cutoff,timelimit=timeres1,emphasize=emphasizeHEUR,symmetry=symmetryHEUR,
-                             lbheur=lbheurHEUR,strategy=strategyHEUR,
-                             tee=False,tofiles=False,option='lbc3',scope=scope)
-        z_lbc3,g_lbc3   = sol_lbc3.solve_problem()
+try:
+    if  lbc3:   
+        print('\nlbc3 starts')
+        t_o             = time.time() 
+        Vv              = deepcopy(Vv3)
+        Ww              = deepcopy(Ww3)
+        delta           = deepcopy(delta3)
+        SB_Uu           = deepcopy(SB_Uu3)
+        No_SB_Uu        = deepcopy(No_SB_Uu3)
+        lower_Pmin_Uu   = deepcopy(lower_Pmin_Uu3)
+        t_net           = timefull - t_hard3
+        t_res           = timefull - t_hard3
+        cutoff          = e #z_hard3
+        bestUB          = e
+        z_old           = z_hard3
+        diversify       = False
+        first           = True
         softfix         = False
-                
-        rightbranches = util.delete_tabu(rightbranches)
-                
-        if sol_lbc3.optimal:
-            if rhs >= 1e+75:
-                opt = True
-                print('Optimal Solution :-)')
-                bestUB        = z_lbc3
-                SB_Uu, No_SB_Uu, __, Vv, Ww, delta = sol_lbc3.select_binary_support_Uu('lbc3')  
-                lower_Pmin_Uu = sol_lbc3.update_lower_Pmin_Uu(lower_Pmin_Uu,'lbc3')
-                x_incumbent   = [SB_Uu,No_SB_Uu,Vv,Ww,delta,lower_Pmin_Uu]
-                g_lbc3        = util.igap(lb_best,z_lbc3)
-                char          = '*+*+*'
-                break            
-            rightbranches.append([x_[0],x_[1],x_[2],rhs]) ## SB_Uu,No_SB_Uu,lower_Pmin_Uu,k
-            leftbranch    = []            
-            diversify     = False
-            first         = False     
-            cuttoff       = z_lbc3
-            rhs           = k
-            SB_Uu, No_SB_Uu, __, Vv, Ww, delta = sol_lbc3.select_binary_support_Uu('lbc3')  
-            lower_Pmin_Uu = sol_lbc3.update_lower_Pmin_Uu(lower_Pmin_Uu,'lbc3')
-            x_            = [SB_Uu,No_SB_Uu,lower_Pmin_Uu] 
-                        
-        if sol_lbc3.infeasib:
-            if rhs >= 1e+75:
-                opt = True
-                break            
-            rightbranches.append([x_[0],x_[1],x_[2]]) ## SB_Uu,No_SB_Uu,lower_Pmin_Uu
-            leftbranch = []            
-            if diversify:
-                cutoff    = 1e+75
-                first     = True
-            rhs = rhs + ceil(k/2)   
-            print('Infeasible problem: k = k+[k/2]=', rhs)             
-            diversify = True
+        opt             = True
+        rhs             = e ## We started with a giant neighborhood size
+        iter            = 1
+        x_              = [SB_Uu,No_SB_Uu,lower_Pmin_Uu] 
+        x_incumbent     = [SB_Uu,No_SB_Uu,Vv,Ww,delta,lower_Pmin_Uu]
+        rightbranches   = []
+        leftbranch      = []
+        result_iter     = []
+        result_iter.append((t_hard3,z_hard3))
+        char            = ''
             
-        if sol_lbc3.timeover:
-            if rhs < 1e+75:
-                if first:
+        while True:
+            if (iter==iterstop) or (time.time()-t_o>=t_net):
+                break
+            char = ''
+            
+            timeres1 = min(t_res,timeconst)   
+            
+            if rhs < e:
+                leftbranch=[[x_[0],x_[1],x_[2],rhs]]    
+            if first:
+                timeres1 = 100
+            try:
+                model, __ = uc_Co.uc(instance,option='lbc3',SB_Uu=SB_Uu,No_SB_Uu=No_SB_Uu,lower_Pmin_Uu=lower_Pmin_Uu,V=Vv,W=Ww,delta=delta,
+                                    percent_soft=90,k=rhs,nameins=nameins[0:6],mode='Tight',scope=scope,
+                                    rightbranches=rightbranches,leftbranch=leftbranch,softfix=softfix,)
+                sol_lbc3  = Solution(model=model,env=ambiente,executable=executable,nameins=nameins[0:6],letter=util.getLetter(iter-1),
+                                    gap=gap,cutoff=cutoff,timelimit=timeres1,emphasize=emphasizeHEUR,symmetry=symmetryHEUR,
+                                    lbheur=lbheurHEUR,strategy=strategyHEUR,
+                                    tee=False,tofiles=False,option='lbc3',scope=scope)
+                z_lbc3,g_lbc3   = sol_lbc3.solve_problem()
+            except Exception as e:
+                print('!!! Error0 in lbc3', e)
+            softfix       = False
+                    
+            rightbranches = util.delete_tabu(rightbranches)
+                    
+            if sol_lbc3.optimal:
+                if rhs >= e:
+                    opt = True
+                    print('Global optimal solution :-)')
+                    bestUB        = z_lbc3
+                    try:
+                        SB_Uu, No_SB_Uu, __, Vv, Ww, delta = sol_lbc3.select_binary_support_Uu('lbc3')  
+                        lower_Pmin_Uu = sol_lbc3.update_lower_Pmin_Uu(lower_Pmin_Uu,'lbc3')
+                    except Exception as e:
+                        print('!!! Error1 in lbc3', e)
+                    x_incumbent   = [SB_Uu,No_SB_Uu,Vv,Ww,delta,lower_Pmin_Uu]
+                    g_lbc3        = util.igap(lb_best,z_lbc3)
+                    char          = '*+*+*'
+                    break            
+                rightbranches.append([x_[0],x_[1],x_[2],rhs]) ## SB_Uu,No_SB_Uu,lower_Pmin_Uu,k
+                leftbranch    = []            
+                diversify     = False
+                first         = False     
+                cuttoff       = z_lbc3
+                rhs           = k
+                try:
+                    SB_Uu, No_SB_Uu, __, Vv, Ww, delta = sol_lbc3.select_binary_support_Uu('lbc3')  
+                    lower_Pmin_Uu = sol_lbc3.update_lower_Pmin_Uu(lower_Pmin_Uu,'lbc3')
+                except Exception as e:
+                        print('!!! Error2 in lbc3', e)
+                x_ = [SB_Uu,No_SB_Uu,lower_Pmin_Uu] 
+                            
+            if sol_lbc3.infeasib:
+                if rhs >= e:
+                    opt = True
+                    break            
+                rightbranches.append([x_[0],x_[1],x_[2]]) ## SB_Uu,No_SB_Uu,lower_Pmin_Uu
+                leftbranch = []            
+                if diversify:
+                    cutoff    = e
+                    first     = True
+                rhs = rhs + ceil(k/2)   
+                print('Infeasible problem: k = k+[k/2]=', rhs)             
+                diversify = True
+                
+            if sol_lbc3.timeover:
+                if rhs < e:
+                    if first:
+                        leftbranch = []
+                    else:
+                        leftbranch = []
+                        rightbranches.append([x_[0],x_[1],x_[2],0])  ## Δ(x_,x) ≥ 1 Tabú constraint
+            
+                gap_iter = abs((z_lbc3 - bestUB) / bestUB) * 100    ## Percentage of improving
+                if z_lbc3 < bestUB and gap_iter > gap :             ## Update solution   
+                    bestUB      = z_lbc3
+                    x_incumbent = [SB_Uu,No_SB_Uu,Vv,Ww,delta,lower_Pmin_Uu]
+                    g_lbc3      = util.igap(lb_best,z_lbc3)
+                    char        = '***'
+                else: 
+                    temp=0
+                diversify     = False
+                first         = False
+                cutoff        = z_lbc3
+                rhs           = k
+                try:
+                    SB_Uu, No_SB_Uu, __, Vv, Ww, delta = sol_lbc3.select_binary_support_Uu('lbc3')  
+                    lower_Pmin_Uu = sol_lbc3.update_lower_Pmin_Uu(lower_Pmin_Uu,'lbc3')
+                except Exception as e:
+                    print('!!! Error3 in lbc3', e)
+                x_ = [SB_Uu,No_SB_Uu,lower_Pmin_Uu]
+                
+            if sol_lbc3.nosoluti: 
+                if diversify:
                     leftbranch = []
+                    rightbranches.append([x_[0],x_[1],x_[2],0]) ## Δ(x_,x) ≥ 1 Tabú constraint
+                    first    = True
+                    cutoff   = e  
+                    rhs      = rhs + ceil(k/2)   
+                    print('No solution found + diversify: k = k+[k/2]=', rhs)
                 else:
                     leftbranch = []
-                    rightbranches.append([x_[0],x_[1],x_[2],0])  ## Δ(x_,x) ≥ 1 Tabú constraint
-        
-            gap_iter = abs((z_lbc3 - bestUB) / bestUB) * 100    ## Percentage of improving
-            if z_lbc3 < bestUB and gap_iter > gap :             ## Update solution   
-                bestUB      = z_lbc3
-                x_incumbent = [SB_Uu,No_SB_Uu,Vv,Ww,delta,lower_Pmin_Uu]
-                g_lbc3      = util.igap(lb_best,z_lbc3)
-                char        = '***'
-            else: 
-                temp=0
-            diversify     = False
-            first         = False
-            cutoff        = z_lbc3
-            rhs           = k 
-            SB_Uu, No_SB_Uu, __, Vv, Ww, delta = sol_lbc3.select_binary_support_Uu('lbc3')  
-            lower_Pmin_Uu = sol_lbc3.update_lower_Pmin_Uu(lower_Pmin_Uu,'lbc3')
-            x_            = [SB_Uu,No_SB_Uu,lower_Pmin_Uu]
+                    rhs        = rhs - ceil(k/2)   
+                    print('No solution found: k = k-[k/2]=', rhs)
+                diversify = True
+
+            result_iter.append((round(time.time() - t_o + t_hard3,1),z_lbc3))          
+            bestUB = z_lbc3
             
-        if sol_lbc3.nosoluti: 
-            if diversify:
-                leftbranch = []
-                rightbranches.append([x_[0],x_[1],x_[2],0]) ## Δ(x_,x) ≥ 1 Tabú constraint
-                first    = True
-                cutoff   = 1e+75  
-                rhs      = rhs + ceil(k/2)   
-                print('No solution found + diversify: k = k+[k/2]=', rhs)
-            else:
-                leftbranch = []
-                rhs        = rhs - ceil(k/2)   
-                print('No solution found: k = k-[k/2]=', rhs)
-            diversify = True
+            print('<°|--< iter:'+str(iter)+' t_lbc3= ',round(time.time()-t_o+t_hard3,1),'z_lbc3= ',round(z_lbc3,1),char,'g_lbc3= ',round(g_lbc3,8) ) #
+            print('\t')       
 
-        result_iter.append((round(time.time() - t_o + t_hard3,1),z_lbc3))          
-        bestUB = z_lbc3
+            t_res = t_net - time.time() + t_o 
+            print('lbc3:','remaining time:',t_res)
+            
+            del sol_lbc3
+            gc.collect()
+            iter = iter + 1
+
+        t_lbc3 = time.time() - t_o + t_hard3  
+        z_lbc3 = bestUB
+        print('lbc3 results')
+        for item in result_iter:
+            print(item[0],',',item[1])
+        print('lbc3 end')
+        result_iter = np.array(result_iter)
         
-        print('<°|--< iter:'+str(iter)+' t_lbc3= ',round(time.time()-t_o+t_hard3,1),'z_lbc3= ',round(z_lbc3,1),char,'g_lbc3= ',round(g_lbc3,8) ) #
-        print('\t')       
-
-        t_res = t_net - time.time() + t_o 
-        print('lbc3:','remaining time:',t_res)
-        
-        del sol_lbc3
-        gc.collect()
-        iter = iter + 1
-
-    t_lbc3 = time.time() - t_o + t_hard3  
-    z_lbc3 = bestUB    
-    for item in result_iter:
-        print(item[0],',',item[1])    
-    result_iter = np.array(result_iter)
-    
-    ## Check feasibility (LB3)
-    checkSol('z_lbc3',z_lbc3,x_incumbent[0],x_incumbent[1],x_incumbent[2],x_incumbent[3],x_incumbent[4],'lbc3') 
-timeconst = timeconst_original
+        ## Check feasibility (LB3)
+        checkSol('z_lbc3',z_lbc3,x_incumbent[0],x_incumbent[1],x_incumbent[2],x_incumbent[3],x_incumbent[4],'lbc3') 
+    timeconst = timeconst_original
+except Exception as e:
+    print('!!! Error in lbc3', e)
 
 ## --------------------------------------- LOCAL BRANCHING 4 ------------------------------------------
 ## LBC COUNTINOUS VERSION without soft-fixing
 ## Include the LOCAL BRANCHING CUT to the solution and solve the sub-MILP (it is using cutoff=z_hard).
-if  lbc4:    
-    t_o            = time.time() 
-    Vv             = deepcopy(Vv3)
-    Ww             = deepcopy(Ww3)
-    delta          = deepcopy(delta3)
-    SB_Uu          = deepcopy(SB_Uu3)
-    No_SB_Uu       = deepcopy(No_SB_Uu3)
-    lower_Pmin_Uu  = deepcopy(lower_Pmin_Uu3)
-    t_net          = timefull - t_hard3
-    t_res          = timefull - t_hard3
-    cutoff         = 1e+75 #z_hard3
-    bestUB         = 1e+75
-    z_old          = z_hard3
-    diversify      = False
-    first          = True
-    softfix        = False
-    opt            = True
-    rhs            = 1e+75 ## We started with a giant neighborhood size
-    iter           = 1
-    x_             = [SB_Uu,No_SB_Uu,lower_Pmin_Uu] 
-    x_incumbent    = [SB_Uu,No_SB_Uu,Vv,Ww,delta,lower_Pmin_Uu]
-    rightbranches  = []
-    leftbranch     = []
-    result_iter    = []
-    result_iter.append((t_hard3,z_hard3))
-    char           = ''
-    print('\nlbc4 starts')
-    
-    ## Calculating reduced cost
-    model,__  = uc_Co.uc(instance,option='RC',SB_Uu=x_incumbent[0],No_SB_Uu=x_incumbent[1],V=x_incumbent[2],W=x_incumbent[3],delta=x_incumbent[4],
-                         nameins=nameins[0:6],mode='Tight',scope=scope)
-    sol_rc    = Solution(model=model,nameins=nameins[0:6],env=ambiente,executable=executable,gap=gap,timelimit=t_net,
-                         emphasize=emphasizeHEUR,symmetry=symmetryHEUR,lbheur=lbheurHEUR,strategy=strategyHEUR,
-                         tee=False,tofiles=False,exportLP=False,rc=True,option='RC',scope=scope)
-    z_rc,g_rc = sol_rc.solve_problem() 
-    print('lb4 z_rc= ',round(z_rc,4))      
-    
-    ##  Colected candidates
-    rc   = []
-    i    = 0                    
-    for f in No_SB_Uu: 
-        ##        ( i , reduced_cost , g , t )
-        rc.append(( i , model.rc[model.u[f[0]+1,f[1]+1]] , f[0] , f[1] ))
-        i = i + 1    
-    rc.sort(key=lambda tup:tup[1], reverse=False) ## Ordenamos las variables No_SB_Uu de acuerdo a sus costos reducidos 
+try:
+    if  lbc4:    
+        t_o            = time.time() 
+        Vv             = deepcopy(Vv3)
+        Ww             = deepcopy(Ww3)
+        delta          = deepcopy(delta3)
+        SB_Uu          = deepcopy(SB_Uu3)
+        No_SB_Uu       = deepcopy(No_SB_Uu3)
+        lower_Pmin_Uu  = deepcopy(lower_Pmin_Uu3)
+        t_net          = timefull - t_hard3
+        t_res          = timefull - t_hard3
+        cutoff         = e #z_hard3
+        bestUB         = e
+        z_old          = z_hard3
+        diversify      = False
+        first          = True
+        softfix        = False
+        opt            = True
+        rhs            = e ## We started with a giant neighborhood size
+        iter           = 1
+        x_             = [SB_Uu,No_SB_Uu,lower_Pmin_Uu] 
+        x_incumbent    = [SB_Uu,No_SB_Uu,Vv,Ww,delta,lower_Pmin_Uu]
+        rightbranches  = []
+        leftbranch     = []
+        result_iter    = []
+        result_iter.append((t_hard3,z_hard3))
+        char           = ''
+        print('\nlbc4 starts')
+        
+        ## Calculating reduced cost
+        try:
+            model,__  = uc_Co.uc(instance,option='RC',SB_Uu=x_incumbent[0],No_SB_Uu=x_incumbent[1],V=x_incumbent[2],W=x_incumbent[3],delta=x_incumbent[4],
+                                nameins=nameins[0:6],mode='Tight',scope=scope)
+            sol_rc    = Solution(model=model,nameins=nameins[0:6],env=ambiente,executable=executable,gap=gap,timelimit=t_net,
+                                emphasize=emphasizeHEUR,symmetry=symmetryHEUR,lbheur=lbheurHEUR,strategy=strategyHEUR,
+                                tee=False,tofiles=False,exportLP=False,rc=True,option='RC',scope=scope)
+            z_rc,g_rc = sol_rc.solve_problem()
+        except Exception as e:
+            print('!!! Error0 in lbc4', e)
+        print('lb4 z_rc= ',round(z_rc,4))      
+        
+        ##  Colected candidates
+        rc   = []
+        i    = 0                    
+        for f in No_SB_Uu: 
+            ##        ( i , reduced_cost , g , t )
+            rc.append(( i , model.rc[model.u[f[0]+1,f[1]+1]] , f[0] , f[1] ))
+            i = i + 1    
+        rc.sort(key=lambda tup:tup[1], reverse=False) ## Ordenamos las variables No_SB_Uu de acuerdo a sus costos reducidos 
 
-    candidates = []
-    for f in rc: 
-        if f[1]<=0:
-            candidates.append((f[2],f[3])) ## (g , t) 
-    
-    while True:
-        if (iter==iterstop) or (time.time()-t_o>=t_net):
-            break
-        char = ''
+        candidates = []
+        for f in rc: 
+            if f[1]<=0:
+                candidates.append((f[2],f[3])) ## (g , t) 
         
-        timeres1 = min(t_res,timeconst)        
-        
-        if rhs < 1e+75:
-            leftbranch=[[x_[0],x_[1],x_[2],rhs]]
-        if first:
-            timeres1 = 100
-                        
-        model, __ = uc_Co.uc(instance,option='lbc4',SB_Uu=SB_Uu,No_SB_Uu=No_SB_Uu,lower_Pmin_Uu=lower_Pmin_Uu,V=Vv,W=Ww,delta=delta,
-                             percent_soft=90,k=rhs,nameins=nameins[0:6],mode='Tight',scope=scope,
-                             rightbranches=rightbranches,leftbranch=leftbranch,softfix=softfix,)
-        sol_lbc4  = Solution(model=model,env=ambiente,executable=executable,nameins=nameins[0:6],letter=util.getLetter(iter-1),
-                             gap=gap,cutoff=cutoff,timelimit=timeres1,emphasize=emphasizeHEUR,symmetry=symmetryHEUR,
-                             lbheur=lbheurHEUR,strategy=strategyHEUR,
-                             tee=False,tofiles=False,option='lbc4',scope=scope)
-        z_lbc4,g_lbc4 = sol_lbc4.solve_problem()
-        softfix       = True
-                
-        rightbranches = util.delete_tabu(rightbranches)
-                
-        if sol_lbc4.optimal:
-            if rhs >= 1e+75:
-                opt = True
-                print('Optimal Solution :-)')
-                bestUB        = z_lbc4
-                SB_Uu, No_SB_Uu, __, Vv, Ww, delta = sol_lbc4.select_binary_support_Uu('lbc4')  
-                lower_Pmin_Uu = sol_lbc4.update_lower_Pmin_Uu(lower_Pmin_Uu,'lbc4')
-                x_incumbent   = [SB_Uu,No_SB_Uu,Vv,Ww,delta,lower_Pmin_Uu]
-                g_lbc4        = util.igap(lb_best,z_lbc4)
-                char          = '*+*+*'
-                break            
-            rightbranches.append([x_[0],x_[1],x_[2],rhs]) ## SB_Uu,No_SB_Uu,lower_Pmin_Uu,k
-            leftbranch    = []            
-            diversify     = False
-            first         = False     
-            cuttoff       = z_lbc4
-            rhs           = k
-            SB_Uu, No_SB_Uu, __, Vv, Ww, delta = sol_lbc4.select_binary_support_Uu('lbc4')  
-            lower_Pmin_Uu = sol_lbc4.update_lower_Pmin_Uu(lower_Pmin_Uu,'lbc4')
-            x_            = [SB_Uu,No_SB_Uu,lower_Pmin_Uu]
-                        
-        if sol_lbc4.infeasib:
-            if rhs >= 1e+75:
-                opt = True
-                break            
-            rightbranches.append([x_[0],x_[1],x_[2]]) ## SB_Uu,No_SB_Uu,lower_Pmin_Uu
-            leftbranch = []            
-            if diversify:
-                cutoff    = 1e+75
-                first     = True
-            rhs = rhs + ceil(k/2)   
-            print('Infeasible problem: k = k+[k/2]=', rhs)             
-            diversify = True
-            # softfix   = False ###################################################################################
-            # print('Disabled soft-fixing for infeasibility') #####################################################
+        while True:
+            if (iter==iterstop) or (time.time()-t_o>=t_net):
+                break
+            char = ''
             
-        if sol_lbc4.timeover:
-            if rhs < 1e+75:
-                if first:
+            timeres1 = min(t_res,timeconst)        
+            
+            if rhs < e:
+                leftbranch=[[x_[0],x_[1],x_[2],rhs]]
+            if first:
+                timeres1 = 100
+
+            try:
+                model, __ = uc_Co.uc(instance,option='lbc4',SB_Uu=SB_Uu,No_SB_Uu=No_SB_Uu,lower_Pmin_Uu=lower_Pmin_Uu,V=Vv,W=Ww,delta=delta,
+                                    percent_soft=90,k=rhs,nameins=nameins[0:6],mode='Tight',scope=scope,
+                                    rightbranches=rightbranches,leftbranch=leftbranch,softfix=softfix,)
+                sol_lbc4  = Solution(model=model,env=ambiente,executable=executable,nameins=nameins[0:6],letter=util.getLetter(iter-1),
+                                    gap=gap,cutoff=cutoff,timelimit=timeres1,emphasize=emphasizeHEUR,symmetry=symmetryHEUR,
+                                    lbheur=lbheurHEUR,strategy=strategyHEUR,
+                                    tee=False,tofiles=False,option='lbc4',scope=scope)
+                z_lbc4,g_lbc4 = sol_lbc4.solve_problem()
+            except Exception as e:
+                print('!!! Error1 in lbc4', e)
+            softfix       = True
+                    
+            rightbranches = util.delete_tabu(rightbranches)
+                    
+            if sol_lbc4.optimal:
+                if rhs >= e:
+                    opt = True
+                    print('Global optimal solution :-)')
+                    bestUB = z_lbc4
+                    try:
+                        SB_Uu, No_SB_Uu, __, Vv, Ww, delta = sol_lbc4.select_binary_support_Uu('lbc4')  
+                        lower_Pmin_Uu = sol_lbc4.update_lower_Pmin_Uu(lower_Pmin_Uu,'lbc4')
+                    except Exception as e:
+                        print('!!! Error2 in lbc4', e)
+                    x_incumbent   = [SB_Uu,No_SB_Uu,Vv,Ww,delta,lower_Pmin_Uu]
+                    g_lbc4        = util.igap(lb_best,z_lbc4)
+                    char          = '*+*+*'
+                    break            
+                rightbranches.append([x_[0],x_[1],x_[2],rhs]) ## SB_Uu,No_SB_Uu,lower_Pmin_Uu,k
+                leftbranch    = []            
+                diversify     = False
+                first         = False     
+                cuttoff       = z_lbc4
+                rhs           = k
+                try:
+                    SB_Uu, No_SB_Uu, __, Vv, Ww, delta = sol_lbc4.select_binary_support_Uu('lbc4')  
+                    lower_Pmin_Uu = sol_lbc4.update_lower_Pmin_Uu(lower_Pmin_Uu,'lbc4')
+                except Exception as e:
+                    print('!!! Error3 in lbc4', e)
+                x_            = [SB_Uu,No_SB_Uu,lower_Pmin_Uu]
+                            
+            if sol_lbc4.infeasib:
+                if rhs >= e:
+                    opt = True
+                    break            
+                rightbranches.append([x_[0],x_[1],x_[2]]) ## SB_Uu,No_SB_Uu,lower_Pmin_Uu
+                leftbranch = []            
+                if diversify:
+                    cutoff    = e
+                    first     = True
+                rhs = rhs + ceil(k/2)   
+                print('Infeasible problem: k = k+[k/2]=', rhs)             
+                diversify = True
+                # softfix   = False ###################################################################################
+                # print('Disabled soft-fixing for infeasibility') #####################################################
+                
+            if sol_lbc4.timeover:
+                if rhs < e:
+                    if first:
+                        leftbranch = []
+                    else:
+                        leftbranch = []
+                        rightbranches.append([x_[0],x_[1],x_[2],0])  ## Δ(x_,x) ≥ 1 Tabú constraint
+                gap_iter = abs((z_lbc4 - bestUB) / bestUB) * 100    ## Percentage of improving
+                if z_lbc4 < bestUB and gap_iter > gap :             ## Update solution   
+                    bestUB      = z_lbc4
+                    x_incumbent = [SB_Uu,No_SB_Uu,Vv,Ww,delta,lower_Pmin_Uu]
+                    g_lbc4      = util.igap(lb_best,z_lbc4)
+                    char        = '***'
+                else: 
+                    temp = 0
+                    # softfix   = False ##################################################################################
+                    # print('Disabled soft-fixing for no-improving') #####################################################
+                diversify     = False
+                first         = False
+                cutoff        = z_lbc4
+                rhs           = k
+                try: 
+                    SB_Uu, No_SB_Uu, __, Vv, Ww, delta = sol_lbc4.select_binary_support_Uu('lbc4')  
+                    lower_Pmin_Uu = sol_lbc4.update_lower_Pmin_Uu(lower_Pmin_Uu,'lbc4')
+                except Exception as e:
+                    print('!!! Error4 in lbc4', e)
+                x_ = [SB_Uu,No_SB_Uu,lower_Pmin_Uu]
+                
+            if sol_lbc4.nosoluti: 
+                if diversify:
                     leftbranch = []
+                    rightbranches.append([x_[0],x_[1],x_[2],0]) ## Δ(x_,x) ≥ 1 Tabú constraint
+                    first      = True
+                    cutoff     = e  
+                    rhs        = rhs + ceil(k/2)   
+                    print('No solution found + diversify: k = k+[k/2]=', rhs)
                 else:
                     leftbranch = []
-                    rightbranches.append([x_[0],x_[1],x_[2],0])  ## Δ(x_,x) ≥ 1 Tabú constraint
-            gap_iter = abs((z_lbc4 - bestUB) / bestUB) * 100    ## Percentage of improving
-            if z_lbc4 < bestUB and gap_iter > gap :             ## Update solution   
-                bestUB      = z_lbc4
-                x_incumbent = [SB_Uu,No_SB_Uu,Vv,Ww,delta,lower_Pmin_Uu]
-                g_lbc4      = util.igap(lb_best,z_lbc4)
-                char        = '***'
-            else: 
-                temp = 0
-                # softfix   = False ##################################################################################
-                # print('Disabled soft-fixing for no-improving') #####################################################
-            diversify     = False
-            first         = False
-            cutoff        = z_lbc4
-            rhs           = k 
-            SB_Uu, No_SB_Uu, __, Vv, Ww, delta = sol_lbc4.select_binary_support_Uu('lbc4')  
-            lower_Pmin_Uu = sol_lbc4.update_lower_Pmin_Uu(lower_Pmin_Uu,'lbc4')
-            x_            = [SB_Uu,No_SB_Uu,lower_Pmin_Uu]
+                    rhs        = rhs - ceil(k/2)   
+                    print('No solution found: k = k+[k/2]=', rhs)
+                diversify = True
+                # softfix   = False ###################################################################################
+                # print('Disabled soft-fixing for no-solution found') #################################################
+
+            result_iter.append((round(time.time() - t_o + t_hard3,1),z_lbc4))          
+            bestUB = z_lbc4
             
-        if sol_lbc4.nosoluti: 
-            if diversify:
-                leftbranch = []
-                rightbranches.append([x_[0],x_[1],x_[2],0]) ## Δ(x_,x) ≥ 1 Tabú constraint
-                first      = True
-                cutoff     = 1e+75  
-                rhs        = rhs + ceil(k/2)   
-                print('No solution found + diversify: k = k+[k/2]=', rhs)
-            else:
-                leftbranch = []
-                rhs        = rhs - ceil(k/2)   
-                print('No solution found: k = k+[k/2]=', rhs)
-            diversify = True
-            # softfix   = False ###################################################################################
-            # print('Disabled soft-fixing for no-solution found') #################################################
+            print('<°|--< iter:'+str(iter)+' t_lbc4= ',round(time.time()-t_o+t_hard3,1),'z_lbc4= ',round(z_lbc4,1),char,'g_lbc4= ',round(g_lbc4,8) ) #
+            print('\t')       
 
-        result_iter.append((round(time.time() - t_o + t_hard3,1),z_lbc4))          
-        bestUB = z_lbc4
+            t_res = t_net - time.time() + t_o 
+            print('lbc4:','remaining time:',t_res)
+            
+            del sol_lbc4
+            gc.collect()
+            iter = iter + 1
+
+        t_lbc4 = time.time() - t_o + t_hard3  
+        z_lbc4 = bestUB
+        print('lbc4 results')   
+        for item in result_iter:
+            print(item[0],',',item[1])
+        print('lbc4 end')
+        result_iter = np.array(result_iter)
         
-        print('<°|--< iter:'+str(iter)+' t_lbc4= ',round(time.time()-t_o+t_hard3,1),'z_lbc4= ',round(z_lbc4,1),char,'g_lbc4= ',round(g_lbc4,8) ) #
-        print('\t')       
-
-        t_res = t_net - time.time() + t_o 
-        print('lbc4:','remaining time:',t_res)
-        
-        del sol_lbc4
-        gc.collect()
-        iter = iter + 1
-
-    t_lbc4 = time.time() - t_o + t_hard3  
-    z_lbc4 = bestUB    
-    for item in result_iter:
-        print(item[0],',',item[1])    
-    result_iter = np.array(result_iter)
-    
-    ## Check feasibility (LB4)
-    checkSol('z_lbc4',z_lbc4,x_incumbent[0],x_incumbent[1],x_incumbent[2],x_incumbent[3],x_incumbent[4],'lbc4')
-timeconst = timeconst_original
+        ## Check feasibility (LB4)
+        checkSol('z_lbc4',z_lbc4,x_incumbent[0],x_incumbent[1],x_incumbent[2],x_incumbent[3],x_incumbent[4],'lbc4')
+    timeconst = timeconst_original
+except Exception as e:
+    print('!!! Error in lbc4', e)
 
 ## -----------------------------------------  KERNEL SEARCH I -----------------------------------------
 ## La versión básica de KS consiste en relajar la formulacion y a partir de ello sacar 
@@ -832,17 +908,18 @@ timeconst = timeconst_original
 ## KS solution and solve the sub-MILP (it is using cutoff = z_hard).
 ## Use 'Soft+pmin' (lower subset of Uu-Pmin)  as the first and unique bucket to consider
 ## Use relax the integrality variable Uu.
+
 if  KS:
+    print('\nKS starts')
     Vv          = deepcopy(Vv3)
     Ww          = deepcopy(Ww3)
     delta       = deepcopy(delta3)
     SB_Uu       = deepcopy(SB_Uu3)
     No_SB_Uu    = deepcopy(No_SB_Uu3)
     saved       = [SB_Uu,No_SB_Uu,Vv,Ww,delta]
-
     t_o         = time.time() 
     incumbent   =  z_hard3
-    cutoff      =  z_hard3 # 1e+75 
+    cutoff      =  z_hard3 # e 
     iter        =  0  
     sol_ks      =  []
     result_iter =  []
@@ -857,13 +934,16 @@ if  KS:
         
         if  True:
             t_1 = time.time()
-            model,__  = uc_Co.uc(instance,option='RC',SB_Uu=saved[0],No_SB_Uu=saved[1],V=saved[2],W=saved[3],delta=saved[4],
-                                 nameins=nameins[0:6],mode='Tight',scope=scope)
-            sol_rc    = Solution(model=model,nameins=nameins[0:6],env=ambiente,executable=executable,gap=gap,timelimit=timefull,
-                                emphasize=emphasizeHEUR,symmetry=symmetryHEUR,lbheur=lbheurHEUR,strategy=strategyHEUR,
-                                tee=False,tofiles=False,exportLP=False,rc=True,option='RC',scope=scope)
-            z_rc,g_rc = sol_rc.solve_problem() 
-            t_rc      = time.time() - t_1
+            try:
+                model,__  = uc_Co.uc(instance,option='RC',SB_Uu=saved[0],No_SB_Uu=saved[1],V=saved[2],W=saved[3],delta=saved[4],
+                                    nameins=nameins[0:6],mode='Tight',scope=scope)
+                sol_rc    = Solution(model=model,nameins=nameins[0:6],env=ambiente,executable=executable,gap=gap,timelimit=timefull,
+                                    emphasize=emphasizeHEUR,symmetry=symmetryHEUR,lbheur=lbheurHEUR,strategy=strategyHEUR,
+                                    tee=False,tofiles=False,exportLP=False,rc=True,option='RC',scope=scope)
+                z_rc,g_rc = sol_rc.solve_problem() 
+            except Exception as e:
+                print('!!! Error in KS', e)
+            t_rc = time.time() - t_1
             print('KS t_rc= ',round(t_rc,1),'z_rc= ',round(z_rc,4))      
             
             ## ----------------------------- SECOND PHASE ----------------------------------------------
@@ -887,7 +967,7 @@ if  KS:
             k_[-1] = len(No_SB_Uu)
             #print( k_ )
             
-            cutoff      = incumbent # 1e+75 !!!
+            cutoff      = incumbent # e !!!
             iter_bk     = 0
             iterstop    = K - 2
             char        = ''
@@ -911,8 +991,8 @@ if  KS:
                     ##  Resolvemos el kernel con cada uno de los buckets
                     model,__   = uc_Co.uc(instance,option='KS',kernel=kernel,bucket=bucket,nameins=nameins[0:6],mode='Tight',scope=scope)
                     sol_ks     = Solution(model=model,env=ambiente,executable=executable,nameins=nameins[0:6],letter=util.getLetter(iter),gap=gap,cutoff=cutoff,timelimit=timeconst1,
-                                          emphasize=emphasizeHEUR,symmetry=symmetryHEUR,lbheur=lbheurHEUR,strategy=strategyHEUR,
-                                          tee=False,tofiles=False,option='KS',scope=scope)
+                                        emphasize=emphasizeHEUR,symmetry=symmetryHEUR,lbheur=lbheurHEUR,strategy=strategyHEUR,
+                                        tee=False,tofiles=False,option='KS',scope=scope)
                     z_ks, g_ks = sol_ks.solve_problem()
                     t_ks       = time.time() - t_o + t_hard3
                     kernel, No_SB_Uu, __, Vv, Ww, delta = sol_ks.select_binary_support_Uu('KS') 
@@ -928,9 +1008,9 @@ if  KS:
                     
                     g_ks    = util.igap(lb_best,z_ks) 
                     print('<°|>< iter:'+str(iter)+' t_ks= ',round(time.time()-t_o+t_hard3,1),'z_ks= ',round(z_ks,1),char,'g_ks= ',round(g_ks,8)) #
-                except:
-                    print('>>> No solution found')
-                    result_iter.append((round(time.time()-t_o+t_hard3,1), 1e+75))
+                except Exception as e:
+                    print('!!! Error in KS', e)
+                    result_iter.append((round(time.time()-t_o+t_hard3,1), e))
                 finally:    
                     iter_bk = iter_bk + 1
                     
@@ -951,29 +1031,35 @@ if  KS:
 
     t_ks = (time.time() - t_o) + t_hard3  
     z_ks = incumbent    
+    print('KS results')
     for item in result_iter:
         print(item[0],',',item[1])
+    print('KS end')
     result_iter = np.array(result_iter)
     #np.savetxt('iterKS'+nameins[0:6]+'.csv', result_iter, delimiter=',')
     
     checkSol('z_ks',z_ks,SB_Uu,No_SB_Uu,Vv,Ww,delta,'ks') ## Check feasibility (KS)
 
+
 ## ---------------------------------------- MILP2 -----------------------------------------------------
 ## Solve as a MILP2 from a initial solution (MILP29+Hard3)
 if  MILP2:  
-    cutoff         = 1e+75 # z_hard3
+    cutoff         = e # z_hard3
     t_o            = time.time()
     t_res          = timefull - t_hard3
     print('\MILP2 starts')
-    model,__ = uc_Co.uc(instance,option='Milp2',SB_Uu=SB_Uu3,No_SB_Uu=No_SB_Uu3,V=Vv3,W=Ww3,delta=delta3,
-                        nameins=nameins[0:6],mode='Tight',scope=scope)
-    sol_milp2 = Solution(model=model,nameins=nameins[0:6],env=ambiente,executable=executable,
-                        emphasize=emphasizeHEUR,symmetry=symmetryHEUR,lbheur=lbheurHEUR,strategy=strategyHEUR,
-                        gap=gap,cutoff=cutoff,timelimit=t_res,tee=False,tofiles=False,
-                        exportLP=False,option='Milp2',scope=scope)
-    z_milp2, g_milp2 = sol_milp2.solve_problem()
-    t_milp2          = time.time() - t_o + t_hard3
-    g_milp2          = util.igap(lb_best,z_milp2)
+    try:
+        model,__ = uc_Co.uc(instance,option='Milp2',SB_Uu=SB_Uu3,No_SB_Uu=No_SB_Uu3,V=Vv3,W=Ww3,delta=delta3,
+                            nameins=nameins[0:6],mode='Tight',scope=scope)
+        sol_milp2 = Solution(model=model,nameins=nameins[0:6],env=ambiente,executable=executable,
+                            emphasize=emphasizeHEUR,symmetry=symmetryHEUR,lbheur=lbheurHEUR,strategy=strategyHEUR,
+                            gap=gap,cutoff=cutoff,timelimit=t_res,tee=False,tofiles=False,
+                            exportLP=False,option='Milp2',scope=scope)
+        z_milp2, g_milp2 = sol_milp2.solve_problem()
+    except Exception as e:
+        print('!!! Error in MILP2', e)
+    t_milp2 = time.time() - t_o + t_hard3
+    g_milp2 = util.igap(lb_best,z_milp2)
     print('t_milp2= ',round(t_milp2,1),'z_milp2= ',round(z_milp2,1),'g_milp2= ',round(g_milp2,8))
 
     ## PENDIENTES        
