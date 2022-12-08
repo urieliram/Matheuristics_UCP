@@ -41,15 +41,15 @@ MILP,MILP2,Hard3,Harjk,lbc1,lbc2,lbc3,KS,lbc4 = util.config_env()
 
 k_original         = k          ## Almacenamos el parámetro k de local branching
 timeconst_original = timeconst
-x                  = 1e+75
+e                  = e
 
-z_lp=x; z_milp=x; z_harjk=x; z_hard3=x; z_ks=x; z_lbc1=x; z_lbc2=x; z_lbc3=x; z_lbc4=x; z_feas=x; z_check=x; z_lbc0=x; z_ks=0; z_milp2=0; z_=0;
-t_lp=0; t_milp=0; t_harjk=0; t_hard3=0; t_ks=0; t_lbc1=0; t_lbc2=0; t_lbc3=0; t_lbc4=0; t_feas=0; t_check=0; t_lbc0=0; t_ks=0; t_milp2=0; t_=0;
-g_lp=x; g_milp=x; g_harjk=x; g_hard3=x; g_ks=x; g_lbc1=x; g_lbc2=x; g_lbc3=x; g_lbc4=x; g_feas=x; g_check=x; g_lbc0=x; g_ks=x; g_milp2=x; g_=x;
-lb_milp=0; lb_best=0;
-ns=0; nU_no_int=0; n_Uu_no_int=0; n_Uu_1_0=0;
-SB_Uu =[]; No_SB_Uu =[]; lower_Pmin_Uu =[]; Vv =[]; Ww =[]; delta =[];
-SB_Uu3=[]; No_SB_Uu3=[]; lower_Pmin_Uu3=[]; Vv3=[]; Ww3=[]; delta3=[];
+z_lp=e; z_milp=e; z_harjk=e; z_hard3=e; z_ks=e; z_lbc1=e; z_lbc2=e; z_lbc3=e; z_lbc4=e; z_feas=e; z_check=e; z_lbc0=e; z_ks=0; z_milp2=0; z_=0
+t_lp=0; t_milp=0; t_harjk=0; t_hard3=0; t_ks=0; t_lbc1=0; t_lbc2=0; t_lbc3=0; t_lbc4=0; t_feas=0; t_check=0; t_lbc0=0; t_ks=0; t_milp2=0; t_=0
+g_lp=e; g_milp=e; g_harjk=e; g_hard3=e; g_ks=e; g_lbc1=e; g_lbc2=e; g_lbc3=e; g_lbc4=e; g_feas=e; g_check=e; g_lbc0=e; g_ks=e; g_milp2=e; g_=e
+lb_milp=0; lb_best=0
+ns=0; nU_no_int=0; n_Uu_no_int=0; n_Uu_1_0=0
+SB_Uu =[]; No_SB_Uu =[]; lower_Pmin_Uu =[]; Vv =[]; Ww =[]; delta =[]
+SB_Uu3=[]; No_SB_Uu3=[]; lower_Pmin_Uu3=[]; Vv3=[]; Ww3=[]; delta3=[]
 comment = 'Here it writes a message to the stat.csv results file' 
 
 if ambiente == 'yalma':
@@ -90,7 +90,7 @@ if  MILP:
     print('\MILP starts')
     fpheurMILP   = 1     ## Do not generate flow path cuts=-1 ; Automatic=0(CPLEX choose); moderately =1; aggressively=2
     rinsheurMILP = 50    ## Automatic=0 (CPLEX choose); None: do not apply RINS heuristic=-1;  Frequency to apply RINS heuristic=Any positive integer 
-    cutoff   = 1e+75 
+    cutoff   = e 
     t_o      = time.time() 
     model,__ = uc_Co.uc(instance,option='Milp',nameins=nameins[0:6],mode='Tight',scope=scope)
     sol_milp = Solution(model=model,nameins=nameins[0:6],env=ambiente,executable=executable,
@@ -107,8 +107,8 @@ if  MILP:
     timefull = t_milp
     try:
         lb_milp  = sol_milp.lower_bound
-    except Exception as e:
-        temp = 0 #print(e)
+    except Exception as err:
+        temp = 0 #print(err)
         
     lb_best  = max(0,lb_milp)
     g_milp   = util.igap(lb_best,z_milp)
@@ -196,6 +196,7 @@ if  Harjk:
 ## LBC COUNTINOUS VERSION with soft-fixing and restricted candidates list 
 ## Include the LOCAL BRANCHING CUT to the solution and solve the sub-MILP (it is using cutoff=z_hard).
 if  lbc1:    
+    print('\nlbc1 starts')
     t_o            = time.time() 
     Vv             = deepcopy(Vv3)
     Ww             = deepcopy(Ww3)
@@ -205,14 +206,14 @@ if  lbc1:
     lower_Pmin_Uu  = deepcopy(lower_Pmin_Uu3)
     t_net          = timefull - t_hard3
     t_res          = timefull - t_hard3
-    cutoff         = 1e+75 # z_hard3
-    bestUB         = 1e+75
+    cutoff         = e # z_hard3
+    bestUB         = e
     z_old          = z_hard3
     diversify      = False
     first          = True
     softfix        = False
     opt            = True
-    rhs            = 1e+75 ## We started with a giant neighborhood size
+    rhs            = e ## We started with a giant neighborhood size
     iter           = 1
     x_             = [SB_Uu,No_SB_Uu,lower_Pmin_Uu] 
     x_incumbent    = [SB_Uu,No_SB_Uu,Vv,Ww,delta,lower_Pmin_Uu]
@@ -221,7 +222,6 @@ if  lbc1:
     result_iter    = []
     result_iter.append((t_hard3,z_hard3))
     char           = ''
-    print('\nlbc1 starts')
         
     while True:
         if (iter==iterstop) or (time.time()-t_o>=t_net):
@@ -230,7 +230,7 @@ if  lbc1:
         
         timeres1 = min(t_res,timeconst)        
         
-        if rhs < 1e+75:
+        if rhs < e:
             leftbranch=[[x_[0],x_[1],x_[2],rhs]]
         if first:
             timeres1 = 100
@@ -248,7 +248,7 @@ if  lbc1:
         rightbranches = util.delete_tabu(rightbranches)
 
         if sol_lbc1.optimal:
-            if rhs >= 1e+75:
+            if rhs >= e:
                 opt = True
                 print('Optimal Solution :-)')
                 bestUB        = z_lbc1
@@ -269,13 +269,13 @@ if  lbc1:
             x_            = [SB_Uu,No_SB_Uu,lower_Pmin_Uu] 
                         
         if sol_lbc1.infeasib:
-            if rhs >= 1e+75:
+            if rhs >= e:
                 opt = True
                 break            
             rightbranches.append([x_[0],x_[1],x_[2],rhs]) ## SB_Uu,No_SB_Uu,lower_Pmin_Uu
             leftbranch = []            
             if diversify:
-                cutoff    = 1e+75
+                cutoff    = e
                 first     = True
             rhs = rhs + ceil(k/2)   
             print('Infeasible problem: k = k+[k/2]=', rhs)             
@@ -284,7 +284,7 @@ if  lbc1:
             # print('Disabled soft-fixing for infeasibility') ######################################################
             
         if sol_lbc1.timeover:
-            if rhs < 1e+75:
+            if rhs < e:
                 if first:
                     leftbranch = []
                 else:
@@ -313,7 +313,7 @@ if  lbc1:
                 leftbranch = []
                 rightbranches.append([x_[0],x_[1],x_[2],0]) ## Δ(x_,x) ≥ 1 Tabú constraint
                 first      = True
-                cutoff     = 1e+75  
+                cutoff     = e  
                 rhs        = rhs + ceil(k/2)   
                 print('No solution found + diversify: k = k+[k/2]=', rhs)
             else:
@@ -339,9 +339,11 @@ if  lbc1:
 
     t_lbc1 = time.time() - t_o + t_hard3  
     z_lbc1 = bestUB    
+    pritn('lbc1 results')
     for item in result_iter:
-        print(item[0],',',item[1])    
-    result_iter = np.array(result_iter)
+        print(item[0],',',item[1])
+    pritn('lbc1 end')
+    #result_iter = np.array(result_iter)
     
     ## Check feasibility (LB1)
     checkSol('z_lbc1',z_lbc1,x_incumbent[0],x_incumbent[1],x_incumbent[2],x_incumbent[3],x_incumbent[4],'lbc1')
@@ -351,6 +353,7 @@ timeconst = timeconst_original
 ## LBC BINARY VERSION without soft-fixing and use P_min candidates
 ## Include the LOCAL BRANCHING CUT to the solution and solve the sub-MILP (it is using cutoff=z_hard).
 if  lbc2: 
+    print('\nlbc2 starts')
     t_o            = time.time() 
     Vv             = deepcopy(Vv3)
     Ww             = deepcopy(Ww3)
@@ -360,14 +363,14 @@ if  lbc2:
     lower_Pmin_Uu  = deepcopy(lower_Pmin_Uu3)
     t_net          = timefull - t_hard3
     t_res          = timefull - t_hard3
-    cutoff         = 1e+75 #z_hard3
-    bestUB         = 1e+75
+    cutoff         = e #z_hard3
+    bestUB         = e
     z_old          = z_hard3
     diversify      = False
     first          = True
     softfix        = False
     opt            = True
-    rhs            = 1e+75 ## We started with a giant neighborhood size
+    rhs            = e ## We started with a giant neighborhood size
     iter           = 1
     x_             = [SB_Uu,No_SB_Uu,lower_Pmin_Uu] 
     x_incumbent    = [SB_Uu,No_SB_Uu,Vv,Ww,delta,lower_Pmin_Uu]
@@ -376,7 +379,6 @@ if  lbc2:
     result_iter    = []
     result_iter.append((t_hard3,z_hard3))
     char           = ''
-    print('\nlbc2 starts')
         
     while True:
         if (iter==iterstop) or (time.time()-t_o>=t_net):
@@ -385,7 +387,7 @@ if  lbc2:
         
         timeres1 = min(t_res,timeconst)        
         
-        if rhs < 1e+75:
+        if rhs < e:
             leftbranch=[[x_[0],x_[1],x_[2],rhs]]
         if first:
             timeres1 = 100
@@ -403,7 +405,7 @@ if  lbc2:
         rightbranches = util.delete_tabu(rightbranches)
         
         if sol_lbc2.optimal:
-            if rhs >= 1e+75:
+            if rhs >= e:
                 opt = True
                 print('Optimal Solution :-)')
                 bestUB        = z_lbc2
@@ -424,20 +426,20 @@ if  lbc2:
             x_            = [SB_Uu,No_SB_Uu,lower_Pmin_Uu] 
                         
         if sol_lbc2.infeasib:
-            if rhs >= 1e+75:
+            if rhs >= e:
                 opt = True
                 break            
             rightbranches.append([x_[0],x_[1],x_[2]]) ## SB_Uu,No_SB_Uu,lower_Pmin_Uu
             leftbranch = []            
             if diversify:
-                cutoff    = 1e+75
+                cutoff    = e
                 first     = True
             rhs = rhs + ceil(k/2)   
             print('Infeasible problem: k = k+[k/2] =', rhs)             
             diversify = True
             
         if sol_lbc2.timeover:
-            if rhs < 1e+75:
+            if rhs < e:
                 if first:
                     leftbranch = []
                 else:
@@ -465,7 +467,7 @@ if  lbc2:
                 leftbranch = []
                 rightbranches.append([x_[0],x_[1],x_[2],0]) ## Δ(x_,x) ≥ 1 Tabú constraint
                 first    = True
-                cutoff   = 1e+75  
+                cutoff   = e  
                 rhs      = rhs + ceil(k/2)   
                 print('No solution found + diversify: k = k+[k/2]=', rhs)
             else:
@@ -488,10 +490,12 @@ if  lbc2:
         iter = iter + 1
 
     t_lbc2 = time.time() - t_o + t_hard3  
-    z_lbc2 = bestUB    
+    z_lbc2 = bestUB
+    print('lbc2 results')
     for item in result_iter:
-        print(item[0],',',item[1])    
-    result_iter = np.array(result_iter)
+        print(item[0],',',item[1])
+    print('lbc2 end')
+    #result_iter = np.array(result_iter)
     
     ## Check feasibility (LB2)
     checkSol('z_lbc2',z_lbc2,x_incumbent[0],x_incumbent[1],x_incumbent[2],x_incumbent[3],x_incumbent[4],'lbc2') 
@@ -501,6 +505,7 @@ timeconst = timeconst_original
 ## LBC COUNTINOUS VERSION without soft-fixing and not use P_min candidates
 ## Include the LOCAL BRANCHING CUT to the solution and solve the sub-MILP (it is using cutoff=z_hard).
 if  lbc3:   
+    print('\nlbc3 starts')
     t_o             = time.time() 
     Vv              = deepcopy(Vv3)
     Ww              = deepcopy(Ww3)
@@ -510,14 +515,14 @@ if  lbc3:
     lower_Pmin_Uu   = deepcopy(lower_Pmin_Uu3)
     t_net           = timefull - t_hard3
     t_res           = timefull - t_hard3
-    cutoff          = 1e+75 #z_hard3
-    bestUB          = 1e+75
+    cutoff          = e #z_hard3
+    bestUB          = e
     z_old           = z_hard3
     diversify       = False
     first           = True
     softfix         = False
     opt             = True
-    rhs             = 1e+75 ## We started with a giant neighborhood size
+    rhs             = e ## We started with a giant neighborhood size
     iter            = 1
     x_              = [SB_Uu,No_SB_Uu,lower_Pmin_Uu] 
     x_incumbent     = [SB_Uu,No_SB_Uu,Vv,Ww,delta,lower_Pmin_Uu]
@@ -526,7 +531,6 @@ if  lbc3:
     result_iter     = []
     result_iter.append((t_hard3,z_hard3))
     char            = ''
-    print('\nlbc3 starts')
         
     while True:
         if (iter==iterstop) or (time.time()-t_o>=t_net):
@@ -535,7 +539,7 @@ if  lbc3:
         
         timeres1 = min(t_res,timeconst)   
          
-        if rhs < 1e+75:
+        if rhs < e:
             leftbranch=[[x_[0],x_[1],x_[2],rhs]]    
         if first:
             timeres1 = 100
@@ -553,7 +557,7 @@ if  lbc3:
         rightbranches = util.delete_tabu(rightbranches)
                 
         if sol_lbc3.optimal:
-            if rhs >= 1e+75:
+            if rhs >= e:
                 opt = True
                 print('Optimal Solution :-)')
                 bestUB        = z_lbc3
@@ -574,20 +578,20 @@ if  lbc3:
             x_            = [SB_Uu,No_SB_Uu,lower_Pmin_Uu] 
                         
         if sol_lbc3.infeasib:
-            if rhs >= 1e+75:
+            if rhs >= e:
                 opt = True
                 break            
             rightbranches.append([x_[0],x_[1],x_[2]]) ## SB_Uu,No_SB_Uu,lower_Pmin_Uu
             leftbranch = []            
             if diversify:
-                cutoff    = 1e+75
+                cutoff    = e
                 first     = True
             rhs = rhs + ceil(k/2)   
             print('Infeasible problem: k = k+[k/2]=', rhs)             
             diversify = True
             
         if sol_lbc3.timeover:
-            if rhs < 1e+75:
+            if rhs < e:
                 if first:
                     leftbranch = []
                 else:
@@ -615,7 +619,7 @@ if  lbc3:
                 leftbranch = []
                 rightbranches.append([x_[0],x_[1],x_[2],0]) ## Δ(x_,x) ≥ 1 Tabú constraint
                 first    = True
-                cutoff   = 1e+75  
+                cutoff   = e  
                 rhs      = rhs + ceil(k/2)   
                 print('No solution found + diversify: k = k+[k/2]=', rhs)
             else:
@@ -639,9 +643,11 @@ if  lbc3:
 
     t_lbc3 = time.time() - t_o + t_hard3  
     z_lbc3 = bestUB    
+    print('lbc3 results')
     for item in result_iter:
-        print(item[0],',',item[1])    
-    result_iter = np.array(result_iter)
+        print(item[0],',',item[1])   
+    print('lbc3 end') 
+    #result_iter = np.array(result_iter)
     
     ## Check feasibility (LB3)
     checkSol('z_lbc3',z_lbc3,x_incumbent[0],x_incumbent[1],x_incumbent[2],x_incumbent[3],x_incumbent[4],'lbc3') 
@@ -651,6 +657,7 @@ timeconst = timeconst_original
 ## LBC COUNTINOUS VERSION without soft-fixing
 ## Include the LOCAL BRANCHING CUT to the solution and solve the sub-MILP (it is using cutoff=z_hard).
 if  lbc4:    
+    print('\nlbc4 starts')
     t_o            = time.time() 
     Vv             = deepcopy(Vv3)
     Ww             = deepcopy(Ww3)
@@ -660,14 +667,14 @@ if  lbc4:
     lower_Pmin_Uu  = deepcopy(lower_Pmin_Uu3)
     t_net          = timefull - t_hard3
     t_res          = timefull - t_hard3
-    cutoff         = 1e+75 #z_hard3
-    bestUB         = 1e+75
+    cutoff         = e #z_hard3
+    bestUB         = e
     z_old          = z_hard3
     diversify      = False
     first          = True
     softfix        = False
     opt            = True
-    rhs            = 1e+75 ## We started with a giant neighborhood size
+    rhs            = e ## We started with a giant neighborhood size
     iter           = 1
     x_             = [SB_Uu,No_SB_Uu,lower_Pmin_Uu] 
     x_incumbent    = [SB_Uu,No_SB_Uu,Vv,Ww,delta,lower_Pmin_Uu]
@@ -676,7 +683,6 @@ if  lbc4:
     result_iter    = []
     result_iter.append((t_hard3,z_hard3))
     char           = ''
-    print('\nlbc4 starts')
     
     ## Calculating reduced cost
     model,__  = uc_Co.uc(instance,option='RC',SB_Uu=x_incumbent[0],No_SB_Uu=x_incumbent[1],V=x_incumbent[2],W=x_incumbent[3],delta=x_incumbent[4],
@@ -708,7 +714,7 @@ if  lbc4:
         
         timeres1 = min(t_res,timeconst)        
         
-        if rhs < 1e+75:
+        if rhs < e:
             leftbranch=[[x_[0],x_[1],x_[2],rhs]]
         if first:
             timeres1 = 100
@@ -726,7 +732,7 @@ if  lbc4:
         rightbranches = util.delete_tabu(rightbranches)
                 
         if sol_lbc4.optimal:
-            if rhs >= 1e+75:
+            if rhs >= e:
                 opt = True
                 print('Optimal Solution :-)')
                 bestUB        = z_lbc4
@@ -747,13 +753,13 @@ if  lbc4:
             x_            = [SB_Uu,No_SB_Uu,lower_Pmin_Uu]
                         
         if sol_lbc4.infeasib:
-            if rhs >= 1e+75:
+            if rhs >= e:
                 opt = True
                 break            
             rightbranches.append([x_[0],x_[1],x_[2]]) ## SB_Uu,No_SB_Uu,lower_Pmin_Uu
             leftbranch = []            
             if diversify:
-                cutoff    = 1e+75
+                cutoff    = e
                 first     = True
             rhs = rhs + ceil(k/2)   
             print('Infeasible problem: k = k+[k/2]=', rhs)             
@@ -762,7 +768,7 @@ if  lbc4:
             # print('Disabled soft-fixing for infeasibility') #####################################################
             
         if sol_lbc4.timeover:
-            if rhs < 1e+75:
+            if rhs < e:
                 if first:
                     leftbranch = []
                 else:
@@ -791,7 +797,7 @@ if  lbc4:
                 leftbranch = []
                 rightbranches.append([x_[0],x_[1],x_[2],0]) ## Δ(x_,x) ≥ 1 Tabú constraint
                 first      = True
-                cutoff     = 1e+75  
+                cutoff     = e  
                 rhs        = rhs + ceil(k/2)   
                 print('No solution found + diversify: k = k+[k/2]=', rhs)
             else:
@@ -817,9 +823,11 @@ if  lbc4:
 
     t_lbc4 = time.time() - t_o + t_hard3  
     z_lbc4 = bestUB    
+    print('lbc4 results')
     for item in result_iter:
-        print(item[0],',',item[1])    
-    result_iter = np.array(result_iter)
+        print(item[0],',',item[1])
+    print('lbc4 end')  
+    #result_iter = np.array(result_iter)
     
     ## Check feasibility (LB4)
     checkSol('z_lbc4',z_lbc4,x_incumbent[0],x_incumbent[1],x_incumbent[2],x_incumbent[3],x_incumbent[4],'lbc4')
@@ -833,6 +841,7 @@ timeconst = timeconst_original
 ## Use 'Soft+pmin' (lower subset of Uu-Pmin)  as the first and unique bucket to consider
 ## Use relax the integrality variable Uu.
 if  KS:
+    print('\nstarts KS')
     Vv          = deepcopy(Vv3)
     Ww          = deepcopy(Ww3)
     delta       = deepcopy(delta3)
@@ -842,7 +851,7 @@ if  KS:
 
     t_o         = time.time() 
     incumbent   =  z_hard3
-    cutoff      =  z_hard3 # 1e+75 
+    cutoff      =  z_hard3 # e 
     iter        =  0  
     sol_ks      =  []
     result_iter =  []
@@ -887,7 +896,7 @@ if  KS:
             k_[-1] = len(No_SB_Uu)
             #print( k_ )
             
-            cutoff      = incumbent # 1e+75 !!!
+            cutoff      = incumbent # e !!!
             iter_bk     = 0
             iterstop    = K - 2
             char        = ''
@@ -930,7 +939,7 @@ if  KS:
                     print('<°|>< iter:'+str(iter)+' t_ks= ',round(time.time()-t_o+t_hard3,1),'z_ks= ',round(z_ks,1),char,'g_ks= ',round(g_ks,8)) #
                 except:
                     print('>>> No solution found')
-                    result_iter.append((round(time.time()-t_o+t_hard3,1), 1e+75))
+                    result_iter.append((round(time.time()-t_o+t_hard3,1), e))
                 finally:    
                     iter_bk = iter_bk + 1
                     
@@ -950,21 +959,23 @@ if  KS:
         No_SB_Uu = deepcopy(saved[1])
 
     t_ks = (time.time() - t_o) + t_hard3  
-    z_ks = incumbent    
+    z_ks = incumbent
+    print('KS results')
     for item in result_iter:
         print(item[0],',',item[1])
-    result_iter = np.array(result_iter)
+    print('KS end')
+    #result_iter = np.array(result_iter)
     #np.savetxt('iterKS'+nameins[0:6]+'.csv', result_iter, delimiter=',')
     
     checkSol('z_ks',z_ks,SB_Uu,No_SB_Uu,Vv,Ww,delta,'ks') ## Check feasibility (KS)
 
 ## ---------------------------------------- MILP2 -----------------------------------------------------
 ## Solve as a MILP2 from a initial solution (MILP29+Hard3)
-if  MILP2:  
-    cutoff         = 1e+75 # z_hard3
+if  MILP2: 
+    print('\MILP2 starts') 
+    cutoff         = e # z_hard3
     t_o            = time.time()
     t_res          = timefull - t_hard3
-    print('\MILP2 starts')
     model,__ = uc_Co.uc(instance,option='Milp2',SB_Uu=SB_Uu3,No_SB_Uu=No_SB_Uu3,V=Vv3,W=Ww3,delta=delta3,
                         nameins=nameins[0:6],mode='Tight',scope=scope)
     sol_milp2 = Solution(model=model,nameins=nameins[0:6],env=ambiente,executable=executable,
