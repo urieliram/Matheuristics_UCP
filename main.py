@@ -41,7 +41,7 @@ MILP,MILP2,Hard3,Harjk,lbc1,lbc2,lbc3,KS,lbc4 = util.config_env()
 
 k_original         = k          ## Almacenamos el parámetro k de local branching
 timeconst_original = timeconst
-e                  = e
+e                  = 1E+75
 
 z_lp=e; z_milp=e; z_harjk=e; z_hard3=e; z_ks=e; z_lbc1=e; z_lbc2=e; z_lbc3=e; z_lbc4=e; z_feas=e; z_check=e; z_lbc0=e; z_ks=0; z_milp2=0; z_=0
 t_lp=0; t_milp=0; t_harjk=0; t_hard3=0; t_ks=0; t_lbc1=0; t_lbc2=0; t_lbc3=0; t_lbc4=0; t_feas=0; t_check=0; t_lbc0=0; t_ks=0; t_milp2=0; t_=0
