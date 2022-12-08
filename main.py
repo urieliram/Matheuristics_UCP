@@ -46,7 +46,7 @@ e                  = 1E+75
 z_lp=e; z_milp=e; z_harjk=e; z_hard3=e; z_ks=e; z_lbc1=e; z_lbc2=e; z_lbc3=e; z_lbc4=e; z_feas=e; z_check=e; z_lbc0=e; z_ks=0; z_milp2=0; z_=0
 t_lp=0; t_milp=0; t_harjk=0; t_hard3=0; t_ks=0; t_lbc1=0; t_lbc2=0; t_lbc3=0; t_lbc4=0; t_feas=0; t_check=0; t_lbc0=0; t_ks=0; t_milp2=0; t_=0
 g_lp=e; g_milp=e; g_harjk=e; g_hard3=e; g_ks=e; g_lbc1=e; g_lbc2=e; g_lbc3=e; g_lbc4=e; g_feas=e; g_check=e; g_lbc0=e; g_ks=e; g_milp2=e; g_=e
-lb_milp=0; lb_best=0
+lb_milp=0; lb_best=0; lb_milp2=0
 ns=0; nU_no_int=0; n_Uu_no_int=0; n_Uu_1_0=0
 SB_Uu =[]; No_SB_Uu =[]; lower_Pmin_Uu =[]; Vv =[]; Ww =[]; delta =[]
 SB_Uu3=[]; No_SB_Uu3=[]; lower_Pmin_Uu3=[]; Vv3=[]; Ww3=[]; delta3=[]
@@ -115,6 +115,7 @@ if  MILP:
     print('t_milp= ',round(t_milp,1))
     print('z_milp= ',round(z_milp,1))
     print('g_milp= ',round(g_milp,8))
+    print('lb_milp= ',round(lb_milp,8))
       
 if  Hard3:
     ## ----------------------------------------------- RECOVERED SOLUTION ---------------------------------------------
@@ -987,10 +988,14 @@ if  MILP2:
                         exportLP=False,option='Milp2',scope=scope)
     z_milp2, g_milp2 = sol_milp2.solve_problem()
     t_milp2          = time.time() - t_o + t_hard3
-    g_milp2          = util.igap(lb_best,z_milp2)
-    print('t_milp2= ',round(t_milp2,1))
-    print('z_milp2= ',round(z_milp2,1))
-    print('g_milp2= ',round(g_milp2,8))
+    try:
+        lb_milp2  = sol_milp2.lower_bound
+    except Exception as err:
+        temp = 0 #print(err)
+    print('t_milp2= ' ,round(t_milp2, 1))
+    print('z_milp2= ' ,round(z_milp2, 1))
+    print('g_milp2= ' ,round(g_milp2, 8))
+    print('lb_milp2= ',round(lb_milp2,8))
 
     ## PENDIENTES        
     # \todo{probar estadísticamente que SI conviene incluir los intentos de asignación en las variables soft-fix }
@@ -1051,12 +1056,12 @@ comment    = 'Pruebas TC&UC'
 ## --------------------------------- RESULTS -------------------------------------------
 ## Append a list as new line to an old csv file using as log, the first line of the file as shown.
 
-## ambiente,localtime,nameins,T,G,gap,timeconst,timefull,z_lp,z_milp,z_milp2,z_harjk,z_hard3,z_lbc1,z_lbc2,z_lbc3,z_lbc4,z_ks,z_,t_lp,t_milp,t_milp2,t_harjk,t_hard3,t_lbc1,t_lbc2,t_lbc3,t_lbc4,t_ks,t_,lb_milp,g_milp,g_milp2,g_harjk,g_hard3,g_lbc1,g_lbc2,g_lbc3,g_lbc4,g_ks,g_,k,ns,emphasizeMILP,symmetryMILP,strategyMILP,lbheurMILP,emphasizeHEUR,symmetryHEUR,strategyHEUR,lbheurHEUR,comment
+## ambiente,localtime,nameins,T,G,gap,timeconst,timefull,z_lp,z_milp,z_milp2,z_harjk,z_hard3,z_lbc1,z_lbc2,z_lbc3,z_lbc4,z_ks,z_,t_lp,t_milp,t_milp2,t_harjk,t_hard3,t_lbc1,t_lbc2,t_lbc3,t_lbc4,t_ks,t_,lb_milp,g_milp,g_milp2,g_harjk,g_hard3,g_lbc1,g_lbc2,g_lbc3,g_lbc4,g_ks,g_,lb_milp2,k,emphasizeMILP,symmetryMILP,strategyMILP,lbheurMILP,emphasizeHEUR,symmetryHEUR,strategyHEUR,lbheurHEUR,comment
 row = [ambiente,localtime,nameins,len(instance[1]),len(instance[0]),gap,timeconst_original,timefull,
     round(z_lp,   1),round(z_milp,1),round(z_milp2,1),round(z_harjk,1),round(z_hard3,1),round(z_lbc1,1),round(z_lbc2,1),round(z_lbc3,1),round(z_lbc4,1),round(z_ks,1),round(z_,1),
     round(t_lp,   1),round(t_milp,1),round(t_milp2,1),round(t_harjk,1),round(t_hard3,1),round(t_lbc1,1),round(t_lbc2,1),round(t_lbc3,1),round(t_lbc4,1),round(t_ks,1),round(t_,1),
     round(lb_milp,1),round(g_milp,8),round(g_milp2,1),round(g_harjk,8),round(g_hard3,8),round(g_lbc1,8),round(g_lbc2,8),round(g_lbc3,8),round(g_lbc4,8),round(g_ks,8),round(g_,8),
-                  k,ns,emphasizeMILP,symmetryMILP,strategyMILP,lbheurMILP,emphasizeHEUR,symmetryHEUR,strategyHEUR,lbheurHEUR,comment] 
+                                     round(lb_milp2,1),k,emphasizeMILP,symmetryMILP,strategyMILP,lbheurMILP,emphasizeHEUR,symmetryHEUR,strategyHEUR,lbheurHEUR,comment] 
 util.append_list_as_row('stat.csv',row)
 
 print(localtime,'terminé instancia ...´¯`·...·´¯`·.. ><(((º> ',nameins)
