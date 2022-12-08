@@ -73,7 +73,6 @@ class Solution:
         return self.lower_bound
     
     def solve_problem(self):  
-                
         exist = os.path.exists(self.executable)   
         if exist:
             solver = SolverFactory('cplex',executable=self.executable) 

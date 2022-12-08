@@ -180,14 +180,17 @@ if  Harjk:
                          nameins=nameins[0:6],mode='Tight',scope=scope)
     sol_harjk = Solution(model=model,env=ambiente,executable=executable,nameins=nameins[0:6],gap=gap,timelimit=timeconst-t_lp,
                         emphasize=emphasizeHEUR,symmetry=symmetryHEUR,lbheur=lbheurHEUR,strategy=strategyHEUR,
-                        tee=False,tofiles=False,option='Harjk',scope=scope)
-    z_harjk, g_harjk = sol_harjk.solve_problem()
-    t_harjk  = time.time() - t_o + t_lp   ## <<< --- t_harjk ** INCLUYE EL TIEMPO DE LP **
-    g_harjk  = util.igap(lb_best,z_harjk)         
-    
-    SB_Uujk, No_SB_Uujk, __, Vvjk, Wwjk, deltajk = sol_harjk.select_binary_support_Uu('Harjk')    
-    checkSol('Harjk',z_harjk,SB_Uujk,No_SB_Uujk,Vvjk,Wwjk,deltajk,'harjk') ## Check feasibility
-    del SB_Uujk,No_SB_Uujk,Vvjk,Wwjk,deltajk
+                        tee=False,tofiles=False,option='Harjk',scope=scope)     
+    try:
+        z_harjk, g_harjk = sol_harjk.solve_problem()
+        t_harjk  = time.time() - t_o + t_lp   ## <<< --- t_harjk ** INCLUYE EL TIEMPO DE LP **
+        g_harjk  = util.igap(lb_best,z_harjk)         
+        SB_Uujk, No_SB_Uujk, __, Vvjk, Wwjk, deltajk = sol_harjk.select_binary_support_Uu('Harjk')    
+        checkSol('Harjk',z_harjk,SB_Uujk,No_SB_Uujk,Vvjk,Wwjk,deltajk,'harjk') ## Check feasibility
+        del SB_Uujk,No_SB_Uujk,Vvjk,Wwjk,deltajk
+    except:
+        print('>>> No solution Harjk')
+
     print('t_harjk= ',round(t_harjk,1),'z_harjk= ',round(z_harjk,1),'g_harjk= ',round(g_harjk,8) )
     del sol_harjk
     gc.collect()
@@ -339,10 +342,10 @@ if  lbc1:
 
     t_lbc1 = time.time() - t_o + t_hard3  
     z_lbc1 = bestUB    
-    pritn('lbc1 results')
+    print('lbc1 results')
     for item in result_iter:
         print(item[0],',',item[1])
-    pritn('lbc1 end')
+    print('lbc1 end')
     #result_iter = np.array(result_iter)
     
     ## Check feasibility (LB1)
