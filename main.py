@@ -121,7 +121,8 @@ if  Hard3:
     ## Load LR and Hard3 storaged solutions
     if path.exists('solHard3_a_'+nameins[0:6]+'.csv') == True and path.exists('solHard3_b_'+nameins[0:6]+'.csv') == True:
         t_lp,z_lp,t_hard3,z_hard3,SB_Uu3,No_SB_Uu3,lower_Pmin_Uu3,Vv3,Ww3,delta3 = util.loadSolution('Hard3',nameins[0:6]) 
-        print('Recovered solution ---> ','t_hard3= ',round(t_hard3,1),'z_hard3= ',round(z_hard3,1))
+        print('Recovered solution ---> ','z_hard3= ',round(z_hard3,1))
+        print('Recovered solution ---> ','t_hard3= ',round(t_hard3,1))
         z_hard3 = checkSol('Hard3 (recovered)',z_hard3,SB_Uu3,No_SB_Uu3,Vv3,Ww3,delta3,'hard3(rec)') ## Check feasibility
         g_hard3 = util.igap(z_lp,z_hard3) 
         lb_best = max(z_lp,lb_best)
