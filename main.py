@@ -112,7 +112,9 @@ if  MILP:
         
     lb_best  = max(0,lb_milp)
     g_milp   = util.igap(lb_best,z_milp)
-    print('t_milp= ',round(t_milp,1),'z_milp= ',round(z_milp,1),'g_milp= ',round(g_milp,8))
+    print('t_milp= ',round(t_milp,1))
+    print('z_milp= ',round(z_milp,1))
+    print('g_milp= ',round(g_milp,8))
       
 if  Hard3:
     ## ----------------------------------------------- RECOVERED SOLUTION ---------------------------------------------
@@ -133,7 +135,8 @@ if  Hard3:
                               tee=False,tofiles=False,exportLP=False,option='LR',scope=scope)
         z_lp, g_lp = sol_lp.solve_problem() 
         t_lp       = time.time() - t_o
-        print('t_lp= ',round(t_lp,1),'z_lp= ',round(z_lp,1))
+        print('t_lp= ',round(t_lp,1))
+        print('z_lp= ',round(z_lp,1))
         
         lb_best = max(z_lp,lb_best)
         
@@ -166,8 +169,9 @@ if  Hard3:
         lower_Pmin_Uu3 = sol_hard3.update_lower_Pmin_Uu(lower_Pmin_Uu,'Hard3')
         #sol_hard3.cuenta_ceros_a_unos( SB_Uu, No_SB_Uu, lower_Pmin_Uu,'Hard3') 
         checkSol('Hard3',z_hard3,SB_Uu3,No_SB_Uu3,Vv3,Ww3,delta3,'hard3') ## Check feasibility
-
-        print('t_hard3= ',round(t_hard3,1),'z_hard3= ',round(z_hard3,1),'g_hard3= ',round(g_hard3,8) )
+        print('t_hard3= ',round(t_hard3,1))
+        print('z_hard3= ',round(z_hard3,1))
+        print('g_hard3= ',round(g_hard3,8))
         del sol_hard3
         gc.collect()
         util.saveSolution(t_lp,z_lp,t_hard3,z_hard3,SB_Uu3,No_SB_Uu3,lower_Pmin_Uu3,Vv3,Ww3,delta3,'Hard3',nameins[0:6])
@@ -190,8 +194,9 @@ if  Harjk:
         del SB_Uujk,No_SB_Uujk,Vvjk,Wwjk,deltajk
     except:
         print('>>> No solution Harjk')
-
-    print('t_harjk= ',round(t_harjk,1),'z_harjk= ',round(z_harjk,1),'g_harjk= ',round(g_harjk,8) )
+    print('t_harjk= ',round(t_harjk,1))
+    print('z_harjk= ',round(z_harjk,1))
+    print('g_harjk= ',round(g_harjk,8))
     del sol_harjk
     gc.collect()
 
@@ -346,7 +351,6 @@ if  lbc1:
     for item in result_iter:
         print(item[0],',',item[1])
     print('lbc1 end')
-    #result_iter = np.array(result_iter)
     
     ## Check feasibility (LB1)
     checkSol('z_lbc1',z_lbc1,x_incumbent[0],x_incumbent[1],x_incumbent[2],x_incumbent[3],x_incumbent[4],'lbc1')
@@ -498,7 +502,6 @@ if  lbc2:
     for item in result_iter:
         print(item[0],',',item[1])
     print('lbc2 end')
-    #result_iter = np.array(result_iter)
     
     ## Check feasibility (LB2)
     checkSol('z_lbc2',z_lbc2,x_incumbent[0],x_incumbent[1],x_incumbent[2],x_incumbent[3],x_incumbent[4],'lbc2') 
@@ -650,7 +653,6 @@ if  lbc3:
     for item in result_iter:
         print(item[0],',',item[1])   
     print('lbc3 end') 
-    #result_iter = np.array(result_iter)
     
     ## Check feasibility (LB3)
     checkSol('z_lbc3',z_lbc3,x_incumbent[0],x_incumbent[1],x_incumbent[2],x_incumbent[3],x_incumbent[4],'lbc3') 
@@ -830,7 +832,6 @@ if  lbc4:
     for item in result_iter:
         print(item[0],',',item[1])
     print('lbc4 end')  
-    #result_iter = np.array(result_iter)
     
     ## Check feasibility (LB4)
     checkSol('z_lbc4',z_lbc4,x_incumbent[0],x_incumbent[1],x_incumbent[2],x_incumbent[3],x_incumbent[4],'lbc4')
@@ -967,8 +968,6 @@ if  KS:
     for item in result_iter:
         print(item[0],',',item[1])
     print('KS end')
-    #result_iter = np.array(result_iter)
-    #np.savetxt('iterKS'+nameins[0:6]+'.csv', result_iter, delimiter=',')
     
     checkSol('z_ks',z_ks,SB_Uu,No_SB_Uu,Vv,Ww,delta,'ks') ## Check feasibility (KS)
 
@@ -988,7 +987,9 @@ if  MILP2:
     z_milp2, g_milp2 = sol_milp2.solve_problem()
     t_milp2          = time.time() - t_o + t_hard3
     g_milp2          = util.igap(lb_best,z_milp2)
-    print('t_milp2= ',round(t_milp2,1),'z_milp2= ',round(z_milp2,1),'g_milp2= ',round(g_milp2,8))
+    print('t_milp2= ',round(t_milp2,1))
+    print('z_milp2= ',round(z_milp2,1))
+    print('g_milp2= ',round(g_milp2,8))
 
     ## PENDIENTES        
     # \todo{probar estadísticamente que SI conviene incluir los intentos de asignación en las variables soft-fix }
