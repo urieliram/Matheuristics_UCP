@@ -335,7 +335,7 @@ if  lbc1:
             diversify = True
 
         result_iter.append((round(time.time() - t_o + t_hard3,1),z_lbc1))          
-        bestUB = z_lbc1
+        # bestUB = z_lbc1
         
         print('<°|--< iter:'+str(iter)+' t_lbc1= ',round(time.time()-t_o+t_hard3,1),'z_lbc1= ',round(z_lbc1,1),char,'g_lbc1= ',round(g_lbc1,8) ) #
         print('\t')       
@@ -486,7 +486,7 @@ if  lbc2:
             diversify = True
 
         result_iter.append((round(time.time() - t_o + t_hard3,1),z_lbc2))          
-        bestUB = z_lbc2
+        # bestUB = z_lbc2
         
         print('<°|--< iter:'+str(iter)+' t_lbc2= ',round(time.time()-t_o+t_hard3,1),'z_lbc2= ',round(z_lbc2,1),char,'g_lbc2= ',round(g_lbc2,8) ) #
         print('\t')       
@@ -637,7 +637,7 @@ if  lbc3:
             diversify = True
 
         result_iter.append((round(time.time() - t_o + t_hard3,1),z_lbc3))          
-        bestUB = z_lbc3
+        # bestUB = z_lbc3
         
         print('<°|--< iter:'+str(iter)+' t_lbc3= ',round(time.time()-t_o+t_hard3,1),'z_lbc3= ',round(z_lbc3,1),char,'g_lbc3= ',round(g_lbc3,8) ) #
         print('\t')       
@@ -816,7 +816,7 @@ if  lbc4:
             # print('Disabled soft-fixing for no-solution found') #################################################
 
         result_iter.append((round(time.time() - t_o + t_hard3,1),z_lbc4))          
-        bestUB = z_lbc4
+        # bestUB = z_lbc4
         
         print('<°|--< iter:'+str(iter)+' t_lbc4= ',round(time.time()-t_o+t_hard3,1),'z_lbc4= ',round(z_lbc4,1),char,'g_lbc4= ',round(g_lbc4,8) ) #
         print('\t')       
