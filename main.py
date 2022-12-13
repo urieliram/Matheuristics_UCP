@@ -657,7 +657,7 @@ if  lbc3:
     print('lbc3 end') 
     
     ## Check feasibility (LB3)
-    checkSol('z_lbc3',z_lbc3,x_incumbent[0],x_incumbent[1],x_incumbent[2],x_incumbent[3],x_incumbent[4],'lbc3') 
+    checkSol('z_lbc3',z_lbc3,x_incumbent[0],x_incumbent[1],x_incumbent[2],x_incumbent[3],x_incumbent[4],'lbc3','\n' ) 
 timeconst = timeconst_original
 
 ## --------------------------------------- LOCAL BRANCHING 4 ------------------------------------------
@@ -698,7 +698,7 @@ if  lbc4:
                          emphasize=emphasizeHEUR,symmetry=symmetryHEUR,lbheur=lbheurHEUR,strategy=strategyHEUR,
                          tee=False,tofiles=False,exportLP=False,rc=True,option='RC',scope=scope)
     z_rc,g_rc = sol_rc.solve_problem() 
-    print('lb4 z_rc= ',round(z_rc,4))      
+    print('lb4: z_rc= ',round(z_rc,4))
     
     ##  Colected candidates
     rc   = []
@@ -713,6 +713,8 @@ if  lbc4:
     for f in rc: 
         if f[1]<=0:
             candidates.append((f[2],f[3])) ## (g , t) 
+
+    lower_Pmin_Uu  = deepcopy(candidates) #############################################################################################
     
     while True:
         if (iter==iterstop) or (time.time()-t_o>=t_net):
@@ -818,8 +820,7 @@ if  lbc4:
         result_iter.append((round(time.time() - t_o + t_hard3,1),z_lbc4))          
         # bestUB = z_lbc4
         
-        print('<°|--< iter:'+str(iter)+' t_lbc4= ',round(time.time()-t_o+t_hard3,1),'z_lbc4= ',round(z_lbc4,1),char,'g_lbc4= ',round(g_lbc4,8) ) #
-        print('\t')       
+        print('<°|--< iter:'+str(iter)+' t_lbc4= ',round(time.time()-t_o+t_hard3,1),'z_lbc4= ',round(z_lbc4,1),char,'g_lbc4= ',round(g_lbc4,8),'\n' ) #      
 
         t_res = t_net - time.time() + t_o 
         print('lbc4:','remaining time:',t_res)
@@ -974,7 +975,7 @@ if  KS:
     checkSol('z_ks',z_ks,SB_Uu,No_SB_Uu,Vv,Ww,delta,'ks') ## Check feasibility (KS)
 
 ## ---------------------------------------- MILP2 -----------------------------------------------------
-## Solve as a MILP2 from a initial solution (MILP29+Hard3)
+## Solve as a MILP2 from a initial solution (MILP2+Hard3)
 if  MILP2: 
     print('\MILP2 starts') 
     cutoff         = e # z_hard3
