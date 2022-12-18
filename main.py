@@ -1064,8 +1064,9 @@ row = [ambiente,localtime,nameins,len(instance[1]),len(instance[0]),gap,timecons
     round(lb_milp,1),round(g_milp,8),round(g_milp2,1),round(g_harjk,8),round(g_hard3,8),round(g_lbc1,8),round(g_lbc2,8),round(g_lbc3,8),round(g_lbc4,8),round(g_ks,8),round(g_,8),
                                      round(lb_milp2,1),k,emphasizeMILP,symmetryMILP,strategyMILP,lbheurMILP,emphasizeHEUR,symmetryHEUR,strategyHEUR,lbheurHEUR,comment] 
 util.append_list_as_row('stat.csv',row)
-
-print(localtime,'terminé instancia ...´¯`·...·´¯`·.. ><(((º> ',nameins)
+message='terminé instancia ...´¯`·...·´¯`·.. ><(((º> '+nameins
+print(localtime,message)
+util.whatsapp(number='+527772108157',message=message)
 
 exit()
 
