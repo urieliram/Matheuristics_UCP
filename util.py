@@ -186,3 +186,18 @@ def delete_tabu(rightbranches):
         print('>>> Fail deleting tabu coinstraints')
         
     return(rightbranches)
+
+
+def whatsapp(number='+527772108157',message=''):
+    import pywhatkit
+    import time
+    t = time.localtime()
+    H = time.strftime("%H",t)
+    M = time.strftime("%M",t)
+    message = str(H)+':'+str(M)+' '+message
+    try:
+        pywhatkit.sendwhatmsg(number,message,int(H),int(M)+1)
+        print('Whats Successfully Sent!','to',number)
+    except:
+        print('pywhatkit Error!')
+
