@@ -188,7 +188,7 @@ def delete_tabu(rightbranches):
     return(rightbranches)
 
 
-def whatsapp(number='+527772108157',message=''):
+def whatsapp(number='+52xxxxxx',message=''):
     import pywhatkit
     import time
     t = time.localtime()

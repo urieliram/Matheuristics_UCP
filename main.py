@@ -1066,7 +1066,6 @@ row = [ambiente,localtime,nameins,len(instance[1]),len(instance[0]),gap,timecons
 util.append_list_as_row('stat.csv',row)
 message='terminé instancia ...´¯`·...·´¯`·.. ><(((º> '+nameins
 print(localtime,message)
-util.whatsapp(number='+527772108157',message=message)
 
 exit()
 
