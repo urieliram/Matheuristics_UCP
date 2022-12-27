@@ -988,7 +988,7 @@ if  MILP2:
                         gap=gap,cutoff=cutoff,timelimit=t_res,tee=False,tofiles=False,
                         exportLP=False,option='Milp2',scope=scope)
     z_milp2, g_milp2 = sol_milp2.solve_problem()
-    t_milp2          = time.time() - t_o + t_hard3
+    t_milp2          = time.time() - t_o
     try:
         lb_milp2  = sol_milp2.lower_bound
     except Exception as err:
