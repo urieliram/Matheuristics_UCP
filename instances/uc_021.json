@@ -1,5 +1,5 @@
 {
-    "time_periods": 72,
+    "time_periods": 48,
     "demand": [
         63680	,
         62322	,
@@ -2812,7 +2812,7 @@
       "GEN446": {
         "must_run": 0,
         "power_output_minimum": 0,
-        "power_output_maximum": 82,
+        "power_output_maximum": 83,
         "ramp_up_limit": 28.3791504,
         "ramp_down_limit": 31.63191984,
         "ramp_startup_limit": 82,
@@ -2832,6 +2832,9 @@
         "piecewise_production": [
           {
             "mw": 82,
+            "cost": 2035.47615718
+          },          {
+            "mw": 83,
             "cost": 2035.47615718
           }
         ],
@@ -6500,7 +6503,7 @@
       "GEN870": {
         "must_run": 0,
         "power_output_minimum": 0,
-        "power_output_maximum": 49,
+        "power_output_maximum": 50,
         "ramp_up_limit": 24.41964,
         "ramp_down_limit": 27.220284,
         "ramp_startup_limit": 49,
@@ -6520,6 +6523,10 @@
         "piecewise_production": [
           {
             "mw": 49,
+            "cost": 2151.00681766
+          }   ,
+          {
+            "mw": 50,
             "cost": 2151.00681766
           }
         ],
@@ -7148,7 +7155,7 @@
       "GEN204": {
         "must_run": 0,
         "power_output_minimum": 0,
-        "power_output_maximum": 168,
+        "power_output_maximum": 169,
         "ramp_up_limit": 60.4729824,
         "ramp_down_limit": 67.36379904,
         "ramp_startup_limit": 168,
@@ -7168,6 +7175,9 @@
         "piecewise_production": [
           {
             "mw": 168,
+            "cost": 10229.5074576
+          },          {
+            "mw": 169,
             "cost": 10229.5074576
           }
         ],
@@ -19108,7 +19118,7 @@
       "GEN868": {
         "must_run": 0,
         "power_output_minimum": 0,
-        "power_output_maximum": 49,
+        "power_output_maximum": 50,
         "ramp_up_limit": 23.4193944,
         "ramp_down_limit": 26.10572724,
         "ramp_startup_limit": 49,
@@ -19128,6 +19138,10 @@
         "piecewise_production": [
           {
             "mw": 49,
+            "cost": 4911.75937516
+          },
+          {
+            "mw": 50,
             "cost": 4911.75937516
           }
         ],
@@ -21052,7 +21066,7 @@
       "GEN775": {
         "must_run": 0,
         "power_output_minimum": 0,
-        "power_output_maximum": 165,
+        "power_output_maximum": 166,
         "ramp_up_limit": 53.94906,
         "ramp_down_limit": 60.104781,
         "ramp_startup_limit": 165,
@@ -21072,6 +21086,9 @@
         "piecewise_production": [
           {
             "mw": 165,
+            "cost": 20515.4979906
+          },          {
+            "mw": 166,
             "cost": 20515.4979906
           }
         ],
@@ -23781,6 +23798,10 @@
           {
             "mw": 67.3,
             "cost": 2096.45343871
+          },
+          {
+            "mw": 67.3,
+            "cost": 2096.45343871
           }
         ],
         "name": "GEN133"
@@ -24944,7 +24965,7 @@
       "GEN867": {
         "must_run": 0,
         "power_output_minimum": 0,
-        "power_output_maximum": 49,
+        "power_output_maximum": 50,
         "ramp_up_limit": 17.673,
         "ramp_down_limit": 19.7019,
         "ramp_startup_limit": 49,
@@ -24964,6 +24985,10 @@
         "piecewise_production": [
           {
             "mw": 49,
+            "cost": 16261.0221639
+          },
+          {
+            "mw": 50,
             "cost": 16261.0221639
           }
         ],
@@ -25532,7 +25557,7 @@
       "GEN869": {
         "must_run": 0,
         "power_output_minimum": 0,
-        "power_output_maximum": 49,
+        "power_output_maximum": 50,
         "ramp_up_limit": 19.7163456,
         "ramp_down_limit": 21.97915776,
         "ramp_startup_limit": 49,
@@ -25552,6 +25577,10 @@
         "piecewise_production": [
           {
             "mw": 49,
+            "cost": 8651.24411549
+          },
+          {
+            "mw": 50,
             "cost": 8651.24411549
           }
         ],
@@ -30920,7 +30949,7 @@
       "GEN774": {
         "must_run": 0,
         "power_output_minimum": 0,
-        "power_output_maximum": 165,
+        "power_output_maximum": 166,
         "ramp_up_limit": 57.9491736,
         "ramp_down_limit": 64.55592756,
         "ramp_startup_limit": 165,
@@ -30940,6 +30969,10 @@
         "piecewise_production": [
           {
             "mw": 165,
+            "cost": 17169.7476037
+          },
+          {
+            "mw": 166,
             "cost": 17169.7476037
           }
         ],
@@ -33752,7 +33785,7 @@
       "GEN936": {
         "must_run": 0,
         "power_output_minimum": 0,
-        "power_output_maximum": 161,
+        "power_output_maximum": 162,
         "ramp_up_limit": 52.7895816,
         "ramp_down_limit": 58.81438836,
         "ramp_startup_limit": 161,
@@ -33776,6 +33809,9 @@
         "piecewise_production": [
           {
             "mw": 161,
+            "cost": 6353.06381818
+          },          {
+            "mw": 162,
             "cost": 6353.06381818
           }
         ],
@@ -34368,7 +34404,7 @@
       "GEN198": {
         "must_run": 0,
         "power_output_minimum": 0,
-        "power_output_maximum": 187,
+        "power_output_maximum": 188,
         "ramp_up_limit": 60.1944024,
         "ramp_down_limit": 67.05388404,
         "ramp_startup_limit": 187,
@@ -34388,6 +34424,10 @@
         "piecewise_production": [
           {
             "mw": 187,
+            "cost": 6988.96856878
+          },
+          {
+            "mw": 188,
             "cost": 6988.96856878
           }
         ],
