@@ -998,13 +998,12 @@ if  MILP2:
     print('g_milp2= ' ,round(g_milp2, 8))
     print('lb_milp2= ',round(lb_milp2,8))
 
-    ## PENDIENTES        
+    ## PENDIENTES         
+    # \todo{Curar instancias Morales y Knueven (cambiar limites pegados y agregar piecewise cost)}   
     # \todo{probar estadísticamente que SI conviene incluir los intentos de asignación en las variables soft-fix }
     # \todo{Exportar los Costos reducidos ordenados de LR y comparar contra los lower_Pmin_Uu, se esperan coincidencias}
-    # \todo{Curar instancias Morales y Knueven (cambiar limites pegados y agregar piecewise cost)}
 
     ## PRUEBAS                    
-    # \todo{probar iniciar el solver solo con la solución inicial del constructivo Hard3}
     # \todo{Probar experimentalmente que fijar otras variables enteras V,W,DELTA no impacta mucho en la solución}         
 
     ## IDEAS    
@@ -1024,6 +1023,7 @@ if  MILP2:
     # \todo{Agregar must-run} 
     
     ## TERMINADAS        
+    # \todo{probar iniciar el solver solo con la solución inicial del constructivo Hard3}
     # \todo{Encontrar la primer solución factible del CPLEX}
     # \todo{Probar configuración enfasis feasibility vs optimality en el Solver )} 
     # \todo{Considerar no usar nada de Hard, ni cut-off, ni Soporte Binario.}
