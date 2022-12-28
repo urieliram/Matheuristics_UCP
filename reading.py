@@ -392,8 +392,8 @@ def reading(file):
 
     ## Para obtener los Psu y los Psd 
     for i in Pmin:
-        if SU[1]<Pmin[i]:
-            print('Pmin',Pmin[i],SU[1])
+        if SU[i]<Pmin[i]:
+            print('Pmin',Pmin[i],SU[i])
             
     ## Artificialmente creamos ofertas de venta de reservas    
     Crr   = []  
