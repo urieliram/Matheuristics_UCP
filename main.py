@@ -261,6 +261,7 @@ if  lbc1:
             if rhs >= e:
                 opt = True
                 print('Optimal Solution :-)')
+                print('<°|--< iter:'+str(iter)+' t_lbc1= ',round(time.time()-t_o+t_hard3,1),'z_lbc1= ',round(z_lbc1,1),char,'g_lbc1= ',round(g_lbc1,8) ) #
                 bestUB        = z_lbc1
                 SB_Uu, No_SB_Uu, __, Vv, Ww, delta = sol_lbc1.select_binary_support_Uu('lbc1')  
                 lower_Pmin_Uu = sol_lbc1.update_lower_Pmin_Uu(lower_Pmin_Uu,'lbc1')
@@ -417,6 +418,7 @@ if  lbc2:
             if rhs >= e:
                 opt = True
                 print('Optimal Solution :-)')
+                print('<°|--< iter:'+str(iter)+' t_lbc2= ',round(time.time()-t_o+t_hard3,1),'z_lbc2= ',round(z_lbc2,1),char,'g_lbc2= ',round(g_lbc2,8) ) #
                 bestUB        = z_lbc2
                 SB_Uu, No_SB_Uu, __, Vv, Ww, delta = sol_lbc2.select_binary_support_Uu('lbc2')  
                 lower_Pmin_Uu = sol_lbc2.update_lower_Pmin_Uu(lower_Pmin_Uu,'lbc2')
@@ -568,6 +570,7 @@ if  lbc3:
             if rhs >= e:
                 opt = True
                 print('Optimal Solution :-)')
+                print('<°|--< iter:'+str(iter)+' t_lbc3= ',round(time.time()-t_o+t_hard3,1),'z_lbc3= ',round(z_lbc3,1),char,'g_lbc3= ',round(g_lbc3,8) ) #
                 bestUB        = z_lbc3
                 SB_Uu, No_SB_Uu, __, Vv, Ww, delta = sol_lbc3.select_binary_support_Uu('lbc3')  
                 lower_Pmin_Uu = sol_lbc3.update_lower_Pmin_Uu(lower_Pmin_Uu,'lbc3')
@@ -744,6 +747,7 @@ if  lbc4:
             if rhs >= e:
                 opt = True
                 print('Optimal Solution :-)')
+                print('<°|--< iter:'+str(iter)+' t_lbc4= ',round(time.time()-t_o+t_hard3,1),'z_lbc4= ',round(z_lbc4,1),char,'g_lbc4= ',round(g_lbc4,8),'\n' ) # 
                 bestUB        = z_lbc4
                 SB_Uu, No_SB_Uu, __, Vv, Ww, delta = sol_lbc4.select_binary_support_Uu('lbc4')  
                 lower_Pmin_Uu = sol_lbc4.update_lower_Pmin_Uu(lower_Pmin_Uu,'lbc4')
