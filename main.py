@@ -438,7 +438,7 @@ if  lbc2:
             if rhs >= e:
                 opt = True
                 break            
-            rightbranches.append([x_[0],x_[1],x_[2]]) ## SB_Uu,No_SB_Uu,lower_Pmin_Uu
+            rightbranches.append([x_[0],x_[1],x_[2],rhs]) ## SB_Uu,No_SB_Uu,lower_Pmin_Uu
             leftbranch = []            
             if diversify:
                 cutoff    = e
@@ -589,7 +589,7 @@ if  lbc3:
             if rhs >= e:
                 opt = True
                 break            
-            rightbranches.append([x_[0],x_[1],x_[2]]) ## SB_Uu,No_SB_Uu,lower_Pmin_Uu
+            rightbranches.append([x_[0],x_[1],x_[2],rhs]) ## SB_Uu,No_SB_Uu,lower_Pmin_Uu
             leftbranch = []            
             if diversify:
                 cutoff    = e
@@ -765,7 +765,7 @@ if  lbc4:
             if rhs >= e:
                 opt = True
                 break            
-            rightbranches.append([x_[0],x_[1],x_[2]]) ## SB_Uu,No_SB_Uu,lower_Pmin_Uu
+            rightbranches.append([x_[0],x_[1],x_[2],rhs]) ## SB_Uu,No_SB_Uu,lower_Pmin_Uu
             leftbranch = []            
             if diversify:
                 cutoff    = e
