@@ -947,12 +947,12 @@ def uc(instance,option='None',
             # print('Adding ',len(rightbranches),' right-branches')
             for cut in rightbranches:
                 if cut[3] ==0:
-                    print('Adding the tabu-constraint: ∑candidates['+str(len(cut[2]))+'] + ∑SB['+str(len(cut[0]))+'] ≥ + 1')  
+                    print('Adding the tabu-constraint: ∑candidates['   +str(len(cut[2]))+'] + ∑SB['+str(len(cut[0]))+'] ≥ + 1')  
                 else:    
                     print('Adding the right-branch:    ∑candidates['   +str(len(cut[2]))+'] + ∑SB['+str(len(cut[0]))+'] ≥',cut[3],'+ 1')  
                 expr = 0      
                 ## cut[1]=No_SB_Uu   cut[2]=lower_Pmin_Uu  cut[0]=SB_Uu   
-                for f in cut[0]:  ## NUNCA SE MUEVE         ## count the changes  1 --> 0  
+                for f in cut[0]:  ## NUNCA SE MUEVE          ## count the changes  1 --> 0  
                     expr += 1 - model.u[f[0]+1,f[1]+1] 
                 for f in cut[2]:  # cut[1]  *                ## count the changes  0 --> 1 
                     expr +=     model.u[f[0]+1,f[1]+1] 
