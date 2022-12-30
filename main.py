@@ -33,10 +33,10 @@ nameins = 'uc_061.json'       ## prueba demostrativa excelente en mi PC
 ## Emphasize balanced=0; feasibility=1; optimality=2; symmetry automatic=-1; symmetry low level=1
     
 ## Cargamos parámetros de configuración desde archivo <config>
-ambiente,ruta,executable,timeconst,timefull,emphasizeMILP,symmetryMILP,lbheurMILP,strategyMILP, \
+ambiente,ruta,executable,timelp,timeconst,timefull,emphasizeMILP,symmetryMILP,lbheurMILP,strategyMILP, \
 diveMILP,heuristicfreqMILP,numericalMILP,tolfeasibilityMILP,toloptimalityMILP,     \
 emphasizeHEUR,symmetryHEUR,lbheurHEUR,strategyHEUR,gap,k,iterstop, \
-MILP,MILP2,Hard3,Harjk,lbc1,lbc2,lbc3,KS,lbc4 = util.config_env() 
+MILP2,Hard3,Harjk,lbc1,lbc2,lbc3,lbc4,KS,MILP = util.config_env() 
 # diveMILP=2; heuristicfreqMILP=50;  numericalMILP='yes'; tolfeasibilityMILP=1.0000001e-09 ;toloptimalityMILP =1.0000001e-09
 
 k_original         = k          ## Almacenamos el parámetro k de local branching
@@ -63,7 +63,7 @@ if ambiente == 'yalma':
 
 localtime = time.asctime(time.localtime(time.time()))
 
-scope = ''       ## Unit Commitment Model 
+scope = ''       ## '' = T&C Unit Commitment Model
 
 print(localtime,'Solving <'+scope+'> model ---> ---> ---> --->',nameins)
 
@@ -84,39 +84,6 @@ def checkSol(option,z_,SB_Uux,No_SB_Uux,Vvx,Wwx,deltax,dual=False,label=''):
     # SB_Uu, No_SB_Uu, __, Vv, Ww, delta = sol_check.select_binary_support_Uu('g_check')        
     return z_check
 
-## ---------------------------------------- MILP -----------------------------------------------------
-## Solve as a MILP
-if  MILP:  
-    print('\MILP starts')
-    fpheurMILP   = 1     ## Do not generate flow path cuts=-1 ; Automatic=0(CPLEX choose); moderately =1; aggressively=2
-    rinsheurMILP = 50    ## Automatic=0 (CPLEX choose); None: do not apply RINS heuristic=-1;  Frequency to apply RINS heuristic=Any positive integer 
-    cutoff   = e 
-    t_o      = time.time() 
-    model,__ = uc_Co.uc(instance,option='Milp',nameins=nameins[0:6],mode='Tight',scope=scope)
-    sol_milp = Solution(model=model,nameins=nameins[0:6],env=ambiente,executable=executable,
-                        gap=gap,cutoff=cutoff,timelimit=timefull,tee=False,tofiles=False,
-                        emphasize=emphasizeMILP,symmetry=symmetryMILP,lbheur=lbheurMILP,strategy=strategyMILP,
-                        dive=diveMILP,heuristicfreq=heuristicfreqMILP,numerical=numericalMILP,
-                        tolfeasibility=tolfeasibilityMILP,toloptimality=toloptimalityMILP,   
-                        fpheur=fpheurMILP, rinsheur=rinsheurMILP,                                           
-                        exportLP=False,option='Milp',scope=scope)
-    z_milp, g_milp = sol_milp.solve_problem()
-    t_milp         = time.time() - t_o
-    
-    ## Actualizamos el tiempo de las heurísticas al que ocupó el MILP (si es que encontró un óptimo o terminó por tiempo)
-    timefull = t_milp
-    try:
-        lb_milp  = sol_milp.lower_bound
-    except Exception as err:
-        temp = 0 #print(err)
-        
-    lb_best  = max(0,lb_milp)
-    g_milp   = util.igap(lb_best,z_milp)
-    print('t_milp= ',round(t_milp,1))
-    print('z_milp= ',round(z_milp,1))
-    print('g_milp= ',round(g_milp,8))
-    print('lb_milp= ',round(lb_milp,8))
-      
 if  Hard3:
     ## ----------------------------------------------- RECOVERED SOLUTION ---------------------------------------------
     ## Load LR and Hard3 storaged solutions
@@ -133,7 +100,7 @@ if  Hard3:
     else:
         t_o        = time.time() 
         model,__   = uc_Co.uc(instance,option='LR',nameins=nameins[0:6],mode='Tight',scope=scope)
-        sol_lp     = Solution(model=model,env=ambiente,executable=executable,nameins=nameins[0:6],gap=gap,timelimit=timeconst,
+        sol_lp     = Solution(model=model,env=ambiente,executable=executable,nameins=nameins[0:6],gap=gap,timelimit=timelp,
                               tee=False,tofiles=False,exportLP=False,option='LR',scope=scope)
         z_lp, g_lp = sol_lp.solve_problem() 
         t_lp       = time.time() - t_o
@@ -201,6 +168,32 @@ if  Harjk:
     print('g_harjk= ',round(g_harjk,8))
     del sol_harjk
     gc.collect()
+
+## ---------------------------------------- MILP2 -----------------------------------------------------
+## Solve as a MILP2 from a initial solution (MILP2 + Hard3)
+if  MILP2: 
+    print('\MILP2 starts') 
+    t_o      = time.time()
+    t_res    = timefull - t_hard3
+    model,__ = uc_Co.uc(instance,option='Milp2',SB_Uu=SB_Uu3,No_SB_Uu=No_SB_Uu3,V=Vv3,W=Ww3,delta=delta3,
+                        nameins=nameins[0:6],mode='Tight',scope=scope)
+    sol_milp2 = Solution(model=model,nameins=nameins[0:6],env=ambiente,executable=executable,
+                        emphasize=emphasizeHEUR,symmetry=symmetryHEUR,lbheur=lbheurHEUR,strategy=strategyHEUR,
+                        gap=gap,timelimit=t_res,tee=False,tofiles=False,
+                        exportLP=False,option='Milp2',scope=scope)
+    z_milp2, g_milp2 = sol_milp2.solve_problem()
+    t_milp2          = time.time() - t_o
+        
+    ## Actualizamos el tiempo de las heurísticas al que ocupó el MILP (si es que encontró un óptimo o terminó por tiempo)
+    #timefull = t_milp2
+    try:
+        lb_milp2  = sol_milp2.lower_bound
+    except Exception as err:
+        temp = 0 #print(err)
+    print('t_milp2= ' ,round(t_milp2, 1))
+    print('z_milp2= ' ,round(z_milp2, 1))
+    print('g_milp2= ' ,round(g_milp2, 8))
+    print('lb_milp2= ',round(lb_milp2,8))
 
 ## --------------------------------------- LOCAL BRANCHING 1 ------------------------------------------
 ## LBC COUNTINOUS VERSION with soft-fixing and restricted candidates list 
@@ -978,29 +971,37 @@ if  KS:
     
     checkSol('z_ks',z_ks,SB_Uu,No_SB_Uu,Vv,Ww,delta,'ks') ## Check feasibility (KS)
 
-## ---------------------------------------- MILP2 -----------------------------------------------------
-## Solve as a MILP2 from a initial solution (MILP2+Hard3)
-if  MILP2: 
-    print('\MILP2 starts') 
-    cutoff         = e # z_hard3
-    t_o            = time.time()
-    t_res          = timefull - t_hard3
-    model,__ = uc_Co.uc(instance,option='Milp2',SB_Uu=SB_Uu3,No_SB_Uu=No_SB_Uu3,V=Vv3,W=Ww3,delta=delta3,
-                        nameins=nameins[0:6],mode='Tight',scope=scope)
-    sol_milp2 = Solution(model=model,nameins=nameins[0:6],env=ambiente,executable=executable,
-                        emphasize=emphasizeHEUR,symmetry=symmetryHEUR,lbheur=lbheurHEUR,strategy=strategyHEUR,
-                        gap=gap,cutoff=cutoff,timelimit=t_res,tee=False,tofiles=False,
-                        exportLP=False,option='Milp2',scope=scope)
-    z_milp2, g_milp2 = sol_milp2.solve_problem()
-    t_milp2          = time.time() - t_o
+
+## ---------------------------------------- MILP -----------------------------------------------------
+## Solve as a MILP
+if  MILP:  
+    print('\MILP starts')
+    #fpheurMILP   = 1     ## Do not generate flow path cuts=-1 ; Automatic=0(CPLEX choose); moderately =1; aggressively=2
+    #rinsheurMILP = 50    ## Automatic=0 (CPLEX choose); None: do not apply RINS heuristic=-1;  Frequency to apply RINS heuristic=Any positive integer 
+    t_o      = time.time() 
+    model,__ = uc_Co.uc(instance,option='Milp',nameins=nameins[0:6],mode='Tight',scope=scope)
+    sol_milp = Solution(model=model,nameins=nameins[0:6],env=ambiente,executable=executable,
+                        gap=gap,timelimit=timefull,tee=False,tofiles=False,                                         
+                        exportLP=False,option='Milp',scope=scope)
+                        # emphasize=emphasizeMILP,symmetry=symmetryMILP,lbheur=lbheurMILP,strategy=strategyMILP,
+                        # dive=diveMILP,heuristicfreq=heuristicfreqMILP,numerical=numericalMILP,
+                        # tolfeasibility=tolfeasibilityMILP,toloptimality=toloptimalityMILP,   
+                        # fpheur=fpheurMILP, rinsheur=rinsheurMILP,  
+                        
+    z_milp, g_milp = sol_milp.solve_problem()
+    t_milp         = time.time() - t_o
     try:
-        lb_milp2  = sol_milp2.lower_bound
+        lb_milp  = sol_milp.lower_bound
     except Exception as err:
         temp = 0 #print(err)
-    print('t_milp2= ' ,round(t_milp2, 1))
-    print('z_milp2= ' ,round(z_milp2, 1))
-    print('g_milp2= ' ,round(g_milp2, 8))
-    print('lb_milp2= ',round(lb_milp2,8))
+        
+    lb_best  = max(0,lb_milp)
+    g_milp   = util.igap(lb_best,z_milp)
+    print('t_milp= ',round(t_milp,1))
+    print('z_milp= ',round(z_milp,1))
+    print('g_milp= ',round(g_milp,8))
+    print('lb_milp= ',round(lb_milp,8))
+
 
     ## PENDIENTES         
     # \todo{Curar instancias Morales y Knueven (cambiar limites pegados y agregar piecewise cost)}   
