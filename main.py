@@ -124,7 +124,7 @@ if  Hard3:
         t_o       = time.time()
         model,__  = uc_Co.uc(instance,option='Hard3',SB_Uu=SB_Uu,No_SB_Uu=No_SB_Uu,lower_Pmin_Uu=lower_Pmin_Uu,
                             nameins=nameins[0:6],mode='Tight',scope=scope)
-        sol_hard3 = Solution(model=model,env=ambiente,executable=executable,nameins=nameins[0:6],gap=gap,timelimit=timeconst-t_lp,
+        sol_hard3 = Solution(model=model,env=ambiente,executable=executable,nameins=nameins[0:6],gap=gap,timelimit=timeconst,
                             tee=False,tofiles=False,option='Hard3',scope=scope,
                             emphasize=emphasizeHEUR,symmetry=symmetryHEUR,lbheur=lbheurHEUR,strategy=strategyHEUR)
         z_hard3, g_hard3 = sol_hard3.solve_problem()
