@@ -36,7 +36,7 @@ nameins = 'uc_061.json'       ## prueba demostrativa excelente en mi PC
 ambiente,ruta,executable,timelp,timeconst,timefull,emphasizeMILP,symmetryMILP,lbheurMILP,strategyMILP, \
 diveMILP,heuristicfreqMILP,numericalMILP,tolfeasibilityMILP,toloptimalityMILP,     \
 emphasizeHEUR,symmetryHEUR,lbheurHEUR,strategyHEUR,gap,k,iterstop, \
-MILP2,Hard3,Harjk,lbc1,lbc2,lbc3,lbc4,KS,MILP = util.config_env() 
+Hard3,Harjk,MILP2,lbc1,lbc2,lbc3,lbc4,KS,MILP = util.config_env() 
 # diveMILP=2; heuristicfreqMILP=50;  numericalMILP='yes'; tolfeasibilityMILP=1.0000001e-09 ;toloptimalityMILP =1.0000001e-09
 
 k_original         = k          ## Almacenamos el parámetro k de local branching
