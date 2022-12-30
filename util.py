@@ -70,9 +70,9 @@ def config_env():
         k                  = df['k'                  ].values[0]
         iterstop           = df['iterstop'           ].values[0]
         
-        MILP2              = df['MILP2'              ].values[0]
         Hard3              = df['Hard3'              ].values[0]
         Harjk              = df['Harjk'              ].values[0]
+        MILP2              = df['MILP2'              ].values[0]
         lbc1               = df['lbc1'               ].values[0]
         lbc2               = df['lbc2'               ].values[0]
         lbc3               = df['lbc3'               ].values[0]
@@ -91,7 +91,7 @@ def config_env():
             emphasizeMILP,symmetryMILP,lbheurMILP,strategyMILP,                             \
             diveMILP,heuristicfreqMILP,numericalMILP,tolfeasibilityMILP,toloptimalityMILP,  \
             emphasizeHEUR,symmetryHEUR,lbheurHEUR,strategyHEUR,                             \
-            gap,k,iterstop,MILP2,Hard3,Harjk,lbc1,lbc2,lbc3,lbc4,KS,MILP
+            gap,k,iterstop,Hard3,Harjk,MILP2,lbc1,lbc2,lbc3,lbc4,KS,MILP
 
 def trunc(values, decs=1):
     return np.trunc(values*10**decs)/(10**decs)
