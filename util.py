@@ -39,60 +39,6 @@ def imprime_sol(model,sol):
     P  = dict(zip(model.T, sol.getP()))
     R  = dict(zip(model.T, sol.getR()))    
 
-def config_env():
-    #ambiente='localPC',ruta='instances/',executable='/home/uriel/cplex1210/cplex/bin/x86-64_linux/cplex3'
-    df = pd.read_csv('config.con')    
-    if len(df.index)  == 1:
-        ambiente           = df['ambiente'           ].values[0]
-        ruta               = df['ruta'               ].values[0]
-        executable         = df['executable'         ].values[0]
-        timelp             = df['timelp'             ].values[0]
-        timeconst          = df['timeconst'          ].values[0]
-        timefull           = df['timefull'           ].values[0]
-        
-        emphasizeMILP      = df['emphasysmilp'       ].values[0]
-        symmetryMILP       = df['symmetrymilp'       ].values[0]
-        lbheurMILP         = df['lbheurmilp'         ].values[0]
-        strategyMILP       = df['strategymilp'       ].values[0]
-        
-        diveMILP           = df['divemilp'           ].values[0]
-        heuristicfreqMILP  = df['heuristicfreqmilp'  ].values[0]
-        numericalMILP      = df['numericalmilp'      ].values[0]
-        tolfeasibilityMILP = df['tolfeasibilitymilp' ].values[0]
-        toloptimalityMILP  = df['toloptimalitymilp'  ].values[0]
-        
-        emphasizeHEUR      = df['emphasysheur'       ].values[0]
-        symmetryHEUR       = df['symmetryheur'       ].values[0]
-        lbheurHEUR         = df['lbheurheur'         ].values[0]
-        strategyHEUR       = df['strategyheur'       ].values[0]
-        
-        gap                = df['gap'                ].values[0]
-        k                  = df['k'                  ].values[0]
-        iterstop           = df['iterstop'           ].values[0]
-        
-        Hard3              = df['Hard3'              ].values[0]
-        Harjk              = df['Harjk'              ].values[0]
-        MILP2              = df['MILP2'              ].values[0]
-        lbc1               = df['lbc1'               ].values[0]
-        lbc2               = df['lbc2'               ].values[0]
-        lbc3               = df['lbc3'               ].values[0]
-        lbc4               = df['lbc4'               ].values[0]      
-        KS                 = df['KS'                 ].values[0]  
-        MILP               = df['MILP'               ].values[0]
-
-    else:
-        print('!!! Problema al cargar la configuración. Verifique el ')
-        print('formato y rutas del archivo <config>, algo como esto:')
-        print('ambiente,ruta,executable,timelp,timeconst,timefull, emphasysmilp,symmetrymilp,lbheurmilp,strategymilp, divemilp,heuristicfreqmilp,numericalmilp,tolfeasibilitymilp,toloptimalitymilp, emphasysheur,symmetryheur,lbheurheur,strategyheur, gap,k,iterstop, MILP,MILP2,Hard3,Harjk,FP,lbc1,lbc2,lbc3,KS')
-        print('yalma,instances/,/home/uriel/cplex1210/cplex/bin/x86-64_linux/cplex,1200,7200,1,1,yes,3, 1,0,no,3, 0.0001,20,30')
-        print('localPC,instances/,/home/uriel/cplex1210/cplex/bin/x86-64_linux/cplex,400,1000,1,1,yes,3, 1,0,no,3, 0.0001,20,30')
-
-    return  ambiente,ruta,executable,timelp,timeconst,timefull,                                    \
-            emphasizeMILP,symmetryMILP,lbheurMILP,strategyMILP,                             \
-            diveMILP,heuristicfreqMILP,numericalMILP,tolfeasibilityMILP,toloptimalityMILP,  \
-            emphasizeHEUR,symmetryHEUR,lbheurHEUR,strategyHEUR,                             \
-            gap,k,iterstop,Hard3,Harjk,MILP2,lbc1,lbc2,lbc3,lbc4,KS,MILP
-
 def trunc(values, decs=1):
     return np.trunc(values*10**decs)/(10**decs)
 
@@ -189,16 +135,88 @@ def delete_tabu(rightbranches):
     return(rightbranches)
 
 
-def whatsapp(number='+52xxxxxx',message=''):
-    import pywhatkit
-    import time
-    t = time.localtime()
-    H = time.strftime("%H",t)
-    M = time.strftime("%M",t)
-    message = str(H)+':'+str(M)+' '+message
+def config_env(filec='config.con'):
+    #ambiente='localPC',ruta='instances/',executable='/home/uriel/cplex1210/cplex/bin/x86-64_linux/cplex3'
+    # Set column as Index
     try:
-        pywhatkit.sendwhatmsg(number,message,int(H),int(M)+1)
-        print('Whats Successfully Sent!','to',number)
+        df = pd.read_csv(filec, index_col='index')
+        ambiente           = df.loc['ambiente'           ].values[0]
+        ruta               = df.loc['ruta'               ].values[0]
+        executable         = df.loc['executable'         ].values[0]
+        timelp             = float(df.loc['timelp'       ].values[0])
+        timeconst          = float(df.loc['timeconst'    ].values[0])
+        timefull           = float(df.loc['timefull'     ].values[0])
+        
+        emphasizeMILP      = int(df.loc['emphasysmilp'       ].values[0])
+        symmetryMILP       = int(df.loc['symmetrymilp'       ].values[0])
+        lbheurMILP         = str(df.loc['lbheurmilp'         ].values[0])
+        strategyMILP       = int(df.loc['strategymilp'       ].values[0])
+        
+        diveMILP           = int(df.loc['divemilp'           ].values[0])
+        heuristicfreqMILP  = int(df.loc['heuristicfreqmilp'  ].values[0])
+        numericalMILP      = str(df.loc['numericalmilp'      ].values[0])
+        tolfeasibilityMILP = float(df.loc['tolfeasibilitymilp' ].values[0])
+        toloptimalityMILP  = float(df.loc['toloptimalitymilp'  ].values[0])
+        
+        emphasizeHEUR      = int(df.loc['emphasysheur'       ].values[0])
+        symmetryHEUR       = int(df.loc['symmetryheur'       ].values[0])
+        lbheurHEUR         = str(df.loc['lbheurheur'         ].values[0])
+        strategyHEUR       = int(df.loc['strategyheur'       ].values[0])
+        
+        gap                = float(df.loc['gap'              ].values[0])
+        k                  = int(df.loc['k'                  ].values[0])
+        iterstop           = int(df.loc['iterstop'           ].values[0])
+        
+        Hard3              = df.loc['Hard3'              ].values[0]
+        Harjk              = df.loc['Harjk'              ].values[0]
+        MILP2              = df.loc['MILP2'              ].values[0]
+        lbc1               = df.loc['lbc1'               ].values[0]
+        lbc2               = df.loc['lbc2'               ].values[0]
+        lbc3               = df.loc['lbc3'               ].values[0]
+        lbc4               = df.loc['lbc4'               ].values[0]      
+        KS                 = df.loc['KS'                 ].values[0]  
+        MILP               = df.loc['MILP'               ].values[0]
     except:
-        print('pywhatkit Error!')
+        print('!!! Problema al cargar la configuración. Verifique el ')
+        print('formato y rutas del archivo <config.con>, algo como esto en columnas:')
+        print('ambiente,ruta,executable,timelp,timeconst,timefull, emphasysmilp,symmetrymilp,lbheurmilp,strategymilp, divemilp,heuristicfreqmilp,numericalmilp,tolfeasibilitymilp,toloptimalitymilp, emphasysheur,symmetryheur,lbheurheur,strategyheur, gap,k,iterstop, MILP,MILP2,Hard3,Harjk,FP,lbc1,lbc2,lbc3,KS')
+        print('yalma,instances/,/home/uriel/cplex1210/cplex/bin/x86-64_linux/cplex,1200,7200,1,1,yes,3, 1,0,no,3, 0.0001,20,30')
+        print('localPC,instances/,/home/uriel/cplex1210/cplex/bin/x86-64_linux/cplex,400,1000,1,1,yes,3, 1,0,no,3, 0.0001,20,30')
+    return  ambiente,ruta,executable,timelp,timeconst,timefull,                                    \
+            emphasizeMILP,symmetryMILP,lbheurMILP,strategyMILP,                             \
+            diveMILP,heuristicfreqMILP,numericalMILP,tolfeasibilityMILP,toloptimalityMILP,  \
+            emphasizeHEUR,symmetryHEUR,lbheurHEUR,strategyHEUR,                             \
+            gap,k,iterstop,Hard3,Harjk,MILP2,lbc1,lbc2,lbc3,lbc4,KS,MILP
+# index,value
+# ambiente,yalma
+# ruta,instances/
+# executable,/opt/ibm/ILOG/CPLEX_Studio221/cplex/bin/x86-64_linux/cplex
+# timelp,2300
+# timeconst,900
+# timefull,3800
+# emphasysmilp,1
+# symmetrymilp,1
+# lbheurmilp,yes
+# strategymilp,3
+# divemilp,2
+# heuristicfreqmilp,50
+# numericalmilp,yes
+# tolfeasibilitymilp,1.00E-09
+# toloptimalitymilp,1.00E-09
+# emphasysheur,1
+# symmetryheur,0
+# lbheurheur,no
+# strategyheur,3
+# gap,0.0
+# k,20
+# iterstop,999
+# Hard3,True
+# Harjk,True
+# MILP2,True
+# lbc1,True
+# lbc2,True
+# lbc3,True
+# lbc4,True
+# KS,True
+# MILP,True
 

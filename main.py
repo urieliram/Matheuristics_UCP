@@ -37,7 +37,6 @@ ambiente,ruta,executable,timelp,timeconst,timefull,emphasizeMILP,symmetryMILP,lb
 diveMILP,heuristicfreqMILP,numericalMILP,tolfeasibilityMILP,toloptimalityMILP,     \
 emphasizeHEUR,symmetryHEUR,lbheurHEUR,strategyHEUR,gap,k,iterstop, \
 Hard3,Harjk,MILP2,lbc1,lbc2,lbc3,lbc4,KS,MILP = util.config_env() 
-# diveMILP=2; heuristicfreqMILP=50;  numericalMILP='yes'; tolfeasibilityMILP=1.0000001e-09 ;toloptimalityMILP =1.0000001e-09
 
 k_original         = k          ## Almacenamos el parámetro k de local branching
 timeconst_original = timeconst
@@ -151,7 +150,7 @@ if  Harjk:
     t_o       = time.time()
     model,__  = uc_Co.uc(instance,option='Harjk',SB_Uu=SB_Uu,No_SB_Uu=No_SB_Uu,lower_Pmin_Uu=lower_Pmin_Uu,
                          nameins=nameins[0:6],mode='Tight',scope=scope)
-    sol_harjk = Solution(model=model,env=ambiente,executable=executable,nameins=nameins[0:6],gap=gap,timelimit=timeconst-t_lp,
+    sol_harjk = Solution(model=model,env=ambiente,executable=executable,nameins=nameins[0:6],gap=gap,timelimit=timeconst,
                         emphasize=emphasizeHEUR,symmetry=symmetryHEUR,lbheur=lbheurHEUR,strategy=strategyHEUR,
                         tee=False,tofiles=False,option='Harjk',scope=scope)     
     try:
@@ -182,7 +181,7 @@ if  MILP2:
                         gap=gap,timelimit=t_res,tee=False,tofiles=False,
                         exportLP=False,option='Milp2',scope=scope)
     z_milp2, g_milp2 = sol_milp2.solve_problem()
-    t_milp2          = time.time() - t_o
+    t_milp2          = time.time() - t_o + t_hard3
         
     ## Actualizamos el tiempo de las heurísticas al que ocupó el MILP (si es que encontró un óptimo o terminó por tiempo)
     #timefull = t_milp2
