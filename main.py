@@ -100,7 +100,7 @@ if  Hard3:
     else:
         t_o        = time.time() 
         model,__   = uc_Co.uc(instance,option='LR',nameins=nameins[0:6],mode='Tight',scope=scope)
-        sol_lp     = Solution(model=model,env=ambiente,executable=executable,nameins=nameins[0:6],gap=gap,timelimit=timelp,lpmethod=5,
+        sol_lp     = Solution(model=model,env=ambiente,executable=executable,nameins=nameins[0:6],gap=gap,timelimit=timelp,lpmethod=0,
                               tee=False,tofiles=False,exportLP=False,option='LR',scope=scope)
         z_lp, g_lp = sol_lp.solve_problem() 
         t_lp       = time.time() - t_o
