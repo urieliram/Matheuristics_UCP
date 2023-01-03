@@ -140,42 +140,42 @@ def config_env(filec='config.con'):
     # Set column as Index
     try:
         df = pd.read_csv(filec, index_col='index')
-        ambiente           = df.loc['ambiente'           ].values[0]
-        ruta               = df.loc['ruta'               ].values[0]
-        executable         = df.loc['executable'         ].values[0]
-        timelp             = float(df.loc['timelp'       ].values[0])
-        timeconst          = float(df.loc['timeconst'    ].values[0])
-        timefull           = float(df.loc['timefull'     ].values[0])
+        ambiente           = df.loc['ambiente'                ].values[0]
+        ruta               = df.loc['ruta'                    ].values[0]
+        executable         = df.loc['executable'              ].values[0]
+        timelp             = float(df.loc['timelp'            ].values[0])
+        timeconst          = float(df.loc['timeconst'         ].values[0])
+        timefull           = float(df.loc['timefull'          ].values[0])
         
-        emphasizeMILP      = int(df.loc['emphasysmilp'       ].values[0])
-        symmetryMILP       = int(df.loc['symmetrymilp'       ].values[0])
-        lbheurMILP         = str(df.loc['lbheurmilp'         ].values[0])
-        strategyMILP       = int(df.loc['strategymilp'       ].values[0])
+        emphasizeMILP      = int(df.loc['emphasysmilp'        ].values[0])
+        symmetryMILP       = int(df.loc['symmetrymilp'        ].values[0])
+        lbheurMILP         = str(df.loc['lbheurmilp'          ].values[0])
+        strategyMILP       = int(df.loc['strategymilp'        ].values[0])
         
-        diveMILP           = int(df.loc['divemilp'           ].values[0])
-        heuristicfreqMILP  = int(df.loc['heuristicfreqmilp'  ].values[0])
-        numericalMILP      = str(df.loc['numericalmilp'      ].values[0])
-        tolfeasibilityMILP = float(df.loc['tolfeasibilitymilp' ].values[0])
-        toloptimalityMILP  = float(df.loc['toloptimalitymilp'  ].values[0])
+        diveMILP           = int(df.loc['divemilp'            ].values[0])
+        heuristicfreqMILP  = int(df.loc['heuristicfreqmilp'   ].values[0])
+        numericalMILP      = str(df.loc['numericalmilp'       ].values[0])
+        tolfeasibilityMILP = float(df.loc['tolfeasibilitymilp'].values[0])
+        toloptimalityMILP  = float(df.loc['toloptimalitymilp' ].values[0])
         
-        emphasizeHEUR      = int(df.loc['emphasysheur'       ].values[0])
-        symmetryHEUR       = int(df.loc['symmetryheur'       ].values[0])
-        lbheurHEUR         = str(df.loc['lbheurheur'         ].values[0])
-        strategyHEUR       = int(df.loc['strategyheur'       ].values[0])
+        emphasizeHEUR      = int(df.loc['emphasysheur'        ].values[0])
+        symmetryHEUR       = int(df.loc['symmetryheur'        ].values[0])
+        lbheurHEUR         = str(df.loc['lbheurheur'          ].values[0])
+        strategyHEUR       = int(df.loc['strategyheur'        ].values[0])
         
-        gap                = float(df.loc['gap'              ].values[0])
-        k                  = int(df.loc['k'                  ].values[0])
-        iterstop           = int(df.loc['iterstop'           ].values[0])
+        gap                = float(df.loc['gap'               ].values[0])
+        k                  = int(df.loc['k'                   ].values[0])
+        iterstop           = int(df.loc['iterstop'            ].values[0])
         
-        Hard3              = df.loc['Hard3'              ].values[0]
-        Harjk              = df.loc['Harjk'              ].values[0]
-        MILP2              = df.loc['MILP2'              ].values[0]
-        lbc1               = df.loc['lbc1'               ].values[0]
-        lbc2               = df.loc['lbc2'               ].values[0]
-        lbc3               = df.loc['lbc3'               ].values[0]
-        lbc4               = df.loc['lbc4'               ].values[0]      
-        KS                 = df.loc['KS'                 ].values[0]  
-        MILP               = df.loc['MILP'               ].values[0]
+        Hard3              = df.loc['Hard3'                   ].values[0] == 'True'
+        Harjk              = df.loc['Harjk'                   ].values[0] == 'True'
+        MILP2              = df.loc['MILP2'                   ].values[0] == 'True'
+        lbc1               = df.loc['lbc1'                    ].values[0] == 'True'
+        lbc2               = df.loc['lbc2'                    ].values[0] == 'True'
+        lbc3               = df.loc['lbc3'                    ].values[0] == 'True'
+        lbc4               = df.loc['lbc4'                    ].values[0] == 'True'
+        KS                 = df.loc['KS'                      ].values[0] == 'True'
+        MILP               = df.loc['MILP'                    ].values[0] == 'True'
     except:
         print('!!! Problema al cargar la configuración. Verifique el ')
         print('formato y rutas del archivo <config.con>, algo como esto en columnas:')
