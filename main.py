@@ -95,11 +95,11 @@ if  Hard3:
         lb_best = max(z_lp,lb_best)
     
     ## ----------------------------------------------- LINEAR RELAXATION ---------------------------------------------
-    ## Relax as LP and solve it
+    ## Relax as LP and solve it  lpmethod=Barrier (4)
     else:
         t_o        = time.time() 
         model,__   = uc_Co.uc(instance,option='LR',nameins=nameins[0:6],mode='Tight',scope=scope)
-        sol_lp     = Solution(model=model,env=ambiente,executable=executable,nameins=nameins[0:6],gap=gap,timelimit=timelp,
+        sol_lp     = Solution(model=model,env=ambiente,executable=executable,nameins=nameins[0:6],gap=gap,timelimit=timelp,lpmethod=4,
                               tee=False,tofiles=False,exportLP=False,option='LR',scope=scope)
         z_lp, g_lp = sol_lp.solve_problem() 
         t_lp       = time.time() - t_o
@@ -980,9 +980,9 @@ if  MILP:
     t_o      = time.time() 
     model,__ = uc_Co.uc(instance,option='Milp',nameins=nameins[0:6],mode='Tight',scope=scope)
     sol_milp = Solution(model=model,nameins=nameins[0:6],env=ambiente,executable=executable,
-                        gap=gap,timelimit=timefull,tee=False,tofiles=False,                                         
+                        gap=gap,timelimit=timefull,tee=False,tofiles=False,strategy=strategyMILP,                                         
                         exportLP=False,option='Milp',scope=scope)
-                        # emphasize=emphasizeMILP,symmetry=symmetryMILP,lbheur=lbheurMILP,strategy=strategyMILP,
+                        # emphasize=emphasizeMILP,symmetry=symmetryMILP,lbheur=lbheurMILP,
                         # dive=diveMILP,heuristicfreq=heuristicfreqMILP,numerical=numericalMILP,
                         # tolfeasibility=tolfeasibilityMILP,toloptimality=toloptimalityMILP,   
                         # fpheur=fpheurMILP, rinsheur=rinsheurMILP,  
