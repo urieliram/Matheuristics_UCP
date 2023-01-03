@@ -95,11 +95,12 @@ if  Hard3:
         lb_best = max(z_lp,lb_best)
     
     ## ----------------------------------------------- LINEAR RELAXATION ---------------------------------------------
-    ## Relax as LP and solve it  lpmethod=Barrier (4)
+    ## Relax as LP and solve it  
+    ## lpmethod=Barrier (4)0=Automatic; 1,2= Primal and dual simplex; 3=Sifting; 4=Barrier, 5=Concurrent (Dual,Barrier, and Primal in opportunistic parallel mode; Dual and Barrier in deterministic parallel mode)
     else:
         t_o        = time.time() 
         model,__   = uc_Co.uc(instance,option='LR',nameins=nameins[0:6],mode='Tight',scope=scope)
-        sol_lp     = Solution(model=model,env=ambiente,executable=executable,nameins=nameins[0:6],gap=gap,timelimit=timelp,lpmethod=4,
+        sol_lp     = Solution(model=model,env=ambiente,executable=executable,nameins=nameins[0:6],gap=gap,timelimit=timelp,lpmethod=5,
                               tee=False,tofiles=False,exportLP=False,option='LR',scope=scope)
         z_lp, g_lp = sol_lp.solve_problem() 
         t_lp       = time.time() - t_o
@@ -974,51 +975,55 @@ if  KS:
 ## ---------------------------------------- MILP -----------------------------------------------------
 ## Solve as a MILP
 if  MILP:  
-    print('\MILP starts')
-    #fpheurMILP   = 1     ## Do not generate flow path cuts=-1 ; Automatic=0(CPLEX choose); moderately =1; aggressively=2
-    #rinsheurMILP = 50    ## Automatic=0 (CPLEX choose); None: do not apply RINS heuristic=-1;  Frequency to apply RINS heuristic=Any positive integer 
-    t_o      = time.time() 
-    model,__ = uc_Co.uc(instance,option='Milp',nameins=nameins[0:6],mode='Tight',scope=scope)
-    sol_milp = Solution(model=model,nameins=nameins[0:6],env=ambiente,executable=executable,
-                        gap=gap,timelimit=timefull,tee=False,tofiles=False,strategy=strategyMILP,                                         
-                        exportLP=False,option='Milp',scope=scope)
-                        # emphasize=emphasizeMILP,symmetry=symmetryMILP,lbheur=lbheurMILP,
-                        # dive=diveMILP,heuristicfreq=heuristicfreqMILP,numerical=numericalMILP,
-                        # tolfeasibility=tolfeasibilityMILP,toloptimality=toloptimalityMILP,   
-                        # fpheur=fpheurMILP, rinsheur=rinsheurMILP,  
-                        
-    z_milp, g_milp = sol_milp.solve_problem()
-    t_milp         = time.time() - t_o
     try:
-        lb_milp  = sol_milp.lower_bound
-    except Exception as err:
-        temp = 0 #print(err)
-        
-    lb_best  = max(0,lb_milp)
-    g_milp   = util.igap(lb_best,z_milp)
-    print('t_milp= ',round(t_milp,1))
-    print('z_milp= ',round(z_milp,1))
-    print('g_milp= ',round(g_milp,8))
+        print('\MILP starts')
+        #fpheurMILP   = 1     ## Do not generate flow path cuts=-1 ; Automatic=0(CPLEX choose); moderately =1; aggressively=2
+        #rinsheurMILP = 50    ## Automatic=0 (CPLEX choose); None: do not apply RINS heuristic=-1;  Frequency to apply RINS heuristic=Any positive integer 
+        t_o      = time.time() 
+        model,__ = uc_Co.uc(instance,option='Milp',nameins=nameins[0:6],mode='Tight',scope=scope)
+        sol_milp = Solution(model=model,nameins=nameins[0:6],env=ambiente,executable=executable,
+                            gap=gap,timelimit=timefull,tee=False,tofiles=False,strategy=strategyMILP,                                         
+                            exportLP=False,option='Milp',scope=scope)
+                            # emphasize=emphasizeMILP,symmetry=symmetryMILP,lbheur=lbheurMILP,
+                            # dive=diveMILP,heuristicfreq=heuristicfreqMILP,numerical=numericalMILP,
+                            # tolfeasibility=tolfeasibilityMILP,toloptimality=toloptimalityMILP,   
+                            # fpheur=fpheurMILP, rinsheur=rinsheurMILP,  
+                            
+        z_milp, g_milp = sol_milp.solve_problem()
+        t_milp         = time.time() - t_o
+        try:
+            lb_milp  = sol_milp.lower_bound
+        except Exception as err:
+            temp = 0 #print(err)
+            
+        lb_best  = max(0,lb_milp)
+        g_milp   = util.igap(lb_best,z_milp)
+    except:
+        print('!!! Error, something went wrong in MILP')
+    print('t_milp=  ',round(t_milp,1))
+    print('z_milp=  ',round(z_milp,1))
+    print('g_milp=  ',round(g_milp,8))
     print('lb_milp= ',round(lb_milp,8))
 
-
     ## PENDIENTES         
-    # \todo{Curar instancias Morales y Knueven (cambiar limites pegados y agregar piecewise cost)}   
-    # \todo{probar estadísticamente que SI conviene incluir los intentos de asignación en las variables soft-fix }
     # \todo{Exportar los Costos reducidos ordenados de LR y comparar contra los lower_Pmin_Uu, se esperan coincidencias}
 
-    ## PRUEBAS                    
+    ## PRUEBAS                
+    # \todo{probar estadísticamente que SI conviene incluir los intentos de asignación en las variables soft-fix }
     # \todo{Probar experimentalmente que fijar otras variables enteras V,W,DELTA no impacta mucho en la solución}         
+    # \todo{Probar empiricamente tamaños del n_kernel (!!! al parecer influye mucho en el tiempo de búsqueda)} 
 
-    ## IDEAS    
+    ## IDEAS        
+    # \todo{Hacer un Tabu search con las LBC}
     # \todo{Un KS con buckets de tamaños no iguales usando optimal binning}       
-    # \todo{Probar modificar el tamaño de las variables soft-fix de 90% al 95%}
-    # \todo{Incluir restricciones de generadores hidro}      
-    # \todo{Un KS relajando y fijando grupos de variables a manera de buckets}          
+    # \todo{APROVECHAR las infactibilidades de KS para encontrar cotas inferiores}  
+    # \todo{Incluir restricciones de generadores hidro}          
+    # \todo{Un KS relajando y fijando grupos de variables a manera de buckets en generadores agrupados geogràficamente}          
+    # \todo{Probar modificar el tamaño de las variables soft-fix de 90% a: 95% y 85%}
     # \todo{Hacer un VNS o un VND con movimientos definidos con las LBC}
-    
+    # \todo{Probar configuración enfasis feasibility vs optimality en el Solver )} 
+
     ## DESCARTES                    
-    # \todo{Probar tamaños del n_kernel (!!! al parecer influye mucho en el tiempo de búsqueda)} 
     # \todo{Probar cambiar el valor de k en nuevas iteraciones con una búsqueda local (un LBC completo de A.Lodi)}   
     # \todo{Un movimiento en la búsqueda local puede ser cambiar la asignación del costo de arranque en un periodo adelante o atras para algunos generadores} 
     # \todo{Podrian fijarse todas las variables (u,v,w y delta) relacionadas con los generadores que se escogen para ser fijados}
@@ -1026,10 +1031,10 @@ if  MILP:
     # \todo{Calcular el tamaño del slack del subset BS (Soporte binario)}
     # \todo{Agregar must-run} 
     
-    ## TERMINADAS        
+    ## TERMINADAS            
+    # \todo{Curar instancias Morales y Knueven (cambiar limites pegados y agregar piecewise cost)}   
     # \todo{probar iniciar el solver solo con la solución inicial del constructivo Hard3}
     # \todo{Encontrar la primer solución factible del CPLEX}
-    # \todo{Probar configuración enfasis feasibility vs optimality en el Solver )} 
     # \todo{Considerar no usar nada de Hard, ni cut-off, ni Soporte Binario.}
     # \todo{Usar la solución factible hard como warm-start} 
     # \todo{Probar el efecto de la cota obtenida del hard-fix} 

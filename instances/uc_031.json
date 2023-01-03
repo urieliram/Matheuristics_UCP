@@ -1,6 +1,6 @@
 {
     "time_periods": 120,
-    "factor_demand":1,
+    "factor_demand":0.9,
     "demand": [
         74906	,
         71193	,
