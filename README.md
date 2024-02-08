@@ -1,4 +1,4 @@
-# Exploring Innovative Matheuristic Methods for Unit commitment problem: A Comparative Evaluation.
+# A Kernel Search Matheuristic for a Thermal Unit Commitment Problem
 ---
 + [Introducción](#introduccion)
 + [Implementación](#implementación)
@@ -9,13 +9,13 @@
 ---
 
 ## Introducción
-The Unit Commitment Problem (UCP) is a critical challenge in the electrical power systems operation schedule. It involves determining the optimal scheduling of power generation units over a specific time horizon, considering various constraints and objectives. This capsule delves into matheuristic methods, which combine mathematical optimization and heuristic search algorithms. Specifically, we will explore five matheuristic methods that utilize local bifurcation techniques from fischetti2003 and kernel search from Angelini 2013. Additionally, we will present an empirical evaluation comparing the performance of these methods with that of a solver. The evaluation focuses on solving a challenging model near the convex vestibule, utilizing instances derived from the Morales-Spain201 dataset. Finally, we will delve into the characteristics of the UCP, discuss the application of matheuristic methods, and highlight their potential to provide efficient and high-quality solutions.
+The Unit Commitment Problem (UCP) is a critical challenge in the electrical power systems operation schedule. It involves determining the optimal scheduling of power generation units over a specific time horizon, considering various constraints and objectives. This capsule delves into matheuristic methods, which combine mathematical optimization and heuristic search algorithms. Specifically, we will explore five matheuristic methods that utilize local bifurcation techniques from fischetti2003 and kernel search from Angelini 2013. Additionally, we will present an empirical evaluation comparing the performance of these methods with that of a solver. The evaluation focuses on solving a challenging model near the convex vestibule, utilizing instances derived from the Morales-Spain2013 dataset. Finally, we will delve into the characteristics of the UCP, discuss the application of matheuristic methods, and highlight their potential to provide efficient and high-quality solutions.
 
 
 ## Implementación
-The code of the methods proposed are in [main.py](main.py). The results can be found on [Figures_TC_UC2.ipynb](Figures_TC_UC2.ipynb). The MILP model of UCP is in [co_Co.py](co_Co.py). The generator of instances is on [instances_gen.ipynb](instances_gen.ipynb). 
+The code of the methods proposed is in [main.py](main.py). The results can be found in [Figures_TC_UC2.ipynb](Figures_TC_UC2.ipynb). The MILP model of UCP is in [co_Co.py](co_Co.py). The generator of instances is on [instances_gen.ipynb](instances_gen.ipynb). 
 
-El principal componente de este método es un modelo MILP fuerte y compacto **A Tight and Compact MILP** basado en [Knueven2020](https://pubsonline.informs.org/doi/10.1287/ijoc.2019.0944).
+The main component of this method is a strong and compact MILP model **A Tight and Compact MILP** based on [Knueven2020](https://pubsonline.informs.org/doi/10.1287/ijoc.2019.0944).
 
 ### Clases
 
@@ -23,9 +23,9 @@ El principal componente de este método es un modelo MILP fuerte y compacto **A 
 ## Assesment
 (Comparative Evaluation: Assessing Method Performance)
 
-To evaluate the effectiveness of the proposed matheuristic methods, we conducted a comprehensive empirical evaluation. The evaluation employed a tight and compact model situated close to the convex vestibule, a challenging region of the search space. The model featured a limited number of variables and constraints, ensuring a rigorous test for the matheuristic methods.
+To evaluate the effectiveness of the proposed matheuristic methods, we conducted a comprehensive empirical evaluation. The evaluation employed a tight and compact model situated close to the convex hall, a challenging region of the search space. The model featured a limited number of variables and constraints, ensuring a rigorous test for the matheuristic methods.
 
-To construct difficult instances for evaluation, we utilized instances derived from the Morales-Spain201 dataset. These instances are known for their complexity and provide a suitable benchmark for assessing the performance of the proposed methods.
+To construct difficult instances for evaluation, we utilized instances derived from the Morales-Spain2013 dataset. These instances are known for their complexity and provide a suitable benchmark for assessing the performance of the proposed methods.
 
 ### Instancias
 The instances in JSON format are in the folder [instances/](instances/).
