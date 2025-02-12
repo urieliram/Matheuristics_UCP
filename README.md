@@ -9,7 +9,7 @@
 ---
 
 ## Introducción
-The Unit Commitment Problem (UCP) is a critical challenge in the electrical power systems operation schedule. It involves determining the optimal scheduling of power generation units over a specific time horizon, considering various constraints and objectives. This capsule delves into matheuristic methods, which combine mathematical optimization and heuristic search algorithms. Specifically, we will explore five matheuristic methods that utilize local bifurcation techniques from fischetti2003 and kernel search from Angelini 2013. Additionally, we will present an empirical evaluation comparing the performance of these methods with that of a solver. The evaluation focuses on solving a challenging model near the convex vestibule, utilizing instances derived from the Morales-Spain2013 dataset. Finally, we will delve into the characteristics of the UCP, discuss the application of matheuristic methods, and highlight their potential to provide efficient and high-quality solutions.
+The Unit Commitment Problem (UCP) is a critical challenge in the electrical power systems operation schedule. It involves determining the optimal scheduling of power generation units over a specific time horizon, considering various constraints and objectives. This capsule delves into matheuristic methods, which combine mathematical optimization and heuristic search algorithms. Specifically, we will explore five matheuristic methods that utilize local branching techniques from Fischetti 2003 and kernel search from Angelini 2013. Also, we will be presenting an empirical evaluation comparing the performance of these methods with that of a solver. The assessment focuses on solving a challenging model near the convex vestibule, utilizing instances derived from the Morales-España 2013 dataset. Finally, we will delve into the characteristics of the UCP, discuss the application of matheuristic methods, and highlight their potential to provide efficient and high-quality solutions.
 
 
 ## Implementación
@@ -41,9 +41,9 @@ Estas instancias tienen una alta simetría, por lo que tardan en resolverse un p
 |   x7day_large(c)  | 10             |  185 to 242    | 168           | (141-152)      |90%
 
 Other tiny instances to validate the model are:
-> - uc_57 morales_espania2013,Section_III_D,example of one_day from TABLE IX morales-españa2013.
-> - uc_58 morales_espania2013,Section_III_D,example of five days from TABLE VII morales-españa2013.
-> - uc_59 morales_espania2013,Template of eight generators from TABLE VII morales-españa2013.
+> - uc_57 morales_espania2013,Section_III_D,example of one_day from TABLE IX Morales-españa2013.
+> - uc_58 morales_espania2013,Section_III_D,example of five days from TABLE VII Morales-españa2013.
+> - uc_59 morales_espania2013,Template of eight generators from TABLE VII Morales-españa2013.
 
 ### Resultados
 The empirical evaluation yielded intriguing insights into the performance of the matheuristic methods. Four of the methods, based on local bifurcation techniques, showcased remarkable performance in capturing and exploiting local optima. By adapting the search process to the problem's characteristics, these methods demonstrated improved convergence and solution quality.
@@ -65,3 +65,4 @@ The complete results can be found at:
 [U. I. Lezama-Lope. Efficient Methods for Solving Power System Operation Scheduling Challenges: The Thermal Unit Commitment Problem with Staircase Cost and the Very Short-term Load Forecasting Problem. PhD thesis, Universidad Autonoma de Nuevo Leon, Monterrey, Mexico, November 2023.](http://eprints.uanl.mx/26250/).
 
 
+## Appendix
