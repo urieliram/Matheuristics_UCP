@@ -93,7 +93,7 @@ Despite its **fast early convergence**, KS did not always utilize the initial so
 - The **solver struggled with large instances**, and its performance was significantly affected when given an initial solution.
 - **KS is ideal for problems requiring rapid early improvements**, but LB methods are preferable when longer optimization time is available.
 
-For detailed results, refer to the statistical analysis in this link [Uriel I. Lezama](http://eprints.uanl.mx/26250/).. 🚀
+For detailed results, refer to the statistical analysis in this link 🧑‍🏫 [Uriel I. Lezama](http://eprints.uanl.mx/26250/).. 🚀
 
 
 
@@ -105,12 +105,12 @@ For detailed results, refer to the statistical analysis in this link [Uriel I. L
 [Tight and Compact MILP Formulation for the Thermal Unit Commitment Problem, Morales-españa2013](https://ieeexplore.ieee.org/document/6485014).
 
 
-The complete results of this research can be found at:
+The complete results of this research can be found at 🧑‍🏫:
 
 [U. I. Lezama-Lope. Efficient Methods for Solving Power System Operation Scheduling Challenges: The Thermal Unit Commitment Problem with Staircase Cost and the Very Short-term Load Forecasting Problem. PhD thesis, Universidad Autonoma de Nuevo Leon, Monterrey, Mexico, November 2023.](http://eprints.uanl.mx/26250/).
 
 
-## 🔗 Appendix
+## 📎 Appendix
 
 
 ### Differences Mean Test Summary Between the Constructive Methods HARDUC and HGPS
