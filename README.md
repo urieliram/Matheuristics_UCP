@@ -5,7 +5,8 @@
   * [Clases](#clases)
 + [Pruebas](#pruebas)
   * [Instancias](#instancias)
-+ [Ligas](#ligas)
++ [Links](#links)
++ + [Appendix](#appendix)
 ---
 
 ## Introducción
