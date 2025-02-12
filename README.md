@@ -1,13 +1,22 @@
 # A Kernel Search Matheuristic for a Thermal Unit Commitment Problem
+
 ---
-+ [Introducción](#introduccion)
+## Índice
++ [Introducción](#introducción)
 + [Implementación](#implementación)
   * [Clases](#clases)
 + [Pruebas](#pruebas)
   * [Instancias](#instancias)
+  * [Resultados](#resultados)
+    - [Comparative Analysis of Optimization Methods](#-comparative-analysis-of-optimization-methods)
+    - [Key Findings](#-key-findings)
+    - [Discussion: Convergence Speed](#-discussion-convergence-speed)
++ [Conclusión](#-conclusión)
 + [Links](#links)
-+ + [Appendix](#appendix)
++ [Appendix](#appendix)
 ---
+
+
 
 ## Introducción
 The Unit Commitment Problem (UCP) is a critical challenge in the electrical power systems operation schedule. It involves determining the optimal scheduling of power generation units over a specific time horizon, considering various constraints and objectives. This capsule delves into matheuristic methods, which combine mathematical optimization and heuristic search algorithms. Specifically, we will explore five matheuristic methods that utilize local branching techniques from Fischetti 2003 and kernel search from Angelini 2013. Also, we will be presenting an empirical evaluation comparing the performance of these methods with that of a solver. The assessment focuses on solving a challenging model near the convex vestibule, utilizing instances derived from the Morales-España 2013 dataset. Finally, we will delve into the characteristics of the UCP, discuss the application of matheuristic methods, and highlight their potential to provide efficient and high-quality solutions.
@@ -48,10 +57,45 @@ Other tiny instances to validate the model are:
 ### Results
 The empirical evaluation yielded intriguing insights into the performance of the matheuristic methods. Four of the methods, based on local bifurcation techniques, showcased remarkable performance in capturing and exploiting local optima. By adapting the search process to the problem's characteristics, these methods demonstrated improved convergence and solution quality.
 
+#### 📊 Comparative Analysis of Optimization Methods
+
+This repository contains the analysis and comparison of various optimization methods applied to different instance groups under different time constraints.
+
+#### 🏆 Key Findings
+
+- **Best Initial Solution Provider**: The **HARDUC** method consistently found feasible solutions in all instance groups and provided the most accurate initial solutions.
+- **Performance of KS Algorithm**:
+  - Showed a **higher solution descent rate** than Local Branching (LB) methods but was **slower in solution finding**.
+  - In some cases, KS remained in the first found solution without improvement (13.3% of large instances, 4.3% of total instances).
+  - KS outperformed other methods for **large instances** (4000s & 7200s runtime).
+- **Solver Performance**:
+  - For **small instances (4000s runtime)**, no significant differences were found between KS, LB1, LB2, LB3, LB4, and the solver.
+  - For **medium instances (4000s runtime)**, KS had the best results, followed by LB methods, outperforming the solver.
+  - For **large instances (4000s & 7200s runtime)**, KS outperformed all other methods significantly.
+  - **Providing an initial solution to the solver (SM2) often led to worse performance** than letting it run without one (SM1).
+
+#### ⚡ Discussion: Convergence Speed
+
+One of the most notable aspects of the KS method is its **fast initial convergence**. In the first iterations, KS was able to **quickly reduce the optimality gap**, significantly outperforming LB-based methods. However, as iterations progressed, **its convergence rate slowed down**, eventually reaching a state of **stagnation**, which is a common behavior in greedy algorithms.
+
+- **Early-stage dominance**: KS finds an initial solution faster and improves it at a rapid pace.
+- **Late-stage slowdown**: Unlike LB methods, KS loses momentum over time and struggles to continue improving.
+- **Solver limitations**: While KS outperforms the solver in most cases, it sometimes fails to further refine its solution after a certain point.
+
+Despite its **fast early convergence**, KS did not always utilize the initial solution provided by HARDUC, while LB methods consistently improved upon it. This suggests that **LB methods are more robust in long-term refinement**, whereas KS excels in **fast, early-stage improvements**.
+
+## 📌 Conclusion
+
+- The **KS method** achieved the **lowest average optimality gap** and is the best approach for large instances.
+- **Local Branching (LB) methods consistently improved the initial solution**, unlike KS, which sometimes stagnated.
+- The **solver struggled with large instances**, and its performance was significantly affected when given an initial solution.
+- **KS is ideal for problems requiring rapid early improvements**, but LB methods are preferable when longer optimization time is available.
+
+For detailed results, refer to the statistical analysis in this link [Uriel I. Lezama](http://eprints.uanl.mx/26250/).. 🚀
 
 
 
-## Ligas
+## Links
 [On Mixed-Integer Programming Formulations for the Unit Commitment Problem, Knueven2020](https://pubsonline.informs.org/doi/10.1287/ijoc.2019.0944).
 
 [Matheuristics for Speeding Up the Solution of the Unit Commitment Problem, Harjunkoski2021](https://ieeexplore.ieee.org/document/9640029).
@@ -59,7 +103,7 @@ The empirical evaluation yielded intriguing insights into the performance of the
 [Tight and Compact MILP Formulation for the Thermal Unit Commitment Problem, Morales-españa2013](https://ieeexplore.ieee.org/document/6485014).
 
 
-The complete results of this researcher can be found at:
+The complete results of this research can be found at:
 
 [U. I. Lezama-Lope. Efficient Methods for Solving Power System Operation Scheduling Challenges: The Thermal Unit Commitment Problem with Staircase Cost and the Very Short-term Load Forecasting Problem. PhD thesis, Universidad Autonoma de Nuevo Leon, Monterrey, Mexico, November 2023.](http://eprints.uanl.mx/26250/).
 
