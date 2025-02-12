@@ -17,17 +17,16 @@ The code of the methods proposed is in [main.py](main.py). The results can be fo
 
 The main component of this method is a strong and compact MILP model **A Tight and Compact MILP** based on [Knueven2020](https://pubsonline.informs.org/doi/10.1287/ijoc.2019.0944).
 
-### Clases
 
 
-## Assesment
+## Assessment
 (Comparative Evaluation: Assessing Method Performance)
 
 To evaluate the effectiveness of the proposed matheuristic methods, we conducted a comprehensive empirical evaluation. The evaluation employed a tight and compact model situated close to the convex hall, a challenging region of the search space. The model featured a limited number of variables and constraints, ensuring a rigorous test for the matheuristic methods.
 
-To construct difficult instances for evaluation, we utilized instances derived from the Morales-Spain2013 dataset. These instances are known for their complexity and provide a suitable benchmark for assessing the performance of the proposed methods.
+To construct difficult instances for evaluation, we utilized instances derived from the Morales-Spain 2013 dataset. These instances are known for their complexity and provide a suitable benchmark for assessing the performance of the proposed methods.
 
-### Instancias
+### Instances
 The instances in JSON format are in the folder [instances/](instances/).
 
 Estas instancias tienen una alta simetría, por lo que tardan en resolverse un poco más que otras instancias mas cercanas a las de la realidad.
@@ -45,7 +44,7 @@ Other tiny instances to validate the model are:
 > - uc_58 morales_espania2013,Section_III_D,example of five days from TABLE VII Morales-españa2013.
 > - uc_59 morales_espania2013,Template of eight generators from TABLE VII Morales-españa2013.
 
-### Resultados
+### Results
 The empirical evaluation yielded intriguing insights into the performance of the matheuristic methods. Four of the methods, based on local bifurcation techniques, showcased remarkable performance in capturing and exploiting local optima. By adapting the search process to the problem's characteristics, these methods demonstrated improved convergence and solution quality.
 
 
@@ -76,7 +75,7 @@ The complete results can be found at:
 | The means difference of the samples from the same distribution | x7day_medium | Mann-Whitney | 0.0000* | We reject H₀ and accept Hₐ: HARDUC's mean is less than HGPS's mean |
 | The means difference of the samples from the same distribution | x7day_large  | Mann-Whitney | 0.0000* | We reject H₀ and accept Hₐ: HARDUC's mean is less than HGPS's mean |
 
-**\*** Significance level 0.05
+**Significance level: 0.05**
 
 
 
@@ -108,7 +107,7 @@ The complete results can be found at:
 | LB4_1h-SM2_1h: There is no difference between the two population means | T-test for two samples | 0.3808 | We fail to reject H₀ |
 | LB3_1h-SM2_1h: There is no difference between the two population means | T-test for two samples | 0.4675 | We fail to reject H₀ |
 
-**\*** Significance level 0.05
+**Significance level: 0.05**
 
 
 
@@ -141,7 +140,7 @@ The complete results can be found at:
 | SM2-LB3: There is no difference between the two population means | T-test for two samples | 0.3434 | We fail to reject H₀ |
 | KS-LB3: There is no difference between the two population means | T-test for two samples | 0.4909 | We fail to reject H₀ |
 
-**\*** Significance level 0.05
+**Significance level: 0.05**
 
 
 ### Means Difference Statistical Test Summary (x7day_medium) - 1 Hour
@@ -172,13 +171,13 @@ The complete results can be found at:
 | LB3_1h-SM2_1h: There is no difference between the two population means | Mann-Whitney | *0.0005 | We reject H₀ and accept Hₐ: LB3_1h's mean is less than SM2_1h's |
 | SM1_1h-SM2_1h: There is no difference between the two population means | Mann-Whitney | 0.2699 | We fail to reject H₀ |
 
-**\*** Significance level 0.05
+**Significance level: 0.05**
 
 
 
-# Means Difference Hypothesis Test Summary (x7day_medium)
+### Means Difference Hypothesis Test Summary (x7day_medium)
 
-## Means difference statistical test summary among all methods for instances from group x7day_medium under a running time limit of 7200 seconds.
+#### Means difference statistical test summary among all methods for instances from group x7day_medium under a running time limit of 7200 seconds.
 
 | Null Hypothesis | Test | p-value | Decision |
 |----------------|------|---------|----------|
@@ -208,9 +207,9 @@ The complete results can be found at:
 
 
 
-# Means Difference Hypothesis Test Summary (x7day_large)
+### Means Difference Hypothesis Test Summary (x7day_large)
 
-## Means difference statistical test summary among all methods for instances from group x7day_large under a running time limit of 4000 seconds.
+#### Means difference statistical test summary among all methods for instances from group x7day_large under a running time limit of 4000 seconds.
 
 | Null Hypothesis | Test | p-value | Decision |
 |----------------|------|---------|----------|
@@ -240,9 +239,9 @@ The complete results can be found at:
 
 
 
-# Means Difference Hypothesis Test Summary (x7day_large)
+### Means Difference Hypothesis Test Summary (x7day_large)
 
-**Table: Means difference statistical test summary among all methods for instances from group x7day_large under a running time limit of 7200 seconds.**
+#### Means difference statistical test summary among all methods for instances from group x7day_large under a running time limit of 7200 seconds.**
 
 | Null Hypothesis | Test | p-value | Decision |
 |----------------|------|---------|----------|
@@ -268,6 +267,6 @@ The complete results can be found at:
 | LB3-SM2: There is no difference between the two population means | T-test for two samples | *0.0101 | We reject H₀ and accept Hₐ: LB3's mean less than MILP2's |
 | SM1-SM2: There is no difference between the two population means | T-test for two samples | *0.0290 | We reject H₀ and accept Hₐ: MILP's mean less than MILP2's |
 
-*Significance level: 0.05*
+**Significance level: 0.05**
 
 
