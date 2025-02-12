@@ -1,42 +1,44 @@
 # A Kernel Search Matheuristic for a Thermal Unit Commitment Problem
 
 ---
-## Índice
-+ [Introducción](#introducción)
-+ [Implementación](#implementación)
-  * [Clases](#clases)
-+ [Pruebas](#pruebas)
-  * [Instancias](#instancias)
-  * [Resultados](#resultados)
-    - [Comparative Analysis of Optimization Methods](#-comparative-analysis-of-optimization-methods)
-    - [Key Findings](#-key-findings)
-    - [Discussion: Convergence Speed](#-discussion-convergence-speed)
-+ [Conclusión](#-conclusión)
+## Table of Contents
++ [Introduction](#introduction)
++ [Implementation](#implementation)
+  * [Classes](#classes)
++ [Experiments](#experiments)
+  * [Instances](#instances)
+  * [Results](#results)
+    - [Comparative Analysis of Optimization Methods](#comparative-analysis-of-optimization-methods)
+    - [Key Findings](#key-findings)
+    - [Discussion: Convergence Speed](#discussion-convergence-speed)
++ [Conclusion](#conclusion)
 + [Links](#links)
 + [Appendix](#appendix)
 ---
 
 
 
-## Introducción
+
+
+## 📖 Introduction
 The Unit Commitment Problem (UCP) is a critical challenge in the electrical power systems operation schedule. It involves determining the optimal scheduling of power generation units over a specific time horizon, considering various constraints and objectives. This capsule delves into matheuristic methods, which combine mathematical optimization and heuristic search algorithms. Specifically, we will explore five matheuristic methods that utilize local branching techniques from Fischetti 2003 and kernel search from Angelini 2013. Also, we will be presenting an empirical evaluation comparing the performance of these methods with that of a solver. The assessment focuses on solving a challenging model near the convex vestibule, utilizing instances derived from the Morales-España 2013 dataset. Finally, we will delve into the characteristics of the UCP, discuss the application of matheuristic methods, and highlight their potential to provide efficient and high-quality solutions.
 
 
-## Implementación
+## 💻 Implementation
 The code of the methods proposed is in [main.py](main.py). The results can be found in [Figures_TC_UC2.ipynb](Figures_TC_UC2.ipynb). The MILP model of UCP is in [co_Co.py](co_Co.py). The generator of instances is on [instances_gen.ipynb](instances_gen.ipynb). 
 
 The main component of this method is a strong and compact MILP model **A Tight and Compact MILP** based on [Knueven2020](https://pubsonline.informs.org/doi/10.1287/ijoc.2019.0944).
 
 
 
-## Assessment
+## 🧪 Experiments
 (Comparative Evaluation: Assessing Method Performance)
 
 To evaluate the effectiveness of the proposed matheuristic methods, we conducted a comprehensive empirical evaluation. The evaluation employed a tight and compact model situated close to the convex hall, a challenging region of the search space. The model featured a limited number of variables and constraints, ensuring a rigorous test for the matheuristic methods.
 
 To construct difficult instances for evaluation, we utilized instances derived from the Morales-Spain 2013 dataset. These instances are known for their complexity and provide a suitable benchmark for assessing the performance of the proposed methods.
 
-### Instances
+### 🧪 Instances
 The instances in JSON format are in the folder [instances/](instances/).
 
 Estas instancias tienen una alta simetría, por lo que tardan en resolverse un poco más que otras instancias mas cercanas a las de la realidad.
@@ -54,10 +56,10 @@ Other tiny instances to validate the model are:
 > - uc_58 morales_espania2013,Section_III_D,example of five days from TABLE VII Morales-españa2013.
 > - uc_59 morales_espania2013,Template of eight generators from TABLE VII Morales-españa2013.
 
-### Results
+### 📊 Results
 The empirical evaluation yielded intriguing insights into the performance of the matheuristic methods. Four of the methods, based on local bifurcation techniques, showcased remarkable performance in capturing and exploiting local optima. By adapting the search process to the problem's characteristics, these methods demonstrated improved convergence and solution quality.
 
-#### 📊 Comparative Analysis of Optimization Methods
+#### ⚖️ Comparative Analysis of Optimization Methods
 
 This repository contains the analysis and comparison of various optimization methods applied to different instance groups under different time constraints.
 
@@ -84,7 +86,7 @@ One of the most notable aspects of the KS method is its **fast initial convergen
 
 Despite its **fast early convergence**, KS did not always utilize the initial solution provided by HARDUC, while LB methods consistently improved upon it. This suggests that **LB methods are more robust in long-term refinement**, whereas KS excels in **fast, early-stage improvements**.
 
-## 📌 Conclusion
+## 🏆 Conclusion
 
 - The **KS method** achieved the **lowest average optimality gap** and is the best approach for large instances.
 - **Local Branching (LB) methods consistently improved the initial solution**, unlike KS, which sometimes stagnated.
@@ -95,7 +97,7 @@ For detailed results, refer to the statistical analysis in this link [Uriel I. L
 
 
 
-## Links
+## 🔗 Links
 [On Mixed-Integer Programming Formulations for the Unit Commitment Problem, Knueven2020](https://pubsonline.informs.org/doi/10.1287/ijoc.2019.0944).
 
 [Matheuristics for Speeding Up the Solution of the Unit Commitment Problem, Harjunkoski2021](https://ieeexplore.ieee.org/document/9640029).
@@ -108,7 +110,7 @@ The complete results of this research can be found at:
 [U. I. Lezama-Lope. Efficient Methods for Solving Power System Operation Scheduling Challenges: The Thermal Unit Commitment Problem with Staircase Cost and the Very Short-term Load Forecasting Problem. PhD thesis, Universidad Autonoma de Nuevo Leon, Monterrey, Mexico, November 2023.](http://eprints.uanl.mx/26250/).
 
 
-## Appendix
+## 🔗 Appendix
 
 
 ### Differences Mean Test Summary Between the Constructive Methods HARDUC and HGPS
