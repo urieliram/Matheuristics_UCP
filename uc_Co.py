@@ -385,7 +385,7 @@ def uc(instance,option='None',
         TRU = []; TRD = []; TRU.append(-1); TRD.append(-1)
         for g in G:
             TRU.append(floor((model.Pmax[g]-model.SU[g])/model.RU[g]))
-            TRD.append(floor((model.Pmax[g]-model.SU[g])/model.RD[g]))                
+            TRD.append(floor((model.Pmax[g]-model.SD[g])/model.RD[g]))
 
         def su_sd_rule23a(m,g,t):                      ## eq.(23a)
             if m.UT[g] == 1 and m.SU[g] != m.SD[g] and t<len(m.T):    ## :g ∈ G1
@@ -684,7 +684,7 @@ def uc(instance,option='None',
                         return Constraint.Skip                                 
             else:
                 return Constraint.Skip                            
-    model.Piecewise_offer48b = Constraint(model.indexGTLg, rule = Piecewise_offer48b)
+        model.Piecewise_offer48b = Constraint(model.indexGTLg, rule = Piecewise_offer48b)
         
     ## ----------------------------SIMPLE COST PRODUCTION (HYDRO)-------------------------------------------   
     
@@ -710,7 +710,9 @@ def uc(instance,option='None',
          
         def Start_up_cost56(m,g,t):  ##  start-up cost eq.(56)
             return m.cSU[g,t] == sum((m.Cs[g,s]*m.delta[g,t,s]) for s in range(1,len(m.S[g])+1))
-            model.Start_up_cost56 = Constraint(model.G,model.T, rule = Start_up_cost56) 
+        ## El registro estaba indentado dentro de la regla, despues del return: nunca corria y
+        ## cSU quedaba libre en 0, asi que los arranques no se cobraban en el objetivo.
+        model.Start_up_cost56 = Constraint(model.G,model.T, rule = Start_up_cost56)
         
     else:  ## delta projection suggested by Knueven 2020       
         def Start_up_cost57(m,g,t):  ##  start-up cost eq.(57)
@@ -722,18 +724,17 @@ def uc(instance,option='None',
         model.Start_up_cost58 = Constraint(model.G,model.T, rule = Start_up_cost58)   
         
     
-    ## Initial Startup (t=0) Type required by MLR and Knueven from
-    ## 'Tight and Compact MILP Formulation for the Thermal Unit Commitment Problem',
-    ## Germán Morales-España, Jesus M. Latorre, and Andrés Ramos.  
-    def enforce2():   
-        for g in range(1,len(G)+1): 
-            for t in range(1,len(T)+1): 
-                for s in range(1,len(S[g])): 
-                    if TD_0[g]>=2:
-                        if t < model.Tunder[g,s+1]:
-                            if t > max(model.Tunder[g,s+1]-TD_0[g],1):
-                                model.delta[g,t,s].fix(0)
-                                # print('fix delta:',g,t,s)
+    ## (Startcost4) Initial start-up type, required by MLR / Knueven
+    ## ['Tight and Compact MILP Formulation for the Thermal Unit Commitment Problem',
+    ##  Morales-España, Latorre & Ramos]: delta[g,t,s] = 0 en los periodos iniciales en los
+    ## que el tiempo apagado previo al horizonte (TD_0) hace imposible ese tipo de arranque.
+    ## Antes vivia en una funcion enforce2() que nunca se invocaba.
+    for g in range(1,len(G)+1):
+        if TD_0[g] >= 2:
+            for t in range(1,len(T)+1):
+                for s in range(1,len(S[g])):
+                    if t < Tunder[g,s+1] and t > max(Tunder[g,s+1]-TD_0[g],1):
+                        model.delta[g,t,s].fix(0)
 
     if  scope == 'POZ+EL':        
         
