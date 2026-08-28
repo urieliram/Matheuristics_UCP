@@ -12,6 +12,11 @@
     - [Discussion: Convergence Speed](#discussion-convergence-speed)
 + [Conclusion](#conclusion)
 + [Links](#links)
++ [Development](#development)
+  * [Tests](#tests)
+  * [Fixed bugs](#fixed-bugs)
+  * [Start-up costs are missing from the model](#️-start-up-costs-are-missing-from-the-model)
+  * [Open questions](#open-questions)
 + [Appendix](#appendix)
 
 ---
@@ -22,7 +27,7 @@ The Unit Commitment Problem (UCP) is a critical challenge in the electrical powe
 
 ## 💻 Implementation
 
-The code of the methods proposed is in [main.py](main.py). The results can be found in [Figures_TC_UC2.ipynb](Figures_TC_UC2.ipynb). The MILP model of UCP is in [co_Co.py](co_Co.py). The generator of instances is on [instances_gen.ipynb](instances_gen.ipynb). 
+The code of the methods proposed is in [main.py](main.py). The results can be found in [Figures_TC_UC2.ipynb](Figures_TC_UC2.ipynb). The MILP model of UCP is in [uc_Co.py](uc_Co.py). The generator of instances is on [instances_gen.ipynb](instances_gen.ipynb). 
 
 The main component of this method is a strong and compact MILP model **A Tight and Compact MILP** based on [Knueven2020](https://pubsonline.informs.org/doi/10.1287/ijoc.2019.0944).
 
@@ -102,6 +107,137 @@ For detailed results, refer to the statistical analysis in this link 🧑‍🏫
 The complete results of this research can be found at 🧑‍🏫:
 
 [U. I. Lezama-Lope. Efficient Methods for Solving Power System Operation Scheduling Challenges: The Thermal Unit Commitment Problem with Staircase Cost and the Very Short-term Load Forecasting Problem. PhD thesis, Universidad Autonoma de Nuevo Leon, Monterrey, Mexico, November 2023.](http://eprints.uanl.mx/26250/).
+
+## 🛠️ Development
+
+### Setup
+
+```bash
+pip install -r requirements-dev.txt
+```
+
+CPLEX is not installed by `pip` here: point the `executable` key of `config.con` at your own
+CPLEX binary. `config.con` is versioned — without it `main.py` cannot start.
+
+### Running
+
+```bash
+python3 main.py uc_057.json yalma      # single instance
+sh test.sh                             # batch, see the loop at the top of the script
+```
+
+Results are appended as one row to `stat.csv`; the column order is documented in `main.py`
+immediately above the `row = [...]` assembly. Each run also drops `logfile*.log` (CPLEX logs) and
+`solHard3_a/b_<instance>.csv` in the working directory. Those `solHard3_*` files are a **warm-start
+cache**: if they exist for an instance, the next run recovers that solution instead of re-solving
+the LP relaxation and Hard3. Delete them to force a clean run.
+
+### Tests
+
+```bash
+pytest                 # everything
+pytest -m "not slow"   # skips the tests that need CPLEX (this is what CI runs)
+```
+
+`tests/test_model.py` pins the MILP itself: it exports the model `uc_Co.uc()` builds to LP with
+symbolic labels and hashes it, so constraint count, constraint order, coefficients and variable
+domains are all covered. That is the gate to refactor `uc_Co.py` behind — anything that moves the
+model breaks the hash. Regenerate the digests deliberately with `python3 tests/regen_lp_digest.py`
+after an intentional model change or a Pyomo upgrade.
+
+`tests/test_regression.py` solves `uc_057` end to end and compares every non-timing column of the
+resulting `stat.csv` row against `tests/data/golden_uc_057.csv`. That golden row was captured before
+the code was cleaned up, so it is the guard that the refactor did not move any published number.
+Regenerate it only when a change is *meant* to alter results.
+
+### Fixed bugs
+
+These were real defects found during the cleanup. Each is now covered by a test.
+
+| Where | Bug | What changed |
+| :---- | :-- | :----------- |
+| `main.py`, LBC | `cuttoff = z_lbcN` — misspelled, so the intended `cutoff` was never updated in the "optimal but rhs < e" branch and CPLEX kept a stale upper cutoff on the next iteration | now assigns `cutoff` |
+| `main.py`, LBC1 | `diversify = False` had been swallowed by a trailing comment, so LBC1 alone never reset diversification after a non-improving iteration | all four variants now reset it |
+| `main.py`, Kernel Search | `iterstop` came from Sturges' *n*, but the number of bucket boundaries actually built (`len(k_)-1`) can be smaller, so `k_[iter_bk + 1]` overran with `IndexError`. Only bit small instances — at ~500 free variables the two numbers coincide, which is why the published large-instance runs never saw it | bound is `min(n - 2, len(k_) - 1)`; the loop counter no longer shadows the global `iterstop` |
+| `util.py` | `delete_tabu` popped from the list it was iterating, so one of two adjacent tabu cuts survived and over-constrained the next LB iteration | rewritten as a list comprehension |
+| `uc_Co.py` eq. (56) | registration of `Start_up_cost56` sat inside the rule after the `return`, so start-up costs were never priced (`sum(cSU) = 0` in every published run) | registered; objectives now include start-up cost (+0.2-0.4 %) |
+| `uc_Co.py` (Startcost4) | `enforce2()` implementing the initial start-up-type rule was defined but never called | inlined as live `delta.fix(0)` at model build |
+| `uc_Co.py` eq. (48b) | constraint registration sat outside `if mode == 'Tight'`, raising `NameError` under any other mode | moved inside the block (emitted model under Tight unchanged, verified by LP digest) |
+| `reading.py` | `demand`/`reserves` aliased the parsed JSON and were appended to while being iterated; the loop also ran over `len(demand)` instead of the horizon, so `uc_059` (121 demands, 120 periods) died with `IndexError` | scales into fresh lists over `time_periods`; verified `De`/`R` byte-identical on 166 instances |
+| `main.py`, LBC + KS | the reported gap was overwritten on every iteration by `z, g = sol.solve_problem()`, so `stat.csv` recorded the gap of the *last* subproblem, not of the incumbent that is reported next to it (`z_ks = 571490.7` beside `g_ks = 1e+75`) | both blocks recompute the gap against the returned incumbent; the `1e+75` sentinel is preserved when no incumbent was found |
+| `main.py`, `stat.csv` | `g_milp2` was written with `round(...,1)` while every other gap uses 8 decimals, so a real gap of 0.0032 was logged as `0.0` | now 8 decimals like the rest |
+| `main.py`, `stat.csv` | the `emphasizeMILP/symmetryMILP/strategyMILP/lbheurMILP` columns logged the `config.con` values, but SM1 does not pass `emphasize/symmetry/lbheur` — it runs on `Solution.__init__` defaults. The log claimed a parameterization that never reached CPLEX | the columns now record the *effective* parameters, read back from the `Solution` object so the log follows the code |
+| `instances/uc_011.json` | committed as 0 bytes in its only commit; the data never existed in history | removed; `tests/test_util.py` now fails if any instance is empty or malformed |
+
+On `uc_057` none of the LBC fixes change a single number — that instance converges in one iteration
+through the `optimal -> break` path, so the corrected branches never execute. They will change the
+search trajectory on instances that actually iterate, so **re-run any experiment whose conclusions
+depend on LB1's diversification or on the tabu list**.
+
+### Start-up costs: fixed 2026-08-25
+
+Until 2026-08-25 the model **did not price start-up costs**: the registration of eq. (56) sat
+inside its own rule function, after the `return`, so it never executed and the solver drove every
+`cSU[g,t]` to zero. The companion initial-condition rule (Startcost4) lived in a function
+`enforce2()` that was never called. Both are now active in `uc_Co.py`:
+
+* `Start_up_cost56` is registered (`cSU = sum(Cs[s] * delta[s])`), so `total_cSU` in the objective
+  is real money.
+* (Startcost4) fixes `delta[g,t,s] = 0` in the initial periods where the pre-horizon downtime
+  `TD_0` makes that start-up type impossible. Vacuous on the shipped dataset (every unit starts
+  online, `TD_0 = 0`) but load-bearing for extensions with cold initial conditions; covered by
+  `tests/test_util.py::test_startcost4_fixes_initial_delta_for_cold_units`.
+
+Measured impact on `uc_057` (identical by two independent routes):
+
+| | objective | starts | `sum(cSU)` |
+| :-- | --: | --: | --: |
+| before | 571490.66 | 5 | 0.00 |
+| after | 573630.66 | 5 | 2140.00 |
+
+On longer horizons the *schedule itself* moves (uc_058: 5.2 % of commitment cells, uc_059: 4.3 %,
+uc_061: 15 % with starts dropping 62 → 56), so **any experiment whose conclusions depend on
+objective values or commitment schedules needs a re-run**. The golden row
+(`tests/data/golden_uc_057.csv`) and the LP digests (`tests/data/model_lp_sha256_uc_057.json`)
+were regenerated on 2026-08-25; results in `stat.csv` rows dated before then were produced by the
+old model. Stale `solHard3_*.csv` warm-start caches from the old model were deleted — never reuse
+them across this boundary.
+
+### Paper errata applied 2026-08-27
+
+Where the code and `Paper_CAOR25_R1` disagreed, **the experiment was taken as the source of truth**
+and the LaTeX was corrected to describe what actually ran:
+
+| File | Was | Now |
+| :--- | :-- | :-- |
+| `3_MathModel.tex` (genlim3) | full two-sided trajectory bound on `p` with summations over both `T^RU` and `T^RD` | the implemented form: bound on `p-bar`, ramp-up summation capped at `min(UT-2, T^RU)`, shutdown as the single `w_{g,t+1}` term. Noted as a valid inequality, so the integer optimum is unaffected — only the relaxation strength |
+| `5_ExpWork.tex` (both parameter tables) | `mip_tolerances_mipgap = 1e-5` | `1e-6`, the value in `config.con` and in all three 2023 `stat.csv` rows |
+| `5_ExpWork.tex` (Table 2, Remaining) | `mip_strategy_heuristicfreq = 50` | row removed — `main.py` never forwards it, so CPLEX used its default |
+| `5_ExpWork.tex` (Table 2, SM1) | symmetry not stated | `preprocessing_symmetry = -1` stated explicitly, plus a note that unlisted parameters kept CPLEX defaults |
+| `5_ExpWork.tex` §Test2 | "each iteration has a time limit of 1200 s." | adds the 100 s cap that applies to the first subproblem and to every post-diversification restart |
+
+Earlier errata (2026-08-25): `(relation3)`, the definition of `C^R`, the large-instance range
+`141-163`, the 10 % reserve subset, and the ascending reduced-cost order in Algorithm 2 / `alg_ks`.
+
+### Open questions
+
+Not bugs with an obvious right answer — they need a call from whoever owns the experiments.
+Entries marked **Decision** have already been settled and are kept here as the record of why.
+
+* **KS bucket construction diverges from the paper's Algorithm 2 — accepted as-is.** `main.py` builds
+  bucket boundaries with step `len_i+1`, yielding fewer, differently-sized buckets than the published
+  `buildbuckets()` (for |U|=62: 10 buckets `[5,6,...,9]` vs 14 buckets `[5x6,4x8]`), sweeps at most
+  `n-2` of them per pass, and stops after 7 non-improving buckets. **Decision (2026-08-27): the code
+  stays as it is** — it is what produced the published results, and aligning it to Algorithm 2 would
+  invalidate every KS number. Anyone extending KS should read `main.py`, not Algorithm 2, as the
+  specification of what ran.
+* **LB iteration limit: 1200 s (paper) vs `timeconst = 2000` (`config.con`).** `stat.csv` shows both
+  values were used during the May 2023 campaign (`uc_155` at 1200, `uc_160`/`uc_163` at 2000), so the
+  repository cannot settle which one governed the published tables. Needs the experiment owner's call
+  before the paper's "1200 s." can be trusted or corrected.
+* **`solution.py` calls `exit()`** inside its solver-status branch, so a library terminates the whole
+  process instead of raising. It also discards incumbents when the status is not `ok`, so a timed-out
+  run loses a perfectly good solution.
 
 ## 📎 Appendix
 
