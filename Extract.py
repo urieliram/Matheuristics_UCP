@@ -4,6 +4,11 @@ import pandas as pd
 import re
 import matplotlib.pyplot as plt
 
+## Numero con signo, decimales y notacion cientifica opcionales, tolerando espacios
+## intercalados como los emite el log de CPLEX. Estaba repetido 12 veces como literal
+## no-crudo, lo que disparaba DeprecationWarning por los escapes '\ ' y '\.'.
+NUMBER = re.compile(r'-?\ *[0-9]+\.?[0-9]*(?:[Ee]\ *[-+]?\ *[0-9]+)?')
+
 ## Online version
 ## https://colab.research.google.com/drive/15mttuecwMf7bfe6hvb8uK2sAhqsQ2Gkw#scrollTo=kiJzGJszxwGu
 
@@ -37,7 +42,7 @@ class Extract:
       if("Cover cuts applied" in i or "Performing restart 1" in i):
         table_start = False
       if("Elapsed time" in i):
-          tmp = [float(k) for k in re.findall('-?\ *[0-9]+\.?[0-9]*(?:[Ee]\ *[-+]?\ *[0-9]+)?',i)]
+          tmp = [float(k) for k in NUMBER.findall(i)]
           time = tmp[0]
           ticks = tmp[1]
       if(table_start):        
@@ -94,58 +99,58 @@ class Extract:
             variables[variablesValue[j]] = float(k)
         else:
           variablesValue = ["minLB","maxUb"]
-          for j,k in enumerate(re.findall('-?\ *[0-9]+\.?[0-9]*(?:[Ee]\ *[-+]?\ *[0-9]+)?',i)):
+          for j,k in enumerate(NUMBER.findall(i)):
             variables[variablesValue[j]] = float(k)
       if("Objective nonzeros" in i):
         if("Min" in i or "Max" in i):
           variablesValue = ["objNonZerosMin","objNonZerosMax"]
-          for j,k in enumerate(re.findall('-?\ *[0-9]+\.?[0-9]*(?:[Ee]\ *[-+]?\ *[0-9]+)?',i)):
+          for j,k in enumerate(NUMBER.findall(i)):
             variables[variablesValue[j]] = float(k)
         else:
           variables["objNonZeros"] = float(i.replace(" ","").replace("\n","").split(":")[1])
       if("Linear constraints" in i):
         if("Less" in i):
           variablesValue = ["linearConstraintsValue","less","greater","equal"]
-          for j,k in enumerate(re.findall('-?\ *[0-9]+\.?[0-9]*(?:[Ee]\ *[-+]?\ *[0-9]+)?',i)):
+          for j,k in enumerate(NUMBER.findall(i)):
             variables[variablesValue[j]] = float(k)
         else:
           pass
       if("Nonzeros" in i):
         if("Min" in i):
           variablesValue = ["nonZerosMin","nonZerosMax"]
-          for j,k in enumerate(re.findall('-?\ *[0-9]+\.?[0-9]*(?:[Ee]\ *[-+]?\ *[0-9]+)?',i)):
+          for j,k in enumerate(NUMBER.findall(i)):
             variables[variablesValue[j]] = float(k)
         else:
           variables["nonZeros"] = float(i.replace(" ","").replace("\n","").split(":")[1])
       if("RHS nonzeros" in i):
         if("Min" in i):
           variablesValue = ["rhsNonZerosMin","rhsNonZerosMax"]
-          for j,k in enumerate(re.findall('-?\ *[0-9]+\.?[0-9]*(?:[Ee]\ *[-+]?\ *[0-9]+)?',i)):
+          for j,k in enumerate(NUMBER.findall(i)):
             variables[variablesValue[j]] = float(k)
         else:
           variables["rhsNonZeros"] = float(i.replace(" ","").replace("\n","").split(":")[1])
       if("CPXPARAM_TimeLimit" in i):
         variables["CPXPARAM_TimeLimit"] = float(i.replace("\n","").split(" ")[-1])
       if("MIP Presolve eliminated" in i):
-        variables["mipPresolveEliminated"].append([int(k) for k in re.findall('-?\ *[0-9]+\.?[0-9]*(?:[Ee]\ *[-+]?\ *[0-9]+)?',i)])
+        variables["mipPresolveEliminated"].append([int(k) for k in NUMBER.findall(i)])
       if("MIP Presolve modified " in i):
-        variables["mipPresolveModified"].append(int(re.findall('-?\ *[0-9]+\.?[0-9]*(?:[Ee]\ *[-+]?\ *[0-9]+)?',i)[0]))
+        variables["mipPresolveModified"].append(int(NUMBER.findall(i)[0]))
       if("Reduced MIP has" in i):
         if("indicators." in i):
-          tmp = [int(k) for k in re.findall('-?\ *[0-9]+\.?[0-9]*(?:[Ee]\ *[-+]?\ *[0-9]+)?',i)]
+          tmp = [int(k) for k in NUMBER.findall(i)]
           variables["reducedMipHasBinaries"].append(tmp[0])
           variables["reducedMipHasGeneral"].append(tmp[1])
         else:
-          tmp = [int(k) for k in re.findall('-?\ *[0-9]+\.?[0-9]*(?:[Ee]\ *[-+]?\ *[0-9]+)?',i)]
+          tmp = [int(k) for k in NUMBER.findall(i)]
           variables["reducedMipHasColumns"].append(tmp[1])
           variables["reducedMipHasNonZero"].append(tmp[-1])
           reduceHasGeneral = []
       if("Clique" in i):
         variables["cliqueTableMembers"].append(float(i.replace(" ","").replace("\n","").split(":")[1]))
       if("Aggregator did" in i):
-        variables["aggregatorDid"].append(int(re.findall('-?\ *[0-9]+\.?[0-9]*(?:[Ee]\ *[-+]?\ *[0-9]+)?',i)[0]))
+        variables["aggregatorDid"].append(int(NUMBER.findall(i)[0]))
       if("Root relaxation" in i):
-        tmp = [float(k) for k in re.findall('-?\ *[0-9]+\.?[0-9]*(?:[Ee]\ *[-+]?\ *[0-9]+)?',i)]
+        tmp = [float(k) for k in NUMBER.findall(i)]
         variables["rootRelaxSolSeconds"].append(tmp[0])
         variables["rootRelaxSolTicks"].append(tmp[1])
       if("Lift and" in i):

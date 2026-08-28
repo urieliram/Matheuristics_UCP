@@ -5,6 +5,132 @@ import os
 import pandas as pd
 
 def reading(file):
+    """Lee una instancia UC en formato JSON [Knueven2020] y devuelve la lista `instance`.
+
+    ATENCION: el valor de retorno es una lista POSICIONAL de 47 elementos que uc_Co.uc()
+    consume como instance[0], instance[1], ... Cualquier reordenamiento rompe el modelo en
+    silencio. El mapa de indices es:
+
+      [ 0] G        list[int] - generator indices 1..|G|, one per key of md['thermal_generators'] in
+               JSON order (reading.py:72-75). Consumed by uc_Co.py:32; main.py:637 reads
+               len(instance[0]) as the generator count.
+      [ 1] T        list[int] - period indices 1..time_periods (reading.py:63-64). main.py:637 reads
+               len(instance[1]) as the horizon; tests/test_util.py:130 asserts on it.
+      [ 2] L        dict g -> list[int] of piecewise production segment indices 1..(#piecewise points -
+               1) (reading.py:138-143). Note the count is points-1, matching the deletion of the
+               last C entry at reading.py:207.
+      [ 3] S        dict g -> list[int] of start-up cost segment indices, containing ONLY the JSON
+               startup segments whose 'lag' >= time_down_minimum[g] (reading.py:149-156). Segments
+               with a shorter lag are dropped, so S[g] can be shorter than the JSON list.
+      [ 4] Pmax     dict g -> float, thermal_generators[gen]['power_output_maximum'] (reading.py:107,
+               341).
+      [ 5] Pmin     dict g -> float, thermal_generators[gen]['power_output_minimum'] (reading.py:106,
+               342).
+      [ 6] UT       dict g -> int, minimum up time, thermal_generators[gen]['time_up_minimum']
+               (reading.py:112, 343).
+      [ 7] DT       dict g -> int, minimum down time, thermal_generators[gen]['time_down_minimum']
+               (reading.py:113, 344).
+      [ 8] De       dict t -> float, system demand at period t = md['demand'][t-1] * factor_demand,
+               truncated to time_periods (reading.py:60, 66). tests/test_util.py:141 indexes it as
+               inst[8].
+      [ 9] R        dict t -> float, reserve requirement at period t = md['reserves'][t-1] *
+               factor_demand (reading.py:61, 67).
+      [10] u_0      dict g -> int in {0,1}, commitment state immediately before the horizon, derived
+               from unit_on_t0 (reading.py:159-167, 345).
+      [11] U        dict g -> int, number of initial periods the unit is FORCED ON = max(0,
+               time_up_minimum - time_up_t0) when on at t0, else 0 (reading.py:162/169, 346).
+      [12] D        dict g -> int, number of initial periods the unit is FORCED OFF = max(0,
+               time_down_minimum - time_down_t0) when off at t0, else 0 (reading.py:161/163/170,
+               347).
+      [13] TD_0     dict g -> int, hours the unit has been offline before the horizon (time_down_t0 when
+               off at t0, else 0) (reading.py:164/171, 348). EFFECTIVELY UNUSED: uc_Co.py:45
+               unpacks it, but its only reader is enforce2() at uc_Co.py:728-736, which is never
+               called; no model.TD_0 Param is ever declared.
+      [14] SU       dict g -> float, start-up ramp limit, thermal_generators[gen]['ramp_startup_limit']
+               (reading.py:110, 349).
+      [15] SD       dict g -> float, shut-down ramp limit,
+               thermal_generators[gen]['ramp_shutdown_limit'] (reading.py:111, 350).
+      [16] RU       dict g -> float, ramp-up limit, thermal_generators[gen]['ramp_up_limit']
+               (reading.py:108, 351).
+      [17] RD       dict g -> float, ramp-down limit, thermal_generators[gen]['ramp_down_limit']
+               (reading.py:109, 352).
+      [18] p_0      dict g -> float, power output immediately before the horizon,
+               thermal_generators[gen]['power_output_t0'] (reading.py:114/189, 353).
+      [19] Pb       dict (g,l) -> float, MW breakpoint of piecewise production segment l. Built by
+               skipping the FIRST piecewise point (which is Pmin) and numbering the rest from 1, so
+               keys run (g,1)..(g,len(L[g])) (reading.py:210-219).
+      [20] Cb       dict (g,l) -> float, cost at the Pb[g,l] breakpoint; identical key set to Pb
+               (reading.py:218). DEAD in practice: model.Cb is declared at uc_Co.py:223 but
+               referenced only at uc_Co.py:512 and 514, both inside `if mode == 'Compact' and
+               False:`.
+      [21] C        dict (g,n) -> float, cost coefficient of piecewise point n, numbered from 1 over ALL
+               points with the LAST one deleted per generator (reading.py:197-207, note the `del
+               C[(k,n)]`). This is the marginal cost used by Piecewise_offer44 (uc_Co.py) and by
+               Piecewise_mpc via C[g,1].
+      [22] CR       dict g -> float, thermal_generators[gen]['fixed_cost'], defaulting to 0 when the key
+               is absent (reading.py:118-122, 355). uc_Co.py:54 labels it 'Minimum production
+               cost'; it multiplies u[g,t] in total_cMP_rule.
+      [23] Cs       dict (g,s) -> float, cost of start-up segment s, numbered from 1 over the FILTERED
+               startup segments of index 3 (reading.py:222-230).
+      [24] Tunder   dict (g,s) -> int, 'lag' (hours offline) of start-up segment s, same key set as Cs
+               (reading.py:229). Used by Start_up_cost54 as the offline-window bounds.
+      [25] names    dict g -> str, the original generator key from md['thermal_generators']
+               (reading.py:354). Sole consumer in uc_Co.py is the diagnostic print inside the bare
+               `except:` of Piecewise_mpc.
+      [26] LOAD     list[int] - elastic-load indices 1..|md['loads']| (reading.py:244-247). Empty list
+               when the JSON has no 'loads' key (the whole block is wrapped in try/except at
+               reading.py:241/281). Read only under scope=='POZ+EL' (uc_Co.py:60).
+      [27] Ld       dict d -> list[int] of purchase-bid segment indices 1..#points for elastic load d
+               (reading.py:259-264). Unlike L (index 2) this keeps ALL points, no minus-one. Read
+               only under scope=='POZ+EL'.
+      [28] Pd       dict (d,i) -> float, MW of purchase-bid segment i of elastic load d, numbered from 1
+               over all points (reading.py:267-277). Read only under scope=='POZ+EL'.
+      [29] Cd       dict (d,i) -> float, bid price of purchase-bid segment i, same key set as Pd
+               (reading.py:276). Read only under scope=='POZ+EL'.
+      [30] GRO      list[int] - generator indices that have prohibited operating zones, from
+               md['operative_zones']['GRO'] (reading.py:296-297). Empty when the key is absent
+               (try/except at reading.py:294/316). Read only under scope=='POZ+EL'.
+      [31] RO       dict g -> list[int] of operating-zone indices for generator g (reading.py:306-307,
+               357). CAVEAT: every generator is given the SAME `noz` list object by reference, so
+               all POZ generators necessarily share one zone count. Read only under
+               scope=='POZ+EL'.
+      [32] ROmin    dict (g,z) -> float, lower MW bound of prohibited zone z for generator g, computed
+               as power_output_maximum[g-1] * minoz[z-1] * 0.01, i.e. the JSON stores percentages
+               (reading.py:311-313, 358). Read only under scope=='POZ+EL'.
+      [33] ROmax    dict (g,z) -> float, upper MW bound of prohibited zone z = power_output_maximum[g-1]
+               * maxoz[z-1] * 0.01 (reading.py:314, 359). Read only under scope=='POZ+EL'.
+      [34] Crr      dict g -> float, offer price for regulation reserve. NOT from the JSON:
+               reading.py:445 hardcodes 1.0 for every generator ('Artificialmente creamos ofertas
+               de venta de reservas', reading.py:398). Read only under scope=='POZ+EL'.
+      [35] Cs10     dict g -> float, offer price for 10-minute spinning reserve. Synthetic constant 1.0
+               for every generator (reading.py:446, 457). Read only under scope=='POZ+EL'.
+      [36] Cs30     dict g -> float, offer price for 30-minute spinning reserve. Synthetic constant 1.0
+               (reading.py:447, 458). Read only under scope=='POZ+EL'.
+      [37] Cns10    dict g -> float, offer price for 10-minute non-spinning reserve. Synthetic constant
+               1.0 (reading.py:448, 459). Read only under scope=='POZ+EL'.
+      [38] Cns30    dict g -> float, offer price for 30-minute non-spinning reserve. Synthetic constant
+               1.0 (reading.py:449, 460). Read only under scope=='POZ+EL'.
+      [39] RRe      dict g -> float, MW cap on regulation reserve per generator. Synthetic constant 2.0
+               (reading.py:450, 461); enforced by limit_rre_rule. Read only under scope=='POZ+EL'.
+      [40] RR10     dict g -> float, MW cap on 10-minute spinning reserve. Synthetic constant 2.0
+               (reading.py:451, 462). Read only under scope=='POZ+EL'.
+      [41] RR30     dict g -> float, MW cap on 30-minute spinning reserve. Synthetic constant 2.0
+               (reading.py:452, 463). Read only under scope=='POZ+EL'.
+      [42] RN10     dict g -> float, MW cap on 10-minute non-spinning reserve. Synthetic constant 2.0
+               (reading.py:453, 464). Read only under scope=='POZ+EL'.
+      [43] RN30     dict g -> float, MW cap on 30-minute non-spinning reserve. Synthetic constant 2.0
+               (reading.py:454, 465). Read only under scope=='POZ+EL'.
+      [44] ORDC     list[int] 1..12 - segment indices of the Operating Reserve Demand Curve, generated
+               from len(RCO) (reading.py:410, 441-442). Read only under scope=='POZ+EL'.
+      [45] Cordc    dict b -> float, system purchase price for ORDC segment b. Hardcoded ladder 15.0,
+               14.0, ... 4.0 (reading.py:427-438, 466). Read only under scope=='POZ+EL'.
+      [46] RCO      dict b -> float, MW cap of ORDC segment b. Hardcoded ladder 24.0, 22.0, ... 2.0
+               (reading.py:414-425, 467); enforced by limit_rco_rule. Read only under
+               scope=='POZ+EL'.
+
+    Los indices 34 a 46 (Crr..RCO) NO provienen del JSON: reading() los genera con constantes
+    sintetizadas en el propio codigo. Solo se usan si el modelo se corre con reservas y ORDC.
+    """
     with open(file) as json_file:
         md = json.load(json_file)
         
@@ -47,18 +173,18 @@ def reading(file):
     demand1       =     md['demand']  
     reserves1     =     md['reserves']  
     
-    try: 
-        factor_demand = md['factor_demand'] 
-    except:
-        demand        = demand1
-        reserves      = reserves1
-    
+    ## Antes, cuando faltaba 'factor_demand', demand/reserves quedaban aliasados a las listas
+    ## del dict parseado y el bucle les hacia append mientras las recorria: duplicaba la serie
+    ## y mutaba md. Sobrevivia solo porque el zip(T, ...) de mas abajo truncaba el sobrante.
+    ## Ademas se recorria len(demand1); uc_059 trae 121 demandas para 120 periodos y reventaba
+    ## con IndexError sobre reserves1. Se recorre time_periods, que es el largo que zip conserva.
+    factor_demand = float(md.get('factor_demand', 1.0))
+
     if factor_demand != 1:
-            print('factor_demand=',factor_demand)
-            
-    for i in range(len(demand1)):
-        demand.append(    demand1[i] * factor_demand)
-        reserves.append(reserves1[i] * factor_demand)
+        print('factor_demand=', factor_demand)
+
+    demand   = [  demand1[t] * factor_demand for t in range(time_periods)]
+    reserves = [reserves1[t] * factor_demand for t in range(time_periods)]
 
     for t in range(1, time_periods+1):
         T.append(t)

@@ -112,27 +112,15 @@ def compare(array1,array2):
     print('result  =',result)     
 
 def delete_tabu(rightbranches):
-    # x_=[[0,1,2],[3,4,5],[7,8,9]]
-    # rightbranches = []
-    # rightbranches.append([x_[0],x_[1],x_[2],0])
-    # rightbranches.append([x_[0],x_[1],x_[2],1])
-    # rightbranches.append([x_[0],x_[1],x_[2],2])
-    # rightbranches.append([x_[0],x_[1],x_[2],0])
-    # rightbranches.append([x_[0],x_[1],x_[2],3])
-    # rightbranches.append([x_[0],x_[1],x_[2],0])
-    # rightbranches.append([x_[0],x_[1],x_[2],4])
-    try:
-        i=0
-        for cut in rightbranches:
-            if cut[3] == 0:
-                #print(cut)
-                #print(i)
-                rightbranches.pop(i)
-            i=i+1
-    except:
-        print('>>> Fail deleting tabu coinstraints')
-        
-    return(rightbranches)
+    """Descarta los cortes tabu (los que llevan 0 en la cuarta posicion).
+
+    La version anterior hacia pop() sobre la misma lista que estaba recorriendo y llevaba
+    un contador manual que no compensaba el corrimiento, asi que dos cortes tabu adyacentes
+    dejaban uno vivo: [0,0,1] -> [0,1]. Ese corte sobreviviente se reinyectaba como
+    restriccion Delta(x_,x) >= 1 en la siguiente iteracion de local branching,
+    sobre-restringiendo la busqueda. El IndexError final se lo tragaba un except desnudo.
+    """
+    return [cut for cut in rightbranches if cut[3] != 0]
 
 
 def config_env(filec='config.con'):
