@@ -1,0 +1,310 @@
+\section{Description of the Thermal Unit Commitment Problem}
+\label{sec:Mathematicalmodel}
+
+
+\subsection{Problem definition and assumptions}
+
+
+The Unit Commitment Problem (UCP) aims to minimize the total operational cost of a set of generators $g \in \mathcal{G}$ over a planning horizon $t \in \mathcal{T}$. The objective function considers several cost components: production costs $c_{gt}^{\text{p}}$, fixed costs $C_g^{\text{R}}$, start-up costs $c_{gt}^{\text{SU}}$, and shutdown costs $c_{gt}^{\text{SD}}$. Achieving this minimization requires adherence to constraints that reflect the physical and operational limits of the system, ensuring feasible and optimized generator scheduling. These constraints govern aspects such as power generation bounds, minimum uptime and downtime requirements, ramping limits, demand-reserve satisfaction, and staircase cost modeling, and are represented using binary and continuous variables for generator states and power outputs.
+
+The constraints of the UCP encapsulate the physical and operational characteristics of power generation systems, ensuring solutions are both feasible and realistic. Each constraint represents a specific aspect of generator behavior or grid requirements:
+
+\begin{description}
+    \item[Power limits:] Each generator must operate within its designed capacity, defined by the bounds $\underline{P}_g u_{gt} \leq p_{gt} \leq \overline{P}_g u_{gt}$ for all $g \in \mathcal{G}$ and $t \in \mathcal{T}$. This prevents overloading and maintains efficient operation.
+
+\item[Minimum uptime and downtime:] Generators must stay online for at least $UT_g$ periods after starting up and offline for at least $DT_g$ periods after shutting down. These constraints, $\sum_{\tau=t}^{t+UT_g-1} u_{g\tau} \geq UT_g v_{gt}$ and $\sum_{\tau=t}^{t+DT_g-1} (1 - u_{g\tau}) \geq DT_g w_{gt}$, prevent excessive wear and ensure reliable operation.
+
+\item[Ramping constraints:] The rate at which power output changes is limited by ramp-up and ramp-down constraints, defined as $p_{gt} - p_{g(t-1)} \leq RU_g$ and $p_{g(t-1)} - p_{gt} \leq RD_g$. These capture the physical limitations of generator components.
+
+\item[Start-up and shutdown costs:] These costs, $c_{gt}^{\text{SU}}$ and $c_{gt}^{\text{SD}}$, depend on generator downtime and reflect additional fuel use and equipment wear during transitions.
+
+\item[Demand and reserve requirements:] Total generation must satisfy demand $D_t$ and maintain a reserve margin $R_t$, expressed as $\sum_{g \in \mathcal{G}} p_{gt} \geq D_t + R_t$ for all $t \in \mathcal{T}$. This ensures grid stability and reliability.
+
+\item[Staircase cost structure:] Production costs vary staircase with output, modeled as $p_{gt} = \sum_{l \in \mathcal{L}_g} p_{gt}^l$, where $p_{gt}^l$ represents the power produced in each segment $l$. This mirrors fuel efficiency dynamics and captures operational states.
+
+\item[Initial conditions:] The initial states and outputs of generators are predefined, with $u_{g0}, p_{g0}, v_{g0}, w_{g0}$ specified to ensure a seamless transition from previous operations.
+
+\item[System constraints:] These maintain the balance between generation, demand, and reserves, ensuring grid-wide operational reliability.
+\end{description}
+
+\subsection{Mixed-integer linear programming model
+}
+This section introduces a comprehensive Thermal Unit Commitment (TUCP) formulation that is a robust benchmark for evaluating subsequent matheuristic methods. Our model incorporates diverse constraints, including power limits, minimum uptime/downtime, ramp capabilities, variable start-up costs, and demand-reserve requirements, while also narrowing down solution space with staircase cost production and valid inequalities. 
+
+\textcolor{blue}{The TUCP formulation used here is deterministic and excludes network and contingency constraints. While standard UCP models are usually tractable for off-the-shelf solvers, prior studies \citep{CarrionArroyo2006,Morales-Espania2013,Ostrowski2012} show that synthetic instances with high structural symmetry can severely hinder branch-and-bound performance. We therefore use such instances to rigorously assess both the solver and the proposed matheuristics, allowing us to test whether hybridizing heuristics with an exact solver yields performance gains over the solver alone. For now, our focus is on validating the effectiveness of the matheuristics methods for the core UCP before moving to more complex, security-constrained formulation.}
+
+
+\subsubsection*{Notation}
+A summary of sets, indices, parameters, and decision variables is enlisted for quick reference.
+
+\vspace{1em}
+\noindent\textit{Sets and indices of the power system}:%\vspace{-1.0em}
+\begin{labeling}{$\mathcal{G}^{\text{TEX}}$}
+\setlength\itemsep{0.1em}
+\item[$\mathcal{G}$] Set of generators ($g\in\mathcal{G}$)
+\item[$\mathcal{G}^{1}$]  Subset of generators ($g\in\mathcal{G}$) ; (if $UT_{g}=1$)
+\item[$\mathcal{G}^{1*}$] Subset of generators ($g\in\mathcal{G}$) ; (if $UT_{g}=1 \ \text{and} \ \textit{SU}_{g} \neq \textit{SD}_{g} $)
+\item[$\mathcal{G}^{>1}$] Subset of generators ($g\in\mathcal{G}$) ; (if $UT_{g}>1$)
+\item[$\mathcal{T}$] Set of time periods in the planning horizon;  ($t\in \mathcal{T}$)
+\item[$\mathcal{T}^0$] $=\mathcal{T} \setminus \{ |\mathcal{T}| \}$ Set of time periods in the planning horizon except the last one
+\end{labeling}
+
+\vspace{1em}
+\noindent\textit{Sets and indices of cost-related aspects}:%\vspace{-1.0em}
+\begin{labeling}{$\mathcal{B}^{\text{ABCD}}$}
+\setlength\itemsep{0.1em}
+\item[$\mathcal{S}_g$] Set of start-up cost curve segments for a generator ($g\in\mathcal{G}$) from hottest ($s=1$) to coldest ($s=|\mathcal{S}_g|$); ($s \in \mathcal{S}_g$).  
+\item[$\mathcal{L}_g$] Stairwise production cost intervals for generator ($g\in\mathcal{G}$); ($l\in \mathcal{L}_g$) 
+\end{labeling}
+
+\vspace{1em}
+\noindent\textit{Parameters}:%\vspace{-1.0em}
+\begin{labeling}{$a_{1,g},a_{2,g},a_{3,g}$}
+\setlength\itemsep{0.1em}
+\item[$C^{\text{R}}_{g}$] Minimum operating cost of generator ($g\in\mathcal{G}$) that works at least at minimum power $\underline{P}_{g}$; in \$. It comprises the no-load fixed cost plus the cost of producing at $\underline{P}_{g}$, i.e., $C^{\text{R}}_{g}= C^{\text{fix}}_{g} + C^{1}_{g}\underline{P}_{g}$
+\item[$C^{l}_{g}$] Cost coefficient for stairwise segment ($l\in\mathcal{L}_g$) of generator ($g\in\mathcal{G}$) that works at least at minimum power $\underline{P}_{g}$; in \$/MWh
+\item[$C^{\text{S}}_{g,s}$] Start-up cost for generator ($g\in\mathcal{G}$) with a set of segment time ($s\in\mathcal{S}_{g}$); it determines the starting cost by locating a cost in a segment time $s$ in the intervals $[\underline{T}_{g,s},\overline{T}_{g,s})$; in \$/h
+\item[$C^{\text{SD}}_{g}$] Shut-down cost for generator ($g\in\mathcal{G}$); in \$ (equal to zero in all test instances)
+\item[$\textit{De}_{t}$] Energy load demand in period ($t\in\mathcal{T}$); in MWh %Nycander
+\item[${p}_{g,0}$] Power output of a generation ($g\in\mathcal{G}$) at time 0; in MW
+\item[$\overline{P}_{g}$,$\underline{P}_{g}$] Maximum and minimum generation value of generator ($g\in\mathcal{G}$); in MW
+\item[$\overline{P}_{g}^{l}$] Maximum power available for staircase segment ($l\in\mathcal{L}_g$) of generator ($g\in\mathcal{G}$); in MW
+\item[$R_{t}$] System-wide spinning reserve requirement in period ($t\in\mathcal{T}$); in MW
+\item[$\textit{RD}_{g}$] Ramp-down rate is the capacity of generator ($g\in\mathcal{G}$) to decrease power between two consecutive periods; in MW/h
+\item[$\textit{RU}_{g}$] Ramp-up rate of generator ($g\in\mathcal{G}$) to increase power between two consecutive periods; in MW/h
+\item[$|\mathcal{S}_g|$] Number of segments in the set $\mathcal{S}_g$ 
+\item[$\textit{SU}_{g}$] Start-up rate for a generator ($g\in\mathcal{G}$); in MW/h
+\item[$\textit{SD}_{g}$] Shut-down rate for a generator ($g\in\mathcal{G}$); in MW/h
+\item[$T^{\text{RU}}_g$] Time that a generator ($g\in\mathcal{G}$) spends ramping to go from $\textit{SU}_{g}$ to $\overline{P}_{gt}$; in h
+\item[$T^{\text{RD}}_g$] Time that a generator ($g\in\mathcal{G}$) spends ramping to go from $\overline{P}_{gt}$ to $SD_{g}$; in h
+\item[$\textit{TC}_{g}$] Time offline after a generator ($g\in\mathcal{G}$) turned into cold
+\item[$\underline{T}_{g,s}$] Start of start-up cost segment ($s\in\mathcal{S}_g$), respectively; in h, (i.e. $\underline{T}_{g,1}= DT_{g}, \underline{T}_{g,S_{g}}=\textit{TC}_{g}$
+\item[$\textit{UT}_{g}$,$\textit{DT}_{g}$] Minimum up/down time for a generator ($g\in\mathcal{G}$); in h
+\item[${u}_{g,0}$] Status of generator ($g\in\mathcal{G}$) at time 0
+\item[$U_{g}$] Number of periods generator ($g\in\mathcal{G}$) is required to be online at $t=1$ ; in h
+\item[$D_{g}$] Number of periods generator ($g\in\mathcal{G}$) is required to be offline at $t=1$ ; in h
+\end{labeling}
+
+\vspace{1em}
+\noindent\textit{Binary variables}:%\vspace{-1.0em}
+\begin{labeling}{XXXX}
+\setlength\itemsep{0.1em}
+\item[${u}_{gt}$] Equal to 1 if generator ($g\in\mathcal{G}$) is online in period ($t\in\mathcal{T}$), and 0 otherwise 
+\item[$v_{gt}$] Equal to 1 if generator ($g\in\mathcal{G}$) starts up at the beginning of period ($t\in\mathcal{T}$), and 0 otherwise
+\item[$w_{gt}$] Equal to 1 if generator ($g\in\mathcal{G}$) is shut-down at the beginning of period ($t\in\mathcal{T}$), and 0 otherwise
+\item[$\delta_{gts}$] Equal to 1 if generator ($g\in\mathcal{G}$) have a start-up type $s \in \mathcal{S}$ in period ($t\in\mathcal{T}$), and 0 otherwise 
+\end{labeling}
+
+\vspace{1em}
+\noindent\textit{Real variables}:%\vspace{-1.0em}
+\begin{labeling}{$Loss^{MP}_{t}$}
+\setlength\itemsep{0.1em}
+\item[$c_{gt}^{\text{p}}$] Production cost over $\underline{P}$ of generator ($g\in\mathcal{G}$)  in period ($t\in\mathcal{T}$); in \$
+\item[$c_{gt}^{\text{SD}}$] Shut-down cost of generator ($g\in\mathcal{G}$) in period ($t\in\mathcal{T}$); in \$
+\item[$c_{gt}^{\text{SU}}$] Start-up cost of generator ($g\in\mathcal{G}$) in period ($t\in\mathcal{T}$); in \$
+\item[$p_{gt}$] Amount of power a generator ($g\in\mathcal{G}$) produces in period ($t\in\mathcal{T}$), in MW 
+\item[$p'_{gt}$] Amount of power above minimum $\underline{P}_g$ that a generator ($g\in\mathcal{G}$) produces in period ($t\in\mathcal{T}$), in MW 
+\item[$\overline{p}_{gt}$] Maximum power available from generator ($g\in\mathcal{G}$) produces in period ($t\in\mathcal{T}$), in MW 
+\item[$\overline{p}'_{gt}$] Maximum power available above minimum from generator ($g\in\mathcal{G}$) produces in period ($t\in\mathcal{T}$), in MW 
+\item[${p}^{l}_{gt}$] Power from staircase segment ($l\in\mathcal{L}_g$) 
+ from generator ($g\in\mathcal{G}$) produces in period ($t\in\mathcal{T}$), in MW 
+\item[$r_{gt}$] Spinning reserves provided by a generator ($g\in\mathcal{G}$) in period ($t\in\mathcal{T}$), in MW 
+\end{labeling}
+
+The parameters $C_{gl}^{v}$ and $C_{gl}^{w}$  are calculated as follows \citep{Knueven2020b}. 
+\begin{equation}
+    C_{gl}^{v} =
+    \left\{
+     \begin{array}{ll}
+       0                                           & \text{if  } \overline{P}_{g}^{l} \leq \textit{SU}_{g} \text{}\\
+       \overline{P}_{g}^{l}-\textit{SU}_{g}                 & \text{if  } \overline{P}_{g}^{l-1}<\textit{SU}_{g}<\overline{P}_{g}^{l}\text{}\\
+       \overline{P}_{g}^{l}-\overline{P}_{g}^{l-1} & \text{if  } \overline{P}_{g}^{l-1} \geq \textit{SU}_{g}  \text{}\\
+     \end{array}
+    \right.   \nonumber
+\end{equation}
+\begin{equation}
+  C_{gl}^{w} =
+    \left\{
+     \begin{array}{ll}
+       0                                           & \text{if  } \overline{P}_{g}^{l} \leq \textit{SD}_{g} \text{}\\
+       \overline{P}_{g}^{l}-\textit{SD}_{g}                 & \text{if  } \overline{P}_{g}^{l-1}<\textit{SD}_{g}<\overline{P}_{g}^{l}\text{}\\
+       \overline{P}_{g}^{l}-\overline{P}_{g}^{l-1} & \text{if  } \overline{P}_{g}^{l-1} \geq \textit{SD}_{g} \text{} \\
+     \end{array}
+    \right.  \nonumber
+\end{equation}
+
+
+Finally, $T^{\text{RU}}_{g}$ and $T^{\text{RD}}_{g}$ are also computed as follows \citep{Knueven2020b}:
+%Finally, $T^{\text{RU}}_{g}$ is also computed as follows \citep{Knueven2020b}.
+\begin{equation}
+T^{\text{RU}}_{g}=\left\lfloor \frac{\overline{P}_{g}-\textit{SU}_{g}}{\textit{RU}_{g}}  \right\rfloor, \nonumber
+\end{equation}
+\begin{equation}
+T^{\text{RD}}_{g}=\left\lfloor \frac{\overline{P}_{g}-\textit{SD}_{g}}{\textit{RD}_{g}}  \right\rfloor. \nonumber
+\end{equation}
+
+
+\subsubsection*{Mathematical formulation}
+The MILP model is given by:
+\begin{alignat}{3}
+%& \text{Objective function:}  \nonumber
+& \text{(TUCP) Minimize}\quad \sum\limits_{t\in\mathcal{T}} \sum\limits_{g\in \mathcal{G}} C_{g}^{\text{R}}u_{gt} + c_{gt}^{\text{p}} +  c_{gt}^{\text{SU}} + c_{gt}^{\text{SD}} \qquad &&  \label{eq:obj}
+\\
+& \text{Subject to: }  && \nonumber \\
+&\sum_{i=t-UT_{g}+1}^{t} v_{gi} \leq  u_{gt}
+&&  g\in\mathcal{G}, \, t\in \{ UT_g, \ldots, |\mathcal{T}| \},  \label{MUT}\\
+%
+& \sum_{i=t-DT_{g}+1}^{t} w_{gi}\leq 1-u_{gt}
+&& g\in\mathcal{G}, \, t\in \{ DT_{g},...,|\mathcal{T}| \}, \label{MDT}\\
+%
+& \sum_{i=1}^{\min\{ U_{g},|\mathcal{T}| \}} u_{gi} = \min \{ U_{g},|\mathcal{T}| \}
+&&  g\in\mathcal{G} \label{MUT2}\\
+%
+& \sum_{i=1}^{\min\{ D_{g},|\mathcal{T}| \}} u_{gi} = 0
+&& g\in\mathcal{G} \label{MDT2}\\
+%
+& u_{gt}-u_{g,t-1} = v_{gt}-w_{gt}
+&& g\in\mathcal{G}, \, t\in\mathcal{T} \label{garver}\\
+%
+& p'_{gt}+r_{gt}\leq \left( \overline{P}_{g} - \underline{P}_{g} \right)u_{gt} - \left( \overline{P}_{g}-\textit{SU}_{g} \right) v_{gt} && \nonumber\\ 
+& \quad -\left[ \textit{SU}_{g} - SD_{g} \right]^{+} w_{g,t+1} && g\in\mathcal{G}^{1}, \, t\in \mathcal{T}^0\label{genlim1}\\
+%
+& p'_{gt}+r_{gt}\leq \left( \overline{P}_{g} - \underline{P}_{g} \right)u_{gt} - \left( \overline{P}_{g}-\textit{SD}_{g} \right) w_{g,t+1} && \nonumber\\
+& \quad -\left[ \textit{SD}_{g} - \textit{SU}_{g} \right]^{+} v_{gt}
+&& g\in \mathcal{G}^{1}, \, t \in \mathcal{T}^0 \label{genlim2}\\
+%
+& \overline{p}_{gt} \leq \overline{P}_{g}u_{gt} - \left(  \overline{P}_{g}-\textit{SD}_{g} \right) w_{g,t+1} && \nonumber\\ 
+& \quad - \sum_{i=0}^{\min\{ \textit{UT}_g-2, \, T^{\text{RU}}_g \}} \left(  \overline{P}_{g} -\textit{SU}_g-i\,\textit{RU}_g\right)v_{g,t-i}
+&& g\in\mathcal{G}, \, t\in \mathcal{T}^0 \label{genlim3}\\
+%
+& p'_{gt}+r_{gt}\leq \left( \overline{P}_{g} - \underline{P}_{g} \right) u_{gt} - \left( \overline{P}_{g}-\textit{SU}_{g} \right) v_{gt} && \nonumber\\ 
+& \quad - \left( \overline{P}_{g} - \textit{SD}_{g} \right) w_{g,t+1}
+&& g\in\mathcal{G}^{>1}, \, t\in \mathcal{T}^0 \label{startramp}\\
+%
+& p'_{gt}+r_{gt}\leq \left( \overline{P}_{g} - \underline{P}_{g} \right) u_{gt} - \left( \overline{P}_{g}-\textit{SU}_{g} \right) v_{gt}
+&& g\in\mathcal{G}^{1}, t\in\mathcal{T} \label{shutdownramp}\\
+%
+& p'_{gt}+r_{gt}\leq \left( \overline{P}_{g} - \underline{P}_{g} \right) u_{gt} - \left( \overline{P}_{g}-\textit{SD}_{g} \right) w_{g,t+1}
+&& g\in\mathcal{G}^{1}, t \in \mathcal{T}^0 \label{shutdownramp2}\\
+%
+& \overline{p}'_{gt}-p'_{g,t-1}\leq (\textit{SU}_{g}-\underline{P}_{g} -RU_{g})v_{gt}+RU_{g}u_{gt} 
+&& g\in\mathcal{G}, t\in\mathcal{T} \label{rampup}\\
+%
+& p'_{g,t-1}-p'_{gt}\leq (\textit{SD}_{g}-\underline{P}_{g}-RD_{g})w_{gt}+RD_{g}u_{g,t-1} \quad
+&& g\in\mathcal{G},t\in\mathcal{T} \label{rampdown}\\
+%
+& p^{l}_{gt}\leq \left( \overline{P}^{l}_{g} - \overline{P}^{l-1}_{g} \right) u_{gt}
+&& g\in\mathcal{G}, t\in\mathcal{T}, l\in\mathcal{L}_g \label{Staircase1}\\
+%
+& \sum_{l\in \mathcal{L}_g} p^{l}_{gt}=p'_{gt}
+&& g\in\mathcal{G},t\in\mathcal{T} \label{Staircase2}\\
+%
+& \sum_{l\in \mathcal{L}_g} C^{l}_{g}p^{l}_{gt}=c_{gt}^{\text{p}}
+&& g\in\mathcal{G},t\in\mathcal{T} \label{Staircase3}\\
+%
+& p'_{gt}\leq \left( \overline{P}_{g} - \underline{P}_{g} \right) u_{gt}
+&& g\in\mathcal{G},t\in\mathcal{T} \label{Staircase4}\\
+%
+& p^{l}_{gt}\leq \left( \overline{P}^{l}_{g} - \overline{P}^{l-1}_{g} \right) u_{gt} - C^{v}_{gl}v_{gt} -C^{w}_{gl}w_{g,t+1} &&  g\in\mathcal{G}^{>1}, \, t\in \mathcal{T}^0, \, l\in\mathcal{L}_g \label{Staircase5}\\
+%
+& p^{l}_{gt}\leq \left( \overline{P}^{l}_{g} - \overline{P}^{l-1}_{g} \right) u_{gt} - C^{v}_{gl}v_{gt}
+&& g\in\mathcal{G}^{1},t\in\mathcal{T},l\in\mathcal{L}_g \label{Staircase6}\\
+%
+& p^{l}_{gt}\leq \left( \overline{P}^{l}_{g} - \overline{P}^{l-1}_{g} \right) u_{gt} -C^{w}_{gl}w_{g,t+1} 
+&&  g\in\mathcal{G}^{1},  \, t\in \mathcal{T}^0, \, l\in\mathcal{L}_g \label{Staircase7}\\
+%
+& p^{l}_{gt}\leq \left( \overline{P}^{l}_{g} - \overline{P}^{l-1}_{g} \right) u_{gt} - C^{v}_{gl}v_{gt} && \nonumber\\
+& \quad - \left[ C^{v}_{gl} -C^{w}_{gl} \right]^{+} w_{g,t+1} 
+&& g\in\mathcal{G}^{1*}, \, t\in \mathcal{T}^0, \, l\in\mathcal{L}_g \label{Staircase8}\\
+%
+& p^{l}_{gt}\leq \left( \overline{P}^{l}_{g} - \overline{P}^{l-1}_{g} \right) u_{gt} -C^{w}_{gl}w_{g,t+1} && \nonumber\\
+& \quad - \left[ C^{w}_{gl}-C^{v}_{gl} \right]^{+} v_{gt} 
+&& g\in\mathcal{G}^{1*}, \, t\in \mathcal{T}^0, \, l\in\mathcal{L}_g \label{Staircase9}\\
+%
+& \delta_{gts} \leq \sum_{i=\underline{T}_{g,s}}^{{\underline{T}_{g,s+1}-1} } w_{g,t-i}
+&& g\in\mathcal{G},t\in\mathcal{T}, s\in [1,|\mathcal{S}_{g}|)
+%s\in\mathcal{S}_{g} \setminus \left\lbrace S_{g} \right\rbrace
+ \label{Startcost1} \\
+%
+& v_{gt}=\sum_{s=1}^{ |\mathcal{S}_{g}| }\delta_{gts}
+&& g\in\mathcal{G},t\in\mathcal{T} \label{Startcost2}\\
+%
+& c_{gt}^{\text{SU}}=\sum_{s=1}^{|\mathcal{S}_{g}|} C_{g}^{\text{S}} \delta_{gts}
+&& g\in\mathcal{G},t\in\mathcal{T} \label{Startcost3}\\
+%
+& \delta_{gts}=0
+&&  g\in\mathcal{G}, s\in [1,|\mathcal{S}_{g}|), \nonumber \\ 
+& && t\in\left(\underline{T}_{g,s+1}-DT^{0}_{g}, \underline{T}_{g,s+1} \right) \label{Startcost4}\\
+%
+& c_{gt}^{\text{SD}}= C_{g}^{\text{SD}} w_{gt} 
+&& g\in\mathcal{G},t\in\mathcal{T} \label{Shutdowncost}\\
+%
+& \sum_{g\in \mathcal{G}} p_{gt}=\textit{De}_{t}
+&&  t\in \mathcal{T} \label{System1}\\
+%
+& \sum_{g\in \mathcal{G}} \overline{p}_{gt} \geq \textit{De}_{t}+R_{t}
+&& t\in \mathcal{T} \label{System2}\\
+%
+& \sum_{g\in \mathcal{G}} r_{gt} \geq R_{t}
+&&  t\in \mathcal{T} \label{System3}\\
+%
+& p_{gt}=p'_{gt}+\underline{P}_{g} u_{gt}
+&& g\in\mathcal{G}, t\in\mathcal{T} \label{relation1}\\
+%
+& \overline{p}_{gt}=\overline{p}'_{gt}+\underline{P}_{g} u_{gt}
+&& g\in\mathcal{G},t\in\mathcal{T} \label{relation2}\\
+%
+& \overline{p}'_{gt}=p'_{gt}+r_{gt}
+&& g\in\mathcal{G}, t\in\mathcal{T} \label{relation3}\\
+%
+& \overline{p}_{gt}=p_{gt}+r_{gt} 
+&& g\in\mathcal{G}, t\in\mathcal{T} \label{relation4}\\
+%
+& p_{gt}\leq \overline{p}_{gt} 
+&& g\in\mathcal{G}, t\in\mathcal{T} \label{relation5}\\
+%
+& p'_{gt}\leq \overline{p}'_{gt} 
+&& g\in\mathcal{G}, t\in\mathcal{T} \label{relation6}\\
+%
+& u_{gt},v_{gt},w_{gt},\delta^{s}_{g}\in \{0, 1\}
+&& g\in\mathcal{G}, t\in\mathcal{T}  \label{eq:uvw}\\
+%
+& p_{gt},p_{gt}',\bar{p}_{gt}',c_{gt}^{\text{p}},c_{gt}^{\text{SU}},r_{gt} \geq 0 
+&& g\in\mathcal{G}, t\in\mathcal{T}  \label{eq:pp}
+\end{alignat}
+
+
+The objective function (\ref{eq:obj}) seeks to minimize the total cost, which is composed of the energy production cost $c_{gt}^{\text{p}}$, the fixed cost of operating at a minimum production level $C_{g}^{\text{R}}$. The variable startup cost $c_{gt}^{\text{SU}}$ and  the shutdown cost $c_{gt}^{\text{SD}}$ for each generator $g\in\mathcal{G}$ during a specific time period $t\in\mathcal{T}$. 
+
+%RZ The correspondence of the constraints in the proposed model is listed below, with the names of the original authors.
+
+%RZ \hl{RZ: Antes de modificar esto discutor algo con Uriel}
+
+
+The minimum uptime and minimum downtime constraints 
+are represented by Constraints (\ref{MUT})--(\ref{MDT2}). The logic of the generators' start-up, shut-down, and operation is modeled by Constraints (\ref{garver}). The generation limit requirements are imposed by Constraints (\ref{genlim1})--(\ref{genlim3}).
+Constraint (\ref{genlim3}) follows the ramp-up trajectory upper bound of \citet{Pan2016}; the summation terms are
+restricted to $t-i\geq 1$, and the shutdown trajectory is represented by the single term in $w_{g,t+1}$ rather than by a
+full summation over $T^{\text{RD}}_g$. This is the form used in all the experiments reported in Section \ref{section:Test2};
+because (\ref{genlim3}) is a valid inequality, the integer optimum is unaffected by this choice, which only influences the
+strength of the linear relaxation. The start and shut-down ramp limits are modeled by Constraints (\ref{startramp})--(\ref{shutdownramp2}). The ramp-up and ramp-down limits are represented by Constraints (\ref{rampup})--(\ref{rampdown}).
+%
+The staircase production cost are represented by 
+Constraints (\ref{Staircase1})--(\ref{Staircase9}). Note that Constraints (\ref{Staircase5}), (\ref{Staircase6}), (\ref{Staircase7}), (\ref{Staircase8}), and (\ref{Staircase9}) are not necessary in the formulation, but they serve to tighten the variables' staircase production.
+%
+The shut-down cost constraints are Given by Constraints(\ref{Shutdowncost}).
+
+Constraints (\ref{Startcost1})--(\ref{Startcost4}) indicate the cost of the segment of the variable of start-up function cost $c_{gt}^{S_g}$ of the generator $g$, where $C_{g,s}^{\text{S}}$ is the start-up cost in the category $s$ of generator $g$ in \$/MWh.
+%
+The demand and reserve requirement are modeled by Constraints (\ref{System1}) and (\ref{System3}). Constraints (\ref{relation1})--(\ref{relation6}) establish linear relationships between the power variables 
+$p_{gt}, p'_{gt}, \overline{p}'_{gt},\overline{p}_{gt}$. These constraints are used in the best UCP formulations \citep{Knueven2020b}, and help constrain the convex hull of the problem.
+%
+Lastly, \eqref{eq:uvw} and \eqref{eq:pp}  define the nature of the decision variables.
+
+Initial conditions: Constraints (\ref{garver}),(\ref{rampup}),(\ref{rampdown}) change when the time is $t=0$. The parameters used in this case to substitute the parameter with $t-1$ index are the initial conditions of the generators such as $u_{g,0}, p_{g,0}, p'_{g,0}, U_{g,0}, D_{g,0}$. Also, Constraints (\ref{Startcost4}) assure the start-up variable $\delta_{gt}$ to be zero during the initial periods considering its minimum shut-down time if the generator has been offline \citep{Morales-Espania2013}.
+
+
+
+
+
+

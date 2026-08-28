@@ -1,0 +1,33 @@
+\section{Introduction}
+\label{sec:Introduction}
+
+This research aims to improve the efficiency of solving a thermal unit commitment problem (UCP), a key challenge in power system planning. The UCP involves making decisions about generator operations, such as switching units on or off and determining optimal power output levels, to meet consumer demand while satisfying operational, technical, and economic constraints. As a daily optimization task, it seeks to minimize production costs while adhering to limitations imposed by the electrical system, generator characteristics, and market requirements. Commonly, the UCP is addressed through the formulation of an adequate mixed-integer linear programming (MILP) model.
+
+Despite recent advances on models and algorithms, solving UCPs within limited time frames remains a challenge. To tackle this problem, the purpose of this study is to provide a hybrid heuristic framework that attempts to exploit the advantages of components such as kernel search and local branching with the aim of achieving optimal or near-optimal solutions in the time allowed.
+
+The proposed solution algorithm consists of a two-phase approach, comprising a constructive phase and an improving phase. In the first phase, 
+we develop a relax-and-fit heuristic (named HARDUC) that builds feasible solutions to the problem.
+Then, in the second phase, we derive a method that aims to improve the solution by adapting local branching~\citep{Fischetti2003} and kernel search ~\citep{Angelelli2010} mechanisms.
+
+The general algorithm and its individual components were fully assessed
+in three groups of instances derived from \citet{Kazarlis1996}.
+The empirical evaluation included a comparison with
+the constructive HGPS heuristic of \citet{Harjunkoski2021} and the
+CPLEX solution of the thermal UCP MILP model proposed by \citet{Knueven2020b}.
+
+It was observed that
+although the branch-and-bound solver demonstrates strong performance for small-scale problem instances, our proposed method consistently achieves better results for medium- and large-scale instances within the allocated time frame. In particular, our methods reliably generate solutions across all cases, whereas the solver frequently fails to find feasible solutions in medium-, and large-scale instances.
+
+The paper is structured as follows. The most relevant related work
+on algorithms, including matheuristics, for the UCP is surveyed in Section~\ref{sec:survey}, \textcolor{blue}{where the specific contribution of the paper is also outlined}.  Section~\ref{sec:Mathematicalmodel}
+presents the problem, its assumptions, and the mathematical formulation.
+This is followed by Section~\ref{sec:method}
+that includes a full and detailed description of the proposed
+solution framework and its individual components.
+Section~\ref{sec:Experimentalwork}
+presents an empirical evaluation of
+the algorithm and a comparison with existing work.
+Closing remarks, conclusions, and discussion of
+future research directions are given in Section~\ref{sec:Conclusions}.
+
+

@@ -1,0 +1,72 @@
+\begin{algorithm}[htb]
+\small
+\caption{\texttt{kernelsearch()}}
+\label{alg:KS}
+\begin{algorithmic}
+%\fontsize{10}{8}\selectfont 
+\Require \\
+$\bar{x}$=a feasible solution of $P$, \\
+$P$=a formulation of the instance to solve,\\
+$\textit{t\_total}$
+\Ensure \\
+A feasible solution $x^{*}$ of value $z^{*}$ \\
+
+\While{$(elapsed\_time < t\_total)$}
+    %\State \hfill
+    \State $\textit{cutoff} \leftarrow z^{*}$ \Comment{\textbf{Initialization phase}}
+    \State K $\leftarrow$ kernel formed from the variables that fulfill $u_{g,t}:u_{g,t}=1\in\bar{x}$ 
+    \State $ P^{ K}\leftarrow$ \texttt{fixing}(1,$K$,$P$) fixing to 1 all the variables into kernel
+    \State $\lbrace \hat{x}, \hat{z} \rbrace \leftarrow \texttt{solveLR}( P^{\text{fix(\textit{K})}})$ 
+    \State $U \leftarrow$ select the variables that fulfill ${u}_{g,t}\notin K$
+    \State $\textit{nbucks} \leftarrow 1 + 3.322 \ln(|\textit{U}|)$
+    \State $U^{\text{desc}} \leftarrow$ sort $U$ in descending order using its reduced cost values 
+    \State $\{ B_i\}_{i=1}^{\textit{nbucks}} \leftarrow$ \texttt{buildbuckets}($U^{\text{desc}}$,$\textit{nbucks}$)  
+    \State $tl \leftarrow (\textit{t\_total}-\textit{elapsed\_time}) / n$ 
+    \State \hfill\Comment{\textbf{Expansion phase}}
+    \For{ $i=1,\textit{nbucks}$} 
+            \State $ P^{ K\cup B_i}\leftarrow$ \textbf{fixing}(0,$\overline{B}_i$,$P$) fixing to 0 all the variables of the other buckets
+            \State $ P^{ K\cup B_i}\leftarrow$ $ P^{ K\cup B_i} \cup \lbrace \sum_{j\in B_{i}}x_{j} \geq 1\rbrace $ A variable from the bucket is forced into entering the kernel.
+            \State $\lbrace stat, \widetilde{x}, \widetilde{z} \rbrace \leftarrow \texttt{solve}( P^{ K\cup B_i}, \textit{cutoff},tl)$
+            \If{stat=\text{feasible}}
+                    \If{$(\widetilde{z} < z^{*} )$} 
+                 \State $  \textit{cutoff} \leftarrow z^{*} \leftarrow \widetilde{z}$; $x^* \leftarrow \widetilde{x}$
+                \EndIf
+                \State K $\leftarrow$ update the kernel from the buckets variables that fulfill $u_{g,t}:u_{g,t}=1\in\bar{x}$
+            \EndIf
+    \EndFor
+\EndWhile\\
+\Return{$x^{*}$}
+\end{algorithmic}
+\end{algorithm}          
+
+
+
+%https://www.mdpi.com/2076-3417/12/22/11421
+\begin{algorithm}[htb]
+\small%\fontsize{10}{8}\selectfont 
+\caption{\texttt{buildbuckets()}}
+\label{alg:buildbuckets}
+\begin{algorithmic}
+\Require \\
+$U^{\text{desc}}$=list of $u_{g,t}$ outside the kernel, in descending order, \\
+$\textit{nbucks}$=number of buckets
+\Ensure \\A set of buckets $\{ B_i\}_{i=1}^{\textit{nbucks}}$\\
+\State $\{ B_i\}   \leftarrow \lbrace\phi\rbrace$
+\State $\textit{start}      \leftarrow 0 ; \textit{end}  \leftarrow 0$
+\State $n                \leftarrow |U^{\text{desc}}|$
+\State $k                \leftarrow \lfloor n / \textit{nbucks}\rfloor$
+\State $\textit{remainder} \leftarrow n \% \textit{nbucks}$ 
+    \For{ $i=1,\textit{nbucks}$} 
+        \State $\textit{end} \leftarrow \textit{start} + k$
+        \If{$\textit{remainder} > 0$} 
+            \State $ \textit{end}       \leftarrow \textit{end} + 1$
+            \State $ \textit{remainder} \leftarrow \textit{remainder} - 1$
+        \EndIf            
+        \State $ B_i\leftarrow  B_i\cup \lbrace U^{\text{desc}}[\textit{start}:\textit{end}]\rbrace$
+        \State $\textit{start} \leftarrow  \textit{end} $
+\EndFor\\
+\Return{$\{ B_i\}_{i=1}^{\textit{nbucks}}$}
+\end{algorithmic}
+\end{algorithm}        
+
+

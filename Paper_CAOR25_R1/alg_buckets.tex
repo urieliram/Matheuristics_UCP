@@ -1,0 +1,27 @@
+%https://www.mdpi.com/2076-3417/12/22/11421
+\begin{algorithm}[htb]
+\small%\fontsize{10}{8}\selectfont 
+\caption{\texttt{buildbuckets()}}
+\label{alg:buildbuckets}
+\begin{algorithmic}
+\Require \\
+$U^{\text{ord}}$=list of $u_{g,t}$ outside the kernel, most negative reduced cost first, \\
+$\textit{nbucks}$=number of buckets
+\Ensure \\A set of buckets $\{ B_i\}_{i=1}^{\textit{nbucks}}$\\
+\State $\{ B_i\}   \leftarrow \lbrace\phi\rbrace$
+\State $\textit{start}      \leftarrow 0 ; \textit{end}  \leftarrow 0$
+\State $n                \leftarrow |U^{\text{ord}}|$
+\State $k                \leftarrow \lfloor n / \textit{nbucks}\rfloor$
+\State $\textit{remainder} \leftarrow n \mod{(\textit{nbucks})}$ 
+    \For{ $i=1,\textit{nbucks}$} 
+        \State $\textit{end} \leftarrow \textit{start} + k$
+        \If{$\textit{remainder} > 0$} 
+            \State $ \textit{end}       \leftarrow \textit{end} + 1$
+            \State $ \textit{remainder} \leftarrow \textit{remainder} - 1$
+        \EndIf            
+        \State $ B_i\leftarrow  B_i\cup \lbrace U^{\text{ord}}[\textit{start}:\textit{end}]\rbrace$
+        \State $\textit{start} \leftarrow  \textit{end} $
+\EndFor\\
+\Return{$\{ B_i\}_{i=1}^{\textit{nbucks}}$}
+\end{algorithmic}
+\end{algorithm}   

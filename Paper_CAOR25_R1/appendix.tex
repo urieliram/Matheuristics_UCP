@@ -1,0 +1,531 @@
+\setcounter{table}{0}
+\setcounter{figure}{0}
+\renewcommand{\thetable}{A\arabic{table}}
+\renewcommand{\thefigure}{A\arabic{figure}}
+
+%RZ \section*{Appendix}\label{app:appendix}
+
+%RZ\subsection*{Appendix A} \label{app:appA}
+\section{Results for Construction Heuristics} \label{app:appA}
+
+
+%\hl{Las figs no se les ve le leyenda del eje x, es decir, se ven empalmados los valores, (UILL ya quedo arreglado...)}
+
+The distributions of the relative optimality gap results for each method are shown in Figures \ref{fig:violinHARDUC_x7day_small}, \ref{fig:violinHARDUC_x7day_medium}, and \ref{fig:violinHARDUC_x7day_large}. Each series represents the results of a method; the relative optimality gap is shown on the horizontal axis. The number of feasible instances found from each group's total instances is reported in parentheses. 
+\textcolor{black}{The figures illustrate that, as the instance difficulty increases, the relative optimality gap of the first solution obtained with the HARDUC method exhibits a distribution with significantly lower variance than other methods. Moreover, it demonstrates superior accuracy, as evidenced by the average relative optimality gap approaching zero. Statistical tests further support these findings.}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% HGPS VS HARDUC %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{figure}[htb]
+\centering
+\includegraphics[width=.7\textwidth]{Figure/fig_violinHARDUC_x7day_small.pdf}
+\scriptsize \caption{Relative optimality gap distributions of constructive methods in the instances group x7day\_small.}\label{fig:violinHARDUC_x7day_small}
+\end{figure}
+
+\begin{figure}[htb]
+\centering
+\includegraphics[width=.7\textwidth]{Figure/fig_violinHARDUC_x7day_medium.pdf}
+\scriptsize \caption{Relative optimality gap distributions of constructive methods in the instances group x7day\_medium.}\label{fig:violinHARDUC_x7day_medium}
+\end{figure}
+
+\begin{figure}[htb]
+\centering
+\includegraphics[width=.7\textwidth]{Figure/fig_violinHARDUC_x7day_large.pdf}
+\scriptsize \caption{Relative optimality gap distributions of constructive methods in the instances group x7day\_large.}\label{fig:violinHARDUC_x7day_large}
+\end{figure}
+
+The following is an analysis of variance, and mean difference applied to the results of the methods regarding the relative optimality gap. 
+
+On one hand, the analysis of variance checks whether the average relative optimality gap of the results of all methods is statistically different from each other. 
+On the other hand, a series of mean difference tests applied to each pair of results verify that the average relative optimality gap of one method is significantly higher than the mean obtained by another method. 
+All statistical studies were done only in the instances where the solver found a feasible solution.
+
+
+The results of the analysis of variance applied to the results of the constructive methods are shown in Table \ref{tabla:ANOVA_constructive}. In the three groups of instances, the null hypothesis $\text{H}_o$ of equality of means was rejected. The alternative hypothesis that at least one of the methods has a mean difference from the others was not rejected.  
+The results of the mean difference analysis between the HARDUC and HGPS methods can be found in Table \ref{tabla:Differences_constructive}. The HARDUC method has a significantly lower average in the relative optimality gap than HGPS.
+
+Because the HARDUC method obtained a feasible initial solution in all test instances and a significantly smaller relative optimality gap than those obtained by HGPS and CBS, we consider the HARDUC constructive method to be the most appropriate to provide the first initial solution to the improvement methods (LB1, LB2, LB3, LB4, and KS) in the following tests. 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{table}[H]\centering
+\caption{Analysis of variance summary of the constructive methods HARDUC, HGPS, and CBS.}\label{tabla:ANOVA_constructive}
+\scriptsize
+\scalebox{0.95}{
+\begin{tabular}{>{\RaggedRight}p{4cm}rrr>{\RaggedRight}p{4cm}}\toprule
+Null hypothesis &Instances &Test &p-value &Decision \\\cmidrule{1-5}
+The mean for each population is equal &x7day\_small &Kruskal-Wallis &0.0000* &We reject $\text{H}_o$ and accept $\text{H}_a$: at least one population mean different from the rest \\
+The mean for each population is equal &x7day\_medium &Kruskal-Wallis &0.0000* &We reject $\text{H}_o$ and accept $\text{H}_a$: at least one population mean different from the rest \\
+The mean for each population is equal &x7day\_large &Kruskal-Wallis &0.0000* &We reject $\text{H}_o$ and accept $\text{H}_a$: at least one population mean different from the rest \\
+\bottomrule
+*  Significance level 0.05
+\end{tabular}
+}
+
+\end{table}
+\begin{table}[H]\centering
+\caption{Differences mean test summary between the constructive methods HARDUC and HGPS.}\label{tabla:Differences_constructive}
+\scriptsize
+\scalebox{0.95}{
+\begin{tabular}{>{\RaggedRight}p{4.3cm}rrr>{\RaggedRight}p{4cm}}\toprule
+Null hypothesis &Instances&Test &p-value &Decision \\\cmidrule{1-5}
+The means difference of the samples from the same distribution &x7day\_small &Mann-Whitney &0.0002* &We reject $\text{H}_o$ and accept $\text{H}_a$: HARDUC's mean is less than HGPS's mean \\
+The means difference of the samples from the same distribution &x7day\_medium &Mann-Whitney &0.0000* &We reject $\text{H}_o$ and accept $\text{H}_a$: HARDUC's mean is less than HGPS's mean \\
+The means difference of the samples from the same distribution &x7day\_large &Mann-Whitney &0.0000* &We reject $\text{H}_o$ and accept $\text{H}_a$: HARDUC's mean is less than HGPS's mean \\
+\bottomrule
+*  Significance level 0.05
+\end{tabular}
+}
+\end{table}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\setcounter{table}{0}
+\setcounter{figure}{0}
+\renewcommand{\thetable}{B\arabic{table}}
+\renewcommand{\thefigure}{B\arabic{figure}}
+%\subsection*{Appendix B}\label{app:appB}
+\section{Results for Local Branching and Kernel Search}\label{app:appB}
+
+
+We perform statistical tests by analyzing variance and comparing means to determine whether the improvements are significant. The summary of the results of the analysis of variance for the three groups of instances can be found in Table \ref{tabla:ANOVA_allmethods_1h}.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{table}[!htp]\centering
+\caption{Analysis of variance summary for LB1\_1h, LB2\_1h, LB3\_1h, LB4\_1h, KS\_1h, SM1\_1h, SM2\_1h under a running time limit of 4000 seconds.}\label{tabla:ANOVA_allmethods_1h}
+\scriptsize
+\scalebox{0.95}{
+\begin{tabular}{>{\RaggedRight}p{4cm}rrr>{\RaggedRight}p{4cm}}\toprule
+Null hypothesis &Instances &Test &p-value &Decision \\\cmidrule{1-5}
+The mean for each population is equal &x7day\_small &Kruskal-Wallis &0.9758 &We fail to reject $\text{H}_o$ \\
+The mean for each population is equal &x7day\_medium &Kruskal-Wallis &0.0000* &We reject $\text{H}_o$ and accept $\text{H}_a$: at least one population mean different from the rest \\
+The mean for each population is equal &x7day\_large &Kruskal-Wallis &0.0066* &We reject $\text{H}_o$ and accept $\text{H}_a$: at least one population mean different from the rest \\
+\bottomrule
+*  Significance level 0.05
+\end{tabular}
+}
+\end{table}
+
+The analysis of variance results rejects the null hypothesis of equality of the means and does not reject the alternative hypothesis that at least one of the means differs from that of the rest of the methods.
+
+The results of the mean comparison study among all the methods, for 4000 seconds of execution and for the three groups of instances are presented in Tables \ref{tabla:Differences_small_1h}, \ref{tabla:Differences_medium_1h}, and \ref{tabla:Differences_large_1h}.
+
+%%%%%
+
+We carry out statistical testing to determine whether the improvements are significant by analyzing variance and comparing means. The summary of the results of the analysis of variance for the three groups of instances can be found in Table \ref{tabla:ANOVA_allmethods_2h}.
+
+\begin{table}[!htp]\centering
+\caption{Analysis of variance summary for LB1, LB2, LB3, LB4, KS, MILP, SM2 under a running time limit of 7200 seconds.}\label{tabla:ANOVA_allmethods_2h}
+\scriptsize
+\scalebox{0.95}{
+\begin{tabular}{>{\RaggedRight}p{5cm}rrr>{\RaggedRight}p{4cm}r}\toprule
+Null hypothesis &Instances &Test &p-value &Decision \\\cmidrule{1-5}
+The mean for each population is equal &x7day\_small &Kruskal-Wallis &0.7289 &We fail to reject $\text{H}_o$ \\
+The mean for each population is equal &x7day\_medium &Kruskal-Wallis &0.0000* &We reject $\text{H}_o$ and accept $\text{H}_a$: at least one population mean different from the rest \\
+The mean for each population is equal &x7day\_large &Kruskal-Wallis &0.0007* &We reject $\text{H}_o$ and accept $\text{H}_a$: at least one population mean different from the rest \\
+\bottomrule
+*  Significance level 0.05
+\end{tabular}
+}
+\end{table}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\setcounter{table}{0}
+\setcounter{figure}{0}
+\renewcommand{\thetable}{C\arabic{table}}
+\renewcommand{\thefigure}{C\arabic{figure}}
+%\subsection*{Appendix C} \label{app:appC}
+\section{Statistical Tests} \label{app:appC}
+
+\begin{table}[H]\centering
+\caption{Differences mean test summary between the constructive methods HARDUC and HGPS.}\label{tabla:Differences_constructive2}
+\scriptsize
+\scalebox{0.95}{
+\begin{tabular}{>{\RaggedRight}p{4.3cm}rrr>{\RaggedRight}p{4cm}}\toprule
+Null hypothesis &Instances&Test &p-value &Decision \\\cmidrule{1-5}
+The means difference of the samples from the same distribution &x7day\_small &Mann-Whitney &0.0002* &We reject $\text{H}_o$ and accept $\text{H}_a$: HARDUC's mean is less than HGPS's mean \\
+The means difference of the samples from the same distribution &x7day\_medium &Mann-Whitney &0.0000* &We reject $\text{H}_o$ and accept $\text{H}_a$: HARDUC's mean is less than HGPS's mean \\
+The means difference of the samples from the same distribution &x7day\_large &Mann-Whitney &0.0000* &We reject $\text{H}_o$ and accept $\text{H}_a$: HARDUC's mean is less than HGPS's mean \\
+\bottomrule
+*  Significance level 0.05
+\end{tabular}
+}
+\end{table}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%Means difference hypothesis test summary (x7day\_small) 1 hora
+\begin{table}[H]\centering
+\caption{Means difference statistical test summary among all methods for instances from group x7day\_small under a running time limit of 4000 seconds.}
+\label{tabla:Differences_small_1h}
+\scriptsize
+\scalebox{0.82}{
+\begin{tabular}{lrr>{\RaggedRight}p{2.7cm}}\toprule
+Null hypothesis &Test &p-value &Decision \\\cmidrule{1-4}
+SM1\_1h-LB2\_1h: There is no difference between the two population means & Mann-Whitney & 0.3779 & We fail to reject $\text{H}_o$ \\
+SM1\_1h-KS\_1h: There is no difference between the two population means & T-test for two samples & 0.2725 & We fail to reject $\text{H}_o$ \\
+SM1\_1h-LB1\_1h: There is no difference between the two population means & T-test for two samples & 0.2499 & We fail to reject $\text{H}_o$ \\
+SM1\_1h-LB4\_1h: There is no difference between the two population means & T-test for two samples & 0.1737 & We fail to reject $\text{H}_o$ \\
+SM1\_1h-LB3\_1h: There is no difference between the two population means & T-test for two samples & 0.1318 & We fail to reject $\text{H}_o$ \\
+SM1\_1h-SM2\_1h: There is no difference between the two population means & T-test for two samples & 0.0888 & We fail to reject $\text{H}_o$ \\
+LB2\_1h-KS\_1h: There is no difference between the two population means & Mann-Whitney & 0.5484 & We fail to reject $\text{H}_o$ \\
+LB2\_1h-LB1\_1h: There is no difference between the two population means & Mann-Whitney & 0.4302 & We fail to reject $\text{H}_o$ \\
+LB2\_1h-LB4\_1h: There is no difference between the two population means & Mann-Whitney & 0.2714 & We fail to reject $\text{H}_o$ \\
+LB2\_1h-LB3\_1h: There is no difference between the two population means & Mann-Whitney & 0.2367 & We fail to reject $\text{H}_o$ \\
+LB2\_1h-SM2\_1h: There is no difference between the two population means & Mann-Whitney & 0.1617 & We fail to reject $\text{H}_o$ \\
+KS\_1h-LB1\_1h: There is no difference between the two population means & T-test for two samples & 0.492 & We fail to reject $\text{H}_o$ \\
+KS\_1h-LB4\_1h: There is no difference between the two population means & T-test for two samples & 0.4016 & We fail to reject $\text{H}_o$ \\
+KS\_1h-LB3\_1h: There is no difference between the two population means & T-test for two samples & 0.3336 & We fail to reject $\text{H}_o$ \\
+KS\_1h-SM2\_1h: There is no difference between the two population means & T-test for two samples & 0.2923 & We fail to reject $\text{H}_o$ \\
+LB1\_1h-LB4\_1h: There is no difference between the two population means & T-test for two samples & 0.4039 & We fail to reject $\text{H}_o$ \\
+LB1\_1h-LB3\_1h: There is no difference between the two population means & T-test for two samples & 0.332 & We fail to reject $\text{H}_o$ \\
+LB1\_1h-SM2\_1h: There is no difference between the two population means & T-test for two samples & 0.287 & We fail to reject $\text{H}_o$ \\
+LB4\_1h-LB3\_1h: There is no difference between the two population means & T-test for two samples & 0.4211 & We fail to reject $\text{H}_o$ \\
+LB4\_1h-SM2\_1h: There is no difference between the two population means & T-test for two samples & 0.3808 & We fail to reject $\text{H}_o$ \\
+LB3\_1h-SM2\_1h: There is no difference between the two population means & T-test for two samples & 0.4675 & We fail to reject $\text{H}_o$ \\
+\bottomrule
+*  Significance level 0.05
+\end{tabular}
+}
+\end{table}
+
+
+
+%Means difference hypothesis test summary (x7day\_small) 2 hours
+\begin{table}[H]\centering
+\caption{Means difference statistical test summary among all methods for instances from group x7day\_small under a running time limit of 7200 seconds.}
+\label{tabla:Differences_small_2h}
+\scriptsize
+\scalebox{0.9}{
+\begin{tabular}{>{\RaggedRight}p{5.5cm}rr>{\RaggedRight}p{3.5cm}}
+\toprule
+Null hypothesis &Test &p-value &Decision \\\cmidrule{1-4}
+SM1-LB2: There is no difference between the two population means & Mann-Whitney & 0.1584 & We fail to reject $\text{H}_o$ \\
+SM1-LB1: There is no difference between the two population means & Mann-Whitney & 0.1396 & We fail to reject $\text{H}_o$ \\
+SM1-LB4: There is no difference between the two population means & Mann-Whitney & 0.117 & We fail to reject $\text{H}_o$ \\
+SM1-SM2: There is no difference between the two population means & T-test for two samples & *0.0362 & We reject $\text{H}_o$ and accept $\text{H}_a$: MILP's mean less than MILP2's \\
+SM1-KS: There is no difference between the two population means & T-test for two samples & 0.0501 & We fail to reject $\text{H}_o$ \\
+SM1-LB3: There is no difference between the two population means & T-test for two samples & *0.0358 & We reject $\text{H}_o$ and accept $\text{H}_a$: MILP's mean less than LB3's \\
+LB2-LB1: There is no difference between the two population means & Mann-Whitney & 0.4569 & We fail to reject $\text{H}_o$ \\
+LB2-LB4: There is no difference between the two population means & Mann-Whitney & 0.4143 & We fail to reject $\text{H}_o$ \\
+LB2-SM2: There is no difference between the two population means & Mann-Whitney & 0.2326 & We fail to reject $\text{H}_o$ \\
+LB2-KS: There is no difference between the two population means & Mann-Whitney & 0.4091 & We fail to reject $\text{H}_o$ \\
+LB2-LB3: There is no difference between the two population means & Mann-Whitney & 0.2989 & We fail to reject $\text{H}_o$ \\
+LB1-LB4: There is no difference between the two population means & Mann-Whitney & 0.4515 & We fail to reject $\text{H}_o$ \\
+LB1-SM2: There is no difference between the two population means & Mann-Whitney & 0.2669 & We fail to reject $\text{H}_o$ \\
+LB1-KS: There is no difference between the two population means & Mann-Whitney & 0.4623 & We fail to reject $\text{H}_o$ \\
+LB1-LB3: There is no difference between the two population means & Mann-Whitney & 0.2896 & We fail to reject $\text{H}_o$ \\
+LB4-SM2: There is no difference between the two population means & Mann-Whitney & 0.3036 & We fail to reject $\text{H}_o$ \\
+LB4-KS: There is no difference between the two population means & Mann-Whitney & 0.4623 & We fail to reject $\text{H}_o$ \\
+LB4-LB3: There is no difference between the two population means & Mann-Whitney & 0.3375 & We fail to reject $\text{H}_o$ \\
+SM2-KS: There is no difference between the two population means & T-test for two samples & 0.3651 & We fail to reject $\text{H}_o$ \\
+SM2-LB3: There is no difference between the two population means & T-test for two samples & 0.3434 & We fail to reject $\text{H}_o$ \\
+KS-LB3: There is no difference between the two population means & T-test for two samples & 0.4909 & We fail to reject $\text{H}_o$ \\
+\bottomrule
+*  Significance level 0.05
+\end{tabular}
+}
+\end{table}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%Means difference hypothesis test summary (x7day\_medium)
+\begin{table}[H]\centering
+\caption{Means difference statistical test summary among all methods for instances from group x7day\_medium under a running time limit of 4000 seconds.}
+\label{tabla:Differences_medium_1h}
+\scriptsize
+\scalebox{0.85}{
+\begin{tabular}{>{\RaggedRight}p{5.5cm}rr>{\RaggedRight}p{5.5cm}r}\toprule
+Null hypothesis &Test &p-value &Decision \\\cmidrule{1-4}
+KS\_1h-LB2\_1h: There is no difference between the two population means & Mann-Whitney & *0.0108 & We reject $\text{H}_o$ and accept $\text{H}_a$: KS\_1h's mean less than LB2\_1h's \\
+KS\_1h-LB1\_1h: There is no difference between the two population means & Mann-Whitney & *0.0031 & We reject $\text{H}_o$ and accept $\text{H}_a$: KS\_1h's mean less than LB1\_1h's \\
+KS\_1h-LB4\_1h: There is no difference between the two population means & Mann-Whitney & *0.0022 & We reject $\text{H}_o$ and accept $\text{H}_a$: KS\_1h's mean less than LB4\_1h's \\
+KS\_1h-LB3\_1h: There is no difference between the two population means & Mann-Whitney & *0.001 & We reject $\text{H}_o$ and accept $\text{H}_a$: KS\_1h's mean less than LB3\_1h's \\
+KS\_1h-SM1\_1h: There is no difference between the two population means & Mann-Whitney & *0.0 & We reject $\text{H}_o$ and accept $\text{H}_a$: KS\_1h's mean less than SM1\_1h's \\
+KS\_1h-SM2\_1h: There is no difference between the two population means & Mann-Whitney & *0.0 & We reject $\text{H}_o$ and accept $\text{H}_a$: KS\_1h's mean less than SM2\_1h's \\
+LB2\_1h-LB1\_1h: There is no difference between the two population means & Mann-Whitney & 0.2699 & We fail to reject $\text{H}_o$ \\
+LB2\_1h-LB4\_1h: There is no difference between the two population means & Mann-Whitney & 0.2405 & We fail to reject $\text{H}_o$ \\
+LB2\_1h-LB3\_1h: There is no difference between the two population means & Mann-Whitney & 0.1593 & We fail to reject $\text{H}_o$ \\
+LB2\_1h-SM1\_1h: There is no difference between the two population means & Mann-Whitney & *0.0002 & We reject $\text{H}_o$ and accept $\text{H}_a$: LB2\_1h's mean less than SM1\_1h's \\
+LB2\_1h-SM2\_1h: There is no difference between the two population means & Mann-Whitney & *0.0002 & We reject $\text{H}_o$ and accept $\text{H}_a$: LB2\_1h's mean less than SM2\_1h's \\
+LB1\_1h-LB4\_1h: There is no difference between the two population means & Mann-Whitney & 0.4745 & We fail to reject $\text{H}_o$ \\
+LB1\_1h-LB3\_1h: There is no difference between the two population means & Mann-Whitney & 0.3538 & We fail to reject $\text{H}_o$ \\
+LB1\_1h-SM1\_1h: There is no difference between the two population means & Mann-Whitney & *0.0003 & We reject $\text{H}_o$ and accept $\text{H}_a$: LB1\_1h's mean less than SM1\_1h's \\
+LB1\_1h-SM2\_1h: There is no difference between the two population means & Mann-Whitney & *0.0003 & We reject $\text{H}_o$ and accept $\text{H}_a$: LB1\_1h's mean less than SM2\_1h's \\
+LB4\_1h-LB3\_1h: There is no difference between the two population means & Mann-Whitney & 0.3606 & We fail to reject $\text{H}_o$ \\
+LB4\_1h-SM1\_1h: There is no difference between the two population means & Mann-Whitney & *0.0005 & We reject $\text{H}_o$ and accept $\text{H}_a$: LB4\_1h's mean less than SM1\_1h's \\
+LB4\_1h-SM2\_1h: There is no difference between the two population means & Mann-Whitney & *0.0004 & We reject $\text{H}_o$ and accept $\text{H}_a$: LB4\_1h's mean less than SM2\_1h's \\
+LB3\_1h-SM1\_1h: There is no difference between the two population means & Mann-Whitney & *0.0009 & We reject $\text{H}_o$ and accept $\text{H}_a$: LB3\_1h's mean less than SM1\_1h's \\
+LB3\_1h-SM2\_1h: There is no difference between the two population means & Mann-Whitney & *0.0005 & We reject $\text{H}_o$ and accept $\text{H}_a$: LB3\_1h's mean less than SM2\_1h's \\
+SM1\_1h-SM2\_1h: There is no difference between the two population means & Mann-Whitney & 0.2699 & We fail to reject $\text{H}_o$ \\
+\bottomrule
+*  Significance level 0.05
+\end{tabular}
+}
+\end{table}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%Means difference hypothesis test summary (x7day\_medium)
+\begin{table}[H]\centering
+\caption{Means difference statistical test summary among all methods for instances from group x7day\_medium under a running time limit of 7200 seconds.}
+\label{tabla:Differences_medium_2h}
+\scriptsize
+\scalebox{0.85}{
+\begin{tabular}{>{\RaggedRight}p{5.5cm}rr>{\RaggedRight}p{5.5cm}r}\toprule
+Null hypothesis &Test &p-value &Decision \\\cmidrule{1-4}
+KS-SM1: There is no difference between the two population means & Mann-Whitney & 0.3813 & We fail to reject $\text{H}_o$ \\
+KS-LB1: There is no difference between the two population means & Mann-Whitney & *0.0165 & We reject $\text{H}_o$ and accept $\text{H}_a$: KS's mean less than LB1's \\
+KS-LB4: There is no difference between the two population means & Mann-Whitney & *0.0125 & We reject $\text{H}_o$ and accept $\text{H}_a$: KS's mean less than LB4's \\
+KS-LB2: There is no difference between the two population means & Mann-Whitney & *0.0131 & We reject $\text{H}_o$ and accept $\text{H}_a$: KS's mean less than LB2's \\
+KS-LB3: There is no difference between the two population means & Mann-Whitney & *0.0012 & We reject $\text{H}_o$ and accept $\text{H}_a$: KS's mean less than LB3's \\
+KS-SM2: There is no difference between the two population means & Mann-Whitney & *0.0 & We reject $\text{H}_o$ and accept $\text{H}_a$: KS's mean less than MILP2's \\
+SM1-LB1: There is no difference between the two population means & Mann-Whitney & 0.061 & We fail to reject $\text{H}_o$ \\
+SM1-LB4: There is no difference between the two population means & Mann-Whitney & 0.061 & We fail to reject $\text{H}_o$ \\
+SM1-LB2: There is no difference between the two population means & Mann-Whitney & 0.0691 & We fail to reject $\text{H}_o$ \\
+SM1-LB3: There is no difference between the two population means & Mann-Whitney & *0.0103 & We reject $\text{H}_o$ and accept $\text{H}_a$: MILP's mean less than LB3's \\
+SM1-SM2: There is no difference between the two population means & Mann-Whitney & *0.0 & We reject $\text{H}_o$ and accept $\text{H}_a$: MILP's mean less than MILP2's \\
+LB1-LB4: There is no difference between the two population means & Mann-Whitney & 0.4418 & We fail to reject $\text{H}_o$ \\
+LB1-LB2: There is no difference between the two population means & Mann-Whitney & 0.5219 & We fail to reject $\text{H}_o$ \\
+LB1-LB3: There is no difference between the two population means & Mann-Whitney & 0.1463 & We fail to reject $\text{H}_o$ \\
+LB1-SM2: There is no difference between the two population means & Mann-Whitney & *0.0001 & We reject $\text{H}_o$ and accept $\text{H}_a$: LB1's mean less than MILP2's \\
+LB4-LB2: There is no difference between the two population means & Mann-Whitney & 0.551 & We fail to reject $\text{H}_o$ \\
+LB4-LB3: There is no difference between the two population means & T-test for two samples & 0.2583 & We fail to reject $\text{H}_o$ \\
+LB4-SM2: There is no difference between the two population means & T-test for two samples & *0.0001 & We reject $\text{H}_o$ and accept $\text{H}_a$: LB4's mean less than MILP2's \\
+LB2-LB3: There is no difference between the two population means & Mann-Whitney & 0.1638 & We fail to reject $\text{H}_o$ \\
+LB2-SM2: There is no difference between the two population means & Mann-Whitney & *0.0002 & We reject $\text{H}_o$ and accept $\text{H}_a$: LB2's mean less than MILP2's \\
+LB3-SM2: There is no difference between the two population means & Mann-Whitney & *0.0004 & We reject $\text{H}_o$ and accept $\text{H}_a$: LB3's mean less than MILP2's \\
+\bottomrule
+*  Significance level 0.05
+\end{tabular}
+}
+\end{table}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%Means difference hypothesis test summary (x7day\_large)
+\begin{table}[H]\centering
+\caption{Means difference statistical test summary among all methods for instances from group x7day\_large under a running time limit of 4000 seconds.}
+\label{tabla:Differences_large_1h}
+\scriptsize
+\scalebox{0.85}{
+\begin{tabular}{>{\RaggedRight}p{5.5cm}rr>{\RaggedRight}p{5.5cm}r}\toprule
+Null hypothesis &Test &p-value &Decision \\\cmidrule{1-4}
+KS\_1h-LB1\_1h: There is no difference between the two population means & T-test for two samples & *0.0071 & We reject $\text{H}_o$ and accept $\text{H}_a$: KS\_1h's mean less than LB1\_1h's \\
+KS\_1h-LB2\_1h: There is no difference between the two population means & T-test for two samples & *0.0038 & We reject $\text{H}_o$ and accept $\text{H}_a$: KS\_1h's mean less than LB2\_1h's \\
+KS\_1h-LB4\_1h: There is no difference between the two population means & T-test for two samples & *0.0005 & We reject $\text{H}_o$ and accept $\text{H}_a$: KS\_1h's mean less than LB4\_1h's \\
+KS\_1h-LB3\_1h: There is no difference between the two population means & Mann-Whitney & *0.0021 & We reject $\text{H}_o$ and accept $\text{H}_a$: KS\_1h's mean less than LB3\_1h's \\
+KS\_1h-SM1\_1h: There is no difference between the two population means & Mann-Whitney & *0.0003 & We reject $\text{H}_o$ and accept $\text{H}_a$: KS\_1h's mean less than SM1\_1h's \\
+KS\_1h-SM2\_1h: There is no difference between the two population means & Mann-Whitney & *0.0001 & We reject $\text{H}_o$ and accept $\text{H}_a$: KS\_1h's mean less than SM2\_1h's \\
+LB1\_1h-LB2\_1h: There is no difference between the two population means & T-test for two samples & 0.2958 & We fail to reject $\text{H}_o$ \\
+LB1\_1h-LB4\_1h: There is no difference between the two population means & T-test for two samples & 0.1441 & We fail to reject $\text{H}_o$ \\
+LB1\_1h-LB3\_1h: There is no difference between the two population means & T-test for two samples & 0.1603 & We fail to reject $\text{H}_o$ \\
+LB1\_1h-SM1\_1h: There is no difference between the two population means & Mann-Whitney & *0.0425 & We reject $\text{H}_o$ and accept $\text{H}_a$: LB1\_1h's mean less than SM1\_1h's \\
+LB1\_1h-SM2\_1h: There is no difference between the two population means & T-test for two samples & *0.0033 & We reject $\text{H}_o$ and accept $\text{H}_a$: LB1\_1h's mean less than SM2\_1h's \\
+LB2\_1h-LB4\_1h: There is no difference between the two population means & T-test for two samples & 0.3234 & We fail to reject $\text{H}_o$ \\
+LB2\_1h-LB3\_1h: There is no difference between the two population means & T-test for two samples & 0.329 & We fail to reject $\text{H}_o$ \\
+LB2\_1h-SM1\_1h: There is no difference between the two population means & Mann-Whitney & 0.1208 & We fail to reject $\text{H}_o$ \\
+LB2\_1h-SM2\_1h: There is no difference between the two population means & T-test for two samples & *0.0155 & We reject $\text{H}_o$ and accept $\text{H}_a$: LB2\_1h's mean less than SM2\_1h's \\
+LB4\_1h-LB3\_1h: There is no difference between the two population means & T-test for two samples & 0.4934 & We fail to reject $\text{H}_o$ \\
+LB4\_1h-SM1\_1h: There is no difference between the two population means & Mann-Whitney & 0.2347 & We fail to reject $\text{H}_o$ \\
+LB4\_1h-SM2\_1h: There is no difference between the two population means & T-test for two samples & *0.032 & We reject $\text{H}_o$ and accept $\text{H}_a$: LB4\_1h's mean less than SM2\_1h's \\
+LB3\_1h-SM1\_1h: There is no difference between the two population means & Mann-Whitney & 0.1853 & We fail to reject $\text{H}_o$ \\
+LB3\_1h-SM2\_1h: There is no difference between the two population means & T-test for two samples & *0.0408 & We reject $\text{H}_o$ and accept $\text{H}_a$: LB3\_1h's mean less than SM2\_1h's \\
+SM1\_1h-SM2\_1h: There is no difference between the two population means & Mann-Whitney & 0.1208 & We fail to reject $\text{H}_o$ \\
+\bottomrule
+*  Significance level 0.05
+\end{tabular}
+}
+\end{table}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%Means difference hypothesis test summary (x7day\_large)
+\begin{table}[H]\centering
+\caption{Means difference statistical test summary among all methods for instances from group x7day\_large under a running time limit of 7200 seconds.}
+\label{tabla:Differences_large_2h}
+\scriptsize
+\scalebox{0.85}{
+\begin{tabular}{>{\RaggedRight}p{5.5cm}rr>{\RaggedRight}p{5.5cm}r}\toprule
+Null hypothesis &Test &p-value &Decision \\\cmidrule{1-4}
+KS-LB2: There is no difference between the two population means & Mann-Whitney & *0.0164 & We reject $\text{H}_o$ and accept $\text{H}_a$: KS's mean less than LB2's \\
+KS-LB1: There is no difference between the two population means & Mann-Whitney & *0.0105 & We reject $\text{H}_o$ and accept $\text{H}_a$: KS's mean less than LB1's \\
+KS-LB4: There is no difference between the two population means & Mann-Whitney & *0.0072 & We reject $\text{H}_o$ and accept $\text{H}_a$: KS's mean less than LB4's \\
+KS-LB3: There is no difference between the two population means & Mann-Whitney & *0.0019 & We reject $\text{H}_o$ and accept $\text{H}_a$: KS's mean less than LB3's \\
+KS-SM1: There is no difference between the two population means & Mann-Whitney & *0.0021 & We reject $\text{H}_o$ and accept $\text{H}_a$: KS's mean less than MILP's \\
+KS-SM2: There is no difference between the two population means & Mann-Whitney & *0.0001 & We reject $\text{H}_o$ and accept $\text{H}_a$: KS's mean less than MILP2's \\
+LB2-LB1: There is no difference between the two population means & T-test for two samples & 0.3812 & We fail to reject $\text{H}_o$ \\
+LB2-LB4: There is no difference between the two population means & T-test for two samples & 0.2823 & We fail to reject $\text{H}_o$ \\
+LB2-LB3: There is no difference between the two population means & T-test for two samples & 0.1417 & We fail to reject $\text{H}_o$ \\
+LB2-SM1: There is no difference between the two population means & T-test for two samples & 0.0858 & We fail to reject $\text{H}_o$ \\
+LB2-SM2: There is no difference between the two population means & T-test for two samples & *0.0012 & We reject $\text{H}_o$ and accept $\text{H}_a$: LB2's mean less than MILP2's \\
+LB1-LB4: There is no difference between the two population means & T-test for two samples & 0.3952 & We fail to reject $\text{H}_o$ \\
+LB1-LB3: There is no difference between the two population means & T-test for two samples & 0.2175 & We fail to reject $\text{H}_o$ \\
+LB1-SM1: There is no difference between the two population means & T-test for two samples & 0.1337 & We fail to reject $\text{H}_o$ \\
+LB1-SM2: There is no difference between the two population means & T-test for two samples & *0.0022 & We reject $\text{H}_o$ and accept $\text{H}_a$: LB1's mean less than MILP2's \\
+LB4-LB3: There is no difference between the two population means & T-test for two samples & 0.2932 & We fail to reject $\text{H}_o$ \\
+LB4-SM1: There is no difference between the two population means & T-test for two samples & 0.1826 & We fail to reject $\text{H}_o$ \\
+LB4-SM2: There is no difference between the two population means & T-test for two samples & *0.0032 & We reject $\text{H}_o$ and accept $\text{H}_a$: LB4's mean less than MILP2's \\
+LB3-SM1: There is no difference between the two population means & T-test for two samples & 0.3414 & We fail to reject $\text{H}_o$ \\
+LB3-SM2: There is no difference between the two population means & T-test for two samples & *0.0101 & We reject $\text{H}_o$ and accept $\text{H}_a$: LB3's mean less than MILP2's \\
+SM1-SM2: There is no difference between the two population means & T-test for two samples & *0.0290 & We reject $\text{H}_o$ and accept $\text{H}_a$: MILP's mean less than MILP2's \\
+\bottomrule
+*  Significance level 0.05
+\end{tabular}
+}
+\end{table}
+
+%%%=========================================================App D
+\newpage
+\setcounter{table}{0}
+\setcounter{figure}{0}
+\renewcommand{\thetable}{D\arabic{table}}
+\renewcommand{\thefigure}{D\arabic{figure}}
+\section{Description of instances} \label{app:appD}
+
+
+\begin{table}[!htp]\centering
+\caption{x7day\_small instances group.}\label{tab:firstinst}
+\scriptsize
+\scalebox{0.9}{
+\begin{tabular}{lrrrrrrrrrr}\toprule
+Instance & Gen & \multicolumn{8}{c}{Configuration} \\\cmidrule{3-10}
+ & & G1 & G2 & G3 & G4 & G5 & G6 & G7 & G8 \\\cmidrule{1-10}
+061 & 28 & 12 & 11 & 0 & 0 & 1 & 4 & 0 & 0 \\
+062 & 35 & 13 & 15 & 2 & 0 & 4 & 0 & 0 & 1 \\
+063 & 44 & 15 & 13 & 2 & 6 & 3 & 1 & 1 & 3 \\
+064 & 45 & 15 & 11 & 0 & 1 & 4 & 5 & 6 & 3 \\
+065 & 49 & 15 & 13 & 3 & 7 & 5 & 3 & 2 & 1 \\
+066 & 50 & 10 & 10 & 2 & 5 & 7 & 5 & 6 & 5 \\
+067 & 51 & 17 & 16 & 1 & 3 & 1 & 7 & 2 & 4 \\
+068 & 51 & 17 & 10 & 6 & 5 & 2 & 1 & 3 & 7 \\
+069 & 52 & 12 & 17 & 4 & 7 & 5 & 2 & 0 & 5 \\
+070 & 54 & 13 & 12 & 5 & 7 & 2 & 5 & 4 & 6 \\
+101 & 60 & 11 & 18 & 6 & 3 & 7 & 8 & 2 & 5 \\
+102 & 62 & 16 & 17 & 5 & 3 & 5 & 6 & 7 & 3 \\
+103 & 64 & 13 & 20 & 4 & 9 & 4 & 6 & 2 & 6 \\
+104 & 66 & 17 & 16 & 8 & 8 & 0 & 6 & 6 & 5 \\
+105 & 70 & 14 & 21 & 9 & 5 & 8 & 6 & 3 & 4 \\
+106 & 71 & 25 & 18 & 2 & 4 & 7 & 5 & 2 & 8 \\
+107 & 75 & 16 & 25 & 5 & 9 & 3 & 3 & 8 & 6 \\
+108 & 76 & 21 & 21 & 4 & 3 & 8 & 10 & 4 & 5 \\
+109 & 80 & 17 & 24 & 8 & 9 & 8 & 1 & 8 & 5 \\
+110 & 81 & 22 & 21 & 4 & 9 & 4 & 3 & 8 & 10 \\
+\bottomrule
+\end{tabular}
+}
+\end{table}
+
+\begin{table}[!htp]\centering
+\caption{x7day\_medium instances group.}\label{tab:secondinst}
+\scriptsize
+\scalebox{0.8}{
+\begin{tabular}{lrrrrrrrrrr}\toprule
+Instance & Gen & \multicolumn{8}{c}{Configuration} \\\cmidrule{3-10}
+ & & G1 & G2 & G3 & G4 & G5 & G6 & G7 & G8 \\\cmidrule{1-10}
+111 & 85 & 19 & 27 & 6 & 6 & 8 & 9 & 3 & 7 \\
+112 & 86 & 24 & 23 & 6 & 7 & 4 & 8 & 6 & 8 \\
+113 & 90 & 24 & 28 & 6 & 7 & 6 & 3 & 12 & 4 \\
+114 & 91 & 26 & 24 & 9 & 4 & 5 & 10 & 6 & 7 \\
+115* & 94 & 22 & 28 & 4 & 10 & 5 & 9 & 7 & 9 \\
+116 & 97 & 27 & 26 & 8 & 14 & 5 & 6 & 7 & 4 \\
+117 & 98 & 24 & 30 & 4 & 8 & 10 & 7 & 10 & 5 \\
+118* & 102 & 29 & 28 & 10 & 6 & 5 & 9 & 9 & 6 \\
+119* & 104 & 25 & 32 & 9 & 0 & 10 & 11 & 9 & 8 \\
+120* & 106 & 30 & 29 & 11 & 9 & 5 & 2 & 11 & 9 \\
+121* & 109 & 32 & 34 & 9 & 7 & 8 & 9 & 4 & 6 \\
+122 & 111 & 32 & 36 & 6 & 4 & 10 & 7 & 10 & 6 \\
+123 & 114 & 29 & 36 & 11 & 10 & 6 & 5 & 7 & 10 \\
+124 & 116 & 34 & 32 & 7 & 5 & 9 & 9 & 11 & 9 \\
+125 & 119 & 32 & 37 & 9 & 5 & 7 & 11 & 9 & 9 \\
+126 & 121 & 35 & 34 & 7 & 11 & 12 & 4 & 7 & 11 \\
+127* & 125 & 32 & 39 & 5 & 8 & 5 & 15 & 13 & 8 \\
+128* & 126 & 37 & 36 & 10 & 12 & 4 & 12 & 10 & 5 \\
+129 & 129 & 33 & 40 & 9 & 7 & 7 & 14 & 5 & 14 \\
+130 & 131 & 38 & 37 & 14 & 10 & 6 & 7 & 5 & 14 \\
+131 & 131 & 34 & 42 & 8 & 8 & 8 & 11 & 14 & 6 \\
+071 & 132 & 46 & 45 & 8 & 0 & 5 & 0 & 12 & 16 \\
+132 & 135 & 37 & 44 & 8 & 8 & 9 & 9 & 13 & 7 \\
+133 & 138 & 42 & 40 & 7 & 11 & 9 & 10 & 6 & 13 \\
+134 & 140 & 38 & 45 & 8 & 7 & 10 & 14 & 10 & 8 \\
+135 & 143 & 43 & 42 & 7 & 12 & 7 & 15 & 10 & 7 \\
+136 & 146 & 40 & 47 & 9 & 7 & 15 & 13 & 7 & 8 \\
+137 & 148 & 45 & 44 & 7 & 16 & 9 & 10 & 10 & 7 \\
+138 & 151 & 41 & 48 & 9 & 16 & 11 & 8 & 9 & 9 \\
+139 & 154 & 46 & 45 & 10 & 15 & 10 & 3 & 15 & 10 \\
+140 & 156 & 43 & 48 & 16 & 11 & 9 & 12 & 9 & 8 \\
+072 & 156 & 40 & 54 & 14 & 8 & 3 & 15 & 9 & 13 \\
+073 & 156 & 50 & 41 & 19 & 11 & 4 & 4 & 12 & 15 \\
+\bottomrule
+\end{tabular}
+}
+\scriptsize\caption*{*Solver did not produce an initial integer solution}
+\end{table}
+
+\begin{table}[!htp]\centering
+\caption{x7day\_large instances group.}\label{tab:thirdinst}
+\scriptsize
+\scalebox{0.9}{
+\begin{tabular}{lrrrrrrrrrr}\toprule
+Instance & Gen & \multicolumn{8}{c}{Configuration} \\\cmidrule{3-10}
+ & & G1 & G2 & G3 & G4 & G5 & G6 & G7 & G8 \\\cmidrule{1-10}
+074 & 165 & 51 & 58 & 17 & 19 & 16 & 1 & 2 & 1 \\
+075 & 167 & 43 & 46 & 17 & 15 & 13 & 15 & 6 & 12 \\
+076 & 172 & 50 & 59 & 8 & 15 & 1 & 18 & 4 & 17 \\
+077 & 182 & 53 & 50 & 17 & 15 & 16 & 5 & 14 & 12 \\
+078 & 182 & 45 & 57 & 19 & 7 & 19 & 19 & 5 & 11 \\
+079 & 183 & 58 & 50 & 15 & 7 & 16 & 18 & 7 & 12 \\
+080 & 187 & 55 & 48 & 18 & 5 & 18 & 17 & 15 & 11 \\
+141* & 185 & 52 & 57 & 15 & 12 & 12 & 13 & 11 & 13 \\
+142* & 195 & 55 & 62 & 15 & 7 & 18 & 12 & 11 & 15 \\
+143 & 188 & 54 & 52 & 16 & 4 & 16 & 22 & 14 & 10 \\
+144* & 205 & 60 & 64 & 17 & 13 & 19 & 10 & 10 & 12 \\
+145 & 219 & 58 & 52 & 18 & 15 & 16 & 25 & 18 & 17 \\
+146* & 200 & 58 & 60 & 16 & 15 & 21 & 9 & 9 & 12 \\
+147 & 212 & 58 & 67 & 16 & 7 & 15 & 22 & 16 & 11 \\
+148 & 212 & 63 & 60 & 17 & 15 & 22 & 15 & 7 & 13 \\
+149 & 221 & 66 & 65 & 19 & 3 & 13 & 25 & 15 & 15 \\
+150* & 204 & 65 & 60 & 17 & 22 & 24 & 5 & 9 & 2 \\
+151 & 219 & 67 & 62 & 19 & 9 & 15 & 21 & 14 & 12 \\
+152 & 243 & 65 & 64 & 21 & 23 & 25 & 16 & 12 & 17 \\
+153 & 263 & 72 & 67 & 25 & 22 & 19 & 8 & 21 & 29 \\
+154 & 270 & 80 & 66 & 15 & 15 & 21 & 7 & 40 & 26 \\
+155* & 285 & 95 & 80 & 15 & 25 & 25 & 15 & 15 & 15 \\
+156* & 300 & 80 & 95 & 33 & 33 & 21 & 21 & 10 & 7 \\
+157* & 315 & 90 & 90 & 30 & 30 & 20 & 30 & 15 & 10 \\
+158* & 330 & 85 & 130 & 45 & 35 & 7 & 15 & 10 & 3 \\
+159* & 345 & 120 & 70 & 60 & 53 & 15 & 7 & 10 & 10 \\
+160 & 360 & 50 & 90 & 30 & 70 & 60 & 10 & 10 & 40 \\
+161 & 375 & 70 & 85 & 45 & 22 & 25 & 50 & 31 & 47 \\
+162* & 390 & 55 & 99 & 70 & 53 & 34 & 30 & 12 & 37 \\
+163* & 405 & 130 & 111 & 35 & 81 & 21 & 12 & 7 & 8 \\
+\bottomrule
+\end{tabular}
+}
+\scriptsize\caption*{(*) Solver did not produce an initial integer solution}
+\end{table}
+
+
+\begin{table}[!htp]\centering
+\caption{Generators parameters from \citet{Morales-Espania2013}.}\label{tab:parametersMorales}
+\scriptsize
+\scalebox{0.9}{
+\begin{tabular}{lrrrrrrr|rrrrr}\toprule
+\multicolumn{7}{c}{Technical Information} &\multicolumn{4}{c}{Cost coeficients} \\\cmidrule{2-12}
+\multirow{2}{*}{$g$} & $\overline{P}_{g}$ & $\underline{P}_{g}$ & $UT_{g}/DT_{g}$ &$RU_{g}/RD_{g}$ &$U_g/D_g$ &${p}_{g,0}$ &$TC_{g}$ &$C_{g}^{\text{R}}$ &$C{^{l=1}_{g}}^{\dagger}$ &${C^{\text{S}}_{g,s=1}}^{\ddag}$ & ${C^{\text{S}}_{g,s=2}}^{\ddag}$ \\\cmidrule{2-12}
+  &[MW] &[MW] &[h] &[MW/h] &[h] &[MW] &[h] &[\$/h] &[MW/h] &[\$] &[\$] \\\cmidrule{1-12}
+1 &455  &150  &8   &225    &0   &455  &14  &1000 &16.19 &4500 &9000 \\
+2 &455  &150  &8   &225    &0   &245  &14  &970  &17.26 &5000 &10000 \\
+3 &130  &20   &5   &50     &0   &0    &10  &700  &16.60 &550  &1100 \\
+4 &130  &20   &5   &50     &0   &0    &10  &680  &16.50 &560  &1120 \\
+5 &162  &25   &6   &60     &0   &0    &11  &450  &19.70 &900  &1800 \\
+6 &80   &20   &3   &60     &0   &0    &8   &370  &22.26 &170  &340 \\
+7 &85   &25   &3   &60     &0   &0    &6   &480  &27.74 &260  &520 \\
+8 &55   &10   &1   &135    &0   &0    &2   &660  &25.92 &30   &60 \\\midrule
+\multicolumn{12}{c}{$^\dagger$ The subindex $s$=1 corresponds to a hot startup, while the subindex $s$=2 corresponds to a cold startup.  } \\
+\multicolumn{12}{c}{$^\ddag$ The energy cost is represented as a linear value with a single numerical value.} \\
+\multicolumn{12}{c}{The subindex $l$=1 specifically pertains to a step within a staircase function.} \\
+\bottomrule
+\end{tabular}
+}
+\end{table}

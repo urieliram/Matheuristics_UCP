@@ -1,0 +1,125 @@
+%\section{Discussion}
+\subsection{Evaluation of special cases}
+\label{sec:Discussion}
+
+To gain deeper insight, a more detailed analysis of the following cases is carried out as follows:
+\begin{description}
+\itemsep0.05em
+    \item[Case 1:] Performance of methods in two instances where SM1 was unable to find a solution
+    \item[Case 2:] Performance of methods on two instances where SM1 found a solution but performed worse than the remaining methods
+    \item[Case 3:] Performance of methods on two instances for which SM1 obtained similar results to the remaining methods
+    \item[Case 4:] Comparison of the methods in instances where the KS shows stagnation.
+    \item[Case 5:] Comparison of methods in which KS failed to improve the initial solution
+\end{description}
+
+
+\subsubsection*{Analysis of Case 1}
+
+In this case two instances,uc\_141 and uc\_146 from the set of large-scale instances, are evaluated in which SM1 was not able to find a feasible solution. As can be seen in Figures \ref{Fig_uc_141_x7day_largeA} and \ref{Fig_uc_146_x7day_largeA}, the proposed solution methods (and their variants) were able to improve the initial solution found by HARDUC, with KS performing the best of all and LB3 showing the worst performance.
+
+\begin{figure}[H]
+     \centering
+     \begin{subfigure}[b]{0.45\textwidth}         \centering
+         \includegraphics[width=\textwidth]{Figure/Fig_uc_141_x7day_large.pdf}
+         \caption{Instance 141.}            \label{Fig_uc_141_x7day_largeA}
+     \end{subfigure}
+     \begin{subfigure}[b]{0.45\textwidth}         \centering
+         \includegraphics[width=\textwidth]{Figure/Fig_uc_146_x7day_large.pdf}
+         \caption{Instance 146.}            \label{Fig_uc_146_x7day_largeA}
+     \end{subfigure}
+        \caption{Comparison of methods on instances where the solver (SM1) could not solve within the allowed time limit.} \label{fig:Fig_uc_141146_x7day_large}
+\end{figure}
+
+\subsubsection*{Analysis of Case 2}
+
+In the second case, two instances (uc\_143 and uc\_153), depiucted in Figures \ref{Fig_uc_143_x7day_largeA} and \ref{Fig_uc_153_x7day_largeA}, illustrate a scenario where SM1 finds a solution, but its performance and quality are not competitive with the other methods. Here, the initial solution provided by HARDUC plays a crucial role in both the starting point and overall performance of the proposed methods. Although SM1 required a significant amount of time to achieve its first notable improvements, the other methods have taken advantage of the initial solution of HARDUC much earlier, allowing them to use the remaining time more effectively for refinement. Among these methods, KS again demonstrated superior performance and solution quality.
+
+\begin{figure}[H]
+     \centering
+     \begin{subfigure}[b]{0.45\textwidth}         \centering
+         \includegraphics[width=\textwidth]{Figure/Fig_uc_143_x7day_large.pdf}
+         \caption{Instance 143.}            \label{Fig_uc_143_x7day_largeA}
+     \end{subfigure}
+     \begin{subfigure}[b]{0.45\textwidth}         \centering
+         \includegraphics[width=\textwidth]{Figure/Fig_uc_153_x7day_large.pdf}
+         \caption{Instance 153.}            \label{Fig_uc_153_x7day_largeA}
+     \end{subfigure}
+        \caption{Performance of methods on two instances where SM1 found a solution but performed worse than the remaining methods} \label{fig:Fig_uc_143153_x7day_large}
+\end{figure}
+
+\subsubsection*{Analysis of Case 3}
+
+In some isolated cases, SM1 produced competitive or even superior results compared to metaheuristic methods. As shown in Figures \ref{Fig_uc_074_x7day_largeA} and \ref{Fig_uc_079_x7day_largeA}, the initial solution of SM1 was significantly better than the starting point provided by HARDUC. However, while the proposed methods quickly achieved substantial improvements in most cases, they were unable to surpass the solution of SM1 in these specific instances. Only the KS was able to arrive at a similar solution in the given time in one of the cases, being in general one of the proposed methods that showed a better performance.  In particular, despite the strong initial solution of SM1, it struggled to make significant further improvements for most of the remaining time.
+
+\begin{figure}[H]
+     \centering
+     \begin{subfigure}[b]{0.45\textwidth}         \centering
+         \includegraphics[width=\textwidth]{Figure/Fig_uc_074_x7day_large.pdf}
+         \caption{Instance 074.}            \label{Fig_uc_074_x7day_largeA}
+     \end{subfigure}
+     \begin{subfigure}[b]{0.45\textwidth}         \centering
+         \includegraphics[width=\textwidth]{Figure/Fig_uc_079_x7day_large.pdf}
+         \caption{Instance 079.}            \label{Fig_uc_079_x7day_largeA}
+     \end{subfigure}
+        \caption{Performance of methods on two instances for which SM1 obtained similar results to the remaining methods} \label{fig:Fig_uc_074079_x7day_large}
+\end{figure}
+
+
+\subsubsection*{Analysis of Case 4}
+
+In Case 4, two instances show a particular pattern in the KS method. Initially, KS achieved significant improvements, but as iterations progressed, it reached longer periods of stagnation, where further enhancements became minimal. This stagnation prevented the algorithm from making meaningful progress in subsequent iterations. For example, in Figure \ref{Fig_uc_075_x7day_largeA}, the solution improved substantially during the first iteration, but showed little progress over the remaining 5000 seconds. A similar pattern is observed in Figure \ref{Fig_uc_161_x7day_largeA}, where although the solution improved considerably in the final 1000 seconds, it struggled for most of the runtime to escape a local optimum. This behavior may be due to the first buckets containing key variables that provide early improvements, while the remaining buckets, due to their size, failed to capture the ideal combination of variables needed for further optimization. It would be valuable to explore whether evaluating a larger kernel or expanding the number of buckets could improve efficiency and mitigate stagnation.
+
+\begin{figure}[H]
+     \centering
+     \begin{subfigure}[b]{0.45\textwidth}         \centering
+         \includegraphics[width=\textwidth]{Figure/Fig_uc_075_x7day_large.pdf}
+         \caption{Instance 075.}            \label{Fig_uc_075_x7day_largeA}
+     \end{subfigure}
+     \begin{subfigure}[b]{0.45\textwidth}         \centering
+         \includegraphics[width=\textwidth]{Figure/Fig_uc_161_x7day_large.pdf}
+         \caption{Instance 161.}            \label{Fig_uc_161_x7day_largeA}
+     \end{subfigure}
+        \caption{Comparison of the methods in instances where the KS shows stagnation} \label{fig:Fig_uc_075161_x7day_large}
+\end{figure}
+
+
+\subsubsection*{Analysis of Case 5}
+
+In this final analysis, there are four cases where KS failed to improve the initial feasible solution provided by HARDUC (see Figures \ref{Fig_uc_155_x7day_largeA}, \ref{Fig_uc_156_x7day_largeA}, \ref{Fig_uc_158_x7day_largeA}, and \ref{Fig_uc_159_x7day_largeA}). In these cases, only the LB method and its variations were able to achieve better solutions, with slightly different performance depending on the stage solved. One possible approach to address this limitation is to analyze alternative kernel and hub sizes to determine whether tuning these parameters could increase the opportunity for further improvements.
+
+\begin{figure}[htb]
+     \centering
+     \begin{subfigure}[b]{0.45\textwidth}         \centering
+         \includegraphics[width=\textwidth]{Figure/Fig_uc_155_x7day_large.pdf}
+         \caption{Instance 155.}            \label{Fig_uc_155_x7day_largeA}
+     \end{subfigure}
+     \begin{subfigure}[b]{0.45\textwidth}         \centering
+         \includegraphics[width=\textwidth]{Figure/Fig_uc_156_x7day_large.pdf}
+         \caption{Instance 156.}            \label{Fig_uc_156_x7day_largeA}
+     \end{subfigure}
+     \begin{subfigure}[b]{0.45\textwidth}         \centering
+         \includegraphics[width=\textwidth]{Figure/Fig_uc_158_x7day_large.pdf}
+         \caption{Instance 158.}            \label{Fig_uc_158_x7day_largeA}
+     \end{subfigure}
+     \begin{subfigure}[b]{0.45\textwidth}         \centering
+         \includegraphics[width=\textwidth]{Figure/Fig_uc_159_x7day_large.pdf}
+         \caption{Instance 159.}            \label{Fig_uc_159_x7day_largeA}
+     \end{subfigure}
+        \caption{Comparison of methods on instances where the KS remained in the initial solution without improvement.} \label{fig:Fig_uc_156158159_x7day_large}
+\end{figure}
+
+
+Briefly speaking, since the solver did not find a feasible solution in some large-scale instances, we provided an initial starting solution using our HARDUC method. However, even with initial solution, the solver obtained less accurate results than the proposed improvement methods LB1-4, and KS.
+
+For small-scale instances, when the maximum time limit was set to 4000 s., the solver performed similarly to the LB1-4 and KS methods, with no significant accuracy. However, when the time was extended to 7200 s., the solver outperformed LB3 and SM2, achieving a smaller relative optimality gap.
+
+For medium-scale instances with a 4000-second time limit, the KS outperformed the remaining methods. In addition, LB1-4 performed better than SM1 and SM2.
+
+For large-scale instances, in general, KS was again the most efficient method for both time limits. In addition, LB1 performed better than SM1, and SM2 outperformed SM1. 
+
+It was observed that all LB methods outperformed SM2. However, when the time limit was set to 7200 s., no significant differences were found between LB1-4 and SM1 methods. It is important to note that the solver did not successfully solve all medium- and large-scale instances. Furthermore, if an initial solution is provided to the solver, the performance is noticeably lower compared when it is performed without it.
+
+
+In general, among the methods, KS achieved the smallest average optimality gap. On the other hand, LB3, which closely follows the original method proposed by \citet{Fischetti2003}, has shown the lowest performance among the proposed LB methods. 
+
+Although KS generally provided better results in terms of relative optimality gap, it did not improve the initial HARDUC solution in approximately 4\% of the instances. In contrast with the LB methods, which successfully improved the initial solution.

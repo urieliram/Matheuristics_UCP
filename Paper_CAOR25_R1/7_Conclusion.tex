@@ -1,0 +1,64 @@
+\section{Conclusions}
+\label{sec:Conclusions}
+
+Five methods were developed to solve a thermal UCP within a matheuristic approach, four based on local branching and one based on kernel search. In addition, a constructive heuristic (HARDUC) was developed to provide the first solution to the matheuristic methods.
+
+Among the methods based on LB, LB3 is the closest version to the original local branching, unlike LB1, LB2, and LB4, which are variants that implement the soft-fixing concept and a restricted candidate list. Additionally, only the variables classified as dominant are considered in the local search. In this case, the commitment variable, which determines the ``on'' or ``off'' state of the generator, was identified as such.
+
+%%%%%%%%%%%%%%%
+
+The methods were assessed by solving three groups of instances classified into small-, medium-, and large-scale according to the number of generators they contained. A time limit of 4000 seconds and 7200 seconds was set for solving the instances using the LB1, LB2, LB3, LB3, LB4, and KS improvement methods, including the commercial solver. We also tried out feeding the off-the-shelf solver with a feasible solution
+found by the constuction heuristic.  
+%The results of the methods were compared against the best solution achieved by the solver providing it with an initial feasible solution and without an initial feasible solution. 
+%The test instances were created based on existing instances from the literature that are known to be challenging to solve.
+
+%%%%%% 
+The solver without an initial solution only solved approximately 79\% of medium-sized instances and 63\% of large-scale instances. In contrast, our methods, LB1, LB2, LB3, LB4, and KS, always had feasible initial solutions provided by our HARDUC method in the constructive phase.
+
+In terms of solution quality, statistical tests showed no significant differences among the LB1, LB2, LB4, LB3, and KS methods and the solver on small-scale instances. However,
+for testing medium-scale instances within a maximum allowed running time of 4000 seconds, the KS achieved the best performance with statistical significance. The other methods outperformed the solver with an initial solution and matched the results of the solver without an initial solution. For tests with a maximum allowed running time of 7200 s., the solver performed in the same way as all methods except for LB3, which performed worse than the solver without an initial solution. 
+LB3 is the method most similar to the original version of local branching.
+%
+Regardless of the time limit, all methods outperformed the solver in solution quality for the set of large-scale instances.
+Again, the KS performed best.
+
+Therefore, we can confirm that the proposed methods are more efficient than using only the solver; moreover, KS is the best method for medium- and large-scale instances.
+According to the results, the proposed adaptations of local branching, including soft-fixing and RCL components, helped find better solutions in medium-scale instances instead of the original version.
+
+Although previous studies have suggested that the KS method effectively solves knapsack problems with promising outcomes, the results of our study demonstrate that the KS method may also be useful in solving the UCP problem.
+
+The KS exhibits a behavior similar to a greedy algorithm, with a quick descent followed by a ``stagnation'' effect. However, local branching methods offer a consistent improvement and have the capacity to avoid local optima, albeit with a slower descent rate than KS. A promising direction for future work would be to hybridize KS with LB to leverage the strengths of both methods.
+
+We have learned that matheuristics are able to ``dive'' within the solution space and help speed up the search for better solutions than if we only used the solver. 
+%
+We have found that the proposed improvement methods do their job by improving the initial solution. Therefore, we can consider our strategy of constructing and improving solutions using matheuristic methods to be effective.
+
+Finally, in practice, we recommend using these matheuristic methods and the solver simultaneously on different computers. This strategy of diversifying solution methods always allows us to obtain feasible and high-quality solutions.
+
+\noindent\textit{Future research}:
+For future research, it would interesting the developing of a hybrid algorithm combining KS and the Local Branching Constraint (LBC) (\ref{localbranchingcut}) to benefit from KS's rapid convergence in initial iterations and LBC's ability to escape local optima when KS stagnates. Another
+line of work could be designing a branch-and-cut method that includes local branching constraints, using callback functions to introduce cuts into the solver's solution tree, saving time and enhancing efficiency during problem solving.
+\textcolor{blue}{We also consider it worthwhile to assess the proposed approach across various UCP models, including variations such as prohibited zones, non-linear elements, elastic demand, interdependent generators, and network flow limits. Incorporating a full network representation, either a linear DC power flow model or a conic AC power flow, increases computational complexity and further motivates advanced solution methods, while the proposed matheuristics can be integrated into a Security-Constrained Unit Commitment (SCUC) framework with minimal structural modifications.}
+%
+%
+Another line of work, within the context of KS, consists of further studies about strategies for determining values for the kernel and bucket list size. \textcolor{blue}{Another avenue is to construct either the kernel in the KS or the binary support in Local Branching using variables identified through learning-based methods as having a high probability of assignment.} 
+%
+Naturally, many of the ideas developed here can be extended to handle stochastic versions of the problem.  Many of those solution algorithms rely on decomposition or scenario-based schemes where some subproblems might have similar structures.
+
+%\textcolor{blue}{DH-Agregar: evaluar diferentes estrategias para determinar el tamaño de kernel y buckets debido a que en algunas instancias no fue posible mejorar la solución en diversas iteraciones o no se pudo mejorar la primera solución factible encontrada por el KS. También analizar otras estrategias para determinar la mejor combinación de parámetros a fijar para las versiones de LB.}
+
+\vspace{1em}
+\noindent
+\textit{Acknowledgments:}
+\textcolor{blue}{We are grateful to two anonymous reviewers whose
+criticism helped improve the quality of this work.}
+Uriel Lezama-Lope acknowledges a scholarship for doctoral studies from the Mexican Council for Humanities, Science, and Technology (CONAHCYT).
+The research of Roger R\'{\i}os-Mercado was funded
+by CONAHCYT under grant CF-2023-I-880.
+The research of Diana Huerta-Mu\~noz has been supported by CONAHCYT through a postdoctoral fellowship.
+
+%\section{Data Availability}
+%\label{sec:DataAvailability}
+\vspace{1em}
+\noindent\textit{Data Availability:} The repository \url{https://github.com/urieliram/tc_uc} contains the data and source code for the methods that have been implemented.
+

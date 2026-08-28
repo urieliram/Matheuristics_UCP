@@ -1,0 +1,110 @@
+%RZ\documentclass[12pt]{article}
+\documentclass[letterpaper,titlepage,11pt]{article}
+
+% Added by Roger for preprint colored box
+% Highlight text 
+%\usepackage{color,soul}
+\usepackage{soul}
+\usepackage[usenames, dvipsnames]{color}
+\usepackage{tcolorbox}
+%\newtcolorbox{mybox}{colback=red!5!white,colframe=red!75!black}
+\newtcolorbox{mybox}{colback=green!5!white,colframe=green!75!black}
+
+\input{0_Preamble}
+
+\title{
+\textbf{
+%Matheuristics Based on Kernel Search and Local Branching for a Thermal Unit Commitment Problem\\
+\textcolor{black}{Enhancing Matheuristics for a Thermal Unit Commitment Problem through Kernel Search and Local Branching}}\\[2em]
+\begin{mybox}
+\center\small Preprint DIE-RR25-01\\
+Graduate Program in Electrical Engineering\\
+Department of Mechanical and Electrical Engineering\\
+Universidad Aut\'onoma de Nuevo Le\'on\\
+San Nicol\'as de los Garza, NL, Mexico, June 2025
+\end{mybox}}
+
+\author{%
+\textbf{Uriel I. Lezama-Lope}\\% 
+Independent Researcher\\
+%Universidad Aut\'onoma de Nuevo Le\'on (UANL)\\ 
+%Graduate Program in Electrical Engineering\\%
+Cuernavaca, Mexico\\%
+E-mail: \textit{urieliram@yahoo.com}\\[1em]
+%
+%\and
+\textbf{Roger Z.\ R\'{\i}os-Mercado}\\%
+Graduate Program in Electrical Engineering\\%
+Universidad Aut\'onoma de Nuevo Le\'on (UANL)\\% 
+San Nicol\'as de los Garza, NL, Mexico\\%
+E-mail: \textit{roger@optimizer.mx}\\[1em]
+%\and
+\textbf{Diana L. Huerta-Mu{\~n}oz}\\% 
+Graduate Program in Systems Engineering\\%
+Universidad Aut\'onoma de Nuevo Le\'on (UANL)\\%
+San Nicol\'as de los Garza, NL, Mexico\\%
+E-mail: \textit{dianahuerta@yalma.fime.uanl.mx}\\
+}
+
+
+\date{June 2025}   
+
+%\setstretch{1.1}
+%\renewcommand{\baselinestretch}{1.1}
+\begin{document}
+\setstretch{1.2}
+%\begingroup
+%\let\center\justify
+%\let\endcenter\justify
+\maketitle
+%\endgroup
+
+%\renewcommand{\baselinestretch}{1.3}
+%\setstretch{1.4}
+\begin{abstract}
+%The Unit Commitment Problem (UCP) consists of the optimal scheduling of electrical generators in a power line system. Typicall, the different variations of the unit commitment problem are hard to solve. 
+% In this study, we address a thermal UCP with a staircase cost structure, a formulation that introduces additional complexity. Despite promising results from reformulation strategies, their extended resolution times often make them impractical for real-time applications. To address this issue, we propose a two-phase matheuristic approach. In the first phase, we develop a constructive method to generate high-quality initial solutions. In the second phase, we enhance these solutions using components such as Kernel Search and Local Branching, effectively combining the strengths of mathematical programming and metaheuristics into a hybrid framework. Experimental results in real-world instances demonstrate the effectiveness and value of each of the matheuristic components and that the proposed approach consistently outperforms standard solvers and existing heuristics, particularly for large-scale instances.\\[1em] 
+
+\setstretch{1.3}
+%\textcolor{blue}{The Thermal Unit Commitment Problem (UCP) represents a pivotal challenge in the optimization of power system operations, characterized by the need to determine the optimal scheduling of electrical generators to meet fluctuating demand while minimizing production costs. This study addresses the complexities associated with UCP, particularly in the context of staircase cost structures. Despite the encouraging outcomes from the reformulation strategies to the mathematical model, the UCP still presents significant challenges. We propose an innovative two-phase matheuristic framework that first employs a constructive heuristic to generate high-quality initial solutions, followed by an enhancement phase that implements concepts such as Restricted Candidate List (RCL), soft fixing, and optimization strategies utilizing Local Branching and Kernel Search methods. Our approach leverages the synergistic benefits of mathematical programming and metaheuristic strategies, delivering an effective hybrid solution methodology. Empirical evaluations on well-known complex instances from the literature demonstrate that our proposed framework consistently outperforms other state-of-the-art matheuristics as well as off-the-shelf solvers, particularly for medium- and large-scale problem sets. The findings underscore the efficacy of our matheuristic approach, offering significant advancements in the field of UCP resolution and fostering improved reliability in power generation scheduling.} 
+
+
+The unit commitment problem is an important problem 
+arising in the planning and optimization of power system operations.
+The problem is characterized by the need to determine the optimal scheduling of electrical generators to meet fluctuating demand while minimizing production costs.
+In this study, we address a thermal unit commitment problem under
+a staircase cost structure. 
+Despite the encouraging outcomes from the reformulation strategies to the mathematical model, this problem still presents significant challenges.
+%
+Despite the encouraging outcomes from the reformulation strategies to the mathematical model, the UCP still presents significant challenges.
+%
+We propose a novel two-phase matheuristic framework that first employs a constructive heuristic to generate high-quality initial solutions, followed by an enhancement phase that takes advantage of mechanisms such as local branching and kernel search methods. 
+%
+%Our approach leverages the synergistic benefits of mathematical programming and metaheuristic strategies, delivering an effective hybrid solution methodology. 
+Experimental results on real-world instances demonstrate the effectiveness and value of each of the matheuristic components and that the proposed approach consistently outperforms standard solvers and existing heuristics, particularly for large-scale instances.
+%
+%Empirical evaluations on well-known complex instances from the literature demonstrate that our proposed method consistently outperforms other state-of-the-art matheuristics as well as off-the-shelf solvers, particularly for medium- and large-scale problem sets. The findings underscore the efficacy of our matheuristic approach, offering significant advancements in the field of UCP resolution and fostering improved reliability in power generation scheduling.
+
+\vspace{1em}
+\noindent\textit{Keywords:} Thermal unit commitment problem; Integer programming; Matheuristics; Kernel search; Local branching.
+\end{abstract}
+
+%% main text
+\input{1_Introduction}
+\input{2_RelatedWorks}
+\input{3_MathModel}
+\input{4_SolutionMethods}
+\input{5_ExpWork}
+\input{5b_Discussion}
+\input{7_Conclusion}
+
+
+
+\bibliographystyle{plainnat} 
+\bibliography{refs_ucp}
+
+\newpage
+\appendix
+\input{appendix}
+\end{document}
+

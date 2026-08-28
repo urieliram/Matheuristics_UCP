@@ -1,0 +1,44 @@
+\begin{algorithm}[htb]
+\small
+\caption{\texttt{kernelsearch()}}
+\label{alg:KS}
+\begin{algorithmic}
+%\fontsize{10}{8}\selectfont 
+\Require \\
+$\bar{x}$=a feasible solution of $P$, \\
+$P$=a formulation of the instance to solve,\\
+$\textit{t\_total}$
+\Ensure \\
+A feasible solution $x^{*}$ of value $z^{*}$ \\
+
+\While{$(elapsed\_time < t\_total)$}
+    %\State \hfill
+    \State $\textit{cutoff} \leftarrow z^{*}$ \Comment{\textbf{Initialization phase}}
+    \State $K \leftarrow$ kernel formed from the variables that fulfill $u_{g,t}:u_{g,t}=1\in\bar{x}$ 
+    \State $ P^{ K}\leftarrow$ \texttt{fixing}(1,$K$,$P$) fixing to 1 all the variables into kernel
+    \State $\lbrace \hat{x}, \hat{z} \rbrace \leftarrow \texttt{solveLR}( P^{\text{fix(\textit{K})}})$ 
+    \State $U \leftarrow$ select the variables that fulfill ${u}_{g,t}\notin K$
+    \State $\textit{nbucks} \leftarrow 1 + 3.322 \ln(|\textit{U}|)$
+    \State $U^{\text{ord}} \leftarrow$ sort $U$ in ascending order of reduced cost (most negative first) 
+    \State $\{ B_i\}_{i=1}^{\textit{nbucks}} \leftarrow$ \texttt{buildbuckets}($U^{\text{ord}}$,$\textit{nbucks}$)  
+    \State $tl \leftarrow (\textit{t\_total}-\textit{elapsed\_time}) / n$ 
+%RZ    \State \hfill\Comment{\textbf{Expansion phase}}
+    \For{($i=1,\textit{nbucks}$)} \Comment{\textbf{Expansion phase}}
+            \State $ P^{ K\cup B_i}\leftarrow$ \textbf{fixing}(0,$\overline{B}_i$,$P$) \Comment{fixing to 0 all variables of the other buckets}
+            \State $ P^{ K\cup B_i}\leftarrow$ $ P^{ K\cup B_i} \cup \lbrace \sum_{j\in B_{i}}x_{j} \geq 1\rbrace $ \Comment{A variable from the bucket is forced into entering the kernel}
+            \State $\lbrace stat, \widetilde{x}, \widetilde{z} \rbrace \leftarrow \texttt{solve}( P^{ K\cup B_i}, \textit{cutoff},tl)$
+            \If{(stat = \text{feasible})}
+                    \If{$(\widetilde{z} < z^{*} )$} 
+                        \State $z^{*} \leftarrow \widetilde{z}$ \Comment{Update best known objective}
+                        \State $\textit{cutoff} \leftarrow \widetilde{z}$ \Comment{Tighten cutoff for next iteration}
+                        \State $x^* \leftarrow \widetilde{x}$ \Comment{Update best solution}
+%                 \State $  \textit{cutoff} \leftarrow z^{*} \leftarrow \widetilde{z}$; $x^* \leftarrow \widetilde{x}$ \hl{ALGO AQUI NO ENCAJA... triple arrow?? UILL - LO CAMBIÉ ARRIBA EN TRES LINEAS EN AZUL Y LO COMENTE PARA ACLARAR CADA LINEA}
+                \EndIf
+                \State $K \leftarrow$ update the kernel with the variables in $B_i$ such that $u_{g,t} = 1$ in $\widetilde{x}$.
+%                \State K $\leftarrow$ update the kernel from the buckets variables that fulfill $\{u_{g,t}:u_{g,t}=1\in\bar{x}\}$ \hl{RZ esta expesion no es correcta UILL doc... la cambie por la de arriba }
+            \EndIf
+    \EndFor
+\EndWhile\\
+\Return{$x^{*}$}
+\end{algorithmic}
+\end{algorithm}          

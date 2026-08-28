@@ -1,0 +1,25 @@
+
+\begin{sidewaystable} %\begin{table}[htp]\centering
+\caption{Comparison of works addressing the UCP using matheuristics.}\label{tab:MathAuthorsComparison}
+\begin{adjustbox}{max width=1.1\textwidth}
+\centering
+\begin{threeparttable}[b]
+\begin{tabular}{>{\RaggedRight}p{4cm}>{\RaggedRight}p{3cm}>{\RaggedRight}p{2cm}>{\RaggedRight}p{2cm}>{\RaggedRight}p{3cm}>{\RaggedRight}p{2cm}>{\RaggedRight}p{2cm}>{\RaggedRight}p{3cm}>{\RaggedRight}p{2cm}>{\RaggedRight}p{1.5cm}>{\RaggedRight}p{1.5cm}>{\RaggedRight}p{1.5cm}>{\RaggedRight}p{8cm}}\toprule
+\textbf{Article} &\textbf{Method} &\textbf{Features UCP} &\textbf{PC} &\textbf{SUC} &\textbf{SDC} &\textbf{RR} &\textbf{GL} &\textbf{RUD} &\textbf{SR} &\textbf{MUDT} &\textbf{Net} &\textbf{Notes} \\\cmidrule{1-13}
+\citet{Fayzur2014} 2014 &LB-ILA, PSO-ILA &thermal &Q &Cold and hot start-up & \checkmark & \checkmark & \checkmark & \checkmark &  & \checkmark &  & LB's original version and cost linearization is used. \\\cmidrule{1-13}
+\citet{Todosijevic2016} 2016 &VNS-linear programming &thermal &Q &Cold and hot start-up & \checkmark & \checkmark & \checkmark &  &  & \checkmark &  &  solver times reported \\\cmidrule{1-13}
+\citet{Saboia2016} 2016 &LB &stochastic thermal compact formulation &L &Exponential start-up cost & \checkmark &  & \checkmark & \checkmark &  & \checkmark & \checkmark &A variant of LB that incorporates violated flow limits in each node. \\\cmidrule{1-13}
+\citet{Dupin2016} 2016 &R\&F, VNS with MIP neighborhoods. LB, RINS. &discrete thermal, real-time &L &Fixed cost &  & \checkmark & \checkmark &  &  & \checkmark &  &Utilizes RINS and LB, among other strategies, to define neighborhoods. \\\cmidrule{1-13}
+\citet{Dupin2018} 2018 &R\&F-B\&B &discrete thermal, real-time &L &Fixed cost &  & \checkmark & \checkmark & \checkmark &  & \checkmark &  &Multiple construction methods running in parallel. KS used only as a concept in two heuristics \\\cmidrule{1-13}
+\citet{Santos2020} 2020 &FP, LB &Hydrothermal &L &Fixed cost & \checkmark &  & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark &LB's \citet{Saboia2016} and a variant of FP \\\cmidrule{1-13}
+\citet{Harjunkoski2021} [17] 2021 &R\&F &thermal &L &Fixed cost & \checkmark & \checkmark & \checkmark & \checkmark &  & \checkmark &  &A construct that sets the variables of engagement with a selection rule and solves a B\&B with warm-start \\\cmidrule{1-13}
+\textbf{This work} &R\&F, LB, KS. &thermal T\&C model &S &Variable start-up cost & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark &  & Four variants of LB (applying RCL and soft-fixing)  and one variant of KS. A new R\&F construction method. Comparison with a T\&C formulation.\\
+\bottomrule
+\end{tabular}
+\begin{tablenotes}
+    \item PC: Production cost, SUC: Start-up cost, SUC: Shut-down cost, RR: Reserve requirements, GL: Gen limits, RUD: Ramp up/down, SR: Start-up/shut-down ramps, MUDT: min up/down times, Net: Network.
+	\item Q:quadratic, L:linear, S:staircase.
+\end{tablenotes}
+\end{threeparttable}
+\end{adjustbox}
+\end{sidewaystable} %\end{table}

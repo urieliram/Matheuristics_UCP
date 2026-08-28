@@ -1,0 +1,25 @@
+The correspondence of the constraints in the proposed model is listed below, with the names of the original authors.
+
+%RZ \hl{RZ: Antes de modificar esto discutor algo con Uriel}
+
+
+The minimum uptime and minimum downtime constraints as (\ref{MUT}) and (\ref{MDT}) from \citet{Rajan2005}, enforced with (\ref{MUT2}) and (\ref{MDT2}). The logic of the generators' start-up, shut-down, and operation is modeled by (\ref{garver}) from \citet{Garver1962}. The generation limits constraints are modeled as (\ref{genlim1}) and (\ref{genlim2}) from \citet{Gentile2017}, and (\ref{genlim3}) from \citet{Pan2016}. The start and shut-down ramp limits are modeled as (\ref{startramp}), (\ref{shutdownramp}), and (\ref{shutdownramp2}) from \citet{Morales-Espania2013}. The ramp-up and ramp-down limits constraints are modeled as (\ref{rampup}) and (\ref{rampdown}) from \citet{Damci-Kurt2016}.
+
+The staircase production cost constraints are modeled as (\ref{Staircase1}), (\ref{Staircase2}), and (\ref{Staircase3}) from \citet{Garver1962}, (\ref{Staircase4}) from \citet{Wu2016}, and (\ref{Staircase5}), (\ref{Staircase6}), (\ref{Staircase7}), (\ref{Staircase8}), and (\ref{Staircase9}) from \citet{Knueven2018b}. Note that (\ref{Staircase5}), (\ref{Staircase6}), (\ref{Staircase7}), (\ref{Staircase8}), and (\ref{Staircase9}) are not indispensable in the formulation, but they serve to tighten the variables' staircase production.
+
+The shut-down cost constraints are modeled as (\ref{Shutdowncost}) from \citet{Knueven2020b}.
+
+Constraints (\ref{Startcost1}), (\ref{Startcost2}), (\ref{Startcost3}), and (\ref{Startcost4}) from \citet{Morales-Espania2013} equalize the cost of the segment of the variable of start-up function cost $c_{gt}^{S_g}$ of the generator $g$, where $C_{g,s}^{\text{S}}$ is the start-up cost in the category $s$ of generator $g$ in \$/MWh.
+
+The demand meets, and reserve requirement constraints are modeled as (\ref{System1}) and (\ref{System2}) from \citet{Ostrowski2012}, and (\ref{System3}) from \citet{Morales-Espania2013}. Constraints (\ref{relation1}) from \citet{Morales-Espania2013}, (\ref{relation2}), (\ref{relation3}), (\ref{relation4}), (\ref{relation5}), and (\ref{relation6}) from \citet{Knueven2020b} establish linear relationships between the power variables 
+$p_{gt}, p'_{gt}, \overline{p}'_{gt},\overline{p}_{gt}$. These constraints are used in the best UCP formulations \citep{Knueven2020b}, which helps to constrain the problem's convex hull.
+
+Lastly, constraints \eqref{eq:uvw} and \eqref{eq:pp}  define the nature of the variables.
+
+Initial conditions: constraints (\ref{garver}),(\ref{rampup}),(\ref{rampdown}) change when the time is $t=0$. The parameters used in this case to substitute the parameter with $t-1$ index are the initial conditions of the generators such as $u_{g,0}, p_{g,0}, p'_{g,0}, U_{g,0}, D_{g,0}$. Also, constraints (\ref{Startcost4}) assure the start-up variable $\delta_{gt}$ to be zero during the initial periods considering its minimum shut-down time if the generator has been offline \citep{Morales-Espania2013}.
+
+
+
+
+
+

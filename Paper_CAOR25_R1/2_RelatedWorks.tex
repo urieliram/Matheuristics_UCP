@@ -1,0 +1,166 @@
+\section{Literature Survey}
+\label{sec:survey}
+
+%\color{RedOrange}
+
+%RZ\section{Related work}
+%RZ\label{sec:Relatedwork}
+
+%Before continuing, we believe it is necessary to briefly discuss the UCP prior to addressing the matheuristics methods that have been used to solve it.
+UCP models are classified into deterministic and stochastic.  In our work, we deal with
+a deterministic model, therefore we focus our literature review on deterministic models and approaches. For stochastic UCPs, the reader is referred
+to the work by \citet{2019_ijepes_Haberg}, who reviews models and algorithms developed for handling uncertainty in UCPs.
+
+The literature on UCP models is vast \citep{Montero2022}. UCP models have been widely used to manage energy production for many decades. Different variations of UCP models addressing particular situations and assumptions have been studied \citep{Idriss2018}.
+
+UCP models can be classified according to generator operating, electrical network, and system constraints. The first set includes technical constraints related to the generators as power limits, ramps, minimum up and down times, and start-up costs. The second set comprises limits in lines and tie-lines. The last one encompasses meeting demand and load-generation balance. \citet{Anjos2017} outline some examples of these models.
+
+Recent research has established the UCP as a computationally complex challenge. \citet{Anjos2013} affirm that the UCP is an NP-hard, large-scale, non-linear, non-convex, combinatorial optimization problem. On the other hand, \citet{Bendotti2019} assert that the UCP can be transformed into multiple knapsack problems with linking constraints in time and analyze the complexity of the UCP with respect to the number of units and time periods. 
+%The UCP is strongly NP-hard, as proven in this study. 
+
+
+\subsection{Traditional approaches}
+
+In his doctoral thesis, \citet{Morales-Espania2014_thesis} highlights that a significant portion of the UCP literature concentrates on improving the formulation by seeking locally ideal or locally tighter representations for a specific subset of constraints of UCP.  However, the thesis concludes that achieving an excessively tight model becomes useless if computational limitations slow its computability due to the extensive number of variables and constraints involved. \textcolor{blue}{Given the insights provided by these findings, recent research has focused on finding tighter formulations that have shown promising results, particularly in thermal UCP models.  \citet{CarrionArroyo2006} are the pioneers in this modeling approach, proposing a one-binary-variable formulation that significantly reduces the number of variables in the problem. Subsequently, \citet{Ostrowski2012} later proposed a tighter three-binary-variable model and demonstrated that, despite the compactness of the one-binary formulation, the one-binary formulation produces weaker linear relaxations and makes it more difficult to incorporate additional valid inequalities, which ultimately affects computational performance and puts general-purpose solvers at a disadvantage.}
+
+\textcolor{blue}{Subsequently, \citet{Morales-Espania2013} proposed a tight and compact (T\&C) formulation for the thermal UCP model, which aims to minimize operating costs over a specified period by optimizing the commitment and dispatch of generators that use gas, coal, fuel oil, and diesel as primary energy sources. The formulation considers generator capacity limits, minimum up and down times, ramp rates, and variable start-up costs, while ensuring that electricity demand and reserve requirements are met.}
+
+Recent research on UCP models has concentrated on developing more effective Mixed Integer Linear Programming (MILP) formulations that can represent the various components of the problem more tightly and compactly \citep{Morales-Espania2013b,Morales-Espania2016,Yang2017,Yang2021}. These studies have particularly focused on the thermal UCP model. In addition, \citet{Guedes2017} have presented a hydraulic UCP model with T\&C features.
+
+On one hand, a tighter model reduces or narrows down the best solution space to find the feasible solution and helps methods based on branch and bound (B\&B) reach a solution quicker. On the other hand, a more compact model employs fewer constraints and variables and requires fewer computing resources. \citet{Knueven2020b} have compiled the major modern UCP formulations and proposed different models that balance out T\&C features. The new formulations are derived from combining constraints from other models. They also tested the model's performance with instances from electricity markets, showing positive results for tighter models.
+
+These T\&C models have shown promising results because they can be extended with additional constraints as \citet{Nycander2021} that propose a variant based on power and not in energy. This variant of UCP based on power provides a notable advantage by incorporating a more realistic approach to considering generator ramps. It accurately calculates the generation capacity at the beginning and end of each time period. Additionally, it integrates constraints that account for intra-hour reserve requirements, leading to enhanced practicality within the model.
+
+Finally, UCP models have been solved using the branch-and-bound (B\&B) method and its variants \citep{Wolsey2021}. In practice, sophisticated solvers and high computing power are required to solve large-scale problems at reasonable times. Despite this progress, depending on the size and features of specific instances, sometimes the algorithms cannot reach an optimal solution in the time allowed. In this context, metaheuristic methods help find near-optimal solutions. However, some methods based on Genetic Algorithms \citep{Kazarlis1996}, Tabu Search \citep{Mori1996}, and Variable Neighborhoods Search \citep{Todosijevic2016}  have yet to perform well. Nevertheless, recent research has yielded promising results by integrating metaheuristic methods with mathematical programming to address UCPs. Consequently, the next sub-section comprehensively surveys the most recent matheuristic approaches for solving UCP models.
+
+%\color{black}
+
+\subsection{Hybrid heuristic approaches}
+
+A strategy for reducing solution times and improving accuracy in the UCP is the hybrid heuristic methods, known as matheuristics. These strategies cleverly embed exact methods into metaheuristic approaches \citep{2023_itor_Boschetti,Maniezzo2021}. They also take advantage of advances in good MILP formulations \citep{Fischetti2016}. 
+
+The efficiency of branch-and-bound algorithms has been significantly improved by the implementation of heuristic ideas in MILP solvers \citep{Wolsey2021}. Matheuristics can improve solution quality, convergence guarantees, and computational efficiency, leading to better solutions. Constructive heuristics, such as relax-and-fix (R\&F) methods \citep{Wolsey2021}, the feasibility pump (FP) \citep{Fischetti2003}, and the relaxation-induced neighborhood search (RINS) \citep{Danna2005}, use continuous solutions from linear relaxation and rounding to guide the search for feasible integer solutions. This approach improves the quality and efficiency of the solutions by exploring the neighborhoods around relaxed solutions in combinatorial optimization problems.
+
+Other matheuristics inspired by local search algorithms are then used to refine solution quality, such as local branching (LB) strategies introduced by \citet{Fischetti2003}, which define the neighborhoods within the MILP with maximum modifications to the incumbent solution. These strategies iteratively explore neighboring solutions by applying small changes, focusing on improving the incumbent while maintaining feasibility. The approach allows for an effective exploration of the solution space, providing higher-quality solutions by guiding the search toward more optimal regions.
+
+The Kernel Search (KS) matheuristic, introduced by \citet{Angelelli2010}, is inspired by greedy algorithms. The method begins by partitioning the decision variables of an MILP formulation into two sets: a central kernel and multiple buckets. A simplified version of the problem, or sub-MILP, is then solved for each bucket, using the kernel as a starting point. Iteratively, the method adds new variables from the buckets to the kernel, progressively improving the solution. The process continues until all the variables from the buckets have been integrated into the kernel, resulting in an optimal or near-optimal solution with the variables assigned within the kernel.
+
+Following this, a survey of the matheuristic and heuristic methods applied to variations of UCP models is presented. It is worth noting that there is a significant lack of research on the use of matheuristics in the UCP. In Table \ref{tab:MathAuthorsComparison}, the comparison between the works that have addressed the UCP problem with these heuristic approaches is presented. The table lists the main constraints and features of the UCP models addressed in each work and their corresponding solution methods.
+
+
+
+\begin{table}[htp]
+\caption{Survey of works on UCPs using matheuristics.}\label{tab:MathAuthorsComparison}
+\begin{adjustbox}{max width=\textwidth}
+\centering
+\begin{threeparttable}[b]
+\begin{tabular}{>{\RaggedRight}p{3cm}>{\RaggedRight}p{3cm}>{\RaggedRight}p{3cm}>{\RaggedRight}p{1.5cm}>{\RaggedRight}p{3cm}>{\RaggedRight}p{1.5cm}>{\RaggedRight}p{1.5cm}>{\RaggedRight}p{2cm}>{\RaggedRight}p{2cm}>{\RaggedRight}p{1.5cm}>{\RaggedRight}p{1.5cm}}\toprule
+{Article} & {Method} &{UCP type} & {PC} & {SUC} & {SDC} & {RR} & {GL} & {RUD} & {SR} & {MUDT} \\\cmidrule{1-11}
+\citet{Fayzur2014} 2014 &LB-ILA, PSO-ILA &thermal &Q &Cold and hot start-up & \checkmark & \checkmark & \checkmark & \checkmark &  & \checkmark \\\cmidrule{1-11}
+\citet{Todosijevic2016} 2016 &VNS-linear programming &thermal &Q &Cold and hot start-up & \checkmark & \checkmark & \checkmark &  &  & \checkmark \\\cmidrule{1-11}
+\citet{Saboia2016} 2016 &LB &stochastic thermal compact formulation &L &Exponential start-up cost & \checkmark &  & \checkmark & \checkmark &  & \checkmark \\\cmidrule{1-11}
+\citet{Dupin2016} 2016 &R\&F, VNS with MIP neighborhoods. LB, RINS. &discrete thermal, real-time &L &Fixed cost &  & \checkmark & \checkmark &  &  & \checkmark \\\cmidrule{1-11}
+\citet{Dupin2018} 2018 &R\&F-B\&B &discrete thermal, real-time &L &Fixed cost &  & \checkmark & \checkmark & \checkmark &  & \checkmark \\\cmidrule{1-11}
+\citet{Santos2020} 2020 &FP, LB &Hydrothermal &L &Fixed cost & \checkmark &  & \checkmark & \checkmark & \checkmark & \checkmark \\\cmidrule{1-11}
+\citet{Harjunkoski2021} [17] 2021 &R\&F &thermal &L &Fixed cost & \checkmark & \checkmark & \checkmark & \checkmark &  & \checkmark \\\cmidrule{1-11}
+\citet{Liu2023} 2023 &Learning-assisted MIP & stochastic thermal & L & Variable start-up cost &  &  & \checkmark & \checkmark & \checkmark &  \checkmark\\\cmidrule{1-11}
+{This work} &R\&F, LB, KS. &thermal T\&C model &S &Variable start-up cost & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark \\
+\bottomrule
+\end{tabular}
+\begin{tablenotes}
+    \item PC: Production cost; SUC: Start-up cost; SDC: Shut-down cost; RR: Reserve requirements; GL: Gen limits; RUD: Ramp up/down; SR: Start-up/shut-down ramps; MUDT: min up/down times.
+	\item Q: quadratic; L: linear; S: staircase.
+\end{tablenotes}
+\end{threeparttable}
+\end{adjustbox}
+\end{table}
+
+
+%\citet{Xavier2021} 2021 &Learning-assisted MIP &SCUC &Q &Fixed and variable start-up cost & \checkmark &  & \checkmark & \checkmark & \checkmark & \checkmark \\\cmidrule{1-11}
+
+First, \citet{Fayzur2014} present two matheuristic approaches to solve a thermal UCP. The first approach combines the original version of LB from \citet{Fischetti2003} and an iterative linear approximation (ILA) method. The second approach combines particle swarm optimization (PSO) and ILA, incorporating a solver in an iterative process.
+The UCP problem addressed in the study initially involves quadratic production costs, which are later linearized with ILA and solved using the LB method. The model's constraints include power balance, spinning reserve requirements, minimum up and down times, production limits, and ramps \citep{Viana2013}.
+The study solves previously unsolvable instances and achieves faster optimal results for larger instances. The proposed LB-ILA algorithms significantly reduce the average CPU time for larger instances by 40\%-56\%. However, these algorithms perform worse for smaller instances due to unnecessary exploration of the neighborhoods.
+
+\citet{Saboia2016} solve a stochastic thermal network-constraint UPC using the LB approach combined with an iterative approach that considers transmission lines flow limits. 
+They dynamically introduce violated flow limit constraints, embedding them into the nodes of the LB scheme. This iterative procedure involves fixing the optimal integer solution achieved at each node. The DC power flow is then evaluated iteratively, continuously checking for violations of line capacity. The process continues until no further line capacity violations are observed. This model is a new compact MILP formulation with basic constraints for thermal UCP. The method is tested on one instance.
+
+\citet{Todosijevic2016} propose a hybrid approach that combines variable neighborhood search (VNS) with mathematical programming to address a UCP. 
+In their method, the commitment of generators, i.e., deciding which ones will be turned on and off, is determined using VNS. Additionally, they solve an economic dispatch problem (calculus of each generator's power level) for each period by formulating the dispatch as a linear programming problem.
+The results obtained by the proposed approach outperformed considerable metaheuristics reported in the literature for solving the UCP. Furthermore, the solutions achieved were very close to the optimal solutions obtained with the CPLEX solver. However, the paper lacks information regarding the CPU times of the solver, making it impossible to compare the computational efficiency of VNS directly.
+Nevertheless, it is important to note that the mathematical model used in the study considers only constraints of demand, reserves, power limits, minimum up and down times, and hot and cold start-up costs. However, the model does not incorporate ramps, which are essential constraints in real-life UCP usage. 
+Furthermore, a particular feature of their UCP is that the production cost of the generators is quadratic.
+
+\citet{Dupin2016} use a matheuristic method to solve a discrete thermal UCP from programming thermal generators in the real-time electricity French system. 
+First, in a constructive phase, they use R\&F strategies to find one initially good solution. 
+In the subsequent improvement phase, a VNS algorithm conducts a local search by iteratively exploring B\&B solutions within neighborhoods defined within the solution space confined by the MILP model. In other words, these neighborhoods are defined within the MILP using various heuristics suggested by the authors, such as RINS or LB strategies.
+
+The mathematical model used by \citet{Dupin2017} comprised of constraints such as demand, reserves, minimum up and down times \citep{Rajan2005}, and fixed start-up costs. 
+Note that in the discrete thermal UCP, the limits of generation constraints are not applicable. Instead, discrete power levels and transition constraints exist between them.
+However, the model does not incorporate ramps.
+The method aims to find the best solutions for the discrete thermal UCP on a 15-minute time limit from its application in a real-time scenario.
+The results of the metaheuristic method are better than the MILP solution, which was obtained by the solver in the allotted time frame. 
+
+In follow-up work, \citet{Dupin2018} improved the discrete thermal UCP formulation with tight and compact (T\&C) features and extended the model to include min-stop ramping for a discrete thermal UCP.  To address the problem, the authors propose several constructive matheuristics designed to generate good-quality feasible solutions. These solutions can be effective initial solutions for a branch-and-bound (B\&B) algorithm. Among all the ingenious constructive methods presented, they implemented one with the KS ideas proposed by \citet{Guastaroba2017}, i.e., the segregation of generators based on their marginal costs, eliminating units with higher production costs. Another variant of their heuristic prioritizes utilizing low-cost units as the main production basis, while the remaining units constitute the kernel of the KS algorithm. However, the authors neither utilize the complete KS method nor provide specific details about the implementation
+of the method. The proposed method produces precise, high-quality solutions, outperforming the B\&B method applied to the MILP model in the allotted time limit.
+The authors tested the method with more than 600 instances from the French electrical system.
+
+
+According to the investigation undertaken by the \citet{Santos2020}, who present the model and method used to plan operations for energy generation in Brazil, their work considers thermal generation and hydro generation and limitations on the electrical network. They used a variant of the FP from \citet{Fischetti2005} adapted for binary variable decisions. They also created an objective function adapted with a mathematical term that calculates the Hamming distance. The researchers opted for a heuristic method due to the limitations in time to solve the UCP, which should be solved daily for a time horizon of seven days. Considering the dimensions of their problem, an exact method would not yield a timely resolution within two hours. The authors report using the same version of LB as that of \citet{Saboia2016}.
+
+\textcolor{blue}{
+\citet{Liu2023} address a thermal stochastic UCP with network constraints in thermal systems with high renewable penetration using a straightforward learning method that does not rely on complex machine learning techniques. They analyze historical daily commitment patterns to fix stable binary variables and eliminate rarely used ramping constraints. This simple, rule-based approach effectively reduces the problem size and computational time without sacrificing solution quality, providing a practical alternative to more complex learning-based methods.
+\citet{Xavier2021} propose a learning-based approach for  security UCP that predicts redundant network constraints, generates warm-start solutions, and identifies affine subspaces to reduce problem size and accelerate computation.
+Although both \citet{Liu2023} and \citet{Xavier2021} leverage learning from multiple daily real instances, \citet{Liu2023} fix binary commitment variables and removes underused ramping constraints, whereas \citet{Xavier2021} emphasize predicting redundant network constraints, generating warm-starts, and identifying affine subspaces to reduce problem size and computation time.
+}
+
+In the study conducted by \citet{Harjunkoski2021}, an R\&F heuristic for the UCP is devised. The proposed method starts with solving a linear relaxation of the problem. Subsequently, they analyzed the product of the commitment binary variable with each generator's power level. The commitment binary variables were fixed and solved as an MILP problem if the product exceeded the minimum feasible generation level. This constructive method provides a warm start to the B\&B algorithm and accelerates the UCP solution process.
+
+
+
+%RZ In this section, we discuss the key distinctions between our work and the related studies, emphasizing the scientific contributions of our research.
+
+\subsection{Positioning our work in the literature}
+
+Regarding the mathematical modeling of the problem, our UCP is a deterministic thermal model with a staircase cost function. 
+Furthermore, our model incorporates valid inequalities in the cost constraints, making the formulation tighter.
+This cost function assigns different price levels for each generation level interval, 
+aligning the model more closely with the cost modeling of electricity markets. 
+Other works address similar problems with linear costs \citet{Saboia2016,Dupin2016,Dupin2018,Harjunkoski2021} and quadratic costs \citet{Fayzur2014,Todosijevic2016}.
+Another notable difference is that the modeling of generator startup costs is simplified in most of the papers to a fixed startup cost \citet{Dupin2016,Dupin2018,Santos2020,Harjunkoski2021} 
+or hot and cold starts \citet{Fayzur2014,Todosijevic2016}, or, at best, exponential startup costs depending on the time the generator has been off \citet{Saboia2016}. 
+In our case, we use variable startup cost constraints \citet{Morales-Espania2013} with tighter features.
+
+The main difference with the other works is that, although they also solve a thermal UCP, they address different variants. 
+For example, \citet{Dupin2016,Dupin2018} tackle a discrete thermal UCP for a real-time horizon with limited forward scheduling periods. 
+\cite{Santos2020} deal with a hydrothermal UCP problem, while \citet{Saboia2016} solve a stochastic UCP thermal problem. 
+Although \citet{Fayzur2014} present a hybrid LB method with cost linearization, the version they report is the original one developed by \citet{Fischetti2003}. 
+Alternatively, \citet{Todosijevic2016} apply VNS to solve the problem and incorporates linear programming to address a subproblem. 
+Similarly, \citet{Dupin2016} employ another VNS, and some of the neighborhoods they define incorporate the concepts of LB and RINS matheuristics. 
+Moreover, it is worth noting that only the local search definition from the LB method is utilized without involving the branching phase. 
+Additionally, \citet{Saboia2016} modify the original LB to include the power network.  
+%
+In their research, \citet{Santos2020} report using a variant of FP as a constructive strategy and LB as an improvement strategy. 
+Furthermore, the authors state that they use the same version of LB as \citet{Saboia2016}.
+
+\textcolor{blue}{
+Similar to matheuristic strategies that fix variables with persistent patterns and remove underused ramping constraints, \citet{Liu2023, Xavier2021}  simplify the MILP problem using information extracted from past instances. In contrast to our approach, which does not rely on learning from previously solved instances, these learning-based works show how historical solutions can guide effective problem-size reduction in stochastic and security-constrained UCP settings.
+}
+
+The first paper to report on the use of the KS for UCP is \citet{Dupin2018},
+where they present their findings on incorporating the KS concept as a variable-fixing criterion into a variable fixing strategy. 
+This strategy introduces methods to select specific variables to fix a priori to obtain a reduced problem that the MILP solver can subsequently solve. 
+However, it is important to emphasize that their work lacks a complete implementation of the KS method.
+
+Furthermore, \citet{Harjunkoski2021} propose a constructive method based on R\&F, where the initial feasible solution provides a warm start to the B\&B algorithm, resulting in an accelerated UCP solution process. 
+
+\subsection*{Summary of research contributions}
+
+In terms of solution methodologies, we proposed a novel constructive method that aims to compete with the approach of \citet{Harjunkoski2021} and the solver. The solution calculated by the constructive method provides the first solution to the improving method.
+
+In the improvement phase, we have developed a unique version of KS; our version introduces several significant innovations compared to the original method proposed by \citet{Angelelli2010}. First, our KS eliminates the need for kernel construction, as a preliminary constructive stage already provides the kernel. Second, we employ the statistical rule of Sturges to determine the number of buckets in KS, a refinement that optimizes the method's performance. Third, our focus is on the dominant variables of the problem, which enhances computational efficiency. Fifth, our method calculates the reduced costs by fixing kernel variables while leaving the remaining variables free, using the linear relaxation of the problem. Finally, our kernel expansion process continues even after the buckets have been processed. If time permits, the kernel is reconfigured using the latest solution, and the expansion process is restarted, allowing for further refinement of the results.
+
+%RZ\hl{RZ No se menciona nada aqui sobre local branching??}
+\textcolor{black}{
+Furthermore, we introduce four specialized versions of the Local Branching (LB) method, each incorporating refinements to enhance performance. Our adaptations present significant differences compared to the original approach by \citet{Fischetti2003}. The first procedure, LB1, defines a restricted candidate list (RCL) based on variables that are nonzero in the constructive method (HARDUC) but fall below the minimum generator power threshold. Additionally, LB1 employs a soft-fixing constraint that retains at least 90\% of the binary support variables in the solution. The second procedure, LB2, removes the soft-fixing constraint while maintaining the RCL based on the HARDUC rule. The third procedure, LB3 adheres closely to the original LB method but does not use an RCL or soft-fixing constraints, limiting its local search to binary support variables and their complements. Finally, LB4 selects the RCL based on negative reduced costs, improving the efficiency of the search process. A key feature of our LB adaptations is that they operate solely on the dominant variable $u_{g,t}$ to define the binary support, unlike the generic LB approach, which considers all binary variables.
+}
