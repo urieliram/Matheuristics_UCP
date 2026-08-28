@@ -1,0 +1,7 @@
+# Dependencias de ejecucion de la matheuristica UC (versiones verificadas en el entorno de desarrollo).
+# CPLEX se usa via su API de Python; el ejecutable se apunta con la clave `executable` de config.con.
+pyomo==6.4.4
+numpy==1.23.5
+pandas==1.5.2
+matplotlib==3.6.2
+cplex==22.1.1.2

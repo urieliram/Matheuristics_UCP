@@ -7,12 +7,27 @@ __pycache__/
 *.so
 
 
-# Archivos de salida
+# Archivos de salida generados por main.py / test.sh
 *.lp
-*.txt
 *.log
+solHard3_*.csv
+
+# Salidas de texto, pero las dependencias declaradas si se versionan
+*.txt
+!requirements.txt
+!requirements-dev.txt
+
+# Secretos y scripts locales con credenciales: NUNCA versionar.
+# comandos.sh contiene un token de acceso personal en texto plano.
+comandos.sh
+*.token
+.env
+.netrc
+
+# config.con es la configuracion de ejecucion: SIN ella el repo no corre,
+# asi que se versiona aunque el patron generico ignore *.con
 *.con
-*.sh
+!config.con
 
 # Distribution / packaging
 .Python
